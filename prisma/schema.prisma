@@ -8,6 +8,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AccountTypes {
+    Assets
+    Revenue
+    Equity
+    Expense
+    Liability
+}
+
 model Members {
   memberId         Int           @id @default(autoincrement())
   lastName         String        
@@ -21,5 +29,23 @@ model Members {
   updatedAt        DateTime     @default(now())
 
   @@map("members")
+
+}
+
+model Accounts {
+  accountId       Int           @id @default(autoincrement())
+  accountType     AccountTypes
+  parentAccount   Int?
+  debit           Float   
+  credit          Float
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())
+
+  @@map("accounts")
+}
+
+model Transactions {
+  transactionId    BigInt       @id @default(autoincrement())
+  transactionType  String
 
 }
