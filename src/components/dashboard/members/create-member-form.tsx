@@ -36,59 +36,6 @@ import { memberSchema, type MemberSchema } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-const countryOptions = [
-  { label: 'Male', value: 'us' },
-  { label: 'Germany', value: 'de' },
-  { label: 'Spain', value: 'es' },
-] as const;
-
-function fileToBase64(file: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      resolve(reader.result as string);
-    };
-    reader.onerror = () => {
-      reject(new Error('Error converting file to base64'));
-    };
-  });
-}
-
-// const schema = zod.object({
-//   avatar: zod.string().optional(),
-//   name: zod.string().min(1, 'Name is required').max(255),
-//   email: zod.string().email('Must be a valid email').min(1, 'Email is required').max(255),
-//   phone: zod.string().min(1, 'Phone is required').max(15),
-//   company: zod.string().max(255),
-//   billingAddress: zod.object({
-//     country: zod.string().min(1, 'Country is required').max(255),
-//     state: zod.string().min(1, 'State is required').max(255),
-//     city: zod.string().min(1, 'City is required').max(255),
-//     zipCode: zod.string().min(1, 'Zip code is required').max(255),
-//     line1: zod.string().min(1, 'Street line 1 is required').max(255),
-//     line2: zod.string().max(255).optional(),
-//   }),
-//   taxId: zod.string().max(255).optional(),
-//   timezone: zod.string().min(1, 'Timezone is required').max(255),
-//   language: zod.string().min(1, 'Language is required').max(255),
-//   currency: zod.string().min(1, 'Currency is required').max(255),
-// });
-
-// type Values = zod.infer<typeof schema>;
-
-// const defaultValues = {
-//   avatar: '',
-//   name: '',
-//   email: '',
-//   phone: '',
-//   company: '',
-//   billingAddress: { country: 'us', state: '', city: '', zipCode: '', line1: '', line2: '' },
-//   taxId: '',
-//   timezone: 'new_york',
-//   language: 'en',
-//   currency: 'USD',
-// } satisfies Values;
 
 export function CreateMemberForm(): React.JSX.Element {
   const router = useRouter();
@@ -103,26 +50,20 @@ export function CreateMemberForm(): React.JSX.Element {
 
   const { execute, isExecuting, result } = useAction(createNewMember);
 
-  //   const onSubmit = React.useCallback(
-  //     async (_: Values): Promise<void> => {
-  //       try {
-  //         // Make API request
-  //         toast.success('Customer updated');
-  //         router.push(paths.dashboard.customers.details('1'));
-  //       } catch (err) {
-  //         logger.error(err);
-  //         toast.error('Something went wrong!');
-  //       }
-  //     },
-  //     [router]
-  //   );
 
   const onSubmit = (val: MemberSchema) => {
-    execute(val);
-    const { serverError, data } = result;
-    if (!serverError) {
-      console.log(data);
-      router.push('/dashboard/members');
+    try {
+      //    execute the action by invoking this !!
+      execute(val);
+
+      const { serverError, data } = result;
+      if (!serverError) {
+        toast.success('Member created.');
+        router.push(paths.dashboard.members.list);
+      }
+    } catch (err) {
+      logger.error(err);
+      toast.error('Something went wrong!');
     }
   };
 
