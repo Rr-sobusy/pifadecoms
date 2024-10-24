@@ -109,19 +109,6 @@ export function CustomersFilters({ filters = {}, sortDir = 'desc' }: CustomersFi
 
   return (
     <div>
-      <Tabs onChange={handleStatusChange} sx={{ px: 3 }} value={status ?? ''} variant="scrollable">
-        {tabs.map((tab) => (
-          <Tab
-            icon={<Chip label={tab.count} size="small" variant="soft" />}
-            iconPosition="end"
-            key={tab.value}
-            label={tab.label}
-            sx={{ minHeight: 'auto' }}
-            tabIndex={0}
-            value={tab.value}
-          />
-        ))}
-      </Tabs>
       <Divider />
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap', px: 3, py: 2 }}>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flex: '1 1 auto', flexWrap: 'wrap' }}>
@@ -167,6 +154,36 @@ export function CustomersFilters({ filters = {}, sortDir = 'desc' }: CustomersFi
         </Select>
       </Stack>
     </div>
+  );
+}
+
+function LastNameFilterPopover(): React.JSX.Element {
+  const { anchorEl, onApply, onClose, open, value: initialValue } = useFilterContext();
+  const [value, setValue] = React.useState<string>('');
+  return (
+    <FilterPopover anchorEl={anchorEl} onClose={onClose} open={open} title="Filter by email">
+      <FormControl>
+        <OutlinedInput
+          onChange={(event) => {
+            setValue(event.target.value);
+          }}
+          onKeyUp={(event) => {
+            if (event.key === 'Enter') {
+              onApply(value);
+            }
+          }}
+          value={value}
+        />
+      </FormControl>
+      <Button
+        onClick={() => {
+          onApply(value);
+        }}
+        variant="contained"
+      >
+        Apply
+      </Button>
+    </FilterPopover>
   );
 }
 

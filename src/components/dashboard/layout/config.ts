@@ -34,6 +34,16 @@ export const layoutConfig = {
           matcher: { type: 'startsWith', href: '/dashboard/settings' },
         },
         {
+          key: 'members',
+          title: 'Members',
+          icon: 'users',
+          items: [
+            { key: 'members', title: 'List members', href: paths.dashboard.members.list },
+            { key: 'members:create', title: 'Create member', href: paths.dashboard.members.create },
+            // { key: 'members:details', title: 'Customer details', href: paths.dashboard.members.details('1') },
+          ],
+        },
+        {
           key: 'customers',
           title: 'Customers',
           icon: 'users',

@@ -36,10 +36,10 @@ export default async function Layout({ children }: LayoutProps): Promise<React.J
   return (
     <html lang={settings.language} suppressHydrationWarning>
       <body>
-        <InitColorSchemeScript attribute="class" />
-        <Analytics>
-          <LocalizationProvider>
-            <TopLoaderProvider>
+        <TopLoaderProvider>
+          <InitColorSchemeScript attribute="class" />
+          <Analytics>
+            <LocalizationProvider>
               <UserProvider>
                 <SettingsProvider settings={settings}>
                   <I18nProvider lng={settings.language}>
@@ -51,9 +51,9 @@ export default async function Layout({ children }: LayoutProps): Promise<React.J
                   </I18nProvider>
                 </SettingsProvider>
               </UserProvider>
-            </TopLoaderProvider>
-          </LocalizationProvider>
-        </Analytics>
+            </LocalizationProvider>
+          </Analytics>
+        </TopLoaderProvider>
       </body>
     </html>
   );
