@@ -16,6 +16,11 @@ enum AccountTypes {
     Liability
 }
 
+enum AccountStatus {
+  active
+  inactive
+}
+
 
 model Members {
   memberId         String        @id @default(cuid())
@@ -29,6 +34,8 @@ model Members {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @default(now())
 
+  dividends        Dividends[]    
+
   @@map("members")
   @@index([lastName])
 
@@ -36,18 +43,33 @@ model Members {
 
 model Accounts {
   accountId       Int           @id @default(autoincrement())
-  accountType     AccountTypes
-  parentAccount   Int?
-  debit           Float   
-  credit          Float
+  accountName     String
+  runningBalance  Float         @default(0)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now())
+  status          AccountStatus  @default(active)
+
+  dividends       Dividends[]
+
 
   @@map("accounts")
+}
+
+model Dividends {
+  dividendId            BigInt         @id  @default(autoincrement())
+  memberId              String
+  accountId             Int
+  datePosted            DateTime       @default(now())
+  amount                Float
+  members               Members        @relation(fields: [memberId], references: [memberId])
+  account               Accounts       @relation(fields: [accountId], references: [accountId])
+
+
+  @@map("dividends")
+  @@index([memberId, accountId, datePosted])
 }
 
 model Transactions {
   transactionId    BigInt       @id @default(autoincrement())
   transactionType  String
-
 }

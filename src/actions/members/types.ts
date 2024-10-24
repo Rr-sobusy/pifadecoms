@@ -11,7 +11,7 @@ export const memberSchema = z.object({
   gender: z.enum(['M', 'F'], { message: 'Must be M or F!' }),
   address: z.string().min(1, { message: 'Address must not be empty!' }),
   birthDate: z.date(),
-  occupation: z.string(),
+  occupation: z.string().optional(),
   contactNo: z.string().length(11, { message: 'Contact number must be 11 characters' }),
 });
 

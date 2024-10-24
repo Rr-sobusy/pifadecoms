@@ -368,7 +368,7 @@ export function CreateMemberForm(): React.JSX.Element {
               </Grid>
             </Stack> */}
             <Stack spacing={3}>
-              <Typography variant="h6">Shipping information</Typography>
+              <Typography variant="h6">Previous owed amount</Typography>
               <FormControlLabel control={<Checkbox defaultChecked />} label="Same as billing address" />
             </Stack>
             <Stack spacing={3}>
