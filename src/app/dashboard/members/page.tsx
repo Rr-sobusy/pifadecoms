@@ -18,7 +18,6 @@ type PageProps = {
 const Page = async ({ searchParams }: PageProps) => {
   const { lastName } = searchParams;
   const members = await fetchMembers({ lastName });
-  console.log(members);
   return (
     <Box
       sx={{

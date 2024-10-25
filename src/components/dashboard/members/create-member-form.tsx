@@ -54,12 +54,13 @@ export function CreateMemberForm(): React.JSX.Element {
   const onSubmit = (val: MemberSchema) => {
     try {
       //    execute the action by invoking this !!
-      execute(val);
+     const rex = execute(val);
 
       const { serverError, data } = result;
       if (!serverError) {
         toast.success('Member created.');
         router.push(paths.dashboard.members.list);
+        console.log(rex)
       }
     } catch (err) {
       logger.error(err);

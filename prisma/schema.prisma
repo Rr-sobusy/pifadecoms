@@ -72,4 +72,10 @@ model Dividends {
 model Transactions {
   transactionId    BigInt       @id @default(autoincrement())
   transactionType  String
+  refName          String
+  refType          String
+  particular       String?
+  debit            Float
+  credit           Float
+  createdAt        DateTime     @default(now())
 }

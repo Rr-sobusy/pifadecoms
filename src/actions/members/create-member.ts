@@ -9,22 +9,15 @@ import { actionClient } from '@/lib/safe-action';
 
 import { memberSchema } from './types';
 
-export const createNewMember = actionClient.schema(memberSchema).action(async ({ parsedInput: Member }) => {
+export const createNewMember = actionClient.schema(memberSchema).action(async ({ parsedInput: _newMember }) => {
   try {
     const newMember = await prisma.members.create({
-      data: {
-        lastName: Member.lastName,
-        firstName: Member.firstName,
-        address: Member.address,
-        birthDate: new Date(Member.birthDate),
-        gender: Member.gender,
-        contactNo: Member.contactNo,
-        occupation: Member.occupation,
-      },
+      data: _newMember,
     });
+    console.log(newMember)
+    return { message: 'New member created!', data: newMember };
   } catch (error) {
     console.error({ message: 'Error occureded in server:' + error });
   }
-
   revalidatePath(paths.dashboard.members.list);
 });
