@@ -368,84 +368,13 @@ export function CreateMemberForm(): React.JSX.Element {
                 </Grid>
               </Grid>
             </Stack> */}
-            <Stack spacing={3}>
+            {/* <Stack spacing={3}>
               <Typography variant="h6">Previous owed amount</Typography>
               <FormControlLabel control={<Checkbox defaultChecked />} label="Same as billing address" />
             </Stack>
             <Stack spacing={3}>
               <Typography variant="h6">Additional information</Typography>
-              {/* <Grid container spacing={3}>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="timezone"
-                    render={({ field }) => (
-                      <FormControl error={Boolean(errors.timezone)} fullWidth>
-                        <InputLabel required>Timezone</InputLabel>
-                        <Select {...field}>
-                          <Option value="">Select a timezone</Option>
-                          <Option value="new_york">US - New York</Option>
-                          <Option value="california">US - California</Option>
-                          <Option value="london">UK - London</Option>
-                        </Select>
-                        {errors.timezone ? <FormHelperText>{errors.timezone.message}</FormHelperText> : null}
-                      </FormControl>
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="language"
-                    render={({ field }) => (
-                      <FormControl error={Boolean(errors.language)} fullWidth>
-                        <InputLabel required>Language</InputLabel>
-                        <Select {...field}>
-                          <Option value="">Select a language</Option>
-                          <Option value="en">English</Option>
-                          <Option value="es">Spanish</Option>
-                          <Option value="de">German</Option>
-                        </Select>
-                        {errors.language ? <FormHelperText>{errors.language.message}</FormHelperText> : null}
-                      </FormControl>
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="currency"
-                    render={({ field }) => (
-                      <FormControl error={Boolean(errors.currency)} fullWidth>
-                        <InputLabel>Currency</InputLabel>
-                        <Select {...field}>
-                          <Option value="">Select a currency</Option>
-                          <Option value="USD">USD</Option>
-                          <Option value="EUR">EUR</Option>
-                          <Option value="RON">RON</Option>
-                        </Select>
-                        {errors.currency ? <FormHelperText>{errors.currency.message}</FormHelperText> : null}
-                      </FormControl>
-                    )}
-                  />
-                </Grid>
-              </Grid> */}
-            </Stack>
+            </Stack> */}
           </Stack>
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-end' }}>
@@ -453,7 +382,7 @@ export function CreateMemberForm(): React.JSX.Element {
             Cancel
           </Button>
           <Button disabled={isExecuting} type="submit" variant="contained">
-            Create customer
+            Create member
           </Button>
         </CardActions>
       </Card>

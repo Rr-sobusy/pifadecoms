@@ -10,10 +10,11 @@ datasource db {
 
 enum AccountTypes {
     Assets
-    Revenue
-    Equity
-    Expense
     Liability
+    Equity
+    Revenue
+    Expense
+  
 }
 
 enum AccountStatus {
@@ -21,6 +22,16 @@ enum AccountStatus {
   inactive
 }
 
+
+enum SavingsType {
+  sharedCap
+  memberSavings
+}
+
+enum SavingsTransactionType {
+  withdrawal
+  deposit
+}
 
 model Members {
   memberId         String        @id @default(cuid())
@@ -55,6 +66,21 @@ model Accounts {
   @@map("accounts")
 }
 
+model ChartOfAccounts {
+  id               Int       @id @default(autoincrement())
+  accountName      String
+  accountCode      String    @unique
+  parentAccountId  Int?      
+  parentAccount    ChartOfAccounts? @relation("ParentChild", fields: [parentAccountId], references: [id])
+  children         ChartOfAccounts[] @relation("ParentChild")
+  accountType      AccountTypes
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([parentAccountId])
+}
+
 model Dividends {
   dividendId            BigInt         @id  @default(autoincrement())
   memberId              String
@@ -69,7 +95,22 @@ model Dividends {
   @@index([memberId, accountId, datePosted])
 }
 
-model Transactions {
+model Savings {
+  savingsId            String         @id @default(cuid())
+  memberID             String         @unique
+  savingsType          SavingsType
+  currentBalance       Float
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @default(now())
+}
+
+model SavingsTransact {
+  transactionId       BigInt          @id @default(autoincrement())
+  savingsId           String
+  transactionType     SavingsTransactionType
+}
+
+model LedgerPostings {
   transactionId    BigInt       @id @default(autoincrement())
   transactionType  String
   refName          String

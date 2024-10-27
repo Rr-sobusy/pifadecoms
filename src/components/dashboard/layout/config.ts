@@ -1,6 +1,10 @@
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 
+
+
+
+
 // NOTE: We did not use React Components for Icons, because
 //  you may one to get the config from the server.
 
@@ -44,6 +48,16 @@ export const layoutConfig = {
           ],
         },
         {
+          key: 'savings',
+          title: 'Savings Manager',
+          icon: 'money',
+          items: [
+            { key: 'members', title: 'List members', href: paths.dashboard.members.list },
+            { key: 'members:create', title: 'Create member', href: paths.dashboard.members.create },
+            // { key: 'members:details', title: 'Customer details', href: paths.dashboard.members.details('1') },
+          ],
+        },
+        {
           key: 'customers',
           title: 'Customers',
           icon: 'users',
@@ -79,6 +93,31 @@ export const layoutConfig = {
           icon: 'receipt',
           items: [
             { key: 'invoices', title: 'List invoices', href: paths.dashboard.invoices.list },
+            { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
+            { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
+          ],
+        },
+        {
+          key: 'finance',
+          title: 'Finance',
+          icon: 'receipt',
+          items: [
+            {
+              key: 'charfOfAccounts',
+              title: 'Chart of accounts',
+              items: [
+                {
+                  key: 'list',
+                  title: 'Account List',
+                  href: paths.dashboard.finance.list,
+                },
+                {
+                  key: 'list',
+                  title: 'Create Account',
+                  href: paths.dashboard.finance.create,
+                },
+              ],
+            },
             { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
             { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
           ],

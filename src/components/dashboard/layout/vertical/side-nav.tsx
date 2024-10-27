@@ -51,7 +51,7 @@ export function SideNav({ color = 'evident', items = [] }: SideNavProps): React.
         height: '100%',
         left: 0,
         position: 'fixed',
-        top: 0,
+        top:3,
         width: 'var(--SideNav-width)',
         zIndex: 'var(--SideNav-zIndex)',
       }}

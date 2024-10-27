@@ -36,7 +36,7 @@ export default async function Layout({ children }: LayoutProps): Promise<React.J
   return (
     <html lang={settings.language} suppressHydrationWarning>
       <body>
-        <TopLoaderProvider>
+
           <InitColorSchemeScript attribute="class" />
           <Analytics>
             <LocalizationProvider>
@@ -53,7 +53,7 @@ export default async function Layout({ children }: LayoutProps): Promise<React.J
               </UserProvider>
             </LocalizationProvider>
           </Analytics>
-        </TopLoaderProvider>
+
       </body>
     </html>
   );

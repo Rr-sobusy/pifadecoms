@@ -85,6 +85,10 @@ export const paths = {
         list : '/dashboard/members',
         create: '/dashboard/members/create',
     },
+    finance: {
+      list : '/dashboard/finance/accounts/list',
+      create: '/dashboard/finance/accounts/create',
+  },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',
     i18n: '/dashboard/i18n',

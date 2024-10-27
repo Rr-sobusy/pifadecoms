@@ -12,6 +12,7 @@ import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
+import { Next13ProgressBar } from 'next13-progressbar';
 import { useTranslation } from 'react-i18next';
 
 import type { NavItemConfig } from '@/types/nav';
@@ -36,6 +37,7 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 
   return (
     <React.Fragment>
+      <Next13ProgressBar height="3px" color="#2563eb" options={{ showSpinner: false , speed : 500}} />
       <Box
         component="header"
         sx={{
