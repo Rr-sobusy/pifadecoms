@@ -1,10 +1,40 @@
+export const AccountType = [
+  // Assets
+  // 'Current Assets',
+  // 'Non-Current Assets',
+  // 'Fixed Assets',
+  // 'Receivables',
+  // 'Inventory',
+  // 'Prepaid Expenses',
+  // 'Cash and Cash Equivalents',
 
-enum ParentAccount  {
-    'Assets' = "Assets",
-    'Liabilities' = "Liabilities",
-    'Equity' = "Equity",
-    'Income' = "Income",
-    'Expense' = "Expense"
-}
+  // Liabilities
+  // 'Current Liabilities',
+  // 'Non-Current Liabilities',
+  // 'Payables',
+  // 'Accrued Expenses',
+  // 'Long Term Debt',
 
-type ParentAccountType =keyof typeof ParentAccount;
+  // // Equity
+  // 'Share Capital',
+  // 'Retained Earnings',
+  // 'Dividends',
+
+  // // Revenue
+  // 'Sales Revenue',
+  // 'Service Revenue',
+  // 'Other Revenue',
+
+  // // Expenses
+ "Cost of Goods Sold",
+ "Operating Expenses",
+ "Depreciation",
+"Interest Expense",
+"Tax Expense",
+
+  // // Other accounts
+  // ContraAsset : "Contra Asset",
+  // AccumulatedDepreciation : "Accumulated Depreciation",
+  // ProvisionForDoubtfulAccounts : "Provision for Doubtful Accounts",
+  // EquityInvestments : "Equity Investments"
+];

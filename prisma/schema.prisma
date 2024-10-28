@@ -14,8 +14,8 @@ enum AccountTypes {
     Equity
     Revenue
     Expense
-  
 }
+
 
 enum AccountStatus {
   active
@@ -52,43 +52,56 @@ model Members {
 
 }
 
-model Accounts {
-  accountId       Int           @id @default(autoincrement())
-  accountName     String
-  runningBalance  Float         @default(0)
+model Invoice {
+   invoiceId     BigInt        @id @default(autoincrement())
+    
+}
+
+// second level of account tree
+model AccountsSecondLvl {
+  rootId          Int           @id @default(autoincrement())
+  rootType        AccountTypes
+  rootName        String
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @default(now())
-  status          AccountStatus  @default(active)
+  Children        AccountsThirdLvl[]
 
-  dividends       Dividends[]
-
-
-  @@map("accounts")
+  @@map("accounts_second")
 }
 
-model ChartOfAccounts {
-  id               Int       @id @default(autoincrement())
-  accountName      String
-  accountCode      String    @unique
-  parentAccountId  Int?      
-  parentAccount    ChartOfAccounts? @relation("ParentChild", fields: [parentAccountId], references: [id])
-  children         ChartOfAccounts[] @relation("ParentChild")
-  accountType      AccountTypes
-  isActive         Boolean   @default(true)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  @@index([parentAccountId])
+model AccountsThirdLvl {
+  accountId      String               @id @default(cuid())
+  accountName    String
+  rootId         Int
+  runningBalance Int                  @default(0)
+  
+  RootID         AccountsSecondLvl    @relation(references: [rootId], fields: [rootId])
+  dividends      Dividends[]
 }
+
+// model ChartOfAccounts {
+//   id               Int       @id @default(autoincrement())
+//   accountName      String
+//   accountCode      String    @unique
+//   parentAccountId  Int?      
+//   parentAccount    ChartOfAccounts? @relation("ParentChild", fields: [parentAccountId], references: [id])
+//   children         ChartOfAccounts[] @relation("ParentChild")
+//   accountType      AccountTypes
+//   isActive         Boolean   @default(true)
+//   createdAt        DateTime  @default(now())
+//   updatedAt        DateTime  @updatedAt
+
+//   @@index([parentAccountId])
+// }
+
 
 model Dividends {
-  dividendId            BigInt         @id  @default(autoincrement())
+  dividendId            BigInt                 @id  @default(autoincrement())
   memberId              String
-  accountId             Int
-  datePosted            DateTime       @default(now())
+  accountId             String
+  datePosted            DateTime               @default(now())
   amount                Float
-  members               Members        @relation(fields: [memberId], references: [memberId])
-  account               Accounts       @relation(fields: [accountId], references: [accountId])
+  members               Members                @relation(fields: [memberId], references: [memberId])
+  account               AccountsThirdLvl       @relation(fields: [accountId], references: [accountId])
 
 
   @@map("dividends")

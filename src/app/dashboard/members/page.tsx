@@ -7,6 +7,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
+import { AccountType } from '@/lib/api-utils/account-tree';
+import prisma from '@/lib/prisma';
 import { fetchMembers } from '@/actions/members/fetch-members';
 import { MemberFilters } from '@/components/dashboard/members/members-filter';
 import { MembersTable } from '@/components/dashboard/members/members-table';
@@ -15,7 +17,19 @@ type PageProps = {
   searchParams: { lastName: string };
 };
 
+async function seed(arr: string[]) {
+  arr.map(async (rex) => {
+    await prisma.accountsSecondLvl.create({
+      data: {
+        rootType: 'Expense',
+        rootName : rex,
+      },
+    });
+  });
+}
+
 const Page = async ({ searchParams }: PageProps) => {
+  // const sam = await seed(AccountType);
   const { lastName } = searchParams;
   const members = await fetchMembers({ lastName });
   return (

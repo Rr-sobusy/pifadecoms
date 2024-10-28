@@ -127,9 +127,11 @@ const columns = [
 ] satisfies ColumnDef<MembersType[0]>[];
 export interface MembersTableProps {
   rows: MembersType;
+  value?:any
 }
 
-export function MembersTable({ rows }: MembersTableProps): React.JSX.Element {
+export function MembersTable({ rows, value }: MembersTableProps): React.JSX.Element {
+  console.log(value)
   return (
     <React.Fragment>
       <DataTable<MembersType[0]> columns={columns} rows={rows} />
