@@ -16,6 +16,11 @@ enum AccountTypes {
     Expense
 }
 
+enum Gender {
+    Male
+    Female
+}
+
 
 enum AccountStatus {
   active
@@ -37,8 +42,19 @@ model Members {
   memberId         String        @id @default(cuid())
   lastName         String              
   firstName        String
-  gender           String
-  birthDate        DateTime
+  gender           Gender
+  idNumber         Int?
+  tin              String?
+  dateAccepted     DateTime?
+  arb              String?
+  bodResNo         String?
+  membershipType   String?
+  civilStatus      String?
+  highestEdAttain  String?
+  numOfDependents  Int?
+  religion         String?
+  annualIncom      Int?
+  birthDate        DateTime?
   address          String
   occupation       String?
   contactNo        String
@@ -73,7 +89,10 @@ model AccountsThirdLvl {
   accountName    String
   rootId         Int
   runningBalance Int                  @default(0)
-  
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @default(now())
+  isActive       Boolean              @default(true)
+
   RootID         AccountsSecondLvl    @relation(references: [rootId], fields: [rootId])
   dividends      Dividends[]
 }

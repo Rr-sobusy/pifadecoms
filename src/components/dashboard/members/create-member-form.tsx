@@ -181,8 +181,8 @@ export function CreateMemberForm(): React.JSX.Element {
                       <FormControl error={Boolean(errors.gender)} fullWidth>
                         <InputLabel required>Gender</InputLabel>
                         <Select {...field}>
-                          <Option value="M">Male</Option>
-                          <Option value="F">Female</Option>
+                          <Option value="Male">Male</Option>
+                          <Option value="Female">Female</Option>
                         </Select>
                         {errors.gender ? <FormHelperText>{errors.gender.message}</FormHelperText> : null}
                       </FormControl>

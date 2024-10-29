@@ -1,9 +1,5 @@
 import prisma from '@/lib/prisma';
 
-
-
-
-
 /**
  *  Note: Fetch all members without limiting because i think the total rows for members is not too really
  *  a hardware expensive task.
@@ -14,7 +10,11 @@ type MemberFilters = {
 };
 
 export async function fetchMembers({ lastName }: MemberFilters) {
-  const members = await prisma.members.findMany();
+  const members = await prisma.members.findMany({
+    orderBy : {
+      lastName : 'asc'
+    }
+  });
 
   if (lastName) {
     const filteredByLastName = members.filter((member) =>
