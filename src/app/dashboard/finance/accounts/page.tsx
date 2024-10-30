@@ -48,8 +48,9 @@ const page = async ({ searchParams }: Props) => {
         <AddNewAccountDiaglog
           accountType={rootAccounts.map((accounts) => {
             return {
-              key: accounts.rootId,
-              name: accounts.rootName,
+              rootId: accounts.rootId,
+              rootName: accounts.rootName,
+              rootType: accounts.rootType
             };
           })}
           open={create}
