@@ -20,17 +20,17 @@ import { Minus as MinusIcon } from '@phosphor-icons/react/dist/ssr/Minus';
 
 const columns = [
   {
-    formatter: (row): React.JSX.Element => (
+    formatter: (row, index): React.JSX.Element => (
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="subtitle2">
-            {row.accountId}
+            {index + 1}
           </Typography>
         </div>
       </Stack>
     ),
-    name: 'Account ID',
-    width: '100px',
+    name: '',
+    width: '10px',
   },
   {
     formatter: (row): React.JSX.Element => (

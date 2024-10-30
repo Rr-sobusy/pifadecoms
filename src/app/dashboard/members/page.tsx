@@ -6,24 +6,25 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
+
 import { dayjs } from '@/lib/dayjs';
+import prisma from '@/lib/prisma';
 import { fetchMembers } from '@/actions/members/fetch-members';
 import { MemberFilters } from '@/components/dashboard/members/members-filter';
 import { MembersTable } from '@/components/dashboard/members/members-table';
-import prisma from '@/lib/prisma';
+import MembersPagination from '@/components/dashboard/members/members-table-pagination';
+
 // import xl from 'exceljs'
 // import { Rows } from '@phosphor-icons/react';
 
-
 type PageProps = {
-  searchParams: { lastName: string };
+  searchParams: { lastName: string; offsetPage: number };
 };
 
 // async function populateMembers(){
 //   const workbook = new xl.Workbook();
 //   await workbook.xlsx.readFile("public/data/2021.xlsx")
-//   const worksheet = workbook.getWorksheet(1); 
-
+//   const worksheet = workbook.getWorksheet(1);
 
 // if (!worksheet) {
 //   console.error("Worksheet not found. Make sure the sheet exists.");
@@ -53,27 +54,28 @@ type PageProps = {
 //           occupation : row.getCell(19).value,
 //           numOfDependents : Number(row.getCell(20).value),
 //           religion:  row.getCell(21).value,
-//           annualIncom : row.getCell(22).value,         
+//           annualIncom : row.getCell(22).value,
 //       }
 //      })
 //     // console.log(row.getCell(14).value)
 //   }
 // }
 
-async function seed(arr: string[]) {
-  arr.map(async (rex) => {
-    await prisma.accountsSecondLvl.create({
-      data: {
-        rootType: 'Expense',
-        rootName : rex,
-      },
-    });
-  });
-}
+// async function seed(arr: string[]) {
+//   arr.map(async (rex) => {
+//     await prisma.accountsSecondLvl.create({
+//       data: {
+//         rootType: 'Expense',
+//         rootName : rex,
+//       },
+//     });
+//   });
+// }
 
 const Page = async ({ searchParams }: PageProps) => {
-  const { lastName } = searchParams;
-  const members = await fetchMembers({ lastName });
+  const { lastName, offsetPage } = searchParams;
+  const members = await fetchMembers({ lastName, offsetPage });
+  console.log(members);
   return (
     <Box
       sx={{
@@ -101,6 +103,7 @@ const Page = async ({ searchParams }: PageProps) => {
             <MembersTable rows={members} />
           </Box>
           <Divider />
+          <MembersPagination count={1000} offsetPage={offsetPage} />
         </Card>
       </Stack>
     </Box>

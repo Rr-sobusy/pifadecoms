@@ -21,13 +21,18 @@ import { MembersType } from '@/actions/members/types';
 import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
 
+// extended interface to inject {id} object
+type ExtendedMemberType = MembersType[0] & {
+  id?: number;
+};
+
 const columns = [
   {
     formatter: (row, index): React.JSX.Element => (
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="body2">
-            {index + 1}
+            {row.id}
           </Typography>
         </div>
       </Stack>
@@ -124,17 +129,17 @@ const columns = [
     width: '100px',
     align: 'right',
   },
-] satisfies ColumnDef<MembersType[0]>[];
+] satisfies ColumnDef<ExtendedMemberType>[];
 export interface MembersTableProps {
-  rows: MembersType;
-  value?:any
+  rows: ExtendedMemberType[];
+  value?: any;
 }
 
 export function MembersTable({ rows, value }: MembersTableProps): React.JSX.Element {
-  console.log(value)
+  console.log(value);
   return (
     <React.Fragment>
-      <DataTable<MembersType[0]> columns={columns} rows={rows} />
+      <DataTable<ExtendedMemberType> columns={columns} rows={rows} />
       {!rows.length ? (
         <Box sx={{ p: 3 }}>
           <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="body2">

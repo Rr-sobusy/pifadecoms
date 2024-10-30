@@ -55,7 +55,7 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
       const { serverError } = result;
 
       if (!serverError) {
-        toast.success('Member created.');
+        toast.success('Financial Account created!');
         router.push(paths.dashboard.finance.list);
         console.log(serverReturnedData);
       }
@@ -95,7 +95,7 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
               name="accountName"
               control={control}
               render={({ field }) => (
-                <FormControl>
+                <FormControl fullWidth error={Boolean(errors.accountName)}>
                   <InputLabel required>Account Name</InputLabel>
                   <OutlinedInput type="text" {...field} />
                   {errors.accountName ? <FormHelperText>{errors.accountName.message}</FormHelperText> : null}
