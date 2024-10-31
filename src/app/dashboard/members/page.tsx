@@ -13,6 +13,7 @@ import { fetchMembers } from '@/actions/members/fetch-members';
 import { MemberFilters } from '@/components/dashboard/members/members-filter';
 import { MembersTable } from '@/components/dashboard/members/members-table';
 import MembersPagination from '@/components/dashboard/members/members-table-pagination';
+import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
 
 // import xl from 'exceljs'
 // import { Rows } from '@phosphor-icons/react';
@@ -75,6 +76,8 @@ type PageProps = {
 const Page = async ({ searchParams }: PageProps) => {
   const { lastName, offsetPage } = searchParams;
   const members = await fetchMembers({ lastName, offsetPage });
+
+  const invoice = await fetchInvoices();
   console.log(members);
   return (
     <Box
@@ -100,7 +103,7 @@ const Page = async ({ searchParams }: PageProps) => {
           <MemberFilters filters={{ lastName }} />
           <Divider />
           <Box sx={{ overflowX: 'auto' }}>
-            <MembersTable rows={members} />
+            <MembersTable value={invoice} rows={members} />
           </Box>
           <Divider />
           <MembersPagination count={1000} offsetPage={offsetPage} />

@@ -38,6 +38,11 @@ enum SavingsTransactionType {
   deposit
 }
 
+enum ItemType {
+  product
+  services
+}
+
 model Members {
   memberId         String        @id @default(cuid())
   lastName         String              
@@ -62,6 +67,7 @@ model Members {
   updatedAt        DateTime     @default(now())
 
   dividends        Dividends[]    
+  members          Invoice[]
 
   @@map("members")
   @@index([lastName])
@@ -69,8 +75,68 @@ model Members {
 }
 
 model Invoice {
-   invoiceId     BigInt        @id @default(autoincrement())
-    
+   invoiceId      BigInt        @id @default(autoincrement())
+   memberId       String
+   dateOfInvoice  DateTime      @default(now())
+   baseGrandTotal Float         
+   outStandingAmt Float   
+   Members        Members       @relation(fields: [memberId], references: [memberId])
+   InvoiceItems   InvoiceItems[]      
+
+
+  @@map("invoices")
+  @@index([dateOfInvoice, memberId])
+}
+
+model InvoiceItems {
+  invoiceItemID   BigInt      @id @default(autoincrement())
+  invoiceID       BigInt
+  itemID          String
+  rate            Int
+  quantity        Int
+
+
+
+  Item            Items      @relation(fields: [itemID] , references: [itemID])           
+  Invoice         Invoice    @relation(fields: [invoiceID], references: [invoiceId])
+
+
+
+  @@map("invoice_items")
+}
+
+model Items {
+  itemID          String       @id @default(cuid())
+  itemName        String
+  itemDescription String?
+  itemType        ItemType
+  sellingPrice    Int
+  costPrice       Int?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @default(now())
+  stocks          Int?         @default(0)
+
+  InvoiceItems    InvoiceItems[]
+
+  Accounts        AccountsThirdLvl[]
+
+  // cost of goods sold
+  expenseAcct     String?
+
+  // inventory account
+  inventoryAcct   String?
+
+  // accounts receivable account
+  receivableAcct  String?
+
+  // product receivable income (cost of goods counter part)
+  incomeAcct      String?
+
+  // trading income account
+  tradingAcct     String?
+
+  // interest income account
+  interestAcct    String?
 }
 
 // second level of account tree
@@ -92,6 +158,8 @@ model AccountsThirdLvl {
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @default(now())
   isActive       Boolean              @default(true)
+
+  Items          Items[]
 
   RootID         AccountsSecondLvl    @relation(references: [rootId], fields: [rootId])
   dividends      Dividends[]

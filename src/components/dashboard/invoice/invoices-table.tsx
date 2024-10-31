@@ -58,7 +58,6 @@ const columns = [
         spacing={2}
         sx={{ alignItems: 'center', display: 'inline-flex', textDecoration: 'none', whiteSpace: 'nowrap' }}
       >
-        <Avatar src={row.customer.avatar} />
         <div>
           <Typography color="text.primary" variant="subtitle2">
             {row.id}
