@@ -6,9 +6,27 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
-type Props = {};
+import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
+import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
+import { InvoicesFiltersCard } from '@/components/dashboard/invoice/invoices-filters-card';
+import { InvoicesStats } from '@/components/dashboard/invoice/invoices-stats';
 
-const page = (props: Props) => {
+type PageProps = {
+  searchParams: {
+    customer?: string;
+    endDate?: string;
+    id?: string;
+    sortDir?: 'asc' | 'desc';
+    startDate?: string;
+    status?: string;
+    view?: 'group' | 'list';
+  };
+};
+
+const page = async ({ searchParams }: PageProps) => {
+  const { customer, endDate, id, sortDir, startDate, status, view = 'group' } = searchParams;
+  const filters = { customer, endDate, id, startDate, status };
+  const invoices = await fetchInvoices();
   return (
     <Box
       sx={{
@@ -24,8 +42,15 @@ const page = (props: Props) => {
             <Typography variant="h4">Invoices</Typography>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="contained">Add account</Button>
+            <Button variant="contained">Create New Invoice</Button>
           </Box>
+        </Stack>
+        <InvoicesStats />
+        <Stack direction="row" spacing={4} sx={{ alignItems: 'flex-start' }}>
+          <InvoicesFiltersCard filters={filters} sortDir={sortDir} view={view} />
+          <Stack spacing={4} sx={{ flex: '1 1 auto', minWidth: 0 }}>
+            <InvoiceTable rows={invoices} />
+          </Stack>
         </Stack>
       </Stack>
     </Box>

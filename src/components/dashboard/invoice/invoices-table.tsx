@@ -46,6 +46,8 @@ function groupRows(invoices: Invoice[]): GroupedRows {
   );
 }
 
+
+
 const groupTitles = { canceled: 'Canceled', paid: 'Paid', pending: 'Pending' } as const;
 
 const columns = [
