@@ -75,7 +75,7 @@ type PageProps = {
 
 const Page = async ({ searchParams }: PageProps) => {
   const { lastName, offsetPage } = searchParams;
-  const members = await fetchMembers({ lastName, offsetPage });
+  const members = await fetchMembers({ lastName, offsetPage});
 
   const invoice = await fetchInvoices();
   console.log(members);

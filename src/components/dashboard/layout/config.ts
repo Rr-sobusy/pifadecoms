@@ -88,6 +88,16 @@ export const layoutConfig = {
           ],
         },
         {
+          key: 'invoice',
+          title: 'Invoice',
+          icon: 'receipt',
+          items: [
+            { key: 'invoices', title: 'List invoices', href: paths.dashboard.invoice.list },
+            // { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
+            // { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
+          ],
+        },
+        {
           key: 'invoices',
           title: 'Invoices',
           icon: 'receipt',

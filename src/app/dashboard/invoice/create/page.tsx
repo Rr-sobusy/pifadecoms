@@ -7,19 +7,15 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
-import { config } from '@/config';
-import { paths } from '@/paths';
+import { fetchItems } from '@/actions/items/fetch-items';
 import { fetchMembers } from '@/actions/members/fetch-members';
-import { InvoiceCreateForm } from '@/components/dashboard/invoice/invoice-create-form';
+import InvoiceCreateForm2 from '@/components/dashboard/invoice/_invoice-create-form';
 
-export const metadata = { title: `Create | Invoices | Dashboard | ${config.site.name}` } satisfies Metadata;
-type PageProps = {
-  searchParams: { lastName: string };
-};
-export default async function Page({ searchParams }: PageProps) {
-  const { lastName } = searchParams;
+type Props = {};
 
-  const members = await fetchMembers({ lastName });
+const page = async (props: Props) => {
+  const members = await fetchMembers({ returnAll: true });
+  const items = await fetchItems();
   return (
     <Box
       sx={{
@@ -34,8 +30,6 @@ export default async function Page({ searchParams }: PageProps) {
           <div>
             <Link
               color="text.primary"
-              component={RouterLink}
-              href={paths.dashboard.invoices.list}
               sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
               variant="subtitle2"
             >
@@ -47,8 +41,22 @@ export default async function Page({ searchParams }: PageProps) {
             <Typography variant="h4">Create invoice</Typography>
           </div>
         </Stack>
-        <InvoiceCreateForm />
+        <InvoiceCreateForm2
+          items={items.map((item) => {
+            return {
+              itemId: item.itemID,
+              itemName: item.itemName,
+              itemType: item.itemType,
+              rate: item.sellingPrice
+            };
+          })}
+          members={members.map((member) => {
+            return { ...member };
+          })}
+        />
       </Stack>
     </Box>
   );
-}
+};
+
+export default page;

@@ -1,4 +1,5 @@
 import React from 'react';
+import RouterLink from 'next/link'
 import type { Metadata } from 'next';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -10,6 +11,7 @@ import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
 import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
 import { InvoicesFiltersCard } from '@/components/dashboard/invoice/invoices-filters-card';
 import { InvoicesStats } from '@/components/dashboard/invoice/invoices-stats';
+import { paths } from '@/paths';
 
 type PageProps = {
   searchParams: {
@@ -27,6 +29,7 @@ const page = async ({ searchParams }: PageProps) => {
   const { customer, endDate, id, sortDir, startDate, status, view = 'group' } = searchParams;
   const filters = { customer, endDate, id, startDate, status };
   const invoices = await fetchInvoices();
+
   return (
     <Box
       sx={{
@@ -42,7 +45,7 @@ const page = async ({ searchParams }: PageProps) => {
             <Typography variant="h4">Invoices</Typography>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="contained">Create New Invoice</Button>
+            <Button LinkComponent={RouterLink} href={paths.dashboard.invoice.create} variant="contained">Create New Invoice</Button>
           </Box>
         </Stack>
         <InvoicesStats />

@@ -19,17 +19,12 @@ import { dayjs } from '@/lib/dayjs';
 import { type InvoiceType } from '@/actions/invoices/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
+import { formatToCurrency } from '@/lib/format-currency';
 
 type InvoiceTableProps = {
   rows: InvoiceType;
 };
 
-function formatToCurrency(amount:number, locale = 'en-US', currency = 'USD') {
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: currency
-  }).format(amount);
-}
 
 const dueMonth = 1
 

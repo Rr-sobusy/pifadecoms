@@ -10,9 +10,10 @@ import prisma from '@/lib/prisma';
 type MemberFilters = {
   lastName?: string | undefined;
   offsetPage?: number | undefined;
+  returnAll?: boolean
 };
 
-export async function fetchMembers({ lastName, offsetPage = 1 }: MemberFilters) {
+export async function fetchMembers({ lastName, offsetPage = 1, returnAll = false }: MemberFilters) {
   const members = await prisma.members.findMany({
     orderBy: {
       lastName: 'asc',
@@ -29,6 +30,10 @@ export async function fetchMembers({ lastName, offsetPage = 1 }: MemberFilters) 
       member.lastName.toLowerCase().includes(lastName.toLowerCase())
     );
     return filteredByLastName.length ? filteredByLastName : [];
+  }
+
+  if(returnAll){
+    return extendedMembers
   }
 
   if (offsetPage) {

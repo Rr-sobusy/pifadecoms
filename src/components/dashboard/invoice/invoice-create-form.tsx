@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -10,6 +11,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
@@ -28,8 +30,11 @@ import { z as zod } from 'zod';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { logger } from '@/lib/default-logger';
+import type { MembersType } from '@/actions/members/types';
+import useDebounceUrlParams from '@/hooks/use-debounce';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
+
 
 interface LineItem {
   id: string;
@@ -96,13 +101,13 @@ const defaultValues = {
   dueDate: dayjs().add(1, 'month').toDate(),
   customer: '',
   taxId: '',
-  lineItems: [{ id: 'LI-001', description: '', service: '', quantity: 1, unitPrice: 0 }],
+  lineItems: [{ id: 'LI-001', description: 'awraw', service: 'awrawraw', quantity: 1, unitPrice: 0 }],
   discount: 0,
   shippingRate: 0,
   taxRate: 0,
 } satisfies Values;
 
-export function InvoiceCreateForm(): React.JSX.Element {
+export function InvoiceCreateForm({ members }: { members?: MembersType }): React.JSX.Element {
   const router = useRouter();
 
   const {
@@ -113,6 +118,8 @@ export function InvoiceCreateForm(): React.JSX.Element {
     setValue,
     watch,
   } = useForm<Values>({ defaultValues, resolver: zodResolver(schema) });
+
+  console.log(members);
 
   const onSubmit = React.useCallback(
     async (_: Values): Promise<void> => {
@@ -177,11 +184,28 @@ export function InvoiceCreateForm(): React.JSX.Element {
                     control={control}
                     name="customer"
                     render={({ field }) => (
-                      <FormControl error={Boolean(errors.customer)} fullWidth>
-                        <InputLabel>Customer</InputLabel>
-                        <OutlinedInput {...field} />
-                        {errors.customer ? <FormHelperText>{errors.customer.message}</FormHelperText> : null}
-                      </FormControl>
+                      <Autocomplete
+                        {...field}
+                        getOptionLabel={(account) => account}
+                        // onChange={(_, value) => {
+                        //   if (value) {
+                        //     field.onChange(value);
+                        //   }
+                        // }}
+                        options={['rex']}
+                        renderInput={(params) => (
+                          <FormControl fullWidth>
+                            <InputLabel required>Account Type</InputLabel>
+                            <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
+                            {/* {errors.rootId ? <FormHelperText>{errors.rootId.message}</FormHelperText> : null} */}
+                          </FormControl>
+                        )}
+                        renderOption={(props, options) => (
+                          <Option {...props} key={options} value={options}>
+                            {options}
+                          </Option>
+                        )}
+                      />
                     )}
                   />
                 </Grid>

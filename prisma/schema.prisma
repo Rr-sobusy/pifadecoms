@@ -118,7 +118,9 @@ model Items {
 
   InvoiceItems    InvoiceItems[]
 
-  Accounts        AccountsThirdLvl[]
+
+
+
 
   // cost of goods sold
   expenseAcct     String?
@@ -137,6 +139,10 @@ model Items {
 
   // interest income account
   interestAcct    String?
+
+  IncomeAcct      AccountsThirdLvl?   @relation("IncomeItems", fields: [incomeAcct], references: [accountId])
+
+
 }
 
 // second level of account tree
@@ -159,9 +165,11 @@ model AccountsThirdLvl {
   updatedAt      DateTime             @default(now())
   isActive       Boolean              @default(true)
 
-  Items          Items[]
+
 
   RootID         AccountsSecondLvl    @relation(references: [rootId], fields: [rootId])
+  IncomeItems    Items[]             @relation("IncomeItems")
+
   dividends      Dividends[]
 }
 

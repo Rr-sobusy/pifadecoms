@@ -18,6 +18,8 @@ import { InvoicesFiltersButton } from '@/components/dashboard/invoice/invoices-f
 import { InvoicesSort } from '@/components/dashboard/invoice/invoices-sort';
 import type { Invoice } from '@/components/dashboard/invoice/invoices-table';
 
+
+
 export const metadata = { title: `List | Invoices | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 const invoices = [
@@ -80,10 +82,12 @@ interface PageProps {
   };
 }
 
-export default function Page({ searchParams }: PageProps): React.JSX.Element {
+export default async function Page({ searchParams }: PageProps) {
   const { customer, endDate, id, sortDir, startDate, status, view = 'group' } = searchParams;
 
   const filters = { customer, endDate, id, startDate, status };
+
+
 
   const sortedInvoices = applySort(invoices, sortDir);
   const filteredInvoices = applyFilters(sortedInvoices, filters);
@@ -100,7 +104,7 @@ export default function Page({ searchParams }: PageProps): React.JSX.Element {
       <Stack spacing={4}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Invoices</Typography>
+            <Typography variant="h4">Inovices</Typography>
           </Box>
           <div>
             <Button startIcon={<PlusIcon />} variant="contained">

@@ -89,6 +89,10 @@ export const paths = {
       list : '/dashboard/finance/accounts',
       create: '/dashboard/finance/accounts/create',
   },
+  invoice : {
+      list: '/dashboard/invoice',
+      create: '/dashboard/invoice/create'
+  },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',
     i18n: '/dashboard/i18n',
