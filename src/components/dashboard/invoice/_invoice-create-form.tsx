@@ -23,11 +23,13 @@ import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
+import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
+import { createInvoice } from '@/actions/invoices/create-invoice';
 // types
 import { invoiceSchema, type InvoiceSchemaType } from '@/actions/invoices/types';
 import type { ItemTypes } from '@/actions/items/types';
@@ -65,6 +67,8 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
 
   const grandTotal = calculateGrandTotal(lineItems);
 
+  const { execute } = useAction(createInvoice.bind(null, grandTotal));
+
   const handleAddLineItem = React.useCallback(() => {
     const lineItems = watch('lineItems');
 
@@ -91,8 +95,8 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
     [getValues, setValue]
   );
 
-  function submitHandler (data:any){
-      console.log(data)
+  function submitHandler(data: any) {
+    execute(data)
   }
 
   return (
