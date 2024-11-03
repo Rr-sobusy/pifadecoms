@@ -16,17 +16,16 @@ import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
 
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
+import { formatToCurrency } from '@/lib/format-currency';
 import { type InvoiceType } from '@/actions/invoices/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
-import { formatToCurrency } from '@/lib/format-currency';
 
 type InvoiceTableProps = {
   rows: InvoiceType;
 };
 
-
-const dueMonth = 1
+const dueMonth = 1;
 
 const columns = [
   {
@@ -39,8 +38,8 @@ const columns = [
         sx={{ alignItems: 'center', display: 'inline-flex', textDecoration: 'none', whiteSpace: 'nowrap' }}
       >
         <div>
-        <Typography color="text.primary" variant="subtitle2">
-            {'INV-' + row.invoiceId.toString().padStart(6, "0")}
+          <Typography color="text.primary" variant="subtitle2">
+            {'INV-' + row.invoiceId.toString().padStart(6, '0')}
           </Typography>
           <Typography color="text.secondary" variant="body2">
             {row.Members.lastName + ', ' + row.Members.firstName}
@@ -85,7 +84,9 @@ const columns = [
     formatter: (row): React.JSX.Element => (
       <div>
         <Typography variant="subtitle2">Due</Typography>
-        <Typography variant="body2">{dayjs(dayjs(row.dateOfInvoice).add(dueMonth, 'M')).format('MMM DD YYYY')}</Typography>
+        <Typography variant="body2">
+          {dayjs(dayjs(row.dateOfInvoice).add(dueMonth, 'M')).format('MMM DD YYYY')}
+        </Typography>
       </div>
     ),
     name: 'Total amount',
@@ -96,9 +97,9 @@ const columns = [
       const mapping = {
         pending: { label: 'Pending', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
         paid: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
-        canceled: { label: 'Canceled', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
+        cancelled: { label: 'Canceled', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
       } as const;
-      const { label, icon } = row.outStandingAmt !== 0 ? mapping["pending"] : mapping["paid"]
+      const { label, icon } = mapping[row.invStatus];
 
       return <Chip icon={icon} label={label} size="small" variant="outlined" />;
     },
@@ -106,8 +107,8 @@ const columns = [
     width: '100px',
   },
   {
-    formatter: (): React.JSX.Element => (
-      <IconButton component={RouterLink} href={paths.dashboard.invoices.details('1')}>
+    formatter: (row): React.JSX.Element => (
+      <IconButton component={RouterLink} href={paths.dashboard.invoice.details(row.invoiceId)}>
         <ArrowRightIcon />
       </IconButton>
     ),

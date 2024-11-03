@@ -43,6 +43,12 @@ enum ItemType {
   services
 }
 
+enum InvoiceStatus {
+  pending
+  paid
+  cancelled
+}
+
 model Members {
   memberId         String        @id @default(cuid())
   lastName         String              
@@ -75,17 +81,18 @@ model Members {
 }
 
 model Invoice {
-   invoiceId      BigInt        @id @default(autoincrement())
+   invoiceId      BigInt           @id @default(autoincrement())
    memberId       String
-   dateOfInvoice  DateTime      @default(now())
+   dateOfInvoice  DateTime         @default(now())
    baseGrandTotal Float         
    outStandingAmt Float   
-   Members        Members       @relation(fields: [memberId], references: [memberId])
+   invStatus      InvoiceStatus    @default(pending)
+   Members        Members          @relation(fields: [memberId], references: [memberId])
    InvoiceItems   InvoiceItems[]      
 
 
   @@map("invoices")
-  @@index([dateOfInvoice, memberId])
+  @@index([dateOfInvoice, memberId, invStatus])
 }
 
 model InvoiceItems {
@@ -98,7 +105,7 @@ model InvoiceItems {
 
 
   Item            Items      @relation(fields: [itemID] , references: [itemID])           
-  Invoice         Invoice    @relation(fields: [invoiceID], references: [invoiceId])
+  Invoice         Invoice    @relation(fields: [invoiceID], references: [invoiceId], onDelete: Cascade)
 
 
 

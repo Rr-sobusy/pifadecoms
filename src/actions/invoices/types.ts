@@ -21,7 +21,7 @@ export const invoiceSchema = z.object({
       quantity: z.number(),
       rate: z.number(),
     })
-  ),
+  ).min(1),
 });
 
 export type InvoiceSchemaType = z.infer<typeof invoiceSchema>;

@@ -27,6 +27,8 @@ import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
+import { paths } from '@/paths';
+import { asyncHandler } from '@/lib/api-utils/asyncHandler';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { createInvoice } from '@/actions/invoices/create-invoice';
@@ -35,6 +37,7 @@ import { invoiceSchema, type InvoiceSchemaType } from '@/actions/invoices/types'
 import type { ItemTypes } from '@/actions/items/types';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
+import { toast } from '@/components/core/toaster';
 
 type InvoiceCreateProps = {
   members: { memberId: string; lastName: string; firstName: string }[];
@@ -63,11 +66,13 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
     defaultValues,
   });
 
+  const router = useRouter();
+
   const lineItems = watch('lineItems');
 
   const grandTotal = calculateGrandTotal(lineItems);
 
-  const { execute } = useAction(createInvoice.bind(null, grandTotal));
+  const { execute, result, isExecuting } = useAction(createInvoice.bind(null, grandTotal));
 
   const handleAddLineItem = React.useCallback(() => {
     const lineItems = watch('lineItems');
@@ -95,8 +100,17 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
     [getValues, setValue]
   );
 
-  function submitHandler(data: any) {
-    execute(data)
+  function submitHandler(data: InvoiceSchemaType) {
+    try {
+      execute(data);
+
+      if (!result.serverError) {
+        toast.success('Invoice Created!');
+        router.push(paths.dashboard.invoice.list);
+      }
+    } catch (error) {
+      toast.error('Error occured in server!' + ' ' + 'error:' + error);
+    }
   }
 
   return (
@@ -344,8 +358,8 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
               </Box>
               <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button color="secondary">Cancel</Button>
-                <Button type="submit" variant="contained">
-                  Create invoice
+                <Button disabled={isExecuting} type="submit" variant="contained">
+                  {isExecuting ? 'Creating Invoice ...' : 'Create Invoice'}
                 </Button>
               </CardActions>
             </Stack>
