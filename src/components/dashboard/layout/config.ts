@@ -78,6 +78,16 @@ export const layoutConfig = {
           ],
         },
         {
+          key: 'items',
+          title: 'Items',
+          icon: 'shopping-bag-open',
+          items: [
+            { key: 'items', title: 'List items', href: paths.dashboard.items.list },
+            { key: 'items:create', title: 'Create item', href: paths.dashboard.items.create },
+            // { key: 'product:details', title: 'Product details', href: paths.dashboard.products.details('1') },
+          ],
+        },
+        {
           key: 'orders',
           title: 'Orders',
           icon: 'shopping-cart-simple',
@@ -92,7 +102,8 @@ export const layoutConfig = {
           title: 'Invoice',
           icon: 'receipt',
           items: [
-            { key: 'invoices', title: 'List invoices', href: paths.dashboard.invoice.list },
+            { key: 'invoices:list', title: 'List invoices', href: paths.dashboard.invoice.list },
+            { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoice.create },
             // { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
             // { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
           ],

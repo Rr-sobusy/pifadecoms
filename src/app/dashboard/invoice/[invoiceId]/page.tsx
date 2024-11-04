@@ -28,9 +28,7 @@ type PageProps = {
 };
 
 export default async function Page({ params }: PageProps): Promise<React.JSX.Element> {
-  
   const invoiceDetails = await fetchSingleInvoice(params.invoiceId);
-
 
   const invDueDate = dayjs(dayjs(invoiceDetails?.dateOfInvoice).add(1, 'M')).format('MMM DD,YYYY');
 
@@ -49,7 +47,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
             <Link
               color="text.primary"
               component={RouterLink}
-              href={paths.dashboard.invoices.list}
+              href={paths.dashboard.invoice.list}
               sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
               variant="subtitle2"
             >
@@ -204,8 +202,8 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
             <Stack spacing={1}>
               <Typography variant="h6">Notes</Typography>
               <Typography color="text.secondary" variant="body2">
-                Please make sure you have the right bank registration number as I had issues before and make sure you
-                cover transfer expenses.
+                This is a system generated invoice. Please make sure that all the data stated above are accurate before
+                proceed for payment.
               </Typography>
             </Stack>
           </Stack>

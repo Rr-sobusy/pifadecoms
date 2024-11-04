@@ -47,6 +47,7 @@ type InvoiceCreateProps = {
 const defaultValues = {
   invNumber: 'INV-*',
   lineItems: [],
+  invDate: new Date()
 };
 
 function calculateGrandTotal(lineItems: { lineId: string; itemId: string; quantity: number; rate: number }[]): number {

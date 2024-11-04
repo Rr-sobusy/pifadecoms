@@ -35,7 +35,7 @@ const columns = [
   {
     formatter: (row): React.JSX.Element => (
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-        {row.image ? (
+        {/* {row.image ? (
           <Box
             sx={{
               alignItems: 'center',
@@ -65,7 +65,7 @@ const columns = [
           >
             <ImageIcon fontSize="var(--icon-fontSize-lg)" />
           </Box>
-        )}
+        )} */}
         <div>
           <Link
             color="text.primary"
