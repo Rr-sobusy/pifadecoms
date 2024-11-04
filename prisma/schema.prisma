@@ -96,8 +96,8 @@ model Invoice {
 }
 
 model InvoiceItems {
-  invoiceItemID   BigInt      @id @default(autoincrement())
-  invoiceID       BigInt
+  invoiceItemId   BigInt      @id @default(autoincrement())
+  invoiceId       BigInt
   itemID          String
   rate            Int
   quantity        Int
@@ -105,7 +105,7 @@ model InvoiceItems {
 
 
   Item            Items      @relation(fields: [itemID] , references: [itemID])           
-  Invoice         Invoice    @relation(fields: [invoiceID], references: [invoiceId], onDelete: Cascade)
+  Invoice         Invoice    @relation(fields: [invoiceId], references: [invoiceId], onDelete: Cascade)
 
 
 

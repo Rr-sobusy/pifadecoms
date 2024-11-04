@@ -19,3 +19,21 @@ export async function fetchInvoices() {
 
   return invoice;
 }
+
+export async function fetchSingleInvoice(invoiceId: bigint) {
+  const invoiceDetails = await prisma.invoice.findUnique({
+    where: {
+      invoiceId: invoiceId,
+    },
+    include: {
+      InvoiceItems: {
+        include : {
+          Item : true
+        } 
+      },
+      Members : true
+    },
+  });
+
+  return invoiceDetails;
+}

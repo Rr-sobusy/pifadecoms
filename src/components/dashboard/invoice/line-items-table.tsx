@@ -2,42 +2,39 @@
 
 import * as React from 'react';
 
+import { formatToCurrency } from '@/lib/format-currency';
+import type { InvoiceItemsWithItem, SingleInvoiceType } from '@/actions/invoices/types';
 import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
 
-export interface LineItem {
-  id: string;
-  name: string;
-  quantity: number;
-  currency: string;
-  unitAmount: number;
-  totalAmount: number;
-}
-
 const columns = [
-  { field: 'name', name: 'Name', width: '250px' },
   {
-    formatter: (row): string => {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: row.currency }).format(row.unitAmount);
-    },
-    name: 'Unit Amount',
+    formatter: (row, index) => row.Item.itemName,
+    name: 'Item Name',
+    width: '250px',
+  },
+  {
+    formatter: (row) => formatToCurrency(row.rate, 'Fil-ph', 'Php'),
+    name: 'Unit Price',
+    width: '200px',
+  },
+  {
+    formatter: (row) => row.quantity,
+    name: 'Quantity',
     width: '100px',
   },
-  { field: 'quantity', name: 'Qty', width: '100px' },
   {
-    formatter: (row): string => {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: row.currency }).format(row.totalAmount);
-    },
+    formatter: (row) => formatToCurrency(row.quantity * row.rate, 'Fil-ph', 'Php'),
     name: 'Amount',
-    width: '100px',
+    width: '200px',
     align: 'right',
   },
-] satisfies ColumnDef<LineItem>[];
+] satisfies ColumnDef<InvoiceItemsWithItem['InvoiceItems'][0]>[];
 
 export interface LineItemsTableProps {
-  rows: LineItem[];
+  data: InvoiceItemsWithItem['InvoiceItems'];
 }
 
-export function LineItemsTable({ rows }: LineItemsTableProps): React.JSX.Element {
-  return <DataTable<LineItem> columns={columns} rows={rows} />;
+export function LineItemsTable({ data }: LineItemsTableProps): React.JSX.Element {
+  return <DataTable columns={columns} rows={data} />;
 }

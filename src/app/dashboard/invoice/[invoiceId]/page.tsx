@@ -14,18 +14,26 @@ import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/Arrow
 import { config } from '@/config';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
+import { formatToCurrency } from '@/lib/format-currency';
+import { fetchSingleInvoice } from '@/actions/invoices/fetch-invoice';
+import type { InvoiceItemsWithItem } from '@/actions/invoices/types';
 import { DynamicLogo } from '@/components/core/logo';
 import { InvoicePDFLink } from '@/components/dashboard/invoice/invoice-pdf-link';
 import { LineItemsTable } from '@/components/dashboard/invoice/line-items-table';
-import type { LineItem } from '@/components/dashboard/invoice/line-items-table';
 
 export const metadata = { title: `Details | Invoices | Dashboard | ${config.site.name}` } satisfies Metadata;
 
-const lineItems = [
-  { id: 'LI-001', name: 'Pro Subscription', quantity: 1, currency: 'USD', unitAmount: 14.99, totalAmount: 14.99 },
-] satisfies LineItem[];
+type PageProps = {
+  params: { invoiceId: bigint };
+};
 
-export default function Page(): React.JSX.Element {
+export default async function Page({ params }: PageProps): Promise<React.JSX.Element> {
+  
+  const invoiceDetails = await fetchSingleInvoice(params.invoiceId);
+
+
+  const invDueDate = dayjs(dayjs(invoiceDetails?.dateOfInvoice).add(1, 'M')).format('MMM DD,YYYY');
+
   return (
     <Box
       sx={{
@@ -51,16 +59,18 @@ export default function Page(): React.JSX.Element {
           </div>
           <Stack direction="row" spacing={3} sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <Stack spacing={1}>
-              <Typography variant="h4">INV-001</Typography>
+              <Typography variant="h4">INV-{params.invoiceId.toString().padStart(6, '0')}</Typography>
               <div>
                 <Chip color="warning" label="Pending" variant="soft" />
               </div>
             </Stack>
             <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
               <InvoicePDFLink invoice={undefined}>
-                <Button color="secondary">Download</Button>
+                <Button disabled color="secondary">
+                  Download
+                </Button>
               </InvoicePDFLink>
-              <Button component="a" href={paths.pdf.invoice('1')} target="_blank" variant="contained">
+              <Button disabled component="a" href={paths.pdf.invoice('1')} target="_blank" variant="contained">
                 Preview
               </Button>
             </Stack>
@@ -82,7 +92,7 @@ export default function Page(): React.JSX.Element {
                   <Typography variant="subtitle2">Number:</Typography>
                 </Box>
                 <div>
-                  <Typography variant="body2">INV-008</Typography>
+                  <Typography variant="body2">INV-{params.invoiceId.toString().padStart(6, '0')}</Typography>
                 </div>
               </Stack>
               <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
@@ -90,7 +100,7 @@ export default function Page(): React.JSX.Element {
                   <Typography variant="subtitle2">Due date:</Typography>
                 </Box>
                 <div>
-                  <Typography variant="body2">{dayjs().add(15, 'day').format('MMM D,YYYY')}</Typography>
+                  <Typography variant="body2">{invDueDate}</Typography>
                 </div>
               </Stack>
               <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
@@ -98,14 +108,14 @@ export default function Page(): React.JSX.Element {
                   <Typography variant="subtitle2">Issue date:</Typography>
                 </Box>
                 <div>
-                  <Typography variant="body2">{dayjs().subtract(1, 'hour').format('MMM D, YYYY')}</Typography>
+                  <Typography variant="body2">{dayjs(invoiceDetails?.dateOfInvoice).format('MMM DD YYYY')}</Typography>
                 </div>
               </Stack>
               <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
                 <Box sx={{ flex: '0 1 150px' }}>
                   <Typography variant="subtitle2">Issuer VAT No:</Typography>
                 </Box>
-                <Typography variant="body2">RO4675933</Typography>
+                <Typography variant="body2"> -</Typography>
               </Stack>
             </Stack>
             <Grid container spacing={3}>
@@ -116,15 +126,11 @@ export default function Page(): React.JSX.Element {
                 }}
               >
                 <Stack spacing={1}>
-                  <Typography variant="subtitle1">Devias IO</Typography>
+                  <Typography variant="subtitle1">Pinagsibaan Farmer's Development Cooperative</Typography>
                   <Typography variant="body2">
-                    2674 Alfred Drive
+                    Pinagsibaan, Rosario, Batangas
                     <br />
-                    Brooklyn, New York, United States
-                    <br />
-                    11206
-                    <br />
-                    accounts@devias.io
+                    Philippines, 4225
                     <br />
                     (+1) 757 737 1980
                   </Typography>
@@ -139,30 +145,22 @@ export default function Page(): React.JSX.Element {
                 <Stack spacing={1}>
                   <Typography variant="subtitle1">Billed to</Typography>
                   <Typography variant="body2">
-                    Miron Vitold
+                    {`${invoiceDetails?.Members.lastName}, ${invoiceDetails?.Members.firstName}`}
                     <br />
-                    Acme Inc.
+                    {invoiceDetails?.Members.address}
                     <br />
-                    1721 Bartlett Avenue
-                    <br />
-                    Southfield, Michigan, United States
-                    <br />
-                    48034
-                    <br />
-                    RO8795621
                   </Typography>
                 </Stack>
               </Grid>
             </Grid>
             <div>
               <Typography variant="h5">
-                {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(19.99)} due{' '}
-                {dayjs().add(15, 'day').format('MMM D, YYYY')}
+                {`${formatToCurrency(invoiceDetails?.baseGrandTotal === undefined ? 0 : invoiceDetails?.baseGrandTotal, 'Fil-ph', 'Php')} due on ${invDueDate}`}
               </Typography>
             </div>
             <Stack spacing={2}>
               <Card sx={{ borderRadius: 1, overflowX: 'auto' }} variant="outlined">
-                <LineItemsTable rows={lineItems} />
+                <LineItemsTable data={invoiceDetails?.InvoiceItems as InvoiceItemsWithItem['InvoiceItems']} />
               </Card>
               <Stack spacing={2}>
                 <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -171,7 +169,11 @@ export default function Page(): React.JSX.Element {
                   </Box>
                   <Box sx={{ flex: '0 1 100px', textAlign: 'right' }}>
                     <Typography>
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(14.99)}
+                      {formatToCurrency(
+                        invoiceDetails?.baseGrandTotal === undefined ? 0 : invoiceDetails?.baseGrandTotal,
+                        'Fil-ph',
+                        'Php'
+                      )}
                     </Typography>
                   </Box>
                 </Stack>
@@ -180,9 +182,7 @@ export default function Page(): React.JSX.Element {
                     <Typography>Tax</Typography>
                   </Box>
                   <Box sx={{ flex: '0 1 100px', textAlign: 'right' }}>
-                    <Typography>
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(5)}
-                    </Typography>
+                    <Typography>-</Typography>
                   </Box>
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -191,7 +191,11 @@ export default function Page(): React.JSX.Element {
                   </Box>
                   <Box sx={{ flex: '0 1 100px', textAlign: 'right' }}>
                     <Typography variant="h6">
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(19.99)}
+                      {formatToCurrency(
+                        invoiceDetails?.baseGrandTotal === undefined ? 0 : invoiceDetails?.baseGrandTotal,
+                        'Fil-ph',
+                        'Php'
+                      )}
                     </Typography>
                   </Box>
                 </Stack>
