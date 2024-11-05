@@ -121,7 +121,7 @@ export default async function Page({ searchParams }: PageProps): Promise<React.J
             <div>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.products.create}
+                href={paths.dashboard.items.create}
                 startIcon={<PlusIcon />}
                 variant="contained"
               >

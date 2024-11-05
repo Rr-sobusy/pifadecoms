@@ -58,7 +58,7 @@ const columns = [
     width: '300px',
   },
   {
-    formatter: () => 'rex',
+    formatter: (row) => row.itemDescription,
     name: 'Item Description',
     width: '250px',
   },
