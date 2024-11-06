@@ -99,11 +99,12 @@ export const layoutConfig = {
         },
         {
           key: 'invoice',
-          title: 'Invoice',
+          title: 'Sales Invoice',
           icon: 'receipt',
           items: [
             { key: 'invoices:list', title: 'List invoices', href: paths.dashboard.invoice.list },
             { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoice.create },
+            { key: 'invoices:payments', title: 'Sales payments', href: paths.dashboard.invoice.create },
             // { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
             // { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
           ],

@@ -177,7 +177,9 @@ model AccountsThirdLvl {
   RootID         AccountsSecondLvl    @relation(references: [rootId], fields: [rootId])
   IncomeItems    Items[]             @relation("IncomeItems")
 
-  dividends      Dividends[]
+  Dividends      Dividends[]
+  JournalItems   JournalItems[]
+
 }
 
 // model ChartOfAccounts {
@@ -225,13 +227,25 @@ model SavingsTransact {
   transactionType     SavingsTransactionType
 }
 
-model LedgerPostings {
-  transactionId    BigInt       @id @default(autoincrement())
-  transactionType  String
-  refName          String
-  refType          String
-  particular       String?
-  debit            Float
-  credit           Float
-  createdAt        DateTime     @default(now())
+model JournalEntries {
+  entryId             BigInt         @id @default(autoincrement())
+  entryDate           DateTime      
+  reference           String          
+  referenceType       String?
+  createdAt           DateTime       @default(now())
+  particulars         String
+
+  JournalItems        JournalItems[]
+}
+
+model JournalItems {
+  journalItemsId     BigInt             @id @default(autoincrement())
+  entryId            BigInt
+  accountId          String
+  debit              Float
+  credit             Float
+
+
+  JournalEntries     JournalEntries     @relation(references: [entryId], fields: [entryId], onDelete: Cascade)
+  Accounts           AccountsThirdLvl   @relation(references: [accountId], fields: [accountId])
 }
