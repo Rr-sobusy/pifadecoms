@@ -102,7 +102,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
       execute(data);
 
       if (!result.serverError) {
-        toast.success('Invoice Created!');
+        toast.success('Invoice Created!' + " " + result.data?.invoice);
         router.push(paths.dashboard.invoice.list);
       }
     } catch (error) {

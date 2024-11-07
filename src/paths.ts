@@ -92,6 +92,8 @@ export const paths = {
     finance: {
       list : '/dashboard/finance/accounts',
       create: '/dashboard/finance/accounts/create',
+      journal: '/dashboard/finance/journal',
+      journalCreate: '/dashboard/finance/journal/create'
   },
   invoice : {
       list: '/dashboard/invoice',

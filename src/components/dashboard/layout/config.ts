@@ -140,6 +140,7 @@ export const layoutConfig = {
                 },
               ],
             },
+            { key: 'finance:journal', title: 'Manual Journal', href: paths.dashboard.finance.journal },
             { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
             { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
           ],

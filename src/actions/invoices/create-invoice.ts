@@ -15,6 +15,12 @@ import { actionClient } from '@/lib/safe-action';
 
 import { invoiceSchema } from './types';
 
+export async function test(){
+  return {
+    data: "rex"
+  }
+}
+
 export const createInvoice = actionClient
   .schema(invoiceSchema)
   .bindArgsSchemas<[grandTotal: z.ZodNumber]>([z.number()])

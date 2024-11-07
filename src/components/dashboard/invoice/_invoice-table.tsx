@@ -13,13 +13,13 @@ import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/Arr
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
 import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
-
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { type InvoiceType } from '@/actions/invoices/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
+
 
 type InvoiceTableProps = {
   rows: InvoiceType;
@@ -54,7 +54,7 @@ const columns = [
     formatter: (row): React.JSX.Element => (
       <div>
         <Typography variant="subtitle2">Base Total</Typography>
-        <Typography variant="body2">{formatToCurrency(row.baseGrandTotal, 'Fil-ph', 'Php')}</Typography>
+        <Typography color="text.secondary" variant="body2">{formatToCurrency(row.baseGrandTotal, 'Fil-ph', 'Php')}</Typography>
       </div>
     ),
     name: 'Grand Total',
@@ -64,7 +64,7 @@ const columns = [
     formatter: (row): React.JSX.Element => (
       <div>
         <Typography variant="subtitle2">Amount Due</Typography>
-        <Typography variant="body2">{formatToCurrency(row.outStandingAmt, 'Fil-ph', 'Php')}</Typography>
+        <Typography color="text.secondary" variant="body2">{formatToCurrency(row.outStandingAmt, 'Fil-ph', 'Php')}</Typography>
       </div>
     ),
     name: 'Total amount',
@@ -74,7 +74,7 @@ const columns = [
     formatter: (row): React.JSX.Element => (
       <div>
         <Typography variant="subtitle2">Issued</Typography>
-        <Typography variant="body2">{dayjs(row.dateOfInvoice).format('MMM DD YYYY')}</Typography>
+        <Typography color="text.secondary" variant="body2">{dayjs(row.dateOfInvoice).format('MMM DD YYYY')}</Typography>
       </div>
     ),
     name: 'Total amount',
@@ -84,7 +84,7 @@ const columns = [
     formatter: (row): React.JSX.Element => (
       <div>
         <Typography variant="subtitle2">Due</Typography>
-        <Typography variant="body2">
+        <Typography color="text.secondary" variant="body2">
           {dayjs(dayjs(row.dateOfInvoice).add(dueMonth, 'M')).format('MMM DD YYYY')}
         </Typography>
       </div>
