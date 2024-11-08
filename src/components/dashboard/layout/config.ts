@@ -104,7 +104,7 @@ export const layoutConfig = {
           items: [
             { key: 'invoices:list', title: 'List invoices', href: paths.dashboard.invoice.list },
             { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoice.create },
-            { key: 'invoices:payments', title: 'Sales payments', href: paths.dashboard.invoice.create },
+            { key: 'invoices:payments', title: 'Sales payments', href: paths.dashboard.invoice.payments },
             // { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
             // { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
           ],

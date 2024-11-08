@@ -98,7 +98,8 @@ export const paths = {
   invoice : {
       list: '/dashboard/invoice',
       create: '/dashboard/invoice/create',
-      details : (invoiceId:bigint) => `/dashboard/invoice/${invoiceId}`
+      details : (invoiceId:bigint) => `/dashboard/invoice/${invoiceId}`,
+      payments: '/dashboard/invoice/payments'
   },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',

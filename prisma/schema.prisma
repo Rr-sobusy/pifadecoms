@@ -86,9 +86,12 @@ model Invoice {
    dateOfInvoice  DateTime         @default(now())
    baseGrandTotal Float         
    outStandingAmt Float   
+   journalId      BigInt?
    invStatus      InvoiceStatus    @default(pending)
    Members        Members          @relation(fields: [memberId], references: [memberId])
-   InvoiceItems   InvoiceItems[]      
+
+   InvoiceItems   InvoiceItems[]  
+   InvoicePayments InvoicePayments[]
 
 
   @@map("invoices")
@@ -110,6 +113,19 @@ model InvoiceItems {
 
 
   @@map("invoice_items")
+}
+
+model InvoicePayments {
+  paymentId       BigInt             @id  @default(autoincrement())
+  invoiceId       BigInt
+  orNo            String
+  paymentReceived Float 
+  journalRef      BigInt
+
+  JournalEntry    JournalEntries    @relation(references: [entryId], fields: [journalRef])
+  Invoice         Invoice           @relation(references: [invoiceId], fields: [invoiceId])
+
+
 }
 
 model Items {
@@ -219,6 +235,8 @@ model Savings {
   currentBalance       Float
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @default(now())
+
+  @@map("member_savings")
 }
 
 model SavingsTransact {
@@ -230,12 +248,15 @@ model SavingsTransact {
 model JournalEntries {
   entryId             BigInt         @id @default(autoincrement())
   entryDate           DateTime      
-  reference           String          
+  referenceName       String         
   referenceType       String?
   createdAt           DateTime       @default(now())
-  particulars         String
+  particulars         String?
 
   JournalItems        JournalItems[]
+  InvoicePayments     InvoicePayments[]
+
+  @@map("journal_entries")
 }
 
 model JournalItems {
@@ -248,4 +269,6 @@ model JournalItems {
 
   JournalEntries     JournalEntries     @relation(references: [entryId], fields: [entryId], onDelete: Cascade)
   Accounts           AccountsThirdLvl   @relation(references: [accountId], fields: [accountId])
+
+  @@map("journal_items")
 }
