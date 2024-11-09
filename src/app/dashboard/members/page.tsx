@@ -14,8 +14,9 @@ import { MemberFilters } from '@/components/dashboard/members/members-filter';
 import { MembersTable } from '@/components/dashboard/members/members-table';
 import MembersPagination from '@/components/dashboard/members/members-table-pagination';
 import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
+import { AccountType } from '@/lib/api-utils/account-tree';
 
-// import xl from 'exceljs'
+import xl from 'exceljs'
 // import { Rows } from '@phosphor-icons/react';
 
 type PageProps = {
@@ -34,7 +35,7 @@ type PageProps = {
 
 //   for(let i = 7; i <= 806 ; i++){
 //     const row = worksheet.getRow(i);
-//     // console.log(row.getCell(2).value)
+
 //     const formattedDateString = (row.getCell(13).value?.toString().replace("-"," ")+ " "+row.getCell(14).value )
 //      await prisma.members.create({
 //       data:{
@@ -74,10 +75,13 @@ type PageProps = {
 // }
 
 const Page = async ({ searchParams }: PageProps) => {
+  // const rex = await seed(AccountType)
+
   const { lastName, offsetPage } = searchParams;
   const members = await fetchMembers({ lastName, offsetPage});
 
   const invoice = await fetchInvoices();
+    // const rex = await seed()
   console.log(members);
   return (
     <Box

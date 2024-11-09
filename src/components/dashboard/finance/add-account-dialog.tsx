@@ -33,7 +33,7 @@ interface AddAccountProps {
 }
 
 export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => {
-  const { execute, result } = useAction(createNewAccount);
+  const { executeAsync, result } = useAction(createNewAccount);
 
   const {
     handleSubmit,
@@ -51,13 +51,12 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
   // form submit
   const submitHandler = (data: AccountSchemaType) => {
     try {
-      const serverReturnedData = execute(data);
+      executeAsync(data);
       const { serverError } = result;
 
       if (!serverError) {
         toast.success('Financial Account created!');
         router.push(paths.dashboard.finance.list);
-        console.log(serverReturnedData);
       }
     } catch (error) {
       toast.error('Something went wrong!');
@@ -130,15 +129,17 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
                 />
               )}
             />
-            <FormControl>
-              <InputLabel>
-                Account Balance <br />
-                <Typography color="textSecondary" variant="caption">
-                  Account balance must start with 0.
-                </Typography>
-              </InputLabel>
-              <OutlinedInput disabled type="number" value={0} />
-            </FormControl>
+            <Controller
+              name="openingBalance"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={Boolean(errors.openingBalance)}>
+                  <InputLabel required>Opening Balance</InputLabel>
+                  <OutlinedInput type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                  {errors.openingBalance ? <FormHelperText>{errors.openingBalance.message}</FormHelperText> : null}
+                </FormControl>
+              )}
+            />
             <Stack marginTop={1}>
               <Button type="submit" variant="contained">
                 Create Account

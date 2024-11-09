@@ -14,6 +14,8 @@ export const createNewAccount = actionClient.schema(accountSchema).action(async 
       data: {
         accountName: AccountSchema.accountName,
         rootId: AccountSchema.rootId.rootId,
+        openingBalance : AccountSchema.openingBalance,
+        runningBalance: AccountSchema.openingBalance
       },
     });
 

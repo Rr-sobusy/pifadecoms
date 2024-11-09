@@ -19,6 +19,7 @@ export const AccountType = [
   // 'Share Capital',
   // 'Retained Earnings',
   // 'Dividends',
+  // 'Patronage Refunds'
 
   // // Revenue
   // 'Sales Revenue',

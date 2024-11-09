@@ -10,6 +10,7 @@ export const accountSchema = z.object({
     rootType: z.string().nullable()
   }),
   accountName: z.string(),
+  openingBalance: z.number(),
 });
 
 export type AccountSchemaType = z.infer<typeof accountSchema>;
