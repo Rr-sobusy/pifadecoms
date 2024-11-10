@@ -86,7 +86,7 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
             </Stack>
             <IconButton onClick={handleClose}>
               <XIcon />
-            </IconButton>
+            </IconButton>~
           </Stack>
           <Divider />
           <Stack spacing={3} marginTop={6} direction="column">

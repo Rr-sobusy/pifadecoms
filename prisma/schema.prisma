@@ -121,6 +121,7 @@ model InvoicePayments {
   orNo            String
   paymentReceived Float 
   journalRef      BigInt
+  paymentDate     DateTime          @default(now())
 
   JournalEntry    JournalEntries    @relation(references: [entryId], fields: [journalRef])
   Invoice         Invoice           @relation(references: [invoiceId], fields: [invoiceId])
