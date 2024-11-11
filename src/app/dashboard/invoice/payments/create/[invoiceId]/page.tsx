@@ -11,6 +11,8 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
+import { paths } from '@/paths';
+import { fetchChartofAccounts } from '@/actions/accounts/fetch-accounts';
 import { fetchSingleInvoice } from '@/actions/invoices/fetch-invoice';
 import InvoicePaymentForm from '@/components/dashboard/payments/invoice-payment-form';
 
@@ -21,6 +23,7 @@ type PageProps = {
 const page = async ({ params }: PageProps): Promise<React.JSX.Element> => {
   const { invoiceId } = params;
   const invoiceDetails = await fetchSingleInvoice(invoiceId);
+  const accounts = await fetchChartofAccounts();
   return (
     <Box
       sx={{
@@ -34,6 +37,8 @@ const page = async ({ params }: PageProps): Promise<React.JSX.Element> => {
         <Stack spacing={3}>
           <div>
             <Link
+              component={RouterLink}
+              href={paths.dashboard.invoice.list}
               color="text.primary"
               sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
               variant="subtitle2"
@@ -46,7 +51,7 @@ const page = async ({ params }: PageProps): Promise<React.JSX.Element> => {
             <Typography variant="h4">Create Payment</Typography>
           </div>
         </Stack>
-        <InvoicePaymentForm value={invoiceDetails} />
+        <InvoicePaymentForm accounts={accounts} invoiceDetails={invoiceDetails} />
       </Stack>
     </Box>
   );

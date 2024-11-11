@@ -4,7 +4,6 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -14,28 +13,98 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { color, getValue } from '@mui/system';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
+import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
+import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
 
-import { InvoiceType, SingleInvoiceType } from '@/actions/invoices/types';
-import { color } from '@mui/system';
+import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
+import { AccountType } from '@/actions/accounts/types';
+import { createPaymentPosting } from '@/actions/invoice-payments/create-payments';
+import { paymentSchema, type PaymentSchema } from '@/actions/invoice-payments/types';
+import { InvoiceType, SingleInvoiceType } from '@/actions/invoices/types';
+import { Option } from '@/components/core/option';
 
 type PageProps = {
-  value: SingleInvoiceType;
+  invoiceDetails: SingleInvoiceType;
+  accounts: AccountType;
 };
 
-function InvoicePaymentForm({ value }: PageProps) {
-  const { control } = useForm();
+function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
+  const {
+    control,
+    watch,
+    getValues,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PaymentSchema>({
+    resolver: zodResolver(paymentSchema),
+    defaultValues: {
+      invoiceId: invoiceDetails?.invoiceId,
+      entryDate: new Date(),
 
-  console.log(value);
+      journalLineItems: [
+        {
+          journalLineItemId: uuidv4(),
+          accountDetails: {
+            accountId: '',
+            accountName: '',
+          },
+          debit: 0,
+          credit: 0,
+        },
+      ],
+    },
+  });
+
+  const { executeAsync } = useAction(createPaymentPosting);
+
+  const entryLineItems = watch('journalLineItems');
+
+  const addJournalLine = React.useCallback(() => {
+    const journalLines = getValues('journalLineItems');
+
+    setValue('journalLineItems', [
+      ...journalLines,
+      {
+        journalLineItemId: uuidv4(),
+        accountDetails: {
+          accountId: '',
+          accountName: '',
+        },
+        debit: 0,
+        credit: 0,
+      },
+    ]);
+  }, [getValues, setValue]);
+
+  const removeJournalLine = React.useCallback(
+    (lineId: string) => {
+      const journalLines = getValues('journalLineItems');
+
+      setValue(
+        'journalLineItems',
+        journalLines.filter((lines) => lines.journalLineItemId !== lineId)
+      );
+    },
+    [setValue, getValues]
+  );
+
+  const submitHandler = (data: PaymentSchema) => {
+    executeAsync(data);
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(submitHandler)}>
       <Card>
         <CardContent>
           <Stack divider={<Divider />} spacing={4}>
@@ -48,19 +117,13 @@ function InvoicePaymentForm({ value }: PageProps) {
                     xs: 12,
                   }}
                 >
-                  <Controller
-                    control={control}
-                    name="rex"
-                    render={() => (
-                      <FormControl fullWidth>
-                        <InputLabel required>Member Name</InputLabel>
-                        <OutlinedInput
-                          disabled
-                          defaultValue={value?.Members.lastName + ', ' + value?.Members.firstName}
-                        />
-                      </FormControl>
-                    )}
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel required>Member Name</InputLabel>
+                    <OutlinedInput
+                      disabled
+                      defaultValue={invoiceDetails?.Members.lastName + ', ' + invoiceDetails?.Members.firstName}
+                    />
+                  </FormControl>
                 </Grid>
                 <Grid
                   size={{
@@ -68,16 +131,10 @@ function InvoicePaymentForm({ value }: PageProps) {
                     xs: 12,
                   }}
                 >
-                  <Controller
-                    control={control}
-                    name="rex"
-                    render={() => (
-                      <FormControl fullWidth>
-                        <InputLabel required>Payment No.</InputLabel>
-                        <OutlinedInput disabled defaultValue={`PAY - *`} />
-                      </FormControl>
-                    )}
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel required>Payment No.</InputLabel>
+                    <OutlinedInput disabled defaultValue={`PAY - *`} />
+                  </FormControl>
                 </Grid>
                 <Grid
                   size={{
@@ -85,19 +142,13 @@ function InvoicePaymentForm({ value }: PageProps) {
                     xs: 12,
                   }}
                 >
-                  <Controller
-                    control={control}
-                    name="rex"
-                    render={() => (
-                      <FormControl fullWidth>
-                        <InputLabel required>Invoice No.</InputLabel>
-                        <OutlinedInput
-                          disabled
-                          defaultValue={`INV - ` + value?.invoiceId.toString().padStart(6, '0')}
-                        />
-                      </FormControl>
-                    )}
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel required>Invoice No.</InputLabel>
+                    <OutlinedInput
+                      disabled
+                      defaultValue={`INV - ` + invoiceDetails?.invoiceId.toString().padStart(6, '0')}
+                    />
+                  </FormControl>
                 </Grid>
               </Grid>
               <Divider />
@@ -110,14 +161,62 @@ function InvoicePaymentForm({ value }: PageProps) {
                 >
                   <Controller
                     control={control}
-                    name="rex"
+                    name="entryDate"
                     render={({ field }) => (
-                      <FormControl fullWidth>
-                        <DatePicker
+                      <DatePicker
+                        {...field}
+                        onChange={(date) => {
+                          field.onChange(date?.toDate());
+                        }}
+                        format="MMM D, YYYY"
+                        label="Payment date *"
+                        value={dayjs(field.value)}
+                        slotProps={{
+                          textField: {
+                            error: Boolean(errors.entryDate),
+                            fullWidth: true,
+                            helperText: errors.entryDate?.message,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 6,
+                    xs: 12,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="paymentReceived"
+                    render={({ field }) => (
+                      <FormControl error={Boolean(errors.paymentReceived)} fullWidth>
+                        <InputLabel required>
+                          Amount Received{' '}
+                          <span>{`(${formatToCurrency(invoiceDetails?.outStandingAmt ?? 0, 'Fil-ph', 'Php')} due)`}</span>
+                        </InputLabel>
+                        <OutlinedInput
                           {...field}
-                          format="MMM D, YYYY"
-                          label="Payment date *"
+                          onChange={(e) => {
+                            const firstArr = getValues('journalLineItems');
+                            const value = e.target.value;
+                            if (value) field.onChange(Number(value));
+                            setValue('journalLineItems', [
+                              {
+                                ...firstArr[0],
+                                debit: Number(value),
+                                credit: 0,
+                              },
+                              ...firstArr.slice(1),
+                            ]);
+                          }}
+                          type="number"
                         />
+                        {errors.paymentReceived ? (
+                          <FormHelperText>{errors.paymentReceived.message}</FormHelperText>
+                        ) : null}
                       </FormControl>
                     )}
                   />
@@ -130,13 +229,12 @@ function InvoicePaymentForm({ value }: PageProps) {
                 >
                   <Controller
                     control={control}
-                    name="rex"
-                    render={() => (
-                      <FormControl fullWidth>
-                        <InputLabel required>Amount Received <span>{`(${formatToCurrency(value?.outStandingAmt ?? 0, 'Fil-ph', 'Php')} due)`}</span></InputLabel>
-                        <OutlinedInput
-                        type='number'
-                        />
+                    name="orNo"
+                    render={({ field }) => (
+                      <FormControl error={Boolean(errors.orNo)} fullWidth>
+                        <InputLabel>Payment O.R / Ref No.</InputLabel>
+                        <OutlinedInput {...field} type="text" />
+                        {errors.orNo ? <FormHelperText>{errors.orNo.message}</FormHelperText> : null}
                       </FormControl>
                     )}
                   />
@@ -149,20 +247,133 @@ function InvoicePaymentForm({ value }: PageProps) {
                 >
                   <Controller
                     control={control}
-                    name="rex"
-                    render={() => (
-                      <FormControl fullWidth>
-                        <InputLabel required>Amount Received <span>{`(${formatToCurrency(value?.outStandingAmt ?? 0, 'Fil-ph', 'Php')} due)`}</span></InputLabel>
-                        <OutlinedInput
-                        type='number'
-                        />
-                      </FormControl>
+                    name="depositingAccount"
+                    render={({ field }) => (
+                      <Autocomplete
+                        options={accounts}
+                        getOptionLabel={(option) => option.accountName}
+                        renderInput={(params) => (
+                          <FormControl error={Boolean(errors.depositingAccount)} fullWidth>
+                            <InputLabel required>Depositing account</InputLabel>
+                            <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
+                            {errors.depositingAccount ? (
+                              <FormHelperText>{errors.depositingAccount.message}</FormHelperText>
+                            ) : null}
+                          </FormControl>
+                        )}
+                        filterOptions={(options) => options.filter((option) => option.RootID.rootType === 'Assets')}
+                        renderOption={(props, options) => (
+                          <Option {...props} key={options.accountId} value={options.accountId}>
+                            {options.accountName}
+                          </Option>
+                        )}
+                        onChange={(_, value) => {
+                          field.onChange(value);
+                          const firstArr = getValues('journalLineItems');
+                          setValue('journalLineItems', [
+                            {
+                              ...firstArr[0],
+                              accountDetails: value as { accountId: string; accountName: string },
+                            },
+                            ...firstArr.slice(1),
+                          ]);
+                        }}
+                      />
                     )}
                   />
                 </Grid>
               </Grid>
+              <Divider />
+              <Typography variant="body2">Journal Entry</Typography>
+              {/* ********  Journal Entry Table**********/}
+              <Stack spacing={2}>
+                {entryLineItems.map((journalLine, index) => (
+                  <Stack spacing={3} direction="row" key={index}>
+                    <Controller
+                      name={`journalLineItems.${index}.accountDetails.accountName`}
+                      control={control}
+                      render={({ field }) => (
+                        <Autocomplete
+                          {...field}
+                          disabled={index === 0}
+                          sx={{ width: '50%' }}
+                          onChange={(_, value) => {
+                            field.onChange(value);
+                          }}
+                          options={accounts.map((account) => account.accountName)}
+                          getOptionLabel={(account) => account}
+                          renderInput={(params) => (
+                            <FormControl fullWidth>
+                              <InputLabel required>Account name</InputLabel>
+                              <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
+                            </FormControl>
+                          )}
+                          renderOption={(props, options) => (
+                            <Option {...props} key={options} value={options}>
+                              {options}
+                            </Option>
+                          )}
+                        />
+                      )}
+                    />
+                    <Controller
+                      control={control}
+                      name={`journalLineItems.${index}.debit`}
+                      render={({ field }) => (
+                        <FormControl sx={{ width: '10%' }}>
+                          <InputLabel>Debit</InputLabel>
+                          <OutlinedInput
+                            {...field}
+                            onChange={(event) => field.onChange(Number(event.target.value))}
+                            disabled={index === 0}
+                            defaultValue={0}
+                            type="number"
+                          />
+                        </FormControl>
+                      )}
+                    />
+                    <Controller
+                      control={control}
+                      name={`journalLineItems.${index}.credit`}
+                      render={({ field }) => (
+                        <FormControl sx={{ width: '10%' }}>
+                          <InputLabel>Credit</InputLabel>
+                          <OutlinedInput
+                            {...field}
+                            onChange={(event) => field.onChange(Number(event.target.value))}
+                            disabled={index === 0}
+                            defaultValue={0}
+                            type="number"
+                          />
+                        </FormControl>
+                      )}
+                    />
+                    <IconButton
+                      disabled={index === 0}
+                      color="error"
+                      onClick={() => removeJournalLine(journalLine.journalLineItemId)}
+                      sx={{ alignSelf: 'flex-end' }}
+                    >
+                      <TrashIcon />
+                    </IconButton>
+                  </Stack>
+                ))}
+                <div>
+                  <Button onClick={addJournalLine} color="secondary" startIcon={<PlusCircleIcon />} variant="outlined">
+                    Add line
+                  </Button>
+                </div>
+              </Stack>
             </Stack>
           </Stack>
+          <CardActions>
+            <Button type="submit" variant="contained" color="primary">
+              Sbumit
+            </Button>
+            <Button onClick={() => console.log(getValues())} type="button" variant="contained" color="primary">
+              test
+            </Button>
+          </CardActions>
         </CardContent>
       </Card>
     </form>
