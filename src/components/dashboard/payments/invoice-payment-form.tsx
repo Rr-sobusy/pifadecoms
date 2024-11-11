@@ -57,7 +57,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
           journalLineItemId: uuidv4(),
           accountDetails: {
             accountId: '',
-            accountName: '',
+            accountName: 'Select Account',
           },
           debit: 0,
           credit: 0,
@@ -290,7 +290,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                 {entryLineItems.map((journalLine, index) => (
                   <Stack spacing={3} direction="row" key={index}>
                     <Controller
-                      name={`journalLineItems.${index}.accountDetails.accountName`}
+                      name={`journalLineItems.${index}.accountDetails`}
                       control={control}
                       render={({ field }) => (
                         <Autocomplete
@@ -300,8 +300,8 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                           onChange={(_, value) => {
                             field.onChange(value);
                           }}
-                          options={accounts.map((account) => account.accountName)}
-                          getOptionLabel={(account) => account}
+                          options={accounts}
+                          getOptionLabel={(account) => account.accountName}
                           renderInput={(params) => (
                             <FormControl fullWidth>
                               <InputLabel required>Account name</InputLabel>
@@ -309,8 +309,8 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                             </FormControl>
                           )}
                           renderOption={(props, options) => (
-                            <Option {...props} key={options} value={options}>
-                              {options}
+                            <Option {...props} key={options.accountId} value={options.accountId}>
+                              {options.accountName}
                             </Option>
                           )}
                         />

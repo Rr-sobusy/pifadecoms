@@ -2,32 +2,47 @@
 
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
-
-
 import { asyncHandler } from '@/lib/api-utils/asyncHandler';
 import prisma from '@/lib/prisma';
 import { actionClient } from '@/lib/safe-action';
-
-
 
 import { paymentSchema } from './types';
 
 export const createPaymentPosting = actionClient.schema(paymentSchema).action(async ({ parsedInput: Request }) => {
   try {
-    // const paymentPosted = await prisma.journalEntries.create({
-    //   data: {
-    //     entryDate: Request.entryDate,
-    //     referenceName: Request.orNo,
-    //     JournalItems: {
-    //             create : Request.journalLineItems.map((lineItem)=>({
-    //                 accountId: lineItem.accountDetails.accountId,
-    //                 debit : lineItem.debit,
-    //                 credit: lineItem.credit
-    //             }))
-    //     },
-    //   },
-    // });
-    Request.journalLineItems.map((lineItem)=> console.log(lineItem.accountDetails.accountId))
+    await prisma.$transaction([
+      prisma.journalEntries.create({
+        data: {
+          entryDate: Request.entryDate,
+          referenceName: Request.orNo,
+          JournalItems: {
+            create: Request.journalLineItems.map((lineItem) => ({
+              accountId: lineItem.accountDetails.accountId,
+              debit: lineItem.debit,
+              credit: lineItem.credit,
+            })),
+          },
+          InvoicePayments: {
+            create: {
+              orNo: Request.orNo,
+              paymentReceived: Request.paymentReceived,
+              paymentDate: Request.entryDate,
+              invoiceId: Request.invoiceId,
+            },
+          },
+        },
+      }),
+      prisma.invoice.update({
+        where: {
+          invoiceId: Request.invoiceId,
+        },
+        data: {
+          outStandingAmt: {
+            decrement: Request.paymentReceived,
+          },
+        },
+      }),
+    ]);
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       // Known Prisma error (e.g., constraint violations, database errors)
