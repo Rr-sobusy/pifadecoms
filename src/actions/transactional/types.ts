@@ -19,6 +19,9 @@ export const transactionalSchema = z.object({
         accountDetails: z.object({
           accountId: z.string(),
           accountName: z.string(),
+          RootID : z.object({
+            rootType: z.string()
+          }).optional()
         }),
         debit: z.number(),
         credit: z.number(),

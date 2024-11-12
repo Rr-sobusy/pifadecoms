@@ -6,26 +6,26 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import { paths } from '@/paths';
-import { asyncHandler } from '@/lib/api-utils/asyncHandler';
 import prisma from '@/lib/prisma';
 import { actionClient } from '@/lib/safe-action';
 
 import { invoiceSchema } from './types';
 
-export async function test(){
+export async function test() {
   return {
-    data: "rex"
-  }
+    data: 'rex',
+  };
 }
 
 export const createInvoice = actionClient
   .schema(invoiceSchema)
   .bindArgsSchemas<[grandTotal: z.ZodNumber]>([z.number()])
-  .action(
-    asyncHandler(async ({ parsedInput: Schema, bindArgsParsedInputs: Args }) => {
+  .action(async ({ parsedInput: Schema, bindArgsParsedInputs: Args }) => {
+    try {
       const newInvoice = await prisma.invoice.create({
         data: {
           dateOfInvoice: Schema.invDate,
@@ -37,11 +37,9 @@ export const createInvoice = actionClient
           },
         },
       });
-
-      revalidatePath(paths.dashboard.invoice.list);
-      return {
-        success: true,
-        invoice: newInvoice,
-      };
-    })
-  );
+    } catch (error) {
+      console.error(error);
+    }
+    revalidatePath(paths.dashboard.invoice.list);
+    redirect(paths.dashboard.invoice.list);
+  });

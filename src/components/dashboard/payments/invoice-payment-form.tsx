@@ -25,6 +25,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
+import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { AccountType } from '@/actions/accounts/types';
@@ -32,6 +33,7 @@ import { createPaymentPosting } from '@/actions/invoice-payments/create-payments
 import { paymentSchema, type PaymentSchema } from '@/actions/invoice-payments/types';
 import { InvoiceType, SingleInvoiceType } from '@/actions/invoices/types';
 import { Option } from '@/components/core/option';
+import { toast } from '@/components/core/toaster';
 
 type PageProps = {
   invoiceDetails: SingleInvoiceType;
@@ -66,12 +68,16 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
     },
   });
 
-  const { executeAsync } = useAction(createPaymentPosting);
+
+  const { executeAsync, isExecuting, result } = useAction(createPaymentPosting);
 
   const entryLineItems = watch('journalLineItems');
 
+  const totalDebits = entryLineItems.reduce((sum, item)=> sum + item.debit, 0)
+  const totalCredits = entryLineItems.reduce((sum, item)=> sum + item.credit, 0)
+
   const addJournalLine = React.useCallback(() => {
-    const journalLines = getValues('journalLineItems');
+    const journalLines = getValues('journalLineItems')
 
     setValue('journalLineItems', [
       ...journalLines,
@@ -100,7 +106,15 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
   );
 
   const submitHandler = (data: PaymentSchema) => {
-    executeAsync(data);
+    try {
+      executeAsync(data);
+
+      if (!result.serverError) {
+        toast.success('Payment posted.');
+      }
+    } catch (error) {
+      toast.error('Error occured in server!' + ' ' + error);
+    }
   };
 
   return (
@@ -273,7 +287,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                           setValue('journalLineItems', [
                             {
                               ...firstArr[0],
-                              accountDetails: value as { accountId: string; accountName: string },
+                              accountDetails: value as any,
                             },
                             ...firstArr.slice(1),
                           ]);
@@ -300,7 +314,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                           onChange={(_, value) => {
                             field.onChange(value);
                           }}
-                          options={accounts}
+                          options={accounts as any}
                           getOptionLabel={(account) => account.accountName}
                           renderInput={(params) => (
                             <FormControl fullWidth>
@@ -358,8 +372,27 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                     </IconButton>
                   </Stack>
                 ))}
+                <Stack spacing={4} flexDirection="row">
+                  <Stack  sx={{ width: '50%' }} spacing={3}>
+                    <Typography variant="subtitle2">
+                      Totals
+                    </Typography>
+                  </Stack>
+                  <Stack  sx={{ width: '10%' }} spacing={3}>
+                    <Typography variant="subtitle2">
+                      {formatToCurrency(totalDebits, 'Fil-ph', 'Php')}
+                    </Typography>
+                  </Stack>
+                  <Stack  sx={{ width: '10%', marginLeft:"-7px" }} spacing={3}>
+                    <Typography variant="subtitle2">
+                    {formatToCurrency(totalCredits, 'Fil-ph', 'Php')}
+                    </Typography>
+                  </Stack>
+                </Stack>
                 <div>
-                <Typography marginBottom={1} color='error'>{errors.journalLineItems?.root?.message}</Typography>
+                  <Typography marginBottom={1} color="error">
+                    {errors.journalLineItems?.root?.message}
+                  </Typography>
                   <Button onClick={addJournalLine} color="secondary" startIcon={<PlusCircleIcon />} variant="outlined">
                     Add line
                   </Button>
@@ -367,12 +400,12 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
               </Stack>
             </Stack>
           </Stack>
-          <CardActions>
-            <Button type="submit" variant="contained" color="primary">
-              Sbumit
+          <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
+            <Button onClick={()=>console.log(getValues())} type="button" variant="text" color="primary">
+              Cancel
             </Button>
-            <Button onClick={() => console.log(getValues())} type="button" variant="contained" color="primary">
-              test
+            <Button disabled={isExecuting} type="submit" variant="contained" color="primary">
+              {isExecuting ? 'Posting' : 'Post payment'}
             </Button>
           </CardActions>
         </CardContent>

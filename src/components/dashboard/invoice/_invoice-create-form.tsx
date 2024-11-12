@@ -69,7 +69,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
 
   const grandTotal = calculateGrandTotal(lineItems);
 
-  const { execute, result, isExecuting } = useAction(createInvoice.bind(null, grandTotal));
+  const { executeAsync, result, isExecuting } = useAction(createInvoice.bind(null, grandTotal));
 
   const handleAddLineItem = React.useCallback(() => {
     const lineItems = watch('lineItems');
@@ -99,11 +99,11 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
 
   function submitHandler(data: InvoiceSchemaType) {
     try {
-      execute(data);
+      executeAsync(data);
 
       if (!result.serverError) {
         toast.success('Invoice Created!');
-        router.push(paths.dashboard.invoice.list);
+      
       }
     } catch (error) {
       toast.error('Error occured in server!' + ' ' + 'error:' + error);
