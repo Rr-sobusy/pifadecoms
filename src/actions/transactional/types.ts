@@ -12,15 +12,28 @@ export const transactionalSchema = z.object({
   particulars: z.string().optional(),
 
   // entries
-  journalLineItems: z.array(
-    z.object({
-      journalLineItemId: z.string(),
-      accountDetails: z.object({
-        accountId: z.string(),
-        accountName: z.string(),
-      }),
-      debit: z.number(),
-      credit: z.number(),
-    })
-  ),
+  journalLineItems: z
+    .array(
+      z.object({
+        journalLineItemId: z.string(),
+        accountDetails: z.object({
+          accountId: z.string(),
+          accountName: z.string(),
+        }),
+        debit: z.number(),
+        credit: z.number(),
+      })
+    )
+    .min(2, { message: 'Affected account must be two or more!' })
+    .superRefine((items, ctx) => {
+      const totalDebit = items.reduce((sum, item) => sum + item.debit, 0);
+      const totalCredit = items.reduceRight((sum, item) => sum + item.credit, 0);
+
+      if (totalDebit !== totalCredit) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Total debits and total credits must be equal.',
+        });
+      }
+    }),
 });

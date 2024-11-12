@@ -3,6 +3,7 @@
 import * as React from 'react';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
@@ -104,9 +105,17 @@ const columns = [
       const mapping = {
         pending: { label: 'Pending', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
         paid: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
-        cancelled: { label: 'Canceled', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
+        due: { label: 'due', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
       } as const;
-      const { label, icon } = mapping[row.invStatus];
+
+      function getMapping() {
+        const isPastDue = !dayjs(row.dateOfInvoice).isSameOrAfter(dayjs(), 'D');
+        if (row.outStandingAmt !== 0 && isPastDue) return mapping['due'];
+        if (row.outStandingAmt === 0) return mapping['paid'];
+        return mapping['pending'];
+      }
+
+      const { label, icon } = getMapping();
 
       return <Chip icon={icon} label={label} size="small" variant="outlined" />;
     },
@@ -122,6 +131,7 @@ const columns = [
             <ArrowRightIcon />
           </IconButton>
           <OptionPopOver
+            isPaid={row.outStandingAmt === 0}
             invoiceId={row.invoiceId}
             anchorEl={popover.anchorRef.current}
             onClose={popover.handleClose}
@@ -143,6 +153,7 @@ const OptionPopOver = ({
   onRemoveOne,
   open = false,
   invoiceId,
+  isPaid,
 }: {
   anchorEl: null | Element;
   onClose?: () => void;
@@ -150,6 +161,7 @@ const OptionPopOver = ({
   onRemoveOne?: (id: string) => void;
   open?: boolean;
   invoiceId: bigint;
+  isPaid: boolean;
 }): React.JSX.Element => {
   return (
     <Popover
@@ -157,18 +169,19 @@ const OptionPopOver = ({
       anchorOrigin={{ horizontal: 'right', vertical: 'center' }}
       onClose={onClose}
       open={open}
-      slotProps={{ paper: { sx: { width: '200px' } } }}
+      slotProps={{ paper: { sx: { width: '170px' } } }}
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
     >
       <Stack spacing={1} padding={1}>
-        <Typography
+        <Button
+          disabled={isPaid}
+          size="small"
           component={RouterLink}
           href={paths.dashboard.invoice.createPayment(invoiceId)}
-          padding={1}
           sx={{
-            borderRadius : '5px',
-            textDecoration: "none",
-            color : "inherit",
+            borderRadius: '5px',
+            textDecoration: 'none',
+            color: 'inherit',
             transition: 'background-color 0.3s ease',
             '&:hover': {
               backgroundColor: 'ButtonHighlight',
@@ -176,9 +189,7 @@ const OptionPopOver = ({
           }}
         >
           Create Payment
-        </Typography>
-        <Typography>rexrandu</Typography>
-        <Typography>rexrandu</Typography>
+        </Button>
       </Stack>
     </Popover>
   );

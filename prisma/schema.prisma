@@ -87,7 +87,6 @@ model Invoice {
    baseGrandTotal Float         
    outStandingAmt Float   
    journalId      BigInt?
-   invStatus      InvoiceStatus    @default(pending)
    Members        Members          @relation(fields: [memberId], references: [memberId])
 
    InvoiceItems   InvoiceItems[]  
@@ -95,7 +94,7 @@ model Invoice {
 
 
   @@map("invoices")
-  @@index([dateOfInvoice, memberId, invStatus])
+  @@index([dateOfInvoice, memberId, outStandingAmt])
 }
 
 model InvoiceItems {

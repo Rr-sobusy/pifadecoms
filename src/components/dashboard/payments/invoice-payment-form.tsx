@@ -57,7 +57,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
           journalLineItemId: uuidv4(),
           accountDetails: {
             accountId: '',
-            accountName: 'Select Account',
+            accountName: ' -- Selected Deposit Acct.',
           },
           debit: 0,
           credit: 0,
@@ -359,6 +359,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                   </Stack>
                 ))}
                 <div>
+                <Typography marginBottom={1} color='error'>{errors.journalLineItems?.root?.message}</Typography>
                   <Button onClick={addJournalLine} color="secondary" startIcon={<PlusCircleIcon />} variant="outlined">
                     Add line
                   </Button>

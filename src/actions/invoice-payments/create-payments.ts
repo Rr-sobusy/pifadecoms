@@ -1,8 +1,6 @@
 'use server';
 
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-
-import { asyncHandler } from '@/lib/api-utils/asyncHandler';
 import prisma from '@/lib/prisma';
 import { actionClient } from '@/lib/safe-action';
 
@@ -32,6 +30,8 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
           },
         },
       }),
+
+      // * second batch of query
       prisma.invoice.update({
         where: {
           invoiceId: Request.invoiceId,
