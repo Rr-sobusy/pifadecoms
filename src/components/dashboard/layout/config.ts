@@ -146,6 +146,15 @@ export const layoutConfig = {
           ],
         },
         {
+          key: 'reports',
+          title: 'Reports',
+          icon: 'receipt',
+          items: [
+            { key: 'ledger', title: 'General Ledger', href: paths.dashboard.reports.ledgerList },
+
+          ],
+        },
+        {
           key: 'jobs',
           title: 'Jobs',
           icon: 'read-cv-logo',

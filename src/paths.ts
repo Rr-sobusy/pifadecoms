@@ -102,6 +102,9 @@ export const paths = {
       payments: '/dashboard/invoice/payments',
       createPayment : (invoiceId:bigint) => `/dashboard/invoice/payments/create/${invoiceId}`
   },
+  reports : {
+      ledgerList : '/dashboard/reports/ledger'
+  },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',
     i18n: '/dashboard/i18n',

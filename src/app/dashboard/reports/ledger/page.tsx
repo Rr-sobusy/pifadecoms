@@ -3,34 +3,24 @@ import type { Metadata } from 'next';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
 import { paths } from '@/paths';
 import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
+import { fetchLedgers } from '@/actions/reports/general-ledger';
 import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
 import { InvoicesFiltersCard } from '@/components/dashboard/invoice/invoices-filters-card';
 import { InvoicesStats } from '@/components/dashboard/invoice/invoices-stats';
+import GeneralLedgerTable from '@/components/dashboard/reports/ledgers/general-ledger-table';
 
-type PageProps = {
-  searchParams: {
-    customer?: string;
-    endDate?: string;
-    id?: string;
-    sortDir?: 'asc' | 'desc';
-    startDate?: string;
-    status?: string;
-    view?: 'group' | 'list';
-  };
-};
+type PageProps = {};
 
-const page = async ({ searchParams }: PageProps) => {
-  const { customer, endDate, id, sortDir, startDate, status, view = 'group' } = searchParams;
-  const filters = { customer, endDate, id, startDate, status };
-  const invoices = await fetchInvoices();
-
-
+async function page({}: PageProps): Promise<React.JSX.Element> {
+  const generalLedgers = await fetchLedgers();
   return (
     <Box
       sx={{
@@ -43,24 +33,29 @@ const page = async ({ searchParams }: PageProps) => {
       <Stack spacing={4}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Invoices</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button LinkComponent={RouterLink} href={paths.dashboard.invoice.create} variant="contained">
-              Create New Invoice
-            </Button>
+            <Typography variant="h4">General Ledger</Typography>
           </Box>
         </Stack>
-        <InvoicesStats />
-        <Stack direction="row" spacing={4} sx={{ alignItems: 'flex-start' }}>
-          <InvoicesFiltersCard filters={filters} sortDir={sortDir} view={view} />
-          <Stack spacing={4} sx={{ flex: '1 1 auto', minWidth: 0 }}>
-            <InvoiceTable rows={invoices} />
-          </Stack>
+        <Stack spacing={1} sx={{ alignItems: 'center', marginTop: 3 }}>
+          <Typography color="" variant="overline">
+            Pinagsibaan Farmer's Development Cooperative
+          </Typography>
+          <Typography fontWeight="600" fontSize="23px" variant="body1">
+            General Ledger of Accounts
+          </Typography>
+          <Typography color="textDisabled" variant="body2">
+            From Nov 01 2024 to Nov 31 2024
+          </Typography>
+
+          <Card sx={{ marginTop: 3 }}>
+            <CardContent>
+              <GeneralLedgerTable rows={generalLedgers} />
+            </CardContent>
+          </Card>
         </Stack>
       </Stack>
     </Box>
   );
-};
+}
 
 export default page;

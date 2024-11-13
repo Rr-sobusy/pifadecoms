@@ -219,7 +219,7 @@ const OptionPopOver = ({
 const InvoiceTable = ({ rows }: InvoiceTableProps) => {
   return (
     <Card sx={{ overflowX: 'auto' }}>
-      <DataTable<InvoiceType[0]> columns={columns} hideHead rows={rows} />
+      <DataTable<InvoiceType[0]> hover columns={columns} hideHead rows={rows} />
       {!rows.length ? (
         <Box sx={{ p: 3 }}>
           <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="body2">
