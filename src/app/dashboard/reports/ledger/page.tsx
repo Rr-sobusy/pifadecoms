@@ -7,7 +7,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
+import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 
 import { paths } from '@/paths';
 import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
@@ -35,6 +35,12 @@ async function page({}: PageProps): Promise<React.JSX.Element> {
           <Box sx={{ flex: '1 1 auto' }}>
             <Typography variant="h4">General Ledger</Typography>
           </Box>
+
+          <div>
+            <Button startIcon={<FilterIcon />} variant="outlined">
+              Filter by Date range
+            </Button>
+          </div>
         </Stack>
         <Stack spacing={1} sx={{ alignItems: 'center', marginTop: 3 }}>
           <Typography color="" variant="overline">

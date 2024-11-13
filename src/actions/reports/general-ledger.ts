@@ -1,9 +1,17 @@
+import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
 export async function fetchLedgers() {
   const accountLedgers = await prisma.journalItems.groupBy({
     by: ['accountId'],
     _sum: { debit: true, credit: true },
+    where: {
+      JournalEntries: {
+        entryDate : {
+          lte : new Date(),
+        }
+      },
+    },
   });
 
   const accountIds = accountLedgers.map((ledger) => ledger.accountId);

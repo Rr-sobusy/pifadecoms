@@ -240,5 +240,5 @@ model JournalItems {
   Accounts           AccountsThirdLvl   @relation(references: [accountId], fields: [accountId])
 
   @@map("journal_items")
-  @@index([accountId])
+  @@index([accountId, entryId])
 }

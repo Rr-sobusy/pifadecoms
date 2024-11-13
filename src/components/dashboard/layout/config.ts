@@ -1,10 +1,6 @@
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 
-
-
-
-
 // NOTE: We did not use React Components for Icons, because
 //  you may one to get the config from the server.
 
@@ -151,7 +147,9 @@ export const layoutConfig = {
           icon: 'receipt',
           items: [
             { key: 'ledger', title: 'General Ledger', href: paths.dashboard.reports.ledgerList },
-
+            // { key: 'balanceSheet', title: 'Balance Sheet', href: paths.dashboard.reports.ledgerList },
+            // { key: 'profitLoss', title: 'Income/Loss Statement', href: paths.dashboard.reports.ledgerList },
+            // { key: 'trialBalance', title: 'Trial Balance', href: paths.dashboard.reports.ledgerList },
           ],
         },
         {
