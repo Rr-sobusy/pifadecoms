@@ -68,16 +68,15 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
     },
   });
 
-
   const { executeAsync, isExecuting, result } = useAction(createPaymentPosting);
 
   const entryLineItems = watch('journalLineItems');
 
-  const totalDebits = entryLineItems.reduce((sum, item)=> sum + item.debit, 0)
-  const totalCredits = entryLineItems.reduce((sum, item)=> sum + item.credit, 0)
+  const totalDebits = entryLineItems.reduce((sum, item) => sum + item.debit, 0);
+  const totalCredits = entryLineItems.reduce((sum, item) => sum + item.credit, 0);
 
   const addJournalLine = React.useCallback(() => {
-    const journalLines = getValues('journalLineItems')
+    const journalLines = getValues('journalLineItems');
 
     setValue('journalLineItems', [
       ...journalLines,
@@ -204,63 +203,6 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                 >
                   <Controller
                     control={control}
-                    name="paymentReceived"
-                    render={({ field }) => (
-                      <FormControl error={Boolean(errors.paymentReceived)} fullWidth>
-                        <InputLabel required>
-                          Amount Received{' '}
-                          <span>{`(${formatToCurrency(invoiceDetails?.outStandingAmt ?? 0, 'Fil-ph', 'Php')} due)`}</span>
-                        </InputLabel>
-                        <OutlinedInput
-                          {...field}
-                          onChange={(e) => {
-                            const firstArr = getValues('journalLineItems');
-                            const value = e.target.value;
-                            if (value) field.onChange(Number(value));
-                            setValue('journalLineItems', [
-                              {
-                                ...firstArr[0],
-                                debit: Number(value),
-                                credit: 0,
-                              },
-                              ...firstArr.slice(1),
-                            ]);
-                          }}
-                          type="number"
-                        />
-                        {errors.paymentReceived ? (
-                          <FormHelperText>{errors.paymentReceived.message}</FormHelperText>
-                        ) : null}
-                      </FormControl>
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="orNo"
-                    render={({ field }) => (
-                      <FormControl error={Boolean(errors.orNo)} fullWidth>
-                        <InputLabel>Payment O.R / Ref No.</InputLabel>
-                        <OutlinedInput {...field} type="text" />
-                        {errors.orNo ? <FormHelperText>{errors.orNo.message}</FormHelperText> : null}
-                      </FormControl>
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
                     name="depositingAccount"
                     render={({ field }) => (
                       <Autocomplete
@@ -293,6 +235,63 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                           ]);
                         }}
                       />
+                    )}
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 6,
+                    xs: 12,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="orNo"
+                    render={({ field }) => (
+                      <FormControl error={Boolean(errors.orNo)} fullWidth>
+                        <InputLabel>Payment O.R / Ref No.</InputLabel>
+                        <OutlinedInput {...field} type="text" />
+                        {errors.orNo ? <FormHelperText>{errors.orNo.message}</FormHelperText> : null}
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 6,
+                    xs: 12,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="paymentReceived"
+                    render={({ field }) => (
+                      <FormControl error={Boolean(errors.paymentReceived)} fullWidth>
+                        <InputLabel required>
+                          Amount Received{' '}
+                          <span>{`(${formatToCurrency(invoiceDetails?.outStandingAmt ?? 0, 'Fil-ph', 'Php')} due)`}</span>
+                        </InputLabel>
+                        <OutlinedInput
+                          {...field}
+                          onChange={(e) => {
+                            const firstArr = getValues('journalLineItems');
+                            const value = e.target.value;
+                            if (value) field.onChange(Number(value));
+                            setValue('journalLineItems', [
+                              {
+                                ...firstArr[0],
+                                debit: Number(value),
+                                credit: 0,
+                              },
+                              ...firstArr.slice(1),
+                            ]);
+                          }}
+                          type="number"
+                        />
+                        {errors.paymentReceived ? (
+                          <FormHelperText>{errors.paymentReceived.message}</FormHelperText>
+                        ) : null}
+                      </FormControl>
                     )}
                   />
                 </Grid>
@@ -373,20 +372,14 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                   </Stack>
                 ))}
                 <Stack spacing={4} flexDirection="row">
-                  <Stack  sx={{ width: '50%' }} spacing={3}>
-                    <Typography variant="subtitle2">
-                      Totals
-                    </Typography>
+                  <Stack sx={{ width: '50%' }} spacing={3}>
+                    <Typography variant="subtitle2">Totals</Typography>
                   </Stack>
-                  <Stack  sx={{ width: '10%' }} spacing={3}>
-                    <Typography variant="subtitle2">
-                      {formatToCurrency(totalDebits, 'Fil-ph', 'Php')}
-                    </Typography>
+                  <Stack sx={{ width: '10%' }} spacing={3}>
+                    <Typography variant="subtitle2">{formatToCurrency(totalDebits, 'Fil-ph', 'Php')}</Typography>
                   </Stack>
-                  <Stack  sx={{ width: '10%', marginLeft:"-7px" }} spacing={3}>
-                    <Typography variant="subtitle2">
-                    {formatToCurrency(totalCredits, 'Fil-ph', 'Php')}
-                    </Typography>
+                  <Stack sx={{ width: '10%', marginLeft: '-7px' }} spacing={3}>
+                    <Typography variant="subtitle2">{formatToCurrency(totalCredits, 'Fil-ph', 'Php')}</Typography>
                   </Stack>
                 </Stack>
                 <div>
@@ -401,7 +394,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
             </Stack>
           </Stack>
           <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
-            <Button onClick={()=>console.log(getValues())} type="button" variant="text" color="primary">
+            <Button onClick={() => console.log(getValues())} type="button" variant="text" color="primary">
               Cancel
             </Button>
             <Button disabled={isExecuting} type="submit" variant="contained" color="primary">

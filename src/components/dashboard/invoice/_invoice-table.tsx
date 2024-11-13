@@ -109,7 +109,7 @@ const columns = [
       } as const;
 
       function getMapping() {
-        const isPastDue = !dayjs(row.dateOfInvoice).isSameOrAfter(dayjs(), 'D');
+        const isPastDue = !dayjs(row.dateOfInvoice).add(dueMonth, 'M').isSameOrAfter(dayjs(), 'D');
         if (row.outStandingAmt !== 0 && isPastDue) return mapping['due'];
         if (row.outStandingAmt === 0) return mapping['paid'];
         return mapping['pending'];

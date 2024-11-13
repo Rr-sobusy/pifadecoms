@@ -8,14 +8,13 @@ import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
 import { paths } from '@/paths';
-import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
-import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
-import { InvoicesFiltersCard } from '@/components/dashboard/invoice/invoices-filters-card';
-import { InvoicesStats } from '@/components/dashboard/invoice/invoices-stats';
+import { fetchReceivedPayments } from '@/actions/invoice-payments/fetch-payments';
+import PaymentsTable from '@/components/dashboard/payments/payments-table';
 
 type PageProps = {};
 
-function page({}: PageProps) {
+async function page({}: PageProps): Promise<React.JSX.Element> {
+  const receivedPayments = await fetchReceivedPayments();
   return (
     <Box
       sx={{
@@ -28,11 +27,14 @@ function page({}: PageProps) {
       <Stack spacing={4}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Payments</Typography>
+            <Typography variant="h4">Received Payments</Typography>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button LinkComponent={RouterLink} href={paths.dashboard.invoice.create} variant="contained"></Button>
           </Box>
+        </Stack>
+        <Stack spacing={4}>
+          <PaymentsTable rows={receivedPayments} />
         </Stack>
       </Stack>
     </Box>

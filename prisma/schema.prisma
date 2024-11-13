@@ -125,7 +125,8 @@ model InvoicePayments {
   JournalEntry    JournalEntries    @relation(references: [entryId], fields: [journalRef])
   Invoice         Invoice           @relation(references: [invoiceId], fields: [invoiceId])
 
-
+  @@map("invoice_payments")
+  @@index([invoiceId])
 }
 
 model Items {

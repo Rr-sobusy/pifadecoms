@@ -11,11 +11,8 @@ import { actionClient } from '@/lib/safe-action';
 import { paymentSchema } from './types';
 
 export const createPaymentPosting = actionClient.schema(paymentSchema).action(async ({ parsedInput: Request }) => {
-  function addDebit(arr: number[]): number {
-    let add: number = 0;
-    arr.forEach((ctx) => (add += ctx));
-    return add;
-  }
+
+  
   try {
     await prisma.$transaction([
       prisma.journalEntries.create({
@@ -56,8 +53,8 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
       ...Request.journalLineItems.map((lineItem) => {
         const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.RootID?.rootType ?? '');
         const amount = isIncrement
-          ? lineItem.debit - lineItem.credit // For Assets and Liabilities
-          : lineItem.credit - lineItem.debit; // For Equity, Revenue, and Expense
+          ? lineItem.debit - lineItem.credit // For Assets and Expense Acct
+          : lineItem.credit - lineItem.debit; // For Equity, Revenue, and Liabilities acct
     
         return prisma.accountsThirdLvl.update({
           where: {
@@ -81,5 +78,6 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
   }
 
   revalidatePath(paths.dashboard.invoice.list);
-  redirect(paths.dashboard.invoice.list);
+  revalidatePath(paths.dashboard.invoice.payments);
+  redirect(paths.dashboard.invoice.payments);
 });
