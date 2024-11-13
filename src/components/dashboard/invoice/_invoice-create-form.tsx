@@ -354,7 +354,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                 </Stack>
               </Box>
               <CardActions sx={{ justifyContent: 'flex-end' }}>
-                <Button color="secondary">Cancel</Button>
+                <Button type='button' onClick={()=>router.push(paths.dashboard.invoice.list)} color="secondary">Cancel</Button>
                 <Button disabled={isExecuting} type="submit" variant="contained">
                   {isExecuting ? 'Creating Invoice ...' : 'Create Invoice'}
                 </Button>

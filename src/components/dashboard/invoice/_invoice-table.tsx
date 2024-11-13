@@ -29,26 +29,55 @@ type InvoiceTableProps = {
 
 const dueMonth = 1;
 
+function isPastDue(inputtedDate: Date): boolean {
+  return !dayjs(inputtedDate).add(dueMonth, 'M').isSameOrAfter(dayjs(), 'D');
+}
+
+function computeInterest(inputtedDate: Date, principalAmout: number, rate: number): number {
+  const numberOfMonthsPast = dayjs(inputtedDate).add(dueMonth, 'M').diff(dayjs(), 'M');
+
+  return (rate / 100) * principalAmout * (numberOfMonthsPast - 1) * -1;
+}
+
 const columns = [
   {
-    formatter: (row): React.JSX.Element => (
-      <Stack
-        component={RouterLink}
-        direction="row"
-        href={paths.dashboard.invoice.details(row.invoiceId)}
-        spacing={2}
-        sx={{ alignItems: 'center', display: 'inline-flex', textDecoration: 'none', whiteSpace: 'nowrap' }}
-      >
-        <div>
-          <Typography color="text.primary" variant="subtitle2">
-            {'INV-' + row.invoiceId.toString().padStart(6, '0')}
-          </Typography>
-          <Typography color="text.secondary" variant="body2">
-            {row.Members.lastName + ', ' + row.Members.firstName}
-          </Typography>
-        </div>
-      </Stack>
-    ),
+    formatter: (row): React.JSX.Element => {
+      const mapping = {
+        pending: { label: 'Pending', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
+        paid: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
+        due: { label: 'due', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
+      } as const;
+
+      function getMapping() {
+        if (row.outStandingAmt !== 0 && isPastDue(row.dateOfInvoice)) return mapping['due'];
+        if (row.outStandingAmt === 0) return mapping['paid'];
+        return mapping['pending'];
+      }
+
+      const { label, icon } = getMapping();
+
+      return (
+        <Stack
+          component={RouterLink}
+          direction="row"
+          href={paths.dashboard.invoice.details(row.invoiceId)}
+          spacing={2}
+          sx={{ alignItems: 'center', display: 'inline-flex', textDecoration: 'none', whiteSpace: 'nowrap' }}
+        >
+          <div>
+            <Stack direction="row" alignItems={`center`} gap={2}>
+              <Typography color="text.primary" variant="subtitle2">
+                {'INV-' + row.invoiceId.toString().padStart(6, '0')}
+              </Typography>
+              <Chip icon={icon} label={label} size="small" variant="outlined" />
+            </Stack>
+            <Typography color="text.secondary" variant="body2">
+              {row.Members.lastName + ', ' + row.Members.firstName}
+            </Typography>
+          </div>
+        </Stack>
+      );
+    },
     name: 'Member Name',
     width: '100px',
   },
@@ -67,14 +96,28 @@ const columns = [
   {
     formatter: (row): React.JSX.Element => (
       <div>
-        <Typography variant="subtitle2">Amount Due</Typography>
+        <Typography variant="subtitle2">Balance Due</Typography>
         <Typography color="text.secondary" variant="body2">
           {formatToCurrency(row.outStandingAmt, 'Fil-ph', 'Php')}
         </Typography>
       </div>
     ),
-    name: 'Total amount',
+    name: 'Total balance',
     width: '100px',
+  },
+  {
+    formatter: (row): React.JSX.Element => (
+      <div>
+        <Typography variant="subtitle2">Intr. accrued(2%)</Typography>
+        <Typography color="text.secondary" variant="body2">
+          {isPastDue(row.dateOfInvoice) && row.outStandingAmt !== 0
+            ? formatToCurrency(computeInterest(row.dateOfInvoice, row.baseGrandTotal, 2), 'Fil-ph', 'Php')
+            : formatToCurrency(0, 'Fil-ph', 'Php')}
+        </Typography>
+      </div>
+    ),
+    name: 'Interest Accrued',
+    width: '150px',
   },
   {
     formatter: (row): React.JSX.Element => (
@@ -85,7 +128,7 @@ const columns = [
         </Typography>
       </div>
     ),
-    name: 'Total amount',
+    name: 'Date Issued',
     width: '100px',
   },
   {
@@ -98,28 +141,6 @@ const columns = [
       </div>
     ),
     name: 'Total amount',
-    width: '100px',
-  },
-  {
-    formatter: (row): React.JSX.Element => {
-      const mapping = {
-        pending: { label: 'Pending', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
-        paid: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
-        due: { label: 'due', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
-      } as const;
-
-      function getMapping() {
-        const isPastDue = !dayjs(row.dateOfInvoice).add(dueMonth, 'M').isSameOrAfter(dayjs(), 'D');
-        if (row.outStandingAmt !== 0 && isPastDue) return mapping['due'];
-        if (row.outStandingAmt === 0) return mapping['paid'];
-        return mapping['pending'];
-      }
-
-      const { label, icon } = getMapping();
-
-      return <Chip icon={icon} label={label} size="small" variant="outlined" />;
-    },
-    name: 'Status',
     width: '100px',
   },
   {
@@ -141,7 +162,7 @@ const columns = [
       );
     },
     name: 'Actions',
-    width: '100px',
+    width: '10px',
     align: 'right',
   },
 ] satisfies ColumnDef<InvoiceType[0]>[];

@@ -49,6 +49,12 @@ enum InvoiceStatus {
   cancelled
 }
 
+enum JournalType {
+  cashReceipts
+  cashVoucher
+  generalJournal
+}
+
 model Members {
   memberId         String        @id @default(cuid())
   lastName         String              
@@ -76,7 +82,7 @@ model Members {
   members          Invoice[]
 
   @@map("members")
-  @@index([lastName])
+  @@index([lastName, firstName])
 
 }
 
@@ -175,21 +181,6 @@ model AccountsThirdLvl {
 
 }
 
-// model ChartOfAccounts {
-//   id               Int       @id @default(autoincrement())
-//   accountName      String
-//   accountCode      String    @unique
-//   parentAccountId  Int?      
-//   parentAccount    ChartOfAccounts? @relation("ParentChild", fields: [parentAccountId], references: [id])
-//   children         ChartOfAccounts[] @relation("ParentChild")
-//   accountType      AccountTypes
-//   isActive         Boolean   @default(true)
-//   createdAt        DateTime  @default(now())
-//   updatedAt        DateTime  @updatedAt
-
-//   @@index([parentAccountId])
-// }
-
 
 model Dividends {
   dividendId            BigInt                 @id  @default(autoincrement())
@@ -229,6 +220,7 @@ model JournalEntries {
   referenceType       String?
   createdAt           DateTime       @default(now())
   particulars         String?
+  journalType         JournalType
 
   JournalItems        JournalItems[]
   InvoicePayments     InvoicePayments[]
@@ -248,4 +240,5 @@ model JournalItems {
   Accounts           AccountsThirdLvl   @relation(references: [accountId], fields: [accountId])
 
   @@map("journal_items")
+  @@index([accountId])
 }

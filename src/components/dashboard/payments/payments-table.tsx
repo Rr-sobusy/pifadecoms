@@ -75,6 +75,13 @@ function PaymentsTable({ rows }: Props) {
   return (
     <Card sx={{ overflowX: 'auto' }}>
       <DataTable<PaymentsType[0]> columns={columns} rows={rows} />
+      {!rows.length ? (
+        <Box sx={{ p: 3 }}>
+          <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="body2">
+            No payment posted
+          </Typography>
+        </Box>
+      ) : null}
     </Card>
   );
 }

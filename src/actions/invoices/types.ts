@@ -1,7 +1,5 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
-
-import { memberSchema } from '../members/types';
 import { fetchInvoices, fetchSingleInvoice } from './fetch-invoice';
 
 export type InvoiceType = Prisma.PromiseReturnType<typeof fetchInvoices>;
@@ -30,7 +28,7 @@ export const invoiceSchema = z.object({
       z.object({
         lineId: z.string(),
         itemId: z.string(),
-        quantity: z.number(),
+        quantity: z.number().min(1, {message: "Quantity must be 1 or greater."}),
         rate: z.number(),
       })
     )

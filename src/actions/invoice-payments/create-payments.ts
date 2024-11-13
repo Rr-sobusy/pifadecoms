@@ -11,13 +11,12 @@ import { actionClient } from '@/lib/safe-action';
 import { paymentSchema } from './types';
 
 export const createPaymentPosting = actionClient.schema(paymentSchema).action(async ({ parsedInput: Request }) => {
-
-  
   try {
     await prisma.$transaction([
       prisma.journalEntries.create({
         data: {
           entryDate: Request.entryDate,
+          journalType: 'cashReceipts',
           referenceName: Request.orNo,
           JournalItems: {
             create: Request.journalLineItems.map((lineItem) => ({
@@ -55,7 +54,7 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
         const amount = isIncrement
           ? lineItem.debit - lineItem.credit // For Assets and Expense Acct
           : lineItem.credit - lineItem.debit; // For Equity, Revenue, and Liabilities acct
-    
+
         return prisma.accountsThirdLvl.update({
           where: {
             accountId: lineItem.accountDetails.accountId,

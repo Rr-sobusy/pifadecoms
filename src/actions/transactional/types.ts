@@ -1,6 +1,7 @@
 /**
- * * Here, we must extend the schema for what use case. Example for invoice payments, we call the Journal Posting schema then
- * * manually extend the schema for it
+ * * Here, we must extend the schema for what use case. Example for invoice payments, we call the transactional 
+ * * posting schema then  manually extend the schema for it
+ * *
  */
 
 import { z } from 'zod';
