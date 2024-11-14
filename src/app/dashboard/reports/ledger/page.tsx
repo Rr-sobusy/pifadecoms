@@ -7,20 +7,19 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
+import type { Dayjs } from 'dayjs';
 
-import { paths } from '@/paths';
-import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
+import { dayjs } from '@/lib/dayjs';
 import { fetchLedgers } from '@/actions/reports/general-ledger';
-import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
-import { InvoicesFiltersCard } from '@/components/dashboard/invoice/invoices-filters-card';
-import { InvoicesStats } from '@/components/dashboard/invoice/invoices-stats';
+import DateRangeBtn from '@/components/dashboard/reports/ledgers/date-range-button';
 import GeneralLedgerTable from '@/components/dashboard/reports/ledgers/general-ledger-table';
 
-type PageProps = {};
+type PageProps = {
+  searchParams: { startDate: Dayjs; endDate: Dayjs };
+};
 
-async function page({}: PageProps): Promise<React.JSX.Element> {
-  const generalLedgers = await fetchLedgers();
+async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
+  const generalLedgers = await fetchLedgers({ dateRange: searchParams });
   return (
     <Box
       sx={{
@@ -37,9 +36,7 @@ async function page({}: PageProps): Promise<React.JSX.Element> {
           </Box>
 
           <div>
-            <Button startIcon={<FilterIcon />} variant="outlined">
-              Filter by Date range
-            </Button>
+            <DateRangeBtn />
           </div>
         </Stack>
         <Stack spacing={1} sx={{ alignItems: 'center', marginTop: 3 }}>
@@ -50,7 +47,12 @@ async function page({}: PageProps): Promise<React.JSX.Element> {
             General Ledger of Accounts
           </Typography>
           <Typography color="textDisabled" variant="body2">
-            From Nov 01 2024 to Nov 31 2024
+            From{' '}
+            {searchParams.startDate
+              ? dayjs(searchParams.startDate).format('MMM DD YYYY')
+              : dayjs().subtract(30, 'day').format('MMM DD YYYY')}{' '}
+            to{' '}
+            {searchParams.endDate ? dayjs(searchParams.endDate).format('MMM DD YYYY') : dayjs().format('MMM DD YYYY')}
           </Typography>
 
           <Card sx={{ marginTop: 3 }}>
