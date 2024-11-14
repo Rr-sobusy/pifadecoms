@@ -44,15 +44,14 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
     getValues,
   } = useForm<ItemsSchemaType>({ resolver: zodResolver(itemSchema), defaultValues: {} });
 
-  const { execute, result } = useAction(createNewItems);
+  const { executeAsync, result } = useAction(createNewItems);
 
   const onSubmit = (ItemSchema: ItemsSchemaType) => {
     try {
-      execute(ItemSchema);
+      executeAsync(ItemSchema);
 
       if (!result.serverError) {
         toast.success('New item created.');
-        router.push(paths.dashboard.items.list);
       }
     } catch (error) {
       toast.error('Error occured in server');
@@ -178,8 +177,8 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
               <Grid container spacing={3}>
                 <Grid
                   size={{
-                    md: 6,
-                    xs: 12,
+                    md: 4,
+                    sm: 12,
                   }}
                 >
                   <Controller
@@ -189,51 +188,17 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                       <Autocomplete
                         {...field}
                         options={accounts ?? []}
-                        onChange={(_, value)=> field.onChange(value)}
+                        onChange={(_, value) => field.onChange(value)}
                         getOptionLabel={(account) => account.accountName}
                         filterOptions={(options, { inputValue }) =>
-                          options.filter((ctx) => ctx.accountRootType === 'Expense')
+                          options.filter((ctx) => ctx.accountRootType === 'Expense' || ctx.accountRootType === 'Assets')
                         }
                         renderInput={(params) => (
                           <FormControl error={Boolean(errors.expenseAcct)} fullWidth>
                             <InputLabel>Expense Account (Expense)</InputLabel>
                             <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.expenseAcct ? <FormHelperText>{errors.expenseAcct.message}</FormHelperText> : null}
-                          </FormControl>
-                        )}
-                        renderOption={(props, options) => (
-                          <Option {...props} key={options.accountId} value={options.accountId}>
-                            {options.accountName}
-                          </Option>
-                        )}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="inventoryAcct"
-                    render={({ field }) => (
-                      <Autocomplete
-                        {...field}
-                        options={accounts ?? []}
-                        onChange={(_, value)=> field.onChange(value)}
-                        getOptionLabel={(account) => account.accountName}
-                        filterOptions={(options, { inputValue }) =>
-                          options.filter((ctx) => ctx.accountRootType === 'Assets')
-                        }
-                        renderInput={(params) => (
-                          <FormControl error={Boolean(errors.inventoryAcct)} fullWidth>
-                            <InputLabel>Inventory Account (Assets)</InputLabel>
-                            <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.inventoryAcct ? (
-                              <FormHelperText>{errors.inventoryAcct.message}</FormHelperText>
+                            {errors.expenseAcct ? (
+                              <FormHelperText>{errors.expenseAcct.message}</FormHelperText>
                             ) : null}
                           </FormControl>
                         )}
@@ -248,44 +213,8 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                 </Grid>
                 <Grid
                   size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="receivableAcct"
-                    render={({ field }) => (
-                      <Autocomplete
-                        {...field}
-                        options={accounts ?? []}
-                        onChange={(_, value)=> field.onChange(value)}
-                        getOptionLabel={(account) => account.accountName}
-                        filterOptions={(options, { inputValue }) =>
-                          options.filter((ctx) => ctx.accountRootType === 'Assets')
-                        }
-                        renderInput={(params) => (
-                          <FormControl error={Boolean(errors.receivableAcct)} fullWidth>
-                            <InputLabel>Receivable Account (Assets)</InputLabel>
-                            <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.receivableAcct ? (
-                              <FormHelperText>{errors.receivableAcct.message}</FormHelperText>
-                            ) : null}
-                          </FormControl>
-                        )}
-                        renderOption={(props, options) => (
-                          <Option {...props} key={options.accountId} value={options.accountId}>
-                            {options.accountName}
-                          </Option>
-                        )}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
+                    md: 4,
+                    sm: 12,
                   }}
                 >
                   <Controller
@@ -295,87 +224,17 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                       <Autocomplete
                         {...field}
                         options={accounts ?? []}
-                        onChange={(_, value)=> field.onChange(value)}
+                        onChange={(_, value) => field.onChange(value)}
                         getOptionLabel={(account) => account.accountName}
                         filterOptions={(options, { inputValue }) =>
-                          options.filter((ctx) => ctx.accountRootType === 'Revenue')
+                          options.filter((ctx) => ctx.accountRootType === 'Revenue' || ctx.accountRootType === 'Assets')
                         }
                         renderInput={(params) => (
-                          <FormControl error={Boolean(errors.incomeAcct)} fullWidth>
+                          <FormControl error={Boolean(errors.expenseAcct)} fullWidth>
                             <InputLabel>Income Account (Revenue)</InputLabel>
                             <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.incomeAcct ? <FormHelperText>{errors.incomeAcct.message}</FormHelperText> : null}
-                          </FormControl>
-                        )}
-                        renderOption={(props, options) => (
-                          <Option {...props} key={options.accountId} value={options.accountId}>
-                            {options.accountName}
-                          </Option>
-                        )}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="traddingAcct"
-                    render={({ field }) => (
-                      <Autocomplete
-                        {...field}
-                        options={accounts ?? []}
-                        onChange={(_, value)=> field.onChange(value)}
-                        getOptionLabel={(account) => account.accountName}
-                        filterOptions={(options, { inputValue }) =>
-                          options.filter((ctx) => ctx.accountRootType === 'Revenue')
-                        }
-                        renderInput={(params) => (
-                          <FormControl error={Boolean(errors.traddingAcct)} fullWidth>
-                            <InputLabel>Trading Account (Revenue)</InputLabel>
-                            <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.traddingAcct ? (
-                              <FormHelperText>{errors.traddingAcct.message}</FormHelperText>
-                            ) : null}
-                          </FormControl>
-                        )}
-                        renderOption={(props, options) => (
-                          <Option {...props} key={options.accountId} value={options.accountId}>
-                            {options.accountName}
-                          </Option>
-                        )}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="interestAcct"
-                    render={({ field }) => (
-                      <Autocomplete
-                        {...field}
-                        options={accounts ?? []}
-                        onChange={(_, value)=> field.onChange(value)}
-                        getOptionLabel={(account) => account.accountName}
-                        filterOptions={(options, { inputValue }) =>
-                          options.filter((ctx) => ctx.accountRootType === 'Revenue')
-                        }
-                        renderInput={(params) => (
-                          <FormControl error={Boolean(errors.interestAcct)} fullWidth>
-                            <InputLabel>Interest Account (Revenue)</InputLabel>
-                            <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.interestAcct ? (
-                              <FormHelperText>{errors.interestAcct.message}</FormHelperText>
+                            {errors.expenseAcct ? (
+                              <FormHelperText>{errors.expenseAcct.message}</FormHelperText>
                             ) : null}
                           </FormControl>
                         )}

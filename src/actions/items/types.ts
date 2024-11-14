@@ -1,6 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
+import type { AccountType } from '@/actions/accounts/types';
+
 import { fetchItems } from './fetch-items';
 
 export type ItemTypes = Prisma.PromiseReturnType<typeof fetchItems>;
@@ -17,42 +19,14 @@ export const itemSchema = z.object({
     .object({
       accountId: z.string(),
       accountName: z.string(),
-      accountRootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']),
-    })
-    .optional(),
-  inventoryAcct: z
-    .object({
-      accountId: z.string(),
-      accountName: z.string(),
-      accountRootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']),
-    })
-    .optional(),
-  receivableAcct: z
-    .object({
-      accountId: z.string(),
-      accountName: z.string(),
-      accountRootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']),
+      accountRootType: z.string(),
     })
     .optional(),
   incomeAcct: z
     .object({
       accountId: z.string(),
       accountName: z.string(),
-      accountRootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']),
-    })
-    .optional(),
-  interestAcct: z
-    .object({
-      accountId: z.string(),
-      accountName: z.string(),
-      accountRootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']),
-    })
-    .optional(),
-  traddingAcct: z
-    .object({
-      accountId: z.string(),
-      accountName: z.string(),
-      accountRootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']),
+      accountRootType: z.string(),
     })
     .optional(),
 });

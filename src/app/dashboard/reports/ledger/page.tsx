@@ -15,7 +15,7 @@ import DateRangeBtn from '@/components/dashboard/reports/ledgers/date-range-butt
 import GeneralLedgerTable from '@/components/dashboard/reports/ledgers/general-ledger-table';
 
 type PageProps = {
-  searchParams: { startDate: Dayjs; endDate: Dayjs };
+  searchParams: { startDate: string; endDate: string };
 };
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {

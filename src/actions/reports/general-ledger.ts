@@ -1,11 +1,13 @@
+import { type Dayjs } from 'dayjs';
+
 import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
 type LedgerType = {
-  dateRange?: { startDate: string; endDate: string };
+  dateRange?: { startDate: Dayjs; endDate: Dayjs };
 };
 
-export async function fetchLedgers({ dateRange }: LedgerType) {
+export async function fetchLedgers({ dateRange = { startDate: dayjs(), endDate: dayjs() } }: LedgerType) {
   const accountLedgers = await prisma.journalItems.groupBy({
     by: ['accountId'],
     _sum: { debit: true, credit: true },
@@ -13,7 +15,7 @@ export async function fetchLedgers({ dateRange }: LedgerType) {
       JournalEntries: {
         entryDate: {
           lte: dayjs(dateRange?.endDate).endOf('day').toISOString(),
-          gte: dayjs(dateRange?.startDate).subtract(30, 'day').startOf('day').toISOString(),
+          gte: dayjs(dateRange?.startDate).startOf('day').toISOString(),
         },
       },
     },
