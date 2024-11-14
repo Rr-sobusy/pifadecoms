@@ -103,7 +103,8 @@ export const paths = {
       createPayment : (invoiceId:bigint) => `/dashboard/invoice/payments/create/${invoiceId}`
   },
   reports : {
-      ledgerList : '/dashboard/reports/ledger'
+      ledgerList : '/dashboard/reports/ledger',
+      balanceSheet : '/dashboard/reports/balanceSheet'
   },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',

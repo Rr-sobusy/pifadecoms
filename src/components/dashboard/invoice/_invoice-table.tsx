@@ -13,6 +13,9 @@ import Typography from '@mui/material/Typography';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
+import { DotsThreeVertical as Dots } from '@phosphor-icons/react/dist/ssr/DotsThreeVertical';
+import { Info as Details } from '@phosphor-icons/react/dist/ssr/Info';
+import { PaypalLogo as Pay } from '@phosphor-icons/react/dist/ssr/PaypalLogo';
 import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
 
 import { paths } from '@/paths';
@@ -149,7 +152,7 @@ const columns = [
       return (
         <>
           <IconButton onClick={popover.handleOpen} ref={popover.anchorRef}>
-            <ArrowRightIcon />
+            <Dots />
           </IconButton>
           <OptionPopOver
             isPaid={row.outStandingAmt === 0}
@@ -195,21 +198,21 @@ const OptionPopOver = ({
     >
       <Stack spacing={1} padding={1}>
         <Button
+          startIcon={<Pay />}
           disabled={isPaid}
           size="small"
           component={RouterLink}
           href={paths.dashboard.invoice.createPayment(invoiceId)}
-          sx={{
-            borderRadius: '5px',
-            textDecoration: 'none',
-            color: 'inherit',
-            transition: 'background-color 0.3s ease',
-            '&:hover': {
-              backgroundColor: 'ButtonHighlight',
-            },
-          }}
         >
           Create Payment
+        </Button>
+        <Button
+          LinkComponent={RouterLink}
+          href={paths.dashboard.invoice.details(invoiceId)}
+          startIcon={<Details />}
+          size="small"
+        >
+          Invoice Details
         </Button>
       </Stack>
     </Popover>

@@ -147,6 +147,7 @@ export const layoutConfig = {
           icon: 'receipt',
           items: [
             { key: 'ledger', title: 'General Ledger', href: paths.dashboard.reports.ledgerList },
+            { key: 'balance', title: 'Balance Sheet', href: paths.dashboard.reports.balanceSheet },
             // { key: 'balanceSheet', title: 'Balance Sheet', href: paths.dashboard.reports.ledgerList },
             // { key: 'profitLoss', title: 'Income/Loss Statement', href: paths.dashboard.reports.ledgerList },
             // { key: 'trialBalance', title: 'Trial Balance', href: paths.dashboard.reports.ledgerList },

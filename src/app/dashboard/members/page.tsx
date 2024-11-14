@@ -81,8 +81,6 @@ const Page = async ({ searchParams }: PageProps) => {
   const members = await fetchMembers({ lastName, offsetPage});
 
   const invoice = await fetchInvoices();
-    // const rex = await seed()
-  console.log(members);
   return (
     <Box
       sx={{
