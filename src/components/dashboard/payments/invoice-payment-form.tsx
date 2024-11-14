@@ -17,21 +17,18 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { color, getValue } from '@mui/system';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-
-import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { AccountType } from '@/actions/accounts/types';
 import { createPaymentPosting } from '@/actions/invoice-payments/create-payments';
 import { paymentSchema, type PaymentSchema } from '@/actions/invoice-payments/types';
-import { InvoiceType, SingleInvoiceType } from '@/actions/invoices/types';
+import { SingleInvoiceType } from '@/actions/invoices/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 

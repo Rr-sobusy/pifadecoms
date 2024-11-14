@@ -204,7 +204,7 @@ const OptionPopOver = ({
           component={RouterLink}
           href={paths.dashboard.invoice.createPayment(invoiceId)}
         >
-          Create Payment
+          Post Payment
         </Button>
         <Button
           LinkComponent={RouterLink}

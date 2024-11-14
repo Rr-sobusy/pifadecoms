@@ -30,7 +30,7 @@ import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { WarningDiamond as WarningDiamondIcon } from '@phosphor-icons/react/dist/ssr/WarningDiamond';
 import { CurrencyRub as MoneyIcon } from '@phosphor-icons/react/dist/ssr';
-
+import { TipJar as Borrow } from '@phosphor-icons/react/dist/ssr';
 export const icons = {
   'address-book': AddressBookIcon,
   'align-left': AlignLeftIcon,
@@ -62,5 +62,6 @@ export const icons = {
   truck: TruckIcon,
   upload: UploadIcon,
   users: UsersIcon,
-  money: MoneyIcon
+  money: MoneyIcon,
+  loan : Borrow
 } as Record<string, Icon>;

@@ -54,25 +54,53 @@ export const layoutConfig = {
           ],
         },
         {
-          key: 'customers',
-          title: 'Customers',
-          icon: 'users',
+          key: 'loans',
+          title: 'Loans',
+          icon: 'loan',
           items: [
-            { key: 'customers', title: 'List customers', href: paths.dashboard.customers.list },
-            { key: 'customers:create', title: 'Create customer', href: paths.dashboard.customers.create },
-            { key: 'customers:details', title: 'Customer details', href: paths.dashboard.customers.details('1') },
+            {
+              key: 'memberLoans',
+              title: 'Member Loans',
+              items: [
+                {
+                  key: 'memberLoans:list',
+                  title: 'arwa',
+                },
+              ],
+            },
+            {
+              key: 'employeeLoan',
+              title: 'Employee Loans',
+              items: [
+                {
+                  key: 'memberLoans:list',
+                  title: 'arwa',
+                },
+              ],
+            },
+            // { key: 'members:details', title: 'Customer details', href: paths.dashboard.members.details('1') },
           ],
         },
-        {
-          key: 'products',
-          title: 'Products',
-          icon: 'shopping-bag-open',
-          items: [
-            { key: 'products', title: 'List products', href: paths.dashboard.products.list },
-            { key: 'products:create', title: 'Create product', href: paths.dashboard.products.create },
-            { key: 'products:details', title: 'Product details', href: paths.dashboard.products.details('1') },
-          ],
-        },
+        // {
+        //   key: 'customers',
+        //   title: 'Customers',
+        //   icon: 'users',
+        //   items: [
+        //     { key: 'customers', title: 'List customers', href: paths.dashboard.customers.list },
+        //     { key: 'customers:create', title: 'Create customer', href: paths.dashboard.customers.create },
+        //     { key: 'customers:details', title: 'Customer details', href: paths.dashboard.customers.details('1') },
+        //   ],
+        // },
+        // {
+        //   key: 'products',
+        //   title: 'Products',
+        //   icon: 'shopping-bag-open',
+        //   items: [
+        //     { key: 'products', title: 'List products', href: paths.dashboard.products.list },
+        //     { key: 'products:create', title: 'Create product', href: paths.dashboard.products.create },
+        //     { key: 'products:details', title: 'Product details', href: paths.dashboard.products.details('1') },
+        //   ],
+        // },
         {
           key: 'items',
           title: 'Items',
@@ -83,9 +111,19 @@ export const layoutConfig = {
             // { key: 'product:details', title: 'Product details', href: paths.dashboard.products.details('1') },
           ],
         },
+        // {
+        //   key: 'orders',
+        //   title: 'Orders',
+        //   icon: 'shopping-cart-simple',
+        //   items: [
+        //     { key: 'orders', title: 'List orders', href: paths.dashboard.orders.list },
+        //     { key: 'orders:create', title: 'Create order', href: paths.dashboard.orders.create },
+        //     { key: 'orders:details', title: 'Order details', href: paths.dashboard.orders.details('1') },
+        //   ],
+        // },
         {
-          key: 'orders',
-          title: 'Orders',
+          key: 'expense',
+          title: 'Purhase & Expenses',
           icon: 'shopping-cart-simple',
           items: [
             { key: 'orders', title: 'List orders', href: paths.dashboard.orders.list },
