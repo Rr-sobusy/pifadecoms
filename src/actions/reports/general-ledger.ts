@@ -7,17 +7,26 @@ type LedgerType = {
   dateRange?: { startDate: string; endDate: string };
 };
 
-export async function fetchLedgers({
-  dateRange = { startDate: dayjs().startOf('day').toISOString(), endDate: dayjs().endOf('day').toISOString() },
-}: LedgerType) {
+export async function fetchLedgers({ dateRange }: LedgerType) {
+
+  /**
+   * * Fetch the records for the previous 30 days when there is no given parameters in dateRange
+   */ 
+  
   const accountLedgers = await prisma.journalItems.groupBy({
     by: ['accountId'],
     _sum: { debit: true, credit: true },
     where: {
       JournalEntries: {
         entryDate: {
-          lte: dayjs(dateRange?.endDate).endOf('day').toISOString(),
-          gte: dayjs(dateRange?.startDate).startOf('day').toISOString(),
+          lte:
+          dateRange?.endDate === undefined
+          ? dayjs().startOf('day').toISOString()
+          : dayjs(dateRange?.endDate).startOf('day').toISOString(),
+          gte:
+            dateRange?.startDate === undefined
+              ? dayjs().subtract(30, 'day').startOf('day').toISOString()
+              : dayjs(dateRange?.startDate).startOf('day').toISOString(),
         },
       },
     },

@@ -125,11 +125,7 @@ export const layoutConfig = {
           key: 'expense',
           title: 'Purhase & Expenses',
           icon: 'shopping-cart-simple',
-          items: [
-            { key: 'orders', title: 'List orders', href: paths.dashboard.orders.list },
-            { key: 'orders:create', title: 'Create order', href: paths.dashboard.orders.create },
-            { key: 'orders:details', title: 'Order details', href: paths.dashboard.orders.details('1') },
-          ],
+          items: [{ key: 'orders', title: 'Expenses', href: paths.dashboard.expenses.list }],
         },
         {
           key: 'invoice',
@@ -143,16 +139,16 @@ export const layoutConfig = {
             // { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
           ],
         },
-        {
-          key: 'invoices',
-          title: 'Invoices',
-          icon: 'receipt',
-          items: [
-            { key: 'invoices', title: 'List invoices', href: paths.dashboard.invoices.list },
-            { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
-            { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
-          ],
-        },
+        // {
+        //   key: 'invoices',
+        //   title: 'Invoices',
+        //   icon: 'receipt',
+        //   items: [
+        //     { key: 'invoices', title: 'List invoices', href: paths.dashboard.invoices.list },
+        //     { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
+        //     { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
+        //   ],
+        // },
         {
           key: 'finance',
           title: 'Finance',

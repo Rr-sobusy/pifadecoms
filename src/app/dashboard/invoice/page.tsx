@@ -5,8 +5,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-
 import { paths } from '@/paths';
 import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
 import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
@@ -24,6 +22,10 @@ type PageProps = {
     view?: 'group' | 'list';
   };
 };
+
+export const metadata: Metadata = {
+  title: 'PIFADECO | Invoice list',
+}
 
 const page = async ({ searchParams }: PageProps) => {
   const { customer, endDate, id, sortDir, startDate, status, view = 'group' } = searchParams;

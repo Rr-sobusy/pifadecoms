@@ -23,6 +23,7 @@ import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
+
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { AccountType } from '@/actions/accounts/types';
@@ -214,7 +215,16 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                             ) : null}
                           </FormControl>
                         )}
-                        filterOptions={(options) => options.filter((option) => option.RootID.rootType === 'Assets')}
+                        filterOptions={(options, { inputValue }) =>
+                          /**
+                           * * Only render asset accounts
+                           */
+                          options.filter(
+                            (option) =>
+                              option.RootID?.rootType === 'Assets' &&
+                              (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
+                          )
+                        }
                         renderOption={(props, options) => (
                           <Option {...props} key={options.accountId} value={options.accountId}>
                             {options.accountName}
@@ -302,29 +312,43 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                     <Controller
                       name={`journalLineItems.${index}.accountDetails`}
                       control={control}
-                      render={({ field }) => (
-                        <Autocomplete
-                          {...field}
-                          disabled={index === 0}
-                          sx={{ width: '50%' }}
-                          onChange={(_, value) => {
-                            field.onChange(value);
-                          }}
-                          options={accounts as any}
-                          getOptionLabel={(account) => account.accountName}
-                          renderInput={(params) => (
-                            <FormControl fullWidth>
-                              <InputLabel required>Account name</InputLabel>
-                              <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            </FormControl>
-                          )}
-                          renderOption={(props, options) => (
-                            <Option {...props} key={options.accountId} value={options.accountId}>
-                              {options.accountName}
-                            </Option>
-                          )}
-                        />
-                      )}
+                      render={({ field }) => {
+                        return (
+                          <Autocomplete
+                            {...field}
+                            disabled={index === 0}
+                            sx={{ width: '50%' }}
+                            onChange={(_, value) => {
+                              field.onChange(value);
+                            }}
+                            options={accounts}
+                            filterOptions={(options, { inputValue }) =>
+                              /**
+                               * * Only render asset and revenue accounts
+                               */
+                              options.filter(
+                                (option) =>
+                                  option.RootID?.rootType === 'Assets' ||
+                                  (option.RootID?.rootType === 'Revenue' &&
+                                    (!inputValue ||
+                                      option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
+                              )
+                            }
+                            getOptionLabel={(account) => account.accountName}
+                            renderInput={(params) => (
+                              <FormControl fullWidth>
+                                <InputLabel required>Account name</InputLabel>
+                                <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
+                              </FormControl>
+                            )}
+                            renderOption={(props, options) => (
+                              <Option {...props} key={options.accountId} value={options.accountId}>
+                                {options.accountName}
+                              </Option>
+                            )}
+                          />
+                        );
+                      }}
                     />
                     <Controller
                       control={control}

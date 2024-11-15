@@ -55,6 +55,17 @@ enum JournalType {
   generalJournal
 }
 
+// Transactional entries that trigger journal postings
+enum ReferenceType {
+  MemberRegistration
+  SalesPayments
+  VendorPurchases
+  OtherExpenses
+  LoanDisbursements
+  LoanRepayments
+  ManualJournals
+}
+
 model Members {
   memberId         String        @id @default(cuid())
   lastName         String              
@@ -217,7 +228,7 @@ model JournalEntries {
   entryId             BigInt         @id @default(autoincrement())
   entryDate           DateTime      
   referenceName       String         
-  referenceType       String?
+  referenceType       ReferenceType?
   createdAt           DateTime       @default(now())
   particulars         String?
   journalType         JournalType
