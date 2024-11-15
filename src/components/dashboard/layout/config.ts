@@ -122,12 +122,6 @@ export const layoutConfig = {
         //   ],
         // },
         {
-          key: 'expense',
-          title: 'Purhase & Expenses',
-          icon: 'shopping-cart-simple',
-          items: [{ key: 'orders', title: 'Expenses', href: paths.dashboard.expenses.list }],
-        },
-        {
           key: 'invoice',
           title: 'Sales Invoice',
           icon: 'receipt',

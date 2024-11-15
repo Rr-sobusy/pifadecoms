@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -274,9 +275,12 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                     name="paymentReceived"
                     render={({ field }) => (
                       <FormControl error={Boolean(errors.paymentReceived)} fullWidth>
-                        <InputLabel required>
+                        <InputLabel sx={{ display: 'flex', gap: 1 }} required>
                           Amount Received{' '}
-                          <span>{`(${formatToCurrency(invoiceDetails?.outStandingAmt ?? 0, 'Fil-ph', 'Php')} due)`}</span>
+                          <Box
+                            component="label"
+                            color="red"
+                          >{`(${formatToCurrency(invoiceDetails?.outStandingAmt ?? 0, 'Fil-ph', 'Php')} balance remaining)`}</Box>
                         </InputLabel>
                         <OutlinedInput
                           {...field}

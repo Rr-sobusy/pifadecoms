@@ -22,7 +22,7 @@ type Props = {
 
 const columns = [
   {
-    formatter: (row) => <Stack>{dayjs(row.paymentDate).format('MMM DD YYYY')}</Stack>,
+    formatter: (row) => <Typography variant='subtitle2'>{dayjs(row.paymentDate).format('MMM DD YYYY')}</Typography>,
     name: 'Payment Date',
     width: '80px',
   },

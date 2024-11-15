@@ -21,8 +21,8 @@ export async function fetchLedgers({ dateRange }: LedgerType) {
         entryDate: {
           lte:
           dateRange?.endDate === undefined
-          ? dayjs().startOf('day').toISOString()
-          : dayjs(dateRange?.endDate).startOf('day').toISOString(),
+          ? dayjs().endOf('day').toISOString()
+          : dayjs(dateRange?.endDate).endOf('day').toISOString(),
           gte:
             dateRange?.startDate === undefined
               ? dayjs().subtract(30, 'day').startOf('day').toISOString()

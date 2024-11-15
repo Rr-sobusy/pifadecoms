@@ -59,8 +59,6 @@ enum JournalType {
 enum ReferenceType {
   MemberRegistration
   SalesPayments
-  VendorPurchases
-  OtherExpenses
   LoanDisbursements
   LoanRepayments
   ManualJournals
@@ -184,7 +182,6 @@ model AccountsThirdLvl {
   isActive       Boolean              @default(true)
 
 
-
   RootID         AccountsSecondLvl    @relation(references: [rootId], fields: [rootId])
 
   Dividends      Dividends[]
@@ -228,7 +225,8 @@ model JournalEntries {
   entryId             BigInt         @id @default(autoincrement())
   entryDate           DateTime      
   referenceName       String         
-  referenceType       ReferenceType?
+  referenceType       ReferenceType
+  notes               String?
   createdAt           DateTime       @default(now())
   particulars         String?
   journalType         JournalType

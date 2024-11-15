@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
-import { fetchChartofAccounts } from './fetch-accounts';
+import { fetchAccountTree, fetchChartofAccounts } from './fetch-accounts';
 
 export const accountSchema = z.object({
   rootId: z.object({
@@ -16,3 +16,5 @@ export const accountSchema = z.object({
 export type AccountSchemaType = z.infer<typeof accountSchema>;
 
 export type AccountType = Prisma.PromiseReturnType<typeof fetchChartofAccounts>;
+
+export type AccounTreeType = Prisma.PromiseReturnType<typeof fetchAccountTree>
