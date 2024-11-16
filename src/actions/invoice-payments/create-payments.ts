@@ -16,7 +16,7 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
       prisma.journalEntries.create({
         data: {
           entryDate: Request.entryDate,
-          journalType: 'cashReceipts',
+          journalType: Request.referenceType,
           referenceName: Request.orNo,
           referenceType : "SalesPayments",
           JournalItems: {

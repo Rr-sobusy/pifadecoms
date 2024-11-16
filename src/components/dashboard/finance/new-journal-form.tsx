@@ -16,22 +16,33 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import type { JournalType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
+
 import type { AccounTreeType } from '@/actions/accounts/types';
-import { Option } from '@/components/core/option';
 import { DataTable } from '@/components/core/data-table';
+import { Option } from '@/components/core/option';
 
 type NewJournalFromProps = {
   data: AccounTreeType;
+};
+
+const JournalMap: Record<string, JournalType> = {
+  'Cash Receipts': 'cashReceipts',
+  'Cash Voucher': 'cashVoucher',
+  'General Journal': 'generalJournal',
 };
 
 function NewJournalFrom({ data }: NewJournalFromProps) {
   console.log(data);
   const { control } = useForm();
 
-  const flattenedLabels = data.flatMap((group)=> group.Children.map((option)=>({
-    ...option, group: group.rootName
-  })))
+  const flattenedLabels = data.flatMap((group) =>
+    group.Children.map((option) => ({
+      ...option,
+      group: group.rootName,
+    }))
+  );
   return (
     <form action="">
       <Card>
@@ -70,6 +81,27 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                 name="rex"
                 control={control}
                 render={({ field }) => (
+                  <Autocomplete
+                    options={Object.entries(JournalMap).map(([ctx]) => ctx)}
+                    renderInput={(params) => <TextField {...params} label="Select an option" />}
+                    renderOption={(props, option) => (
+                      <Option
+                        {...props}
+                        value={option}
+                        key={option}
+                        // Optional: Indent for "tree-like" appearance
+                      >
+                        <span style={{ marginLeft: 15 }}>{option}</span>
+                      </Option>
+                    )}
+                    fullWidth
+                  />
+                )}
+              />
+              <Controller
+                name="rex"
+                control={control}
+                render={({ field }) => (
                   <FormControl fullWidth>
                     <InputLabel required>Reference #</InputLabel>
                     <OutlinedInput type="text" />
@@ -87,8 +119,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                 )}
               />
               <Autocomplete
-                options={flattenedLabels}
-                groupBy={(option) => option.group} // Group options by category
+                options={flattenedLabels}// Group options by category
                 getOptionLabel={(option) => option.accountName} // Label to display
                 renderInput={(params) => <TextField {...params} label="Select an option" />}
                 renderOption={(props, option) => (
@@ -96,9 +127,9 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                     {...props}
                     value={option.accountId}
                     key={option.accountId}
-                     // Optional: Indent for "tree-like" appearance
+                    // Optional: Indent for "tree-like" appearance
                   >
-                   <span style={{marginLeft : 15}}>{option.accountName}</span>
+                    <span style={{ marginLeft: 15 }}>{option.accountName}</span>
                   </Option>
                 )}
                 fullWidth
