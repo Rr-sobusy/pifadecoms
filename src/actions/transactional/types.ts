@@ -13,10 +13,11 @@ export type JournalEntryType = Prisma.PromiseReturnType<typeof fetchJournals>;
 
 export const transactionalSchema = z.object({
   entryDate: z.date(),
-  reference: z.string().optional(),
-  referenceType: z.enum(['cashReceipts', 'cashDisbursement', 'generalJournal']),
+  reference: z.string(),
+  journalType: z.enum(['cashReceipts', 'cashDisbursement', 'generalJournal']),
   notes: z.string().optional(),
   particulars: z.string().optional(),
+  referenceType: z.enum(['MemberRegistration','SalesPayments','LoanDisbursements','LoanRepayments','ManualJournals']),
 
   // entries
   journalLineItems: z

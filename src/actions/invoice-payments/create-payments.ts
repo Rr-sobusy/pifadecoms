@@ -16,9 +16,9 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
       prisma.journalEntries.create({
         data: {
           entryDate: Request.entryDate,
-          journalType: Request.referenceType,
-          referenceName: Request.orNo,
-          referenceType : "SalesPayments",
+          journalType: Request.journalType,
+          referenceName: Request.reference,
+          referenceType: 'SalesPayments',
           JournalItems: {
             create: Request.journalLineItems.map((lineItem) => ({
               accountId: lineItem.accountDetails.accountId,
@@ -28,7 +28,7 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
           },
           InvoicePayments: {
             create: {
-              orNo: Request.orNo,
+              orNo: Request.reference,
               paymentReceived: Request.paymentReceived,
               paymentDate: Request.entryDate,
               invoiceId: Request.invoiceId,

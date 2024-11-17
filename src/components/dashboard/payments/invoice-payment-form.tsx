@@ -51,7 +51,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
     resolver: zodResolver(paymentSchema),
     defaultValues: {
       invoiceId: invoiceDetails?.invoiceId,
-      referenceType : "cashReceipts",
+      journalType: 'cashReceipts',
       entryDate: new Date(),
 
       journalLineItems: [
@@ -59,7 +59,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
           journalLineItemId: uuidv4(),
           accountDetails: {
             accountId: '',
-            accountName: '',
+            accountName: '--Selected Depositing acct.',
           },
           debit: 0,
           credit: 0,
@@ -217,6 +217,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                       <Autocomplete
                         options={flattendAccounts}
                         getOptionLabel={(option) => option.accountName}
+                        groupBy={(option) => option.group}
                         renderInput={(params) => (
                           <FormControl error={Boolean(errors.depositingAccount)} fullWidth>
                             <InputLabel required>Depositing account</InputLabel>
@@ -238,7 +239,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                         }
                         renderOption={(props, options) => (
                           <Option {...props} key={options.accountId} value={options.accountId}>
-                            {options.accountName}
+                            <span style={{ marginLeft: 8 }}> {options.accountName}</span>
                           </Option>
                         )}
                         onChange={(_, value) => {
@@ -264,7 +265,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                 >
                   <Controller
                     control={control}
-                    name="orNo"
+                    name="reference"
                     render={({ field }) => (
                       <FormControl error={Boolean(errors.orNo)} fullWidth>
                         <InputLabel>Payment O.R / Ref No.</InputLabel>
@@ -348,7 +349,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                             //           option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
                             //   )
                             // }
-                            groupBy={(option)=>option.group}
+                            groupBy={(option) => option.group}
                             getOptionLabel={(account) => account.accountName}
                             renderInput={(params) => (
                               <FormControl fullWidth>
@@ -358,7 +359,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                             )}
                             renderOption={(props, options) => (
                               <Option {...props} key={options.accountId} value={options.accountId}>
-                                {options.accountName}
+                                <span style={{ marginLeft: 8 }}>{options.accountName}</span>
                               </Option>
                             )}
                           />
@@ -430,7 +431,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
             </Stack>
           </Stack>
           <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
-            <Button onClick={() => console.log(getValues())} type="button" variant="text" color="primary">
+            <Button onClick={() => console.log(errors)} type="button" variant="text" color="primary">
               Cancel
             </Button>
             <Button disabled={isExecuting} type="submit" variant="contained" color="primary">

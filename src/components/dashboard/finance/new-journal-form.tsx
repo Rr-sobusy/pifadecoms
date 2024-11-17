@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { FormControlLabel } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -23,58 +24,16 @@ import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import type { JournalType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import { z } from 'zod';
 
+import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import { transactionalSchema, type TransactionalSchemaType } from '@/actions/transactional/types';
-import { DataTable } from '@/components/core/data-table';
 import { Option } from '@/components/core/option';
 
 type NewJournalFromProps = {
   data: AccounTreeType;
 };
-
-const newTypeSchema = z.object({
-  entryDate: z.date(),
-  reference: z.string().optional(),
-  referenceType: z.enum(['cashReceipts', 'cashDisbursement', 'generalJournal']),
-  notes: z.string().optional(),
-  particulars: z.string().optional(),
-
-  // entries
-  journalLineItems: z
-    .array(
-      z.object({
-        journalLineItemId: z.string(),
-        accountDetails: z.object({
-          accountId: z.string(),
-          accountName: z.string(),
-          createdAt: z.date().optional(),
-          rootId: z.number().optional(),
-          openingBalance: z.number().optional(),
-          runningBalance: z.number().optional(),
-          updatedAt: z.date().optional(),
-          isActive: z.boolean().optional(),
-          group: z.string(),
-        }),
-        debit: z.number(),
-        credit: z.number(),
-      })
-    )
-    .min(2, { message: 'Affected account must be two or more!' })
-    .superRefine((items, ctx) => {
-      const totalDebit = items.reduce((sum, item) => sum + item.debit, 0);
-      const totalCredit = items.reduceRight((sum, item) => sum + item.credit, 0);
-
-      if (totalDebit !== totalCredit) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Total debits and total credits must be equal.',
-        });
-      }
-    }),
-});
 
 const JournalMap: Record<string, JournalType> = {
   'Cash Receipts': 'cashReceipts',
@@ -83,7 +42,14 @@ const JournalMap: Record<string, JournalType> = {
 };
 
 function NewJournalFrom({ data }: NewJournalFromProps) {
-  const { control, getValues, setValue, watch } = useForm<z.infer<typeof newTypeSchema>>({
+  const {
+    control,
+    getValues,
+    setValue,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TransactionalSchemaType>({
     defaultValues: {
       journalLineItems: [
         {
@@ -105,7 +71,9 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
           credit: 0,
         },
       ],
+      entryDate: new Date(),
     },
+    resolver: zodResolver(transactionalSchema),
   });
 
   const lineItems = watch('journalLineItems');
@@ -150,8 +118,12 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
   const totalDebits = lineItems.reduce((sum, item) => sum + item.debit, 0);
   const totalCredits = lineItems.reduce((sum, item) => sum + item.credit, 0);
 
+  const submitHandler = (data: TransactionalSchemaType) => {
+    console.log(data);
+  };
+
   return (
-    <form action="">
+    <form onSubmit={handleSubmit(submitHandler)}>
       <Card>
         <CardContent>
           <Stack spacing={3}>
@@ -174,27 +146,46 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                 name="entryDate"
                 control={control}
                 render={({ field }) => (
-                  <DatePicker {...field} format="MMM D, YYYY" sx={{ width: '100%' }} label="Posting date *" />
+                  <DatePicker
+                    {...field}
+                    onChange={(date) => {
+                      field.onChange(date?.toDate());
+                    }}
+                    value={dayjs(field.value)}
+                    slotProps={{
+                      textField: {
+                        error: Boolean(errors.entryDate),
+                        fullWidth: true,
+                        helperText: errors.entryDate?.message,
+                      },
+                    }}
+                    format="MMM D, YYYY"
+                    sx={{ width: '100%' }}
+                    label="Posting date *"
+                  />
                 )}
               />
               <Controller
-                name="referenceType"
+                name="journalType"
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
                     {...field}
                     options={Object.entries(JournalMap).map(([ctx]) => ctx)}
-                    renderInput={(params) => <TextField {...params} label="Journal Entry type" />}
+                    renderInput={(params) => (
+                      <FormControl error={Boolean(errors.journalType)} fullWidth>
+                        <TextField error={Boolean(errors.journalType)} {...params} label="Journal Entry type *" />
+                        {errors.journalType && <FormHelperText>{errors.journalType.message}</FormHelperText>}
+                      </FormControl>
+                    )}
                     renderOption={(props, option) => (
-                      <Option
-                        {...props}
-                        value={option}
-                        key={option}
-                        // Optional: Indent for "tree-like" appearance
-                      >
+                      <Option {...props} value={option} key={option}>
                         <span style={{ marginLeft: 15 }}>{option}</span>
                       </Option>
                     )}
+                    onChange={(_, value) => {
+                      field.onChange(JournalMap[value ?? '']);
+                    }}
                     fullWidth
                   />
                 )}
@@ -203,9 +194,10 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                 name="reference"
                 control={control}
                 render={({ field }) => (
-                  <FormControl fullWidth>
+                  <FormControl error={Boolean(errors.reference)} fullWidth>
                     <InputLabel required>Reference #</InputLabel>
                     <OutlinedInput {...field} type="text" />
+                    {errors.reference && <FormHelperText>{errors.reference.message}</FormHelperText>}
                   </FormControl>
                 )}
               />
@@ -213,9 +205,10 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                 name="notes"
                 control={control}
                 render={({ field }) => (
-                  <FormControl fullWidth>
-                    <InputLabel required>Notes </InputLabel>
+                  <FormControl error={Boolean(errors.notes)} fullWidth>
+                    <InputLabel>Notes </InputLabel>
                     <OutlinedInput {...field} rows={3} multiline sx={{ minHeight: 80 }} type="text" />
+                    {errors.notes && <FormHelperText>{errors.notes.message}</FormHelperText>}
                   </FormControl>
                 )}
               />
@@ -232,10 +225,10 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                       <Autocomplete
                         {...field}
                         sx={{ width: '50%' }}
-                        options={flattenedLabels} // Group options by category
-                        getOptionLabel={(option) => option.accountName} // Label to display
+                        options={flattenedLabels} 
+                        getOptionLabel={(option) => option.accountName} 
                         groupBy={(option) => option.group}
-                        renderInput={(params) => <TextField {...params} label="Account name" />}
+                        renderInput={(params) => <TextField {...params} label="Account name *" />}
                         onChange={(_, value) => {
                           field.onChange(value);
                         }}
@@ -244,7 +237,6 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                             {...props}
                             value={option.accountId}
                             key={option.accountId}
-                            // Optional: Indent for "tree-like" appearance
                           >
                             <span style={{ marginLeft: 15 }}>{option.accountName}</span>
                           </Option>
@@ -306,7 +298,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
               </Stack>
               <div>
                 <Typography marginBottom={1} color="error">
-                  rex
+                  {errors.journalLineItems?.root?.message}
                 </Typography>
                 <Button
                   onClick={handleAddJournallineLineItem}
@@ -320,8 +312,12 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
             </Stack>
           </Stack>
           <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
-            <Button onClick={() => console.log(getValues('journalLineItems'))}>Post Entry</Button>
-            <Button variant="contained">Cancerl</Button>
+            <Button type="button" onClick={() => console.log(getValues())}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained">
+              Post Entry
+            </Button>
           </CardActions>
         </CardContent>
       </Card>
