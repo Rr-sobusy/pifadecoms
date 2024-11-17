@@ -24,7 +24,8 @@ import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import type { JournalType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-
+import { useAction } from 'next-safe-action/hooks';
+import { createManualJournal } from '@/actions/transactional/create-manual-entry';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
@@ -72,9 +73,12 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
         },
       ],
       entryDate: new Date(),
+      referenceType: "ManualJournals"
     },
     resolver: zodResolver(transactionalSchema),
   });
+
+  const {executeAsync ,isExecuting, result} = useAction(createManualJournal)
 
   const lineItems = watch('journalLineItems');
 
@@ -119,7 +123,12 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
   const totalCredits = lineItems.reduce((sum, item) => sum + item.credit, 0);
 
   const submitHandler = (data: TransactionalSchemaType) => {
-    console.log(data);
+    try{
+      executeAsync(data)
+     
+    }catch(error){
+     
+    }
   };
 
   return (
@@ -312,7 +321,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
             </Stack>
           </Stack>
           <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
-            <Button type="button" onClick={() => console.log(getValues())}>
+            <Button type="button" onClick={() => console.log(errors)}>
               Cancel
             </Button>
             <Button type="submit" variant="contained">

@@ -70,7 +70,7 @@ export const InvoiceStatusSchema = z.enum(['pending','paid','cancelled']);
 
 export type InvoiceStatusType = `${z.infer<typeof InvoiceStatusSchema>}`
 
-export const JournalTypeSchema = z.enum(['cashReceipts','cashVoucher','generalJournal']);
+export const JournalTypeSchema = z.enum(['cashReceipts','cashDisbursement','generalJournal']);
 
 export type JournalTypeType = `${z.infer<typeof JournalTypeSchema>}`
 
