@@ -3,16 +3,12 @@ import type { Metadata } from 'next';
 import RouterLink from 'next/link';
 import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid2';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
 import { paths } from '@/paths';
-import { fetchChartofAccounts } from '@/actions/accounts/fetch-accounts';
+import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchSingleInvoice } from '@/actions/invoices/fetch-invoice';
 import InvoicePaymentForm from '@/components/dashboard/payments/invoice-payment-form';
 
@@ -23,7 +19,7 @@ type PageProps = {
 const page = async ({ params }: PageProps): Promise<React.JSX.Element> => {
   const { invoiceId } = params;
   const invoiceDetails = await fetchSingleInvoice(invoiceId);
-  const accounts = await fetchChartofAccounts();
+  const accountTree =  await fetchAccountTree()
   return (
     <Box
       sx={{
@@ -51,7 +47,7 @@ const page = async ({ params }: PageProps): Promise<React.JSX.Element> => {
             <Typography variant="h4">Create Payment</Typography>
           </div>
         </Stack>
-        <InvoicePaymentForm accounts={accounts} invoiceDetails={invoiceDetails} />
+        <InvoicePaymentForm accounts={accountTree} invoiceDetails={invoiceDetails} />
       </Stack>
     </Box>
   );

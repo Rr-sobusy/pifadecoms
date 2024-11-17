@@ -51,7 +51,7 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
 
       // * third batch of query
       ...Request.journalLineItems.map((lineItem) => {
-        const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.RootID?.rootType ?? '');
+        const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.rootType ?? '');
         const amount = isIncrement
           ? lineItem.debit - lineItem.credit // For Assets and Expense Acct
           : lineItem.credit - lineItem.debit; // For Equity, Revenue, and Liabilities acct

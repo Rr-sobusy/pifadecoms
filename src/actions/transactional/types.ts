@@ -7,14 +7,9 @@
 import { JournalType, Prisma } from '@prisma/client';
 import { z } from 'zod';
 
-// utils for creating same schema of prisma models
-import { createZodSchema } from '@/lib/zodSchema-helper';
-
 import { fetchJournals } from './fetch-journal';
 
 export type JournalEntryType = Prisma.PromiseReturnType<typeof fetchJournals>;
-
-const rex = Object.entries(JournalType).map(([ctx]) => ctx);
 
 export const transactionalSchema = z.object({
   entryDate: z.date(),
@@ -31,11 +26,14 @@ export const transactionalSchema = z.object({
         accountDetails: z.object({
           accountId: z.string(),
           accountName: z.string(),
-          RootID: z
-            .object({
-              rootType: z.string(),
-            })
-            .optional(),
+          createdAt: z.date().optional(),
+          rootId: z.number().optional(),
+          openingBalance: z.number().optional(),
+          runningBalance: z.number().optional(),
+          updatedAt: z.date().optional(),
+          isActive: z.boolean().optional(),
+          group: z.string(),
+          rootType: z.enum(['Assets','Liability','Equity','Revenue','Expense']).optional()
         }),
         debit: z.number(),
         credit: z.number(),
@@ -54,3 +52,5 @@ export const transactionalSchema = z.object({
       }
     }),
 });
+
+export type TransactionalSchemaType = z.infer<typeof transactionalSchema>

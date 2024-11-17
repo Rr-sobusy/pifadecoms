@@ -27,7 +27,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
-import { AccountType } from '@/actions/accounts/types';
+import type { AccounTreeType } from '@/actions/accounts/types';
 import { createPaymentPosting } from '@/actions/invoice-payments/create-payments';
 import { paymentSchema, type PaymentSchema } from '@/actions/invoice-payments/types';
 import { SingleInvoiceType } from '@/actions/invoices/types';
@@ -36,7 +36,7 @@ import { toast } from '@/components/core/toaster';
 
 type PageProps = {
   invoiceDetails: SingleInvoiceType;
-  accounts: AccountType;
+  accounts: AccounTreeType;
 };
 
 function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
@@ -59,7 +59,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
           journalLineItemId: uuidv4(),
           accountDetails: {
             accountId: '',
-            accountName: ' -- Selected Deposit Acct.',
+            accountName: '',
           },
           debit: 0,
           credit: 0,
@@ -82,15 +82,24 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
       ...journalLines,
       {
         journalLineItemId: uuidv4(),
+        debit: 0,
+        credit: 0,
         accountDetails: {
           accountId: '',
           accountName: '',
+          group: '',
         },
-        debit: 0,
-        credit: 0,
       },
     ]);
   }, [getValues, setValue]);
+
+  const flattendAccounts = accounts.flatMap((group) =>
+    group.Children.map((option) => ({
+      ...option,
+      rootType: group.rootType,
+      group: group.rootName,
+    }))
+  );
 
   const removeJournalLine = React.useCallback(
     (lineId: string) => {
@@ -206,7 +215,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                     name="depositingAccount"
                     render={({ field }) => (
                       <Autocomplete
-                        options={accounts}
+                        options={flattendAccounts}
                         getOptionLabel={(option) => option.accountName}
                         renderInput={(params) => (
                           <FormControl error={Boolean(errors.depositingAccount)} fullWidth>
@@ -223,7 +232,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                            */
                           options.filter(
                             (option) =>
-                              option.RootID?.rootType === 'Assets' &&
+                              option.rootType === 'Assets' &&
                               (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
                           )
                         }
@@ -326,19 +335,20 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                             onChange={(_, value) => {
                               field.onChange(value);
                             }}
-                            options={accounts}
-                            filterOptions={(options, { inputValue }) =>
-                              /**
-                               * * Only render asset and revenue accounts
-                               */
-                              options.filter(
-                                (option) =>
-                                  option.RootID?.rootType === 'Assets' ||
-                                  (option.RootID?.rootType === 'Revenue' &&
-                                    (!inputValue ||
-                                      option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
-                              )
-                            }
+                            options={flattendAccounts}
+                            // filterOptions={(options, { inputValue }) =>
+                            //   /**
+                            //    * * Only render asset and revenue accounts
+                            //    */
+                            //   options.filter(
+                            //     (option) =>
+                            //       option. === 'Assets' ||
+                            //       (option.rootType === 'Revenue' &&
+                            //         (!inputValue ||
+                            //           option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
+                            //   )
+                            // }
+                            groupBy={(option)=>option.group}
                             getOptionLabel={(account) => account.accountName}
                             renderInput={(params) => (
                               <FormControl fullWidth>

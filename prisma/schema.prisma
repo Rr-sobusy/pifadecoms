@@ -55,7 +55,7 @@ enum InvoiceStatus {
 
 enum JournalType {
   cashReceipts
-  cashVoucher
+  cashDisbursement
   generalJournal
 }
 
