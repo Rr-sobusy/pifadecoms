@@ -49,7 +49,11 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
         },
       }),
 
-      // * third batch of query
+      /**
+       * * Third batch of query. Adjust account balances depends to their account "rootType".
+       * * Increase balance of assets and expense account on debit and decrease in credit.
+       * * Increase balance of income, equity and liability on credit and decrease in debit.
+       */
       ...Request.journalLineItems.map((lineItem) => {
         const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.rootType ?? '');
         const amount = isIncrement

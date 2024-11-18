@@ -239,6 +239,7 @@ model JournalEntries {
   InvoicePayments     InvoicePayments[]
 
   @@map("journal_entries")
+  @@index([entryDate,particulars])
 }
 
 model JournalItems {

@@ -104,7 +104,8 @@ export const paths = {
   },
   reports : {
       ledgerList : '/dashboard/reports/ledger',
-      balanceSheet : '/dashboard/reports/balanceSheet'
+      balanceSheet : '/dashboard/reports/balanceSheet',
+      accountTransaction: '/dashboard/reports/account-transactions'
   },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',

@@ -157,16 +157,9 @@ export const layoutConfig = {
                   title: 'Account List',
                   href: paths.dashboard.finance.list,
                 },
-                {
-                  key: 'list',
-                  title: 'Create Account',
-                  href: paths.dashboard.finance.create,
-                },
               ],
             },
             { key: 'finance:journal', title: 'Manual Journal', href: paths.dashboard.finance.journal },
-            { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },
-            { key: 'invoices:details', title: 'Invoice details', href: paths.dashboard.invoices.details('1') },
           ],
         },
         {
@@ -175,6 +168,7 @@ export const layoutConfig = {
           icon: 'receipt',
           items: [
             { key: 'ledger', title: 'General Ledger', href: paths.dashboard.reports.ledgerList },
+            { key: 'acctTransactions', title: 'Account Transactions', href: paths.dashboard.reports.accountTransaction },
             { key: 'balance', title: 'Balance Sheet', href: paths.dashboard.reports.balanceSheet },
             // { key: 'balanceSheet', title: 'Balance Sheet', href: paths.dashboard.reports.ledgerList },
             // { key: 'profitLoss', title: 'Income/Loss Statement', href: paths.dashboard.reports.ledgerList },

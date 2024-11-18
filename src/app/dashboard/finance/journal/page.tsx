@@ -10,10 +10,13 @@ import { paths } from '@/paths';
 import { fetchChartofAccounts, fetchRootAccounts } from '@/actions/accounts/fetch-accounts';
 import { AccountsTable } from '@/components/dashboard/finance/accounts-table';
 import { AddNewAccountDiaglog } from '@/components/dashboard/finance/add-account-dialog';
+import ManualJournalTable from '@/components/dashboard/finance/manual-journal-table';
+import { fetchJournals } from '@/actions/journals/fetch-journals';
 
 type PageProps = {};
 
-function page({}: PageProps) {
+async function page({}: PageProps):Promise<React.JSX.Element> {
+  const manualJournals = await fetchJournals()
   return (
     <Box
       sx={{
@@ -34,6 +37,7 @@ function page({}: PageProps) {
             </Button>
           </Box>
         </Stack>
+        <ManualJournalTable journal={manualJournals} />
       </Stack>
     </Box>
   );

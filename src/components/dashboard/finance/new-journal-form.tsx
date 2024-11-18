@@ -22,15 +22,17 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import type { JournalType } from '@prisma/client';
+import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import { useAction } from 'next-safe-action/hooks';
-import { createManualJournal } from '@/actions/transactional/create-manual-entry';
+
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
+import { createManualJournal } from '@/actions/transactional/create-manual-entry';
 import { transactionalSchema, type TransactionalSchemaType } from '@/actions/transactional/types';
 import { Option } from '@/components/core/option';
+import { toast } from '@/components/core/toaster';
 
 type NewJournalFromProps = {
   data: AccounTreeType;
@@ -73,12 +75,12 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
         },
       ],
       entryDate: new Date(),
-      referenceType: "ManualJournals"
+      referenceType: 'ManualJournals',
     },
     resolver: zodResolver(transactionalSchema),
   });
 
-  const {executeAsync ,isExecuting, result} = useAction(createManualJournal)
+  const { executeAsync, isExecuting, result } = useAction(createManualJournal);
 
   const lineItems = watch('journalLineItems');
 
@@ -123,11 +125,14 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
   const totalCredits = lineItems.reduce((sum, item) => sum + item.credit, 0);
 
   const submitHandler = (data: TransactionalSchemaType) => {
-    try{
-      executeAsync(data)
-     
-    }catch(error){
-     
+    try {
+      executeAsync(data);
+
+      if (!result.serverError) {
+        toast.success('New Entry Posted.');
+      }
+    } catch (error) {
+      toast.error(`Error occured: ${error}`);
     }
   };
 
@@ -234,19 +239,15 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                       <Autocomplete
                         {...field}
                         sx={{ width: '50%' }}
-                        options={flattenedLabels} 
-                        getOptionLabel={(option) => option.accountName} 
+                        options={flattenedLabels}
+                        getOptionLabel={(option) => option.accountName}
                         groupBy={(option) => option.group}
                         renderInput={(params) => <TextField {...params} label="Account name *" />}
                         onChange={(_, value) => {
                           field.onChange(value);
                         }}
                         renderOption={(props, option) => (
-                          <Option
-                            {...props}
-                            value={option.accountId}
-                            key={option.accountId}
-                          >
+                          <Option {...props} value={option.accountId} key={option.accountId}>
                             <span style={{ marginLeft: 15 }}>{option.accountName}</span>
                           </Option>
                         )}
@@ -324,8 +325,8 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
             <Button type="button" onClick={() => console.log(errors)}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained">
-              Post Entry
+            <Button disabled={isExecuting} type="submit" variant="contained">
+              {isExecuting ? 'Posting Entry...' : 'Post Entry'}
             </Button>
           </CardActions>
         </CardContent>

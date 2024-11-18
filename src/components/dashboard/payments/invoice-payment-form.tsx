@@ -52,6 +52,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
     defaultValues: {
       invoiceId: invoiceDetails?.invoiceId,
       journalType: 'cashReceipts',
+      referenceType : "SalesPayments",
       entryDate: new Date(),
 
       journalLineItems: [

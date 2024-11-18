@@ -9,6 +9,8 @@ import prisma from '@/lib/prisma';
 import { actionClient } from '@/lib/safe-action';
 
 import { transactionalSchema } from './types';
+import { paths } from '@/paths';
+import { redirect } from 'next/navigation';
 
 export const createManualJournal = actionClient.schema(transactionalSchema).action(async ({ parsedInput: Request }) => {
   try {
@@ -53,4 +55,7 @@ export const createManualJournal = actionClient.schema(transactionalSchema).acti
   } catch (error) {
     console.error(error);
   }
+
+    revalidatePath(paths.dashboard.finance.journal)
+    redirect(paths.dashboard.finance.journal)
 });

@@ -21,12 +21,12 @@ type GeneralLedgerTableProps = {
 
 const columns = [
   {
-    formatter: (row) => <Typography variant="subtitle2">{row.account?.accountName}</Typography>,
+    formatter: (row) => <Typography variant="caption">{row.account?.accountName}</Typography>,
     name: 'Account Name',
   },
   {
     formatter: (row) => (
-      <Typography color="info" variant="subtitle2">
+      <Typography variant="subtitle2">
         {formatToCurrency(row._sum.debit ?? 0, 'Fil-ph', 'Php')}
       </Typography>
     ),
@@ -34,7 +34,7 @@ const columns = [
   },
   {
     formatter: (row) => (
-      <Typography color="info" variant="subtitle2">
+      <Typography variant="subtitle2">
         {formatToCurrency(row._sum.credit ?? 0, 'Fil-ph', 'Php')}
       </Typography>
     ),
@@ -44,7 +44,7 @@ const columns = [
     formatter: (row) => {
       const balance = (row._sum.debit ?? 0) - (row._sum.credit ?? 0);
       return (
-        <Typography color="info" variant="subtitle2">
+        <Typography variant="subtitle2">
           {formatToCurrency(balance, 'Fil-ph', 'Php')}
         </Typography>
       );
