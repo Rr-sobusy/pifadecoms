@@ -92,7 +92,7 @@ model Members {
   updatedAt        DateTime     @default(now())
 
   dividends        Dividends[]    
-  members          Invoice[]
+  invoice          Invoice[]
 
   @@map("members")
   @@index([lastName, firstName])

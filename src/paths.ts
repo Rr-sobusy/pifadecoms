@@ -82,31 +82,32 @@ export const paths = {
       details: (customerId: string) => `/dashboard/customers/${customerId}`,
     },
     members: {
-        list : '/dashboard/members',
-        create: '/dashboard/members/create',
+      list: '/dashboard/members',
+      create: '/dashboard/members/create',
+      view: (memberId: string) => `/dashboard/members/${memberId}`,
     },
     items: {
-      list : '/dashboard/items',
+      list: '/dashboard/items',
       create: '/dashboard/items/create',
-  },
+    },
     finance: {
-      list : '/dashboard/finance/accounts',
+      list: '/dashboard/finance/accounts',
       create: '/dashboard/finance/accounts/create',
       journal: '/dashboard/finance/journal',
-      journalCreate: '/dashboard/finance/journal/create'
-  },
-  invoice : {
+      journalCreate: '/dashboard/finance/journal/create',
+    },
+    invoice: {
       list: '/dashboard/invoice',
       create: '/dashboard/invoice/create',
-      details : (invoiceId:bigint) => `/dashboard/invoice/${invoiceId}`,
+      details: (invoiceId: bigint) => `/dashboard/invoice/${invoiceId}`,
       payments: '/dashboard/invoice/payments',
-      createPayment : (invoiceId:bigint) => `/dashboard/invoice/payments/create/${invoiceId}`
-  },
-  reports : {
-      ledgerList : '/dashboard/reports/ledger',
-      balanceSheet : '/dashboard/reports/balanceSheet',
-      accountTransaction: '/dashboard/reports/account-transactions'
-  },
+      createPayment: (invoiceId: bigint) => `/dashboard/invoice/payments/create/${invoiceId}`,
+    },
+    reports: {
+      ledgerList: '/dashboard/reports/ledger',
+      balanceSheet: '/dashboard/reports/balanceSheet',
+      accountTransaction: '/dashboard/reports/account-transactions',
+    },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',
     i18n: '/dashboard/i18n',

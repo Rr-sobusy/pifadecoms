@@ -10,7 +10,7 @@ import prisma from '@/lib/prisma';
 type MemberFilters = {
   lastName?: string | undefined;
   offsetPage?: number | undefined;
-  returnAll?: boolean
+  returnAll?: boolean;
 };
 
 export async function fetchMembers({ lastName, offsetPage = 1, returnAll = false }: MemberFilters) {
@@ -18,12 +18,11 @@ export async function fetchMembers({ lastName, offsetPage = 1, returnAll = false
     orderBy: {
       lastName: 'asc',
     },
-  })
-  const extendedMembers = members.map((member, index)=>({
-      ...member,
-      id: index + 1
-  }))
-  
+  });
+  const extendedMembers = members.map((member, index) => ({
+    ...member,
+    id: index + 1,
+  }));
 
   if (lastName) {
     const filteredByLastName = members.filter((member) =>
@@ -32,8 +31,8 @@ export async function fetchMembers({ lastName, offsetPage = 1, returnAll = false
     return filteredByLastName.length ? filteredByLastName : [];
   }
 
-  if(returnAll){
-    return extendedMembers
+  if (returnAll) {
+    return extendedMembers;
   }
 
   if (offsetPage) {
@@ -42,4 +41,24 @@ export async function fetchMembers({ lastName, offsetPage = 1, returnAll = false
   }
 
   return extendedMembers;
+}
+
+//* Fetch data per member
+export async function fetchMemberData(memberId: string) {
+  const memberData = await prisma.members.findUnique({
+    where: {
+      memberId: memberId,
+    },
+    include: {
+      invoice: {
+        where: {
+          outStandingAmt: {
+            gt: 0,
+          },
+        },
+      },
+    },
+  });
+
+  return memberData;
 }

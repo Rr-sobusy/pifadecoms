@@ -285,7 +285,7 @@ export type JournalItems = z.infer<typeof JournalItemsSchema>
 
 export const MembersIncludeSchema: z.ZodType<Prisma.MembersInclude> = z.object({
   dividends: z.union([z.boolean(),z.lazy(() => DividendsFindManyArgsSchema)]).optional(),
-  members: z.union([z.boolean(),z.lazy(() => InvoiceFindManyArgsSchema)]).optional(),
+  invoice: z.union([z.boolean(),z.lazy(() => InvoiceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => MembersCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -300,7 +300,7 @@ export const MembersCountOutputTypeArgsSchema: z.ZodType<Prisma.MembersCountOutp
 
 export const MembersCountOutputTypeSelectSchema: z.ZodType<Prisma.MembersCountOutputTypeSelect> = z.object({
   dividends: z.boolean().optional(),
-  members: z.boolean().optional(),
+  invoice: z.boolean().optional(),
 }).strict();
 
 export const MembersSelectSchema: z.ZodType<Prisma.MembersSelect> = z.object({
@@ -326,7 +326,7 @@ export const MembersSelectSchema: z.ZodType<Prisma.MembersSelect> = z.object({
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
   dividends: z.union([z.boolean(),z.lazy(() => DividendsFindManyArgsSchema)]).optional(),
-  members: z.union([z.boolean(),z.lazy(() => InvoiceFindManyArgsSchema)]).optional(),
+  invoice: z.union([z.boolean(),z.lazy(() => InvoiceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => MembersCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -653,7 +653,7 @@ export const MembersWhereInputSchema: z.ZodType<Prisma.MembersWhereInput> = z.ob
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   dividends: z.lazy(() => DividendsListRelationFilterSchema).optional(),
-  members: z.lazy(() => InvoiceListRelationFilterSchema).optional()
+  invoice: z.lazy(() => InvoiceListRelationFilterSchema).optional()
 }).strict();
 
 export const MembersOrderByWithRelationInputSchema: z.ZodType<Prisma.MembersOrderByWithRelationInput> = z.object({
@@ -679,7 +679,7 @@ export const MembersOrderByWithRelationInputSchema: z.ZodType<Prisma.MembersOrde
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   dividends: z.lazy(() => DividendsOrderByRelationAggregateInputSchema).optional(),
-  members: z.lazy(() => InvoiceOrderByRelationAggregateInputSchema).optional()
+  invoice: z.lazy(() => InvoiceOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const MembersWhereUniqueInputSchema: z.ZodType<Prisma.MembersWhereUniqueInput> = z.object({
@@ -711,7 +711,7 @@ export const MembersWhereUniqueInputSchema: z.ZodType<Prisma.MembersWhereUniqueI
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   dividends: z.lazy(() => DividendsListRelationFilterSchema).optional(),
-  members: z.lazy(() => InvoiceListRelationFilterSchema).optional()
+  invoice: z.lazy(() => InvoiceListRelationFilterSchema).optional()
 }).strict());
 
 export const MembersOrderByWithAggregationInputSchema: z.ZodType<Prisma.MembersOrderByWithAggregationInput> = z.object({
@@ -1533,7 +1533,7 @@ export const MembersCreateInputSchema: z.ZodType<Prisma.MembersCreateInput> = z.
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   dividends: z.lazy(() => DividendsCreateNestedManyWithoutMembersInputSchema).optional(),
-  members: z.lazy(() => InvoiceCreateNestedManyWithoutMembersInputSchema).optional()
+  invoice: z.lazy(() => InvoiceCreateNestedManyWithoutMembersInputSchema).optional()
 }).strict();
 
 export const MembersUncheckedCreateInputSchema: z.ZodType<Prisma.MembersUncheckedCreateInput> = z.object({
@@ -1559,7 +1559,7 @@ export const MembersUncheckedCreateInputSchema: z.ZodType<Prisma.MembersUnchecke
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutMembersInputSchema).optional(),
-  members: z.lazy(() => InvoiceUncheckedCreateNestedManyWithoutMembersInputSchema).optional()
+  invoice: z.lazy(() => InvoiceUncheckedCreateNestedManyWithoutMembersInputSchema).optional()
 }).strict();
 
 export const MembersUpdateInputSchema: z.ZodType<Prisma.MembersUpdateInput> = z.object({
@@ -1585,7 +1585,7 @@ export const MembersUpdateInputSchema: z.ZodType<Prisma.MembersUpdateInput> = z.
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   dividends: z.lazy(() => DividendsUpdateManyWithoutMembersNestedInputSchema).optional(),
-  members: z.lazy(() => InvoiceUpdateManyWithoutMembersNestedInputSchema).optional()
+  invoice: z.lazy(() => InvoiceUpdateManyWithoutMembersNestedInputSchema).optional()
 }).strict();
 
 export const MembersUncheckedUpdateInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateInput> = z.object({
@@ -1611,7 +1611,7 @@ export const MembersUncheckedUpdateInputSchema: z.ZodType<Prisma.MembersUnchecke
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutMembersNestedInputSchema).optional(),
-  members: z.lazy(() => InvoiceUncheckedUpdateManyWithoutMembersNestedInputSchema).optional()
+  invoice: z.lazy(() => InvoiceUncheckedUpdateManyWithoutMembersNestedInputSchema).optional()
 }).strict();
 
 export const MembersCreateManyInputSchema: z.ZodType<Prisma.MembersCreateManyInput> = z.object({
@@ -1692,7 +1692,7 @@ export const InvoiceCreateInputSchema: z.ZodType<Prisma.InvoiceCreateInput> = z.
   baseGrandTotal: z.number(),
   outStandingAmt: z.number(),
   journalId: z.bigint().optional().nullable(),
-  Members: z.lazy(() => MembersCreateNestedOneWithoutMembersInputSchema),
+  Members: z.lazy(() => MembersCreateNestedOneWithoutInvoiceInputSchema),
   InvoiceItems: z.lazy(() => InvoiceItemsCreateNestedManyWithoutInvoiceInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsCreateNestedManyWithoutInvoiceInputSchema).optional()
 }).strict();
@@ -1714,7 +1714,7 @@ export const InvoiceUpdateInputSchema: z.ZodType<Prisma.InvoiceUpdateInput> = z.
   baseGrandTotal: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   outStandingAmt: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   journalId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  Members: z.lazy(() => MembersUpdateOneRequiredWithoutMembersNestedInputSchema).optional(),
+  Members: z.lazy(() => MembersUpdateOneRequiredWithoutInvoiceNestedInputSchema).optional(),
   InvoiceItems: z.lazy(() => InvoiceItemsUpdateManyWithoutInvoiceNestedInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUpdateManyWithoutInvoiceNestedInputSchema).optional()
 }).strict();
@@ -3481,9 +3481,9 @@ export const InvoiceUncheckedUpdateManyWithoutMembersNestedInputSchema: z.ZodTyp
   deleteMany: z.union([ z.lazy(() => InvoiceScalarWhereInputSchema),z.lazy(() => InvoiceScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
-export const MembersCreateNestedOneWithoutMembersInputSchema: z.ZodType<Prisma.MembersCreateNestedOneWithoutMembersInput> = z.object({
-  create: z.union([ z.lazy(() => MembersCreateWithoutMembersInputSchema),z.lazy(() => MembersUncheckedCreateWithoutMembersInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => MembersCreateOrConnectWithoutMembersInputSchema).optional(),
+export const MembersCreateNestedOneWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersCreateNestedOneWithoutInvoiceInput> = z.object({
+  create: z.union([ z.lazy(() => MembersCreateWithoutInvoiceInputSchema),z.lazy(() => MembersUncheckedCreateWithoutInvoiceInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => MembersCreateOrConnectWithoutInvoiceInputSchema).optional(),
   connect: z.lazy(() => MembersWhereUniqueInputSchema).optional()
 }).strict();
 
@@ -3539,12 +3539,12 @@ export const NullableBigIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.Nu
   divide: z.bigint().optional()
 }).strict();
 
-export const MembersUpdateOneRequiredWithoutMembersNestedInputSchema: z.ZodType<Prisma.MembersUpdateOneRequiredWithoutMembersNestedInput> = z.object({
-  create: z.union([ z.lazy(() => MembersCreateWithoutMembersInputSchema),z.lazy(() => MembersUncheckedCreateWithoutMembersInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => MembersCreateOrConnectWithoutMembersInputSchema).optional(),
-  upsert: z.lazy(() => MembersUpsertWithoutMembersInputSchema).optional(),
+export const MembersUpdateOneRequiredWithoutInvoiceNestedInputSchema: z.ZodType<Prisma.MembersUpdateOneRequiredWithoutInvoiceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => MembersCreateWithoutInvoiceInputSchema),z.lazy(() => MembersUncheckedCreateWithoutInvoiceInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => MembersCreateOrConnectWithoutInvoiceInputSchema).optional(),
+  upsert: z.lazy(() => MembersUpsertWithoutInvoiceInputSchema).optional(),
   connect: z.lazy(() => MembersWhereUniqueInputSchema).optional(),
-  update: z.union([ z.lazy(() => MembersUpdateToOneWithWhereWithoutMembersInputSchema),z.lazy(() => MembersUpdateWithoutMembersInputSchema),z.lazy(() => MembersUncheckedUpdateWithoutMembersInputSchema) ]).optional(),
+  update: z.union([ z.lazy(() => MembersUpdateToOneWithWhereWithoutInvoiceInputSchema),z.lazy(() => MembersUpdateWithoutInvoiceInputSchema),z.lazy(() => MembersUncheckedUpdateWithoutInvoiceInputSchema) ]).optional(),
 }).strict();
 
 export const InvoiceItemsUpdateManyWithoutInvoiceNestedInputSchema: z.ZodType<Prisma.InvoiceItemsUpdateManyWithoutInvoiceNestedInput> = z.object({
@@ -4516,7 +4516,7 @@ export const InvoiceScalarWhereInputSchema: z.ZodType<Prisma.InvoiceScalarWhereI
   journalId: z.union([ z.lazy(() => BigIntNullableFilterSchema),z.bigint() ]).optional().nullable(),
 }).strict();
 
-export const MembersCreateWithoutMembersInputSchema: z.ZodType<Prisma.MembersCreateWithoutMembersInput> = z.object({
+export const MembersCreateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersCreateWithoutInvoiceInput> = z.object({
   memberId: z.string().cuid().optional(),
   lastName: z.string(),
   firstName: z.string(),
@@ -4541,7 +4541,7 @@ export const MembersCreateWithoutMembersInputSchema: z.ZodType<Prisma.MembersCre
   dividends: z.lazy(() => DividendsCreateNestedManyWithoutMembersInputSchema).optional()
 }).strict();
 
-export const MembersUncheckedCreateWithoutMembersInputSchema: z.ZodType<Prisma.MembersUncheckedCreateWithoutMembersInput> = z.object({
+export const MembersUncheckedCreateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersUncheckedCreateWithoutInvoiceInput> = z.object({
   memberId: z.string().cuid().optional(),
   lastName: z.string(),
   firstName: z.string(),
@@ -4566,9 +4566,9 @@ export const MembersUncheckedCreateWithoutMembersInputSchema: z.ZodType<Prisma.M
   dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutMembersInputSchema).optional()
 }).strict();
 
-export const MembersCreateOrConnectWithoutMembersInputSchema: z.ZodType<Prisma.MembersCreateOrConnectWithoutMembersInput> = z.object({
+export const MembersCreateOrConnectWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersCreateOrConnectWithoutInvoiceInput> = z.object({
   where: z.lazy(() => MembersWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => MembersCreateWithoutMembersInputSchema),z.lazy(() => MembersUncheckedCreateWithoutMembersInputSchema) ]),
+  create: z.union([ z.lazy(() => MembersCreateWithoutInvoiceInputSchema),z.lazy(() => MembersUncheckedCreateWithoutInvoiceInputSchema) ]),
 }).strict();
 
 export const InvoiceItemsCreateWithoutInvoiceInputSchema: z.ZodType<Prisma.InvoiceItemsCreateWithoutInvoiceInput> = z.object({
@@ -4621,18 +4621,18 @@ export const InvoicePaymentsCreateManyInvoiceInputEnvelopeSchema: z.ZodType<Pris
   skipDuplicates: z.boolean().optional()
 }).strict();
 
-export const MembersUpsertWithoutMembersInputSchema: z.ZodType<Prisma.MembersUpsertWithoutMembersInput> = z.object({
-  update: z.union([ z.lazy(() => MembersUpdateWithoutMembersInputSchema),z.lazy(() => MembersUncheckedUpdateWithoutMembersInputSchema) ]),
-  create: z.union([ z.lazy(() => MembersCreateWithoutMembersInputSchema),z.lazy(() => MembersUncheckedCreateWithoutMembersInputSchema) ]),
+export const MembersUpsertWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersUpsertWithoutInvoiceInput> = z.object({
+  update: z.union([ z.lazy(() => MembersUpdateWithoutInvoiceInputSchema),z.lazy(() => MembersUncheckedUpdateWithoutInvoiceInputSchema) ]),
+  create: z.union([ z.lazy(() => MembersCreateWithoutInvoiceInputSchema),z.lazy(() => MembersUncheckedCreateWithoutInvoiceInputSchema) ]),
   where: z.lazy(() => MembersWhereInputSchema).optional()
 }).strict();
 
-export const MembersUpdateToOneWithWhereWithoutMembersInputSchema: z.ZodType<Prisma.MembersUpdateToOneWithWhereWithoutMembersInput> = z.object({
+export const MembersUpdateToOneWithWhereWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersUpdateToOneWithWhereWithoutInvoiceInput> = z.object({
   where: z.lazy(() => MembersWhereInputSchema).optional(),
-  data: z.union([ z.lazy(() => MembersUpdateWithoutMembersInputSchema),z.lazy(() => MembersUncheckedUpdateWithoutMembersInputSchema) ]),
+  data: z.union([ z.lazy(() => MembersUpdateWithoutInvoiceInputSchema),z.lazy(() => MembersUncheckedUpdateWithoutInvoiceInputSchema) ]),
 }).strict();
 
-export const MembersUpdateWithoutMembersInputSchema: z.ZodType<Prisma.MembersUpdateWithoutMembersInput> = z.object({
+export const MembersUpdateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersUpdateWithoutInvoiceInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4657,7 +4657,7 @@ export const MembersUpdateWithoutMembersInputSchema: z.ZodType<Prisma.MembersUpd
   dividends: z.lazy(() => DividendsUpdateManyWithoutMembersNestedInputSchema).optional()
 }).strict();
 
-export const MembersUncheckedUpdateWithoutMembersInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateWithoutMembersInput> = z.object({
+export const MembersUncheckedUpdateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateWithoutInvoiceInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4772,7 +4772,7 @@ export const InvoiceCreateWithoutInvoiceItemsInputSchema: z.ZodType<Prisma.Invoi
   baseGrandTotal: z.number(),
   outStandingAmt: z.number(),
   journalId: z.bigint().optional().nullable(),
-  Members: z.lazy(() => MembersCreateNestedOneWithoutMembersInputSchema),
+  Members: z.lazy(() => MembersCreateNestedOneWithoutInvoiceInputSchema),
   InvoicePayments: z.lazy(() => InvoicePaymentsCreateNestedManyWithoutInvoiceInputSchema).optional()
 }).strict();
 
@@ -4843,7 +4843,7 @@ export const InvoiceUpdateWithoutInvoiceItemsInputSchema: z.ZodType<Prisma.Invoi
   baseGrandTotal: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   outStandingAmt: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   journalId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  Members: z.lazy(() => MembersUpdateOneRequiredWithoutMembersNestedInputSchema).optional(),
+  Members: z.lazy(() => MembersUpdateOneRequiredWithoutInvoiceNestedInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUpdateManyWithoutInvoiceNestedInputSchema).optional()
 }).strict();
 
@@ -4892,7 +4892,7 @@ export const InvoiceCreateWithoutInvoicePaymentsInputSchema: z.ZodType<Prisma.In
   baseGrandTotal: z.number(),
   outStandingAmt: z.number(),
   journalId: z.bigint().optional().nullable(),
-  Members: z.lazy(() => MembersCreateNestedOneWithoutMembersInputSchema),
+  Members: z.lazy(() => MembersCreateNestedOneWithoutInvoiceInputSchema),
   InvoiceItems: z.lazy(() => InvoiceItemsCreateNestedManyWithoutInvoiceInputSchema).optional()
 }).strict();
 
@@ -4963,7 +4963,7 @@ export const InvoiceUpdateWithoutInvoicePaymentsInputSchema: z.ZodType<Prisma.In
   baseGrandTotal: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   outStandingAmt: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   journalId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  Members: z.lazy(() => MembersUpdateOneRequiredWithoutMembersNestedInputSchema).optional(),
+  Members: z.lazy(() => MembersUpdateOneRequiredWithoutInvoiceNestedInputSchema).optional(),
   InvoiceItems: z.lazy(() => InvoiceItemsUpdateManyWithoutInvoiceNestedInputSchema).optional()
 }).strict();
 
@@ -5236,7 +5236,7 @@ export const MembersCreateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersC
   contactNo: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  members: z.lazy(() => InvoiceCreateNestedManyWithoutMembersInputSchema).optional()
+  invoice: z.lazy(() => InvoiceCreateNestedManyWithoutMembersInputSchema).optional()
 }).strict();
 
 export const MembersUncheckedCreateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersUncheckedCreateWithoutDividendsInput> = z.object({
@@ -5261,7 +5261,7 @@ export const MembersUncheckedCreateWithoutDividendsInputSchema: z.ZodType<Prisma
   contactNo: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  members: z.lazy(() => InvoiceUncheckedCreateNestedManyWithoutMembersInputSchema).optional()
+  invoice: z.lazy(() => InvoiceUncheckedCreateNestedManyWithoutMembersInputSchema).optional()
 }).strict();
 
 export const MembersCreateOrConnectWithoutDividendsInputSchema: z.ZodType<Prisma.MembersCreateOrConnectWithoutDividendsInput> = z.object({
@@ -5331,7 +5331,7 @@ export const MembersUpdateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersU
   contactNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  members: z.lazy(() => InvoiceUpdateManyWithoutMembersNestedInputSchema).optional()
+  invoice: z.lazy(() => InvoiceUpdateManyWithoutMembersNestedInputSchema).optional()
 }).strict();
 
 export const MembersUncheckedUpdateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateWithoutDividendsInput> = z.object({
@@ -5356,7 +5356,7 @@ export const MembersUncheckedUpdateWithoutDividendsInputSchema: z.ZodType<Prisma
   contactNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  members: z.lazy(() => InvoiceUncheckedUpdateManyWithoutMembersNestedInputSchema).optional()
+  invoice: z.lazy(() => InvoiceUncheckedUpdateManyWithoutMembersNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUpsertWithoutDividendsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpsertWithoutDividendsInput> = z.object({

@@ -33,15 +33,10 @@ import { createManualJournal } from '@/actions/transactional/create-manual-entry
 import { transactionalSchema, type TransactionalSchemaType } from '@/actions/transactional/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
+import { JournalMap } from '@/lib/api-utils/journal-map';
 
 type NewJournalFromProps = {
   data: AccounTreeType;
-};
-
-const JournalMap: Record<string, JournalType> = {
-  'Cash Receipts': 'cashReceipts',
-  'Cash Disbursement': 'cashDisbursement',
-  'General Journal': 'generalJournal',
 };
 
 function NewJournalFrom({ data }: NewJournalFromProps) {
