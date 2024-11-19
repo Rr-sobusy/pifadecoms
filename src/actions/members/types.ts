@@ -1,9 +1,12 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
-import { fetchMembers } from './fetch-members';
+import { fetchMembers, fetchMemberData } from './fetch-members';
+
 
 export type MembersType = Prisma.PromiseReturnType<typeof fetchMembers>&{id:number}
+
+export type MemberDataType = Prisma.PromiseReturnType<typeof fetchMemberData>
 
 export const memberSchema = z.object({
   lastName: z.string().min(1, { message: 'Last name must not be empty!' }),
@@ -16,3 +19,4 @@ export const memberSchema = z.object({
 });
 
 export type MemberSchema = z.infer<typeof memberSchema>&{id:number};
+

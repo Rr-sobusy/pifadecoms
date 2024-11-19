@@ -29,6 +29,7 @@ export const invoiceSchema = z.object({
         lineId: z.string(),
         itemId: z.string(),
         quantity: z.number().min(1, {message: "Quantity must be 1 or greater."}),
+        trade:z.number(),
         rate: z.number(),
       })
     )

@@ -20,7 +20,7 @@ import MembersPagination from '@/components/dashboard/members/members-table-pagi
 // import { Rows } from '@phosphor-icons/react';
 
 type PageProps = {
-  searchParams: { lastName: string; offsetPage: number };
+  searchParams: { memberName: string; offsetPage: number };
 };
 
 // async function populateMembers(){
@@ -77,8 +77,8 @@ type PageProps = {
 const Page = async ({ searchParams }: PageProps): Promise<React.JSX.Element> => {
   // const rex = await seed(AccountType)
 
-  const { lastName, offsetPage } = searchParams;
-  const members = await fetchMembers({ lastName, offsetPage });
+  const { memberName, offsetPage } = searchParams;
+  const members = await fetchMembers({ memberName, offsetPage });
   return (
     <Box
       sx={{
@@ -100,7 +100,7 @@ const Page = async ({ searchParams }: PageProps): Promise<React.JSX.Element> => 
           </Box>
         </Stack>
         <Card>
-          <MemberFilters filters={{ lastName }} />
+          <MemberFilters filters={{ memberName }} />
           <Divider />
           <Box sx={{ overflowX: 'auto' }}>
             <MembersTable rows={members} />

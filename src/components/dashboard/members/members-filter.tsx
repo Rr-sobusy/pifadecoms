@@ -23,7 +23,7 @@ import { useCustomersSelection } from '../customer/customers-selection-context';
 // The tabs should be generated using API data.
 
 export interface Filters {
-  lastName?: string;
+  memberName?: string;
   gender?: string;
 }
 
@@ -34,7 +34,7 @@ export interface MemberFilterProps {
 }
 
 export function MemberFilters({ filters = {} }: MemberFilterProps): React.JSX.Element {
-  const { lastName } = filters;
+  const { memberName } = filters;
 
   const router = useRouter();
 
@@ -42,10 +42,10 @@ export function MemberFilters({ filters = {} }: MemberFilterProps): React.JSX.El
     (newFilters: Filters): void => {
       const searchParams = new URLSearchParams();
 
-      if (newFilters.lastName) {
-        searchParams.set('lastName', newFilters.lastName);
+      if (newFilters.memberName) {
+        searchParams.set('memberName', newFilters.memberName);
       }
-      router.push(`${paths.dashboard.members.list}?lastName=${newFilters.lastName}`);
+      router.push(`${paths.dashboard.members.list}?${searchParams.toString()}`);
     },
     [router]
   );
@@ -56,12 +56,12 @@ export function MemberFilters({ filters = {} }: MemberFilterProps): React.JSX.El
 
   const handleLastNameChange = React.useCallback(
     (value: string) => {
-      updateSearchParams({ ...filters, lastName: value });
+      updateSearchParams({ ...filters, memberName: value });
     },
     [updateSearchParams, filters]
   );
 
-  const hasFilters = lastName;
+  const hasFilters = memberName;
 
   return (
     <div>
@@ -69,8 +69,8 @@ export function MemberFilters({ filters = {} }: MemberFilterProps): React.JSX.El
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap', px: 3, py: 2 }}>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flex: '1 1 auto', flexWrap: 'wrap' }}>
           <FilterButton
-            displayValue={lastName}
-            label="Last Name"
+            displayValue={memberName}
+            label="Member Name"
             onFilterApply={(value) => {
               handleLastNameChange(value as string);
             }}
@@ -78,7 +78,7 @@ export function MemberFilters({ filters = {} }: MemberFilterProps): React.JSX.El
               handleLastNameChange('');
             }}
             popover={<LastNameFilterPopover />}
-            value={lastName}
+            value={memberName}
           />
           {hasFilters ? <Button onClick={handleClearFilters}>Clear filters</Button> : null}
         </Stack>
@@ -96,7 +96,7 @@ function LastNameFilterPopover(): React.JSX.Element {
   }, [initialValue]);
 
   return (
-    <FilterPopover anchorEl={anchorEl} onClose={onClose} open={open} title="Filter by Last Name">
+    <FilterPopover anchorEl={anchorEl} onClose={onClose} open={open} title="Filter by Member Name">
       <FormControl>
         <OutlinedInput
           onChange={(event) => {

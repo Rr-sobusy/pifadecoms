@@ -25,11 +25,10 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { ShieldWarning as ShieldWarningIcon } from '@phosphor-icons/react/dist/ssr/ShieldWarning';
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 
-
-
 import { config } from '@/config';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
+import { SingleInvoiceType } from '@/actions/invoices/types';
 import { fetchMemberData } from '@/actions/members/fetch-members';
 import { PropertyItem } from '@/components/core/property-item';
 import { PropertyList } from '@/components/core/property-list';
@@ -37,10 +36,7 @@ import { Notifications } from '@/components/dashboard/customer/notifications';
 import { Payments } from '@/components/dashboard/customer/payments';
 import type { Address } from '@/components/dashboard/customer/shipping-address';
 import { ShippingAddress } from '@/components/dashboard/customer/shipping-address';
-
-
-
-
+import { Balances, NonNullableInvoice } from '@/components/dashboard/members/profile-balances';
 
 export const metadata = { title: `Details | Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
@@ -67,22 +63,19 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
             <Link
               color="text.primary"
               component={RouterLink}
-              href={paths.dashboard.customers.list}
+              href={paths.dashboard.members.list}
               sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
               variant="subtitle2"
             >
               <ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />
-              Customers {JSON.stringify(memberData)}
+              Members
             </Link>
           </div>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
             <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flex: '1 1 auto' }}>
-              <Avatar src="/assets/avatar-1.png" sx={{ '--Avatar-size': '64px' }}>
-                MV
-              </Avatar>
               <div>
                 <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-                  <Typography variant="h4">Miron Vitold</Typography>
+                  <Typography variant="h4">{memberData?.lastName + ' ' + memberData?.firstName}</Typography>
                   <Chip
                     icon={<CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" />}
                     label="Active"
@@ -91,7 +84,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                   />
                 </Stack>
                 <Typography color="text.secondary" variant="body1">
-                  miron.vitold@domain.com
+                  {memberData?.address}
                 </Typography>
               </div>
             </Stack>
@@ -131,11 +124,10 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                 >
                   {(
                     [
-                      { key: 'Customer ID', value: <Chip label="USR-001" size="small" variant="soft" /> },
-                      { key: 'Name', value: 'Miron Vitold' },
-                      { key: 'Email', value: 'miron.vitold@domain.com' },
-                      { key: 'Phone', value: '(425) 434-5535' },
-                      { key: 'Company', value: 'Devias IO' },
+                      { key: 'Customer ID', value: <Chip label={memberData?.memberId} size="small" variant="soft" /> },
+                      { key: 'Name', value: memberData?.lastName + ' ' + memberData?.firstName },
+                      { key: 'Phone', value: memberData?.contactNo },
+                      { key: 'Occupation', value: memberData?.occupation },
                       {
                         key: 'Quota',
                         value: (
@@ -186,48 +178,8 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
             }}
           >
             <Stack spacing={4}>
-              <Payments
-                ordersValue={2069.48}
-                payments={[
-                  {
-                    currency: 'USD',
-                    amount: 500,
-                    invoiceId: 'INV-005',
-                    status: 'completed',
-                    createdAt: dayjs().subtract(5, 'minute').subtract(1, 'hour').toDate(),
-                  },
-                  {
-                    currency: 'USD',
-                    amount: 324.5,
-                    invoiceId: 'INV-004',
-                    status: 'refunded',
-                    createdAt: dayjs().subtract(21, 'minute').subtract(2, 'hour').toDate(),
-                  },
-                  {
-                    currency: 'USD',
-                    amount: 746.5,
-                    invoiceId: 'INV-003',
-                    status: 'completed',
-                    createdAt: dayjs().subtract(7, 'minute').subtract(3, 'hour').toDate(),
-                  },
-                  {
-                    currency: 'USD',
-                    amount: 56.89,
-                    invoiceId: 'INV-002',
-                    status: 'completed',
-                    createdAt: dayjs().subtract(48, 'minute').subtract(4, 'hour').toDate(),
-                  },
-                  {
-                    currency: 'USD',
-                    amount: 541.59,
-                    invoiceId: 'INV-001',
-                    status: 'completed',
-                    createdAt: dayjs().subtract(31, 'minute').subtract(5, 'hour').toDate(),
-                  },
-                ]}
-                refundsValue={324.5}
-                totalOrders={5}
-              />
+              <Balances invoiceBalance={memberData?.invoice as NonNullableInvoice[]} />
+
               <Card>
                 <CardHeader
                   action={

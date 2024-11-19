@@ -10,20 +10,12 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
-import { DotsThreeVertical as Dots } from '@phosphor-icons/react/dist/ssr/DotsThreeVertical';
-import { Minus as MinusIcon } from '@phosphor-icons/react/dist/ssr/Minus';
-import { PencilSimple as PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple';
-
-import { paths } from '@/paths';
+import { Notepad as Info } from '@phosphor-icons/react/dist/ssr/Notepad';
 import { dayjs } from '@/lib/dayjs';
 import { MembersType } from '@/actions/members/types';
-import { usePopover } from '@/hooks/use-popover';
 import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
-
-import MemberPopover from './members-option-popover';
+import { paths } from '@/paths';
 
 // extended interface to inject {id} object
 type ExtendedMemberType = MembersType[0] & {
@@ -124,23 +116,11 @@ const columns = [
   },
   {
     formatter: (row): React.JSX.Element => {
-      const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-
-      const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-      };
-
-      const handleClose = () => {
-        setAnchorEl(null);
-      };
-
-      const open = Boolean(anchorEl);
       return (
         <>
-          <IconButton onClick={handleClick}>
-            <Dots />
+          <IconButton href={paths.dashboard.members.view(row.memberId)} LinkComponent={RouterLink}>
+            <Info />
           </IconButton>
-          <MemberPopover memberId={row.memberId} anchorEl={anchorEl} onClose={handleClose} open={open} />
         </>
       );
     },
@@ -154,7 +134,7 @@ export interface MembersTableProps {
   rows: ExtendedMemberType[];
 }
 
-export function MembersTable({ rows }: MembersTableProps): React.JSX.Element {
+export function MembersTable({ rows = [] }: MembersTableProps): React.JSX.Element {
   return (
     <React.Fragment>
       <DataTable<ExtendedMemberType> columns={columns} rows={rows} />

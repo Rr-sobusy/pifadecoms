@@ -121,6 +121,7 @@ model InvoiceItems {
   invoiceId       BigInt
   itemID          String
   rate            Int
+  trade           Int?
   quantity        Int
 
 

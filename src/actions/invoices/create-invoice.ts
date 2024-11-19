@@ -18,16 +18,16 @@ import { invoiceSchema } from './types';
 export const createInvoice = actionClient
   .schema(invoiceSchema)
   .bindArgsSchemas<[grandTotal: z.ZodNumber]>([z.number()])
-  .action(async ({ parsedInput: Schema, bindArgsParsedInputs: Args }) => {
+  .action(async ({ parsedInput: Request, bindArgsParsedInputs: Args }) => {
     try {
       const newInvoice = await prisma.invoice.create({
         data: {
-          dateOfInvoice: Schema.invDate,
+          dateOfInvoice: Request.invDate,
           baseGrandTotal: Args[0],
           outStandingAmt: Args[0],
-          memberId: Schema.member.memberId,
+          memberId: Request.member.memberId,
           InvoiceItems: {
-            create: Schema.lineItems.map((item) => ({ itemID: item.itemId, quantity: item.quantity, rate: item.rate })),
+            create: Request.lineItems.map((item) => ({ itemID: item.itemId, quantity: item.quantity,trade : item.trade ,rate: item.rate })),
           },
         },
       });

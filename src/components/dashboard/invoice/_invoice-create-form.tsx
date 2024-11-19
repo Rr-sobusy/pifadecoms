@@ -80,6 +80,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
         lineId: uuidv4(),
         itemId: '',
         quantity: 0,
+        trade: 0,
         rate: 0,
       },
     ]);
@@ -283,6 +284,34 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                         </FormControl>
                       )}
                     />
+                       <Controller
+                      control={control}
+                      name={`lineItems.${index}.trade`}
+                      render={({ field }) => (
+                        <FormControl error={Boolean(errors.lineItems?.[index])} sx={{ width: '140px' }}>
+                          <InputLabel>Trade</InputLabel>
+                          <OutlinedInput
+                            {...field}
+                            inputProps={{ step: 0.01 }}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                              const value = event.target.valueAsNumber;
+
+                              if (isNaN(value)) {
+                                field.onChange('');
+                                return;
+                              }
+
+                              field.onChange(parseFloat(value.toFixed(2)));
+                            }}
+                            startAdornment={<InputAdornment position="start">Php</InputAdornment>}
+                            type="number"
+                          />
+                          {/* {errors.lineItems?.[index]?.unitPrice ? (
+                            <FormHelperText>{errors.lineItems[index].unitPrice.message}</FormHelperText>
+                          ) : null} */}
+                        </FormControl>
+                      )}
+                    />
                     <Controller
                       control={control}
                       name={`lineItems.${index}.rate`}
@@ -302,7 +331,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
 
                               field.onChange(parseFloat(value.toFixed(2)));
                             }}
-                            startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                            startAdornment={<InputAdornment position="start">Php</InputAdornment>}
                             type="number"
                           />
                           {/* {errors.lineItems?.[index]?.unitPrice ? (

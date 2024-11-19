@@ -8,12 +8,12 @@ import prisma from '@/lib/prisma';
  */
 
 type MemberFilters = {
-  lastName?: string | undefined;
+  memberName?: string | undefined;
   offsetPage?: number | undefined;
   returnAll?: boolean;
 };
 
-export async function fetchMembers({ lastName, offsetPage = 1, returnAll = false }: MemberFilters) {
+export async function fetchMembers({ memberName, offsetPage = 1, returnAll = false }: MemberFilters) {
   const members = await prisma.members.findMany({
     orderBy: {
       lastName: 'asc',
@@ -24,9 +24,11 @@ export async function fetchMembers({ lastName, offsetPage = 1, returnAll = false
     id: index + 1,
   }));
 
-  if (lastName) {
-    const filteredByLastName = members.filter((member) =>
-      member.lastName.toLowerCase().includes(lastName.toLowerCase())
+  if (memberName) {
+    const filteredByLastName = members.filter(
+      (member) =>
+        member.lastName.toLowerCase().includes(memberName.toLowerCase()) ||
+        member.firstName.toLowerCase().includes(memberName.toLowerCase())
     );
     return filteredByLastName.length ? filteredByLastName : [];
   }
