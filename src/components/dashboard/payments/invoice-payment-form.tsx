@@ -51,8 +51,9 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
     resolver: zodResolver(paymentSchema),
     defaultValues: {
       invoiceId: invoiceDetails?.invoiceId,
+      particulars: invoiceDetails?.Members.memberId,
       journalType: 'cashReceipts',
-      referenceType : "SalesPayments",
+      referenceType: 'SalesPayments',
       entryDate: new Date(),
 
       journalLineItems: [

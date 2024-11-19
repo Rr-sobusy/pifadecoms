@@ -7,8 +7,6 @@ import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-
-
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -16,10 +14,6 @@ import { type InvoiceType } from '@/actions/invoices/types';
 import type { AccountTransactionTypes, LedgerTypes } from '@/actions/reports/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
-
-
-
-
 
 type TransactionsTableProps = {
   accountTransactions: AccountTransactionTypes;
@@ -87,7 +81,11 @@ const columns = [
     formatter(row, index) {
       return (
         <Stack>
-          <Typography variant="caption">{row.JournalEntries.particulars}</Typography>
+          <Typography variant="caption">
+            {row.JournalEntries.Members === null
+              ? ' '
+              : `${row.JournalEntries.Members?.lastName} ${row.JournalEntries.Members.firstName}`}
+          </Typography>
         </Stack>
       );
     },
@@ -147,6 +145,7 @@ const columns = [
 ] satisfies ColumnDef<AccountTransactionTypes[0]>[];
 
 function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
+  console.log(accountTransactions)
   return (
     <>
       <DataTable hover columns={columns} rows={accountTransactions} />

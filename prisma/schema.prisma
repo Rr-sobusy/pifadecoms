@@ -93,6 +93,7 @@ model Members {
 
   dividends        Dividends[]    
   invoice          Invoice[]
+  Journals         JournalEntries[]
 
   @@map("members")
   @@index([lastName, firstName])
@@ -233,14 +234,15 @@ model JournalEntries {
   referenceType       ReferenceType
   notes               String?
   createdAt           DateTime       @default(now())
-  particulars         String?
+  memberId            String?
   journalType         JournalType
 
   JournalItems        JournalItems[]
+  Members             Members?        @relation(fields: [memberId], references: [memberId])
   InvoicePayments     InvoicePayments[]
 
   @@map("journal_entries")
-  @@index([entryDate,particulars])
+  @@index([entryDate, memberId])
 }
 
 model JournalItems {
@@ -250,7 +252,7 @@ model JournalItems {
   debit              Float
   credit             Float
 
-
+  
   JournalEntries     JournalEntries     @relation(references: [entryId], fields: [entryId], onDelete: Cascade)
   Accounts           AccountsThirdLvl   @relation(references: [accountId], fields: [accountId])
 

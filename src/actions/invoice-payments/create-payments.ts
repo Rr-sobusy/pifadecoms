@@ -18,6 +18,7 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
           entryDate: Request.entryDate,
           journalType: Request.journalType,
           referenceName: Request.reference,
+          memberId : Request.particulars,
           referenceType: 'SalesPayments',
           JournalItems: {
             create: Request.journalLineItems.map((lineItem) => ({

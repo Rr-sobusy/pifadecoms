@@ -33,7 +33,6 @@ import { fetchMemberData } from '@/actions/members/fetch-members';
 import { PropertyItem } from '@/components/core/property-item';
 import { PropertyList } from '@/components/core/property-list';
 import { Notifications } from '@/components/dashboard/customer/notifications';
-import { Payments } from '@/components/dashboard/customer/payments';
 import type { Address } from '@/components/dashboard/customer/shipping-address';
 import { ShippingAddress } from '@/components/dashboard/customer/shipping-address';
 import { Balances, NonNullableInvoice } from '@/components/dashboard/members/profile-balances';
@@ -126,6 +125,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                     [
                       { key: 'Customer ID', value: <Chip label={memberData?.memberId} size="small" variant="soft" /> },
                       { key: 'Name', value: memberData?.lastName + ' ' + memberData?.firstName },
+                      { key: 'Birth Date', value: dayjs(memberData?.birthDate).format("MMM DD YYYY") },
                       { key: 'Phone', value: memberData?.contactNo },
                       { key: 'Occupation', value: memberData?.occupation },
                       {
