@@ -238,6 +238,8 @@ model JournalEntries {
   journalType         JournalType
 
   JournalItems        JournalItems[]
+
+  //* To be the particulars
   Members             Members?        @relation(fields: [memberId], references: [memberId])
   InvoicePayments     InvoicePayments[]
 

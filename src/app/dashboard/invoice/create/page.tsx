@@ -2,11 +2,11 @@ import * as React from 'react';
 import type { Metadata } from 'next';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
+import { paths } from '@/paths';
 import { fetchItems } from '@/actions/items/fetch-items';
 import { fetchMembers } from '@/actions/members/fetch-members';
 import InvoiceCreateForm2 from '@/components/dashboard/invoice/_invoice-create-form';
@@ -28,14 +28,16 @@ const page = async (props: Props) => {
       <Stack spacing={4}>
         <Stack spacing={3}>
           <div>
-            <Link
+            <Typography
+              component={RouterLink}
+              href={paths.dashboard.invoice.list}
               color="text.primary"
               sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
               variant="subtitle2"
             >
               <ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />
               Invoices
-            </Link>
+            </Typography>
           </div>
           <div>
             <Typography variant="h4">Create invoice</Typography>
@@ -47,7 +49,7 @@ const page = async (props: Props) => {
               itemId: item.itemID,
               itemName: item.itemName,
               itemType: item.itemType,
-              rate: item.sellingPrice
+              rate: item.sellingPrice,
             };
           })}
           members={members.map((member) => {

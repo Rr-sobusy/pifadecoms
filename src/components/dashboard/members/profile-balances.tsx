@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import RouterLink from 'next/link';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,11 +10,11 @@ import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ShoppingCartSimple as ShoppingCartSimpleIcon } from '@phosphor-icons/react/dist/ssr/ShoppingCartSimple';
 
+import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { SingleInvoiceType } from '@/actions/invoices/types';
@@ -34,9 +35,9 @@ const columns = [
   },
   {
     formatter: (row, index): React.JSX.Element => (
-      <Typography color="primary" variant="subtitle2">
+      <Button component={RouterLink} href={paths.dashboard.invoice.details(row.invoiceId)} color="primary">
         {`INV - ${row?.invoiceId.toString().padStart(6, '0')}`}
-      </Typography>
+      </Button>
     ),
     name: 'Invoice ID',
     width: '200px',
