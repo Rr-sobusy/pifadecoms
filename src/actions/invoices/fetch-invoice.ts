@@ -11,13 +11,32 @@ import prisma from '@/lib/prisma';
 interface Filterers {
   memberId?: string;
   invoiceId?: number;
-  startDate?: Dayjs;
+  startDate?: Date;
   endDate?: Date;
   status?: string;
 }
 
 export async function fetchInvoices(props: Filterers = {}) {
   const isEmpty = !props.memberId && !props.invoiceId && !props.startDate && !props.endDate && !props.status;
+
+  const conditions = [];
+
+  if (props.memberId) {
+    conditions.push({ memberId: props.memberId });
+  }
+
+  if (props.invoiceId) {
+    conditions.push({ invoiceId: props.invoiceId });
+  }
+
+  if (props.startDate || props.endDate) {
+    conditions.push({
+      dateOfInvoice: {
+        ...(props.startDate && { gte: dayjs(props.startDate).startOf('day').toISOString() }),
+        ...(props.endDate && { lte: dayjs(props.endDate).endOf('day').toISOString() }),
+      },
+    });
+  }
 
   const invoice = await prisma.invoice.findMany({
     include: {
@@ -28,19 +47,13 @@ export async function fetchInvoices(props: Filterers = {}) {
       },
       Members: true,
     },
+    /**
+     * * Create nullish operator to return the original lists if paramaters are not supplied.
+     */
     where: isEmpty
       ? undefined
       : {
-          OR: [
-            { memberId: props.memberId },
-            { invoiceId: props.invoiceId },
-            {
-              dateOfInvoice: {
-                lte: dayjs(props.endDate).endOf('day').toISOString(),
-                gte: dayjs(props.startDate).startOf('day').toISOString(),
-              },
-            },
-          ].filter(Boolean),
+          OR: conditions
         },
   });
 
