@@ -1,5 +1,4 @@
 import * as React from 'react';
-import type { Metadata } from 'next';
 import RouterLink from 'next/link';
 import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -12,7 +11,7 @@ import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchSingleInvoice } from '@/actions/invoices/fetch-invoice';
 import InvoicePaymentForm from '@/components/dashboard/payments/invoice-payment-form';
 
-type PageProps = {
+interface PageProps {
   params: { invoiceId: bigint };
 };
 

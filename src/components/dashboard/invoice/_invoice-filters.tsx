@@ -18,9 +18,9 @@ import { dayjs } from '@/lib/dayjs';
 import { Option } from '@/components/core/option';
 
 export interface Filters {
-  customer?: string;
+  customerId?: string;
   endDate?: string;
-  id?: string;
+  invoiceId?: string;
   startDate?: string;
   status?: string;
 }
@@ -29,9 +29,9 @@ export type SortDir = 'asc' | 'desc';
 
 const schema = zod
   .object({
-    customer: zod.string().optional(),
+    customerId: zod.string().optional(),
     endDate: zod.date().max(new Date('2099-01-01')).nullable().optional(),
-    id: zod.string().optional(),
+    invoiceId: zod.string().optional(),
     startDate: zod.date().max(new Date('2099-01-01')).nullable().optional(),
     status: zod.string().optional(),
   })
@@ -50,15 +50,15 @@ type Values = zod.infer<typeof schema>;
 
 function getDefaultValues(filters: Filters): Values {
   return {
-    customer: filters.customer ?? '',
+    customerId: filters.customerId ?? '',
     endDate: filters.endDate ? dayjs(filters.endDate).toDate() : null,
-    id: filters.id ?? '',
+    invoiceId: filters.invoiceId ?? '',
     status: filters.status ?? '',
     startDate: filters.startDate ? dayjs(filters.startDate).toDate() : null,
   };
 }
 
-export interface InvoicesFiltersProps {
+export interface InvoiceFiltererProps {
   filters?: Filters;
   onFiltersApplied?: () => void;
   onFiltersCleared?: () => void;
@@ -66,13 +66,13 @@ export interface InvoicesFiltersProps {
   view?: 'group' | 'list';
 }
 
-export function InvoicesFilters({
+export function InvoiceFilterer({
   filters = {},
   onFiltersApplied,
   onFiltersCleared,
   sortDir = 'desc',
   view,
-}: InvoicesFiltersProps): React.JSX.Element {
+}: InvoiceFiltererProps): React.JSX.Element {
   const router = useRouter();
 
   const {
@@ -99,12 +99,12 @@ export function InvoicesFilters({
         searchParams.set('status', newFilters.status);
       }
 
-      if (newFilters.id) {
-        searchParams.set('id', newFilters.id);
+      if (newFilters.invoiceId) {
+        searchParams.set('invoiceId', newFilters.invoiceId);
       }
 
-      if (newFilters.customer) {
-        searchParams.set('customer', newFilters.customer);
+      if (newFilters.customerId) {
+        searchParams.set('memberId', newFilters.customerId);
       }
 
       if (newFilters.startDate) {
@@ -137,18 +137,18 @@ export function InvoicesFilters({
     onFiltersCleared?.();
   }, [updateSearchParams, onFiltersCleared]);
 
-  const hasFilters = filters.id || filters.customer || filters.status || filters.startDate || filters.endDate;
+  const hasFilters = filters.invoiceId || filters.customerId || filters.status || filters.startDate || filters.endDate;
 
   return (
     <form onSubmit={handleSubmit(handleApplyFilters)}>
       <Stack spacing={3}>
         <Controller
           control={control}
-          name="id"
+          name="invoiceId"
           render={({ field }) => (
-            <FormControl error={Boolean(errors.id)}>
+            <FormControl error={Boolean(errors.invoiceId)}>
               <InputLabel>Invoice ID</InputLabel>
-              <OutlinedInput {...field} />
+              <OutlinedInput {...field} type='number' />
             </FormControl>
           )}
         />
@@ -169,9 +169,9 @@ export function InvoicesFilters({
         />
         <Controller
           control={control}
-          name="customer"
+          name="customerId"
           render={({ field }) => (
-            <FormControl error={Boolean(errors.customer)}>
+            <FormControl error={Boolean(errors.customerId)}>
               <InputLabel>Customer</InputLabel>
               <OutlinedInput {...field} />
             </FormControl>
@@ -210,11 +210,11 @@ export function InvoicesFilters({
         <Button disabled={!isDirty} type="submit" variant="contained">
           Apply
         </Button>
-        {hasFilters ? (
+    
           <Button color="secondary" onClick={handleClearFilters}>
             Clear filters
           </Button>
-        ) : null}
+       
       </Stack>
     </form>
   );

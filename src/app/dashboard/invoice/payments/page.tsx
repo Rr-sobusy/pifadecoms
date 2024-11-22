@@ -1,19 +1,14 @@
 import React from 'react';
-import type { Metadata } from 'next';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-
-import { paths } from '@/paths';
+import { paths } from '@/paths'
 import { fetchReceivedPayments } from '@/actions/invoice-payments/fetch-payments';
 import PaymentsTable from '@/components/dashboard/payments/payments-table';
 
-type PageProps = {};
-
-async function page({}: PageProps): Promise<React.JSX.Element> {
+async function page(): Promise<React.JSX.Element> {
   const receivedPayments = await fetchReceivedPayments();
   return (
     <Box

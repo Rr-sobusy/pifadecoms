@@ -3,15 +3,12 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 
 import { paths } from '@/paths';
@@ -77,12 +74,12 @@ export function CustomersFilters({ filters = {}, sortDir = 'desc' }: CustomersFi
     updateSearchParams({}, sortDir);
   }, [updateSearchParams, sortDir]);
 
-  const handleStatusChange = React.useCallback(
-    (_: React.SyntheticEvent, value: string) => {
-      updateSearchParams({ ...filters, status: value }, sortDir);
-    },
-    [updateSearchParams, filters, sortDir]
-  );
+  // const handleStatusChange = React.useCallback(
+  //   (_: React.SyntheticEvent, value: string) => {
+  //     updateSearchParams({ ...filters, status: value }, sortDir);
+  //   },
+  //   [updateSearchParams, filters, sortDir]
+  // );
 
   const handleEmailChange = React.useCallback(
     (value?: string) => {

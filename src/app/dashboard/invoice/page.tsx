@@ -5,33 +5,31 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+
 import { paths } from '@/paths';
 import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
 import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
 import { InvoicesFiltersCard } from '@/components/dashboard/invoice/invoices-filters-card';
 import { InvoicesStats } from '@/components/dashboard/invoice/invoices-stats';
 
-type PageProps = {
+interface PageProps {
   searchParams: {
-    customer?: string;
+    memberId?: string;
     endDate?: string;
-    id?: string;
-    sortDir?: 'asc' | 'desc';
+    invoiceId?: string;
     startDate?: string;
     status?: string;
-    view?: 'group' | 'list';
   };
-};
+}
 
 export const metadata: Metadata = {
   title: 'PIFADECO | Invoice list',
-}
+};
 
 const page = async ({ searchParams }: PageProps) => {
-  const { customer, endDate, id, sortDir, startDate, status, view = 'group' } = searchParams;
-  const filters = { customer, endDate, id, startDate, status };
-  const invoices = await fetchInvoices();
-
+  const { memberId, endDate, invoiceId, startDate, status } = searchParams;
+  const filters = { memberId, endDate, invoiceId, startDate, status };
+  const invoices = await fetchInvoices(filters as any);
 
   return (
     <Box
@@ -55,7 +53,7 @@ const page = async ({ searchParams }: PageProps) => {
         </Stack>
         <InvoicesStats />
         <Stack direction="row" spacing={4} sx={{ alignItems: 'flex-start' }}>
-          <InvoicesFiltersCard filters={filters} sortDir={sortDir} view={view} />
+          <InvoicesFiltersCard filters={filters} />
           <Stack spacing={4} sx={{ flex: '1 1 auto', minWidth: 0 }}>
             <InvoiceTable rows={invoices} />
           </Stack>

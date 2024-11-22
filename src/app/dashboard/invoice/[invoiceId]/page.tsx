@@ -23,7 +23,7 @@ import { LineItemsTable } from '@/components/dashboard/invoice/line-items-table'
 
 export const metadata = { title: `Details | Invoices | Dashboard | ${config.site.name}` } satisfies Metadata;
 
-type PageProps = {
+interface PageProps  {
   params: { invoiceId: bigint };
 };
 
@@ -124,7 +124,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                 }}
               >
                 <Stack spacing={1}>
-                  <Typography variant="subtitle1">Pinagsibaan Farmer's Development Cooperative</Typography>
+                  <Typography variant="subtitle1">Pinagsibaan Farmer&apos;s Development Multi-purpose Cooperative</Typography>
                   <Typography variant="body2">
                     Pinagsibaan, Rosario, Batangas
                     <br />

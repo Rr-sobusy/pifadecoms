@@ -3,9 +3,22 @@
  *  of cash basis accounting. It will affect the balances when payment was settled
  */
 
+import type { Dayjs } from 'dayjs';
+
+import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
-export async function fetchInvoices() {
+interface Filterers {
+  memberId?: string;
+  invoiceId?: number;
+  startDate?: Dayjs;
+  endDate?: Date;
+  status?: string;
+}
+
+export async function fetchInvoices(props: Filterers = {}) {
+  const isEmpty = !props.memberId && !props.invoiceId && !props.startDate && !props.endDate && !props.status;
+
   const invoice = await prisma.invoice.findMany({
     include: {
       InvoiceItems: {
@@ -15,6 +28,20 @@ export async function fetchInvoices() {
       },
       Members: true,
     },
+    where: isEmpty
+      ? undefined
+      : {
+          OR: [
+            { memberId: props.memberId },
+            { invoiceId: props.invoiceId },
+            {
+              dateOfInvoice: {
+                lte: dayjs(props.endDate).endOf('day').toISOString(),
+                gte: dayjs(props.startDate).startOf('day').toISOString(),
+              },
+            },
+          ].filter(Boolean),
+        },
   });
 
   return invoice;
@@ -27,11 +54,11 @@ export async function fetchSingleInvoice(invoiceId: bigint) {
     },
     include: {
       InvoiceItems: {
-        include : {
-          Item : true
-        } 
+        include: {
+          Item: true,
+        },
       },
-      Members : true
+      Members: true,
     },
   });
 

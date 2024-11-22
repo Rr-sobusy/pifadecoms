@@ -2,7 +2,6 @@ import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { fetchAccountTree, fetchChartofAccounts } from './fetch-accounts';
-import { createZodSchema } from '@/lib/zodSchema-helper';
 
 export const accountSchema = z.object({
   rootId: z.object({

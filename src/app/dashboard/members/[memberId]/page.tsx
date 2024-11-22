@@ -28,7 +28,6 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { config } from '@/config';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
-import { SingleInvoiceType } from '@/actions/invoices/types';
 import { fetchMemberData } from '@/actions/members/fetch-members';
 import { PropertyItem } from '@/components/core/property-item';
 import { PropertyList } from '@/components/core/property-list';
@@ -39,7 +38,7 @@ import { Balances, NonNullableInvoice } from '@/components/dashboard/members/pro
 
 export const metadata = { title: `Details | Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
-type PageProps = {
+interface PageProps {
   params: { memberId: string };
 };
 
@@ -74,7 +73,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
             <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flex: '1 1 auto' }}>
               <div>
                 <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-                  <Typography variant="h4">{memberData?.lastName + ' ' + memberData?.firstName}</Typography>
+                  <Typography variant="h4">{`${memberData?.lastName}, ${memberData?.firstName}`}</Typography>
                   <Chip
                     icon={<CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" />}
                     label="Active"
@@ -124,7 +123,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                   {(
                     [
                       { key: 'Customer ID', value: <Chip label={memberData?.memberId} size="small" variant="soft" /> },
-                      { key: 'Name', value: memberData?.lastName + ' ' + memberData?.firstName },
+                      { key: 'Name', value: `${memberData?.lastName}, ${memberData?.firstName}` },
                       { key: 'Birth Date', value: dayjs(memberData?.birthDate).format("MMM DD YYYY") },
                       { key: 'Phone', value: memberData?.contactNo },
                       { key: 'Occupation', value: memberData?.occupation },

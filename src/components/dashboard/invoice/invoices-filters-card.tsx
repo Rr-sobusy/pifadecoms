@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { InvoicesFilters } from './invoices-filters';
+import { InvoiceFilterer } from './_invoice-filters';
 import type { Filters } from './invoices-filters';
 
 interface InvoicesFiltersCardProps {
@@ -13,7 +13,7 @@ interface InvoicesFiltersCardProps {
   view?: 'group' | 'list';
 }
 
-export function InvoicesFiltersCard({ filters, sortDir, view }: InvoicesFiltersCardProps): React.JSX.Element {
+export function InvoicesFiltersCard({ filters }: InvoicesFiltersCardProps): React.JSX.Element {
   return (
     <Card
       sx={{ display: { xs: 'none', lg: 'block' }, flex: '0 0 auto', width: '340px', position: 'sticky', top: '80px' }}
@@ -21,7 +21,7 @@ export function InvoicesFiltersCard({ filters, sortDir, view }: InvoicesFiltersC
       <CardContent>
         <Stack spacing={3}>
           <Typography variant="h5">Filters</Typography>
-          <InvoicesFilters filters={filters} sortDir={sortDir} view={view} />
+          <InvoiceFilterer filters={filters} />
         </Stack>
       </CardContent>
     </Card>

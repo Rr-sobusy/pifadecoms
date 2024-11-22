@@ -44,7 +44,7 @@ const columns = [
   },
   {
     formatter(row, index) {
-      return <Stack>{row.particulars}</Stack>;
+      return <Stack>{`${row.Members?.lastName}, ${row.Members?.firstName}`}</Stack>;
     },
     name: 'Particulars?',
     width: '100px',

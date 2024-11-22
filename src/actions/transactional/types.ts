@@ -4,7 +4,7 @@
  * *
  */
 
-import { JournalType, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { fetchJournals } from './fetch-journal';

@@ -1,8 +1,6 @@
 import React from 'react';
 
-type PageProps = {};
-
-function page({}: PageProps) {
+function page() {
   return <div>page</div>;
 }
 

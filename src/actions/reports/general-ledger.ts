@@ -1,9 +1,7 @@
-import { type Dayjs } from 'dayjs';
-
 import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
-type LedgerType = {
+interface LedgerType {
   dateRange?: { startDate: string; endDate: string };
 };
 

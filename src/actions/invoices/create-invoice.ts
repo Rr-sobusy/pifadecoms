@@ -20,14 +20,19 @@ export const createInvoice = actionClient
   .bindArgsSchemas<[grandTotal: z.ZodNumber]>([z.number()])
   .action(async ({ parsedInput: Request, bindArgsParsedInputs: Args }) => {
     try {
-      const newInvoice = await prisma.invoice.create({
+      await prisma.invoice.create({
         data: {
           dateOfInvoice: Request.invDate,
           baseGrandTotal: Args[0],
           outStandingAmt: Args[0],
           memberId: Request.member.memberId,
           InvoiceItems: {
-            create: Request.lineItems.map((item) => ({ itemID: item.itemId, quantity: item.quantity,trade : item.trade ,rate: item.rate })),
+            create: Request.lineItems.map((item) => ({
+              itemID: item.itemId,
+              quantity: item.quantity,
+              trade: item.trade,
+              rate: item.rate,
+            })),
           },
         },
       });

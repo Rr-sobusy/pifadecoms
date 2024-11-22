@@ -7,7 +7,7 @@ import prisma from '@/lib/prisma';
  *  Paginating in server using offsetPage params in use javascript array methods to manipulate it
  */
 
-type MemberFilters = {
+interface MemberFilters {
   memberName?: string | undefined;
   offsetPage?: number | undefined;
   returnAll?: boolean;
@@ -39,7 +39,7 @@ export async function fetchMembers({ memberName, offsetPage = 1, returnAll = fal
 
   if (offsetPage) {
     const filteredByPage = extendedMembers.slice((offsetPage - 1) * 100, offsetPage * 100);
-    return Boolean(filteredByPage) ? filteredByPage : [];
+    return filteredByPage ? filteredByPage : [];
   }
 
   return extendedMembers;

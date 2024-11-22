@@ -1,11 +1,7 @@
 import * as React from 'react';
 import type { Metadata, Viewport } from 'next';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
-
 import '@/styles/global.css';
-
-import TopLoaderProvider from '@/providers/TopLoaderProvider';
-
 import { config } from '@/config';
 import { applyDefaultSettings } from '@/lib/settings/apply-default-settings';
 import { getSettings as getPersistedSettings } from '@/lib/settings/get-settings';

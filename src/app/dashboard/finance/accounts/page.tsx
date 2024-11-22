@@ -11,11 +11,11 @@ import { fetchChartofAccounts, fetchRootAccounts } from '@/actions/accounts/fetc
 import { AccountsTable } from '@/components/dashboard/finance/accounts-table';
 import { AddNewAccountDiaglog } from '@/components/dashboard/finance/add-account-dialog';
 
-type Props = {
+interface AccountListProps {
   searchParams: { create: boolean };
 };
 
-const page = async ({ searchParams }: Props) => {
+const page = async ({ searchParams }: AccountListProps) => {
   const { create } = searchParams;
 
   const chartOfAccounts = await fetchChartofAccounts();

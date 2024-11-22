@@ -22,7 +22,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
-import { createNewAccount } from '@/actions/accounts/add-new-childAccount';
+import { createNewAccount } from '@/actions/accounts/add-new-child-account';
 import { accountSchema, AccountSchemaType, AccountType } from '@/actions/accounts/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';

@@ -1,6 +1,3 @@
-import { type Dayjs } from 'dayjs';
-
-import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
 export async function fetchAccountTransactions() {

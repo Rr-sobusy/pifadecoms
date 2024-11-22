@@ -1,8 +1,5 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
-
-import type { AccountType } from '@/actions/accounts/types';
-
 import { fetchItems } from './fetch-items';
 
 export type ItemTypes = Prisma.PromiseReturnType<typeof fetchItems>;

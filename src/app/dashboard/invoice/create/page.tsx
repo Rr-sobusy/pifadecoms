@@ -1,5 +1,4 @@
 import * as React from 'react';
-import type { Metadata } from 'next';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -11,9 +10,7 @@ import { fetchItems } from '@/actions/items/fetch-items';
 import { fetchMembers } from '@/actions/members/fetch-members';
 import InvoiceCreateForm2 from '@/components/dashboard/invoice/_invoice-create-form';
 
-type Props = {};
-
-const page = async (props: Props) => {
+const page = async () => {
   const members = await fetchMembers({ returnAll: true });
   const items = await fetchItems();
   return (

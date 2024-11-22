@@ -148,19 +148,19 @@ const columns = [
   },
   {
     formatter: (row): React.JSX.Element => {
-      const popover = usePopover<HTMLButtonElement>();
+      // const popover = usePopover<HTMLButtonElement>();
       return (
         <>
-          <IconButton onClick={popover.handleOpen} ref={popover.anchorRef}>
+          <IconButton>
             <Dots />
           </IconButton>
-          <OptionPopOver
+          {/* <OptionPopOver
             isPaid={row.outStandingAmt === 0}
             invoiceId={row.invoiceId}
             anchorEl={popover.anchorRef.current}
             onClose={popover.handleClose}
             open={popover.open}
-          />
+          /> */}
         </>
       );
     },

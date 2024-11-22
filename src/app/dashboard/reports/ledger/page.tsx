@@ -1,14 +1,9 @@
 import React from 'react';
-import type { Metadata } from 'next';
-import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import type { Dayjs } from 'dayjs';
-
 import { dayjs } from '@/lib/dayjs';
 import { fetchLedgers } from '@/actions/reports/general-ledger';
 import DateRangeBtn from '@/components/dashboard/reports/ledgers/date-range-button';
@@ -41,7 +36,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         </Stack>
         <Stack spacing={1} sx={{ alignItems: 'center', marginTop: 3 }}>
           <Typography color="" variant="overline">
-            Pinagsibaan Farmer's Development Cooperative
+            Pinagsibaan Farmer's Development Multi-purpose Cooperative
           </Typography>
           <Typography fontWeight="600" fontSize="23px" variant="body1">
             General Ledger of Accounts

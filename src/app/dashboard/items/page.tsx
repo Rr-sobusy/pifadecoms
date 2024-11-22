@@ -16,7 +16,6 @@ import { ProductModal } from '@/components/dashboard/product/product-modal';
 import type { Filters } from '@/components/dashboard/product/products-filters';
 import { ProductsFilters } from '@/components/dashboard/product/products-filters';
 import { ProductsPagination } from '@/components/dashboard/product/products-pagination';
-import { ProductsTable } from '@/components/dashboard/product/products-table';
 import type { Product } from '@/components/dashboard/product/products-table';
 import { fetchItems } from '@/actions/items/fetch-items';
 import { ItemsTable } from '@/components/dashboard/product/items-table';

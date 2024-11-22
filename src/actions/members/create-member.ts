@@ -12,10 +12,9 @@ export const createNewMember = actionClient.schema(memberSchema).action(async ({
     const newMember = await prisma.members.create({
       data: _newMember,
     });
-    console.log(newMember)
     return { message: 'New member created!', data: newMember };
   } catch (error) {
-    console.error({ message: 'Error occureded in server:' + error });
+    console.error({ message: `Error occureded in server: ${error} `});
   }
   revalidatePath(paths.dashboard.members.list);
 });

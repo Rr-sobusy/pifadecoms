@@ -1,5 +1,4 @@
 import * as React from 'react';
-import type { Metadata } from 'next';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -11,9 +10,7 @@ import { paths } from '@/paths';
 import ItemCreateForm from '@/components/dashboard/items/item-create-form';
 import { fetchChartofAccounts } from '@/actions/accounts/fetch-accounts';
 
-type PageProps = {};
-
-async function page({}: PageProps): Promise<React.JSX.Element> {
+async function page(): Promise<React.JSX.Element> {
   const chartOfAccounts = await fetchChartofAccounts()
   return (
     <Box

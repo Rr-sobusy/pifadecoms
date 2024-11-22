@@ -1,21 +1,12 @@
 import React from 'react';
-import type { Metadata } from 'next';
-import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import type { Dayjs } from 'dayjs';
-
-import { dayjs } from '@/lib/dayjs';
 import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
 
-type PageProps = {};
-
-async function page({}: PageProps): Promise<React.JSX.Element> {
+async function page(): Promise<React.JSX.Element> {
   const accountTransactions = await fetchAccountTransactions();
   return (
     <Box
@@ -36,10 +27,10 @@ async function page({}: PageProps): Promise<React.JSX.Element> {
         </Stack>
         <Stack spacing={1} sx={{ alignItems: 'center', marginTop: 3 }}>
           <Typography color="" variant="overline">
-            Pinagsibaan Farmer's Development Cooperative
+            Pinagsibaan Farmer&apos;s Development Multi-purpose Cooperative
           </Typography>
           <Typography fontWeight="600" fontSize="23px" variant="body1">
-            Summary of Account's Transactions
+            Summary of Account&apos;'s Transactions
           </Typography>
           <Typography color="textDisabled" variant="body2">
             From{' '}
