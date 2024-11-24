@@ -35,6 +35,7 @@ import { Notifications } from '@/components/dashboard/customer/notifications';
 import type { Address } from '@/components/dashboard/customer/shipping-address';
 import { ShippingAddress } from '@/components/dashboard/customer/shipping-address';
 import { Balances, NonNullableInvoice } from '@/components/dashboard/members/profile-balances';
+import { redirect } from 'next/navigation';
 
 export const metadata = { title: `Details | Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
@@ -46,6 +47,11 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
   const { memberId } = params;
 
   const memberData = await fetchMemberData(memberId);
+
+  if(!memberData){
+      redirect(paths.dashboard.members.list)
+  }
+  
   return (
     <Box
       sx={{

@@ -91,13 +91,23 @@ model Members {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @default(now())
 
+  Savings          MemberSavings?
+
   dividends        Dividends[]    
   invoice          Invoice[]
   Journals         JournalEntries[]
 
+
   @@map("members")
   @@index([lastName, firstName])
 
+}
+
+model MemberSavings {
+  savingsId         Int         @id @default(autoincrement()) // Primary Key
+  memberId          String      @unique                      // Enforce one-to-one
+  balance           Float       @default(0)
+  Member            Members     @relation(fields: [memberId], references: [memberId])
 }
 
 model Invoice {

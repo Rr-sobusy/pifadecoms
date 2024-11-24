@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { FormLabel } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -19,7 +20,6 @@ import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
-import { FormLabel } from '@mui/material';
 
 export interface Filters {
   memberId?: string;
@@ -96,11 +96,11 @@ export function InvoiceFilterer({
     setValue,
   } = useForm<Values>({ values: getDefaultValues(filters), resolver: zodResolver(schema) });
 
-  const [member, setMemberData] = React.useState<{ memberId: string; lastName: string; firstName: string }[]>([]);
+  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
 
   const memberData = watch('member');
 
-  const debouncedValue = useDebounce(memberData?.lastName ?? "", 300) ;
+  const debouncedValue = useDebounce(memberData?.lastName ?? '', 300);
 
   React.useEffect(() => {
     if (!debouncedValue) {
@@ -178,9 +178,9 @@ export function InvoiceFilterer({
   const handleClearFilters = React.useCallback(() => {
     updateSearchParams({});
     onFiltersCleared?.();
-  }, [updateSearchParams, onFiltersCleared,]);
+  }, [updateSearchParams, onFiltersCleared]);
 
-  const hasFilters = filters.invoiceId || filters.memberId || filters.status || filters.startDate || filters.endDate;
+  // const hasFilters = filters.invoiceId || filters.memberId || filters.status || filters.startDate || filters.endDate;
 
   return (
     <form onSubmit={handleSubmit(handleApplyFilters)}>
@@ -226,8 +226,10 @@ export function InvoiceFilterer({
               onChange={(event, value) => {
                 field.onChange(value); // Update form value on selection
               }}
-              options={member}
-              getOptionLabel={(options) => `${options.lastName}, ${options.firstName}`}
+              options={member ?? []}
+              getOptionLabel={(option) =>
+                option && option.lastName && option.firstName ? `${option.lastName} ${option.firstName}` : ''
+              }
               renderInput={(params) => (
                 <FormControl fullWidth>
                   <FormLabel>Member Name</FormLabel>
