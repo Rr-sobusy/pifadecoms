@@ -130,7 +130,8 @@ model MemberFunds {
 }
 
 model FundTransactions {
-  fundId            Int             @id
+  id                BigInt          @id @default(autoincrement())
+  fundId            Int             
   ledgerId          BigInt?
   fundType          FundType
   transactionType   FundTransactionsType

@@ -7,14 +7,16 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
-import { fetchMembers } from '@/actions/members/fetch-members';
-import { MemberFilters } from '@/components/dashboard/members/members-filter';
-import { MembersTable } from '@/components/dashboard/members/members-table';
-import MembersPagination from '@/components/dashboard/members/members-table-pagination';
+import { fetchMemberFunds } from '@/actions/funds/fetch-funds';
+import FundsStats from '@/components/dashboard/funds/fund-stats';
+import { MemberFundsTable } from '@/components/dashboard/funds/member-funds-table';
 
 interface PageProps {}
 
-function page({}: PageProps) {
+async function page({}: PageProps): Promise<React.JSX.Element> {
+  const [memberFunds] = await Promise.all([fetchMemberFunds()]);
+  console.log(memberFunds);
+
   return (
     <Box
       sx={{
@@ -27,14 +29,20 @@ function page({}: PageProps) {
       <Stack spacing={4}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Member Savings Dashboard</Typography>
+            <Typography variant="h4">Member Funds</Typography>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button startIcon={<PlusIcon />} variant="contained">
-              Add
+              Add Member Funds
             </Button>
           </Box>
         </Stack>
+        <FundsStats />
+        <Card>
+          <Box sx={{ overflowX: 'auto' }}>
+            <MemberFundsTable rows={memberFunds} />
+          </Box>
+        </Card>
       </Stack>
     </Box>
   );

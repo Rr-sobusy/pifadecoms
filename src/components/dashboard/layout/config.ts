@@ -44,12 +44,12 @@ export const layoutConfig = {
           ],
         },
         {
-          key: 'savings',
-          title: 'Savings Manager',
+          key: 'funds',
+          title: 'Fund Manager',
           icon: 'money',
           items: [
-            { key: 'members', title: 'List members', href: paths.dashboard.members.list },
-            { key: 'members:create', title: 'Create member', href: paths.dashboard.members.create },
+            { key: 'fund', title: 'Member Funds', href: paths.dashboard.funds.list },
+            // { key: 'members:create', title: 'Create member', href: paths.dashboard.members.create },
             // { key: 'members:details', title: 'Customer details', href: paths.dashboard.members.details('1') },
           ],
         },

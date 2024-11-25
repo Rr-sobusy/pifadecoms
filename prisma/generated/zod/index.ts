@@ -16,7 +16,7 @@ export const MembersScalarFieldEnumSchema = z.enum(['memberId','lastName','first
 
 export const MemberFundsScalarFieldEnumSchema = z.enum(['fundId','memberId','createdAt','updatedAt','savingsBal','shareCapBal']);
 
-export const FundTransactionsScalarFieldEnumSchema = z.enum(['fundId','fundType','transactionType','createdAt','postedBalance']);
+export const FundTransactionsScalarFieldEnumSchema = z.enum(['fundId','ledgerId','fundType','transactionType','createdAt','postedBalance']);
 
 export const InvoiceScalarFieldEnumSchema = z.enum(['invoiceId','memberId','dateOfInvoice','baseGrandTotal','outStandingAmt','journalId']);
 
@@ -145,6 +145,7 @@ export const FundTransactionsSchema = z.object({
   fundType: FundTypeSchema,
   transactionType: FundTransactionsTypeSchema,
   fundId: z.number().int(),
+  ledgerId: z.bigint().nullable(),
   createdAt: z.coerce.date(),
   postedBalance: z.number(),
 })
@@ -398,6 +399,7 @@ export const MemberFundsSelectSchema: z.ZodType<Prisma.MemberFundsSelect> = z.ob
 //------------------------------------------------------
 
 export const FundTransactionsIncludeSchema: z.ZodType<Prisma.FundTransactionsInclude> = z.object({
+  JournalEntries: z.union([z.boolean(),z.lazy(() => JournalEntriesArgsSchema)]).optional(),
   MemberFunds: z.union([z.boolean(),z.lazy(() => MemberFundsArgsSchema)]).optional(),
 }).strict()
 
@@ -408,10 +410,12 @@ export const FundTransactionsArgsSchema: z.ZodType<Prisma.FundTransactionsDefaul
 
 export const FundTransactionsSelectSchema: z.ZodType<Prisma.FundTransactionsSelect> = z.object({
   fundId: z.boolean().optional(),
+  ledgerId: z.boolean().optional(),
   fundType: z.boolean().optional(),
   transactionType: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   postedBalance: z.boolean().optional(),
+  JournalEntries: z.union([z.boolean(),z.lazy(() => JournalEntriesArgsSchema)]).optional(),
   MemberFunds: z.union([z.boolean(),z.lazy(() => MemberFundsArgsSchema)]).optional(),
 }).strict()
 
@@ -641,6 +645,7 @@ export const SavingsTransactSelectSchema: z.ZodType<Prisma.SavingsTransactSelect
 
 export const JournalEntriesIncludeSchema: z.ZodType<Prisma.JournalEntriesInclude> = z.object({
   JournalItems: z.union([z.boolean(),z.lazy(() => JournalItemsFindManyArgsSchema)]).optional(),
+  MemberFundsTransact: z.union([z.boolean(),z.lazy(() => FundTransactionsFindManyArgsSchema)]).optional(),
   Members: z.union([z.boolean(),z.lazy(() => MembersArgsSchema)]).optional(),
   InvoicePayments: z.union([z.boolean(),z.lazy(() => InvoicePaymentsFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => JournalEntriesCountOutputTypeArgsSchema)]).optional(),
@@ -657,6 +662,7 @@ export const JournalEntriesCountOutputTypeArgsSchema: z.ZodType<Prisma.JournalEn
 
 export const JournalEntriesCountOutputTypeSelectSchema: z.ZodType<Prisma.JournalEntriesCountOutputTypeSelect> = z.object({
   JournalItems: z.boolean().optional(),
+  MemberFundsTransact: z.boolean().optional(),
   InvoicePayments: z.boolean().optional(),
 }).strict();
 
@@ -670,6 +676,7 @@ export const JournalEntriesSelectSchema: z.ZodType<Prisma.JournalEntriesSelect> 
   memberId: z.boolean().optional(),
   journalType: z.boolean().optional(),
   JournalItems: z.union([z.boolean(),z.lazy(() => JournalItemsFindManyArgsSchema)]).optional(),
+  MemberFundsTransact: z.union([z.boolean(),z.lazy(() => FundTransactionsFindManyArgsSchema)]).optional(),
   Members: z.union([z.boolean(),z.lazy(() => MembersArgsSchema)]).optional(),
   InvoicePayments: z.union([z.boolean(),z.lazy(() => InvoicePaymentsFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => JournalEntriesCountOutputTypeArgsSchema)]).optional(),
@@ -934,19 +941,23 @@ export const FundTransactionsWhereInputSchema: z.ZodType<Prisma.FundTransactions
   OR: z.lazy(() => FundTransactionsWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FundTransactionsWhereInputSchema),z.lazy(() => FundTransactionsWhereInputSchema).array() ]).optional(),
   fundId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  ledgerId: z.union([ z.lazy(() => BigIntNullableFilterSchema),z.bigint() ]).optional().nullable(),
   fundType: z.union([ z.lazy(() => EnumFundTypeFilterSchema),z.lazy(() => FundTypeSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   postedBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  JournalEntries: z.union([ z.lazy(() => JournalEntriesNullableRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional().nullable(),
   MemberFunds: z.union([ z.lazy(() => MemberFundsRelationFilterSchema),z.lazy(() => MemberFundsWhereInputSchema) ]).optional(),
 }).strict();
 
 export const FundTransactionsOrderByWithRelationInputSchema: z.ZodType<Prisma.FundTransactionsOrderByWithRelationInput> = z.object({
   fundId: z.lazy(() => SortOrderSchema).optional(),
+  ledgerId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   fundType: z.lazy(() => SortOrderSchema).optional(),
   transactionType: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   postedBalance: z.lazy(() => SortOrderSchema).optional(),
+  JournalEntries: z.lazy(() => JournalEntriesOrderByWithRelationInputSchema).optional(),
   MemberFunds: z.lazy(() => MemberFundsOrderByWithRelationInputSchema).optional()
 }).strict();
 
@@ -958,15 +969,18 @@ export const FundTransactionsWhereUniqueInputSchema: z.ZodType<Prisma.FundTransa
   AND: z.union([ z.lazy(() => FundTransactionsWhereInputSchema),z.lazy(() => FundTransactionsWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => FundTransactionsWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FundTransactionsWhereInputSchema),z.lazy(() => FundTransactionsWhereInputSchema).array() ]).optional(),
+  ledgerId: z.union([ z.lazy(() => BigIntNullableFilterSchema),z.bigint() ]).optional().nullable(),
   fundType: z.union([ z.lazy(() => EnumFundTypeFilterSchema),z.lazy(() => FundTypeSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   postedBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  JournalEntries: z.union([ z.lazy(() => JournalEntriesNullableRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional().nullable(),
   MemberFunds: z.union([ z.lazy(() => MemberFundsRelationFilterSchema),z.lazy(() => MemberFundsWhereInputSchema) ]).optional(),
 }).strict());
 
 export const FundTransactionsOrderByWithAggregationInputSchema: z.ZodType<Prisma.FundTransactionsOrderByWithAggregationInput> = z.object({
   fundId: z.lazy(() => SortOrderSchema).optional(),
+  ledgerId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   fundType: z.lazy(() => SortOrderSchema).optional(),
   transactionType: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -983,6 +997,7 @@ export const FundTransactionsScalarWhereWithAggregatesInputSchema: z.ZodType<Pri
   OR: z.lazy(() => FundTransactionsScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FundTransactionsScalarWhereWithAggregatesInputSchema),z.lazy(() => FundTransactionsScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   fundId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  ledgerId: z.union([ z.lazy(() => BigIntNullableWithAggregatesFilterSchema),z.bigint() ]).optional().nullable(),
   fundType: z.union([ z.lazy(() => EnumFundTypeWithAggregatesFilterSchema),z.lazy(() => FundTypeSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeWithAggregatesFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
@@ -1535,6 +1550,7 @@ export const JournalEntriesWhereInputSchema: z.ZodType<Prisma.JournalEntriesWher
   memberId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   journalType: z.union([ z.lazy(() => EnumJournalTypeFilterSchema),z.lazy(() => JournalTypeSchema) ]).optional(),
   JournalItems: z.lazy(() => JournalItemsListRelationFilterSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsListRelationFilterSchema).optional(),
   Members: z.union([ z.lazy(() => MembersNullableRelationFilterSchema),z.lazy(() => MembersWhereInputSchema) ]).optional().nullable(),
   InvoicePayments: z.lazy(() => InvoicePaymentsListRelationFilterSchema).optional()
 }).strict();
@@ -1549,6 +1565,7 @@ export const JournalEntriesOrderByWithRelationInputSchema: z.ZodType<Prisma.Jour
   memberId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   journalType: z.lazy(() => SortOrderSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsOrderByRelationAggregateInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsOrderByRelationAggregateInputSchema).optional(),
   Members: z.lazy(() => MembersOrderByWithRelationInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsOrderByRelationAggregateInputSchema).optional()
 }).strict();
@@ -1569,6 +1586,7 @@ export const JournalEntriesWhereUniqueInputSchema: z.ZodType<Prisma.JournalEntri
   memberId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   journalType: z.union([ z.lazy(() => EnumJournalTypeFilterSchema),z.lazy(() => JournalTypeSchema) ]).optional(),
   JournalItems: z.lazy(() => JournalItemsListRelationFilterSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsListRelationFilterSchema).optional(),
   Members: z.union([ z.lazy(() => MembersNullableRelationFilterSchema),z.lazy(() => MembersWhereInputSchema) ]).optional().nullable(),
   InvoicePayments: z.lazy(() => InvoicePaymentsListRelationFilterSchema).optional()
 }).strict());
@@ -1918,11 +1936,13 @@ export const FundTransactionsCreateInputSchema: z.ZodType<Prisma.FundTransaction
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
+  JournalEntries: z.lazy(() => JournalEntriesCreateNestedOneWithoutMemberFundsTransactInputSchema).optional(),
   MemberFunds: z.lazy(() => MemberFundsCreateNestedOneWithoutTransactionsInputSchema)
 }).strict();
 
 export const FundTransactionsUncheckedCreateInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedCreateInput> = z.object({
   fundId: z.number().int(),
+  ledgerId: z.bigint().optional().nullable(),
   fundType: z.lazy(() => FundTypeSchema),
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
@@ -1934,11 +1954,13 @@ export const FundTransactionsUpdateInputSchema: z.ZodType<Prisma.FundTransaction
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  JournalEntries: z.lazy(() => JournalEntriesUpdateOneWithoutMemberFundsTransactNestedInputSchema).optional(),
   MemberFunds: z.lazy(() => MemberFundsUpdateOneRequiredWithoutTransactionsNestedInputSchema).optional()
 }).strict();
 
 export const FundTransactionsUncheckedUpdateInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateInput> = z.object({
   fundId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ledgerId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1947,6 +1969,7 @@ export const FundTransactionsUncheckedUpdateInputSchema: z.ZodType<Prisma.FundTr
 
 export const FundTransactionsCreateManyInputSchema: z.ZodType<Prisma.FundTransactionsCreateManyInput> = z.object({
   fundId: z.number().int(),
+  ledgerId: z.bigint().optional().nullable(),
   fundType: z.lazy(() => FundTypeSchema),
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
@@ -1962,6 +1985,7 @@ export const FundTransactionsUpdateManyMutationInputSchema: z.ZodType<Prisma.Fun
 
 export const FundTransactionsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateManyInput> = z.object({
   fundId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ledgerId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -2487,6 +2511,7 @@ export const JournalEntriesCreateInputSchema: z.ZodType<Prisma.JournalEntriesCre
   createdAt: z.coerce.date().optional(),
   journalType: z.lazy(() => JournalTypeSchema),
   JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
   Members: z.lazy(() => MembersCreateNestedOneWithoutJournalsInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsCreateNestedManyWithoutJournalEntryInputSchema).optional()
 }).strict();
@@ -2501,6 +2526,7 @@ export const JournalEntriesUncheckedCreateInputSchema: z.ZodType<Prisma.JournalE
   memberId: z.string().optional().nullable(),
   journalType: z.lazy(() => JournalTypeSchema),
   JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUncheckedCreateNestedManyWithoutJournalEntryInputSchema).optional()
 }).strict();
 
@@ -2513,6 +2539,7 @@ export const JournalEntriesUpdateInputSchema: z.ZodType<Prisma.JournalEntriesUpd
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
   JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
   Members: z.lazy(() => MembersUpdateOneWithoutJournalsNestedInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUpdateManyWithoutJournalEntryNestedInputSchema).optional()
 }).strict();
@@ -2527,6 +2554,7 @@ export const JournalEntriesUncheckedUpdateInputSchema: z.ZodType<Prisma.JournalE
   memberId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
   JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUncheckedUpdateManyWithoutJournalEntryNestedInputSchema).optional()
 }).strict();
 
@@ -3008,6 +3036,17 @@ export const FloatWithAggregatesFilterSchema: z.ZodType<Prisma.FloatWithAggregat
   _max: z.lazy(() => NestedFloatFilterSchema).optional()
 }).strict();
 
+export const BigIntNullableFilterSchema: z.ZodType<Prisma.BigIntNullableFilter> = z.object({
+  equals: z.bigint().optional().nullable(),
+  in: z.bigint().array().optional().nullable(),
+  notIn: z.bigint().array().optional().nullable(),
+  lt: z.bigint().optional(),
+  lte: z.bigint().optional(),
+  gt: z.bigint().optional(),
+  gte: z.bigint().optional(),
+  not: z.union([ z.bigint(),z.lazy(() => NestedBigIntNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
 export const EnumFundTypeFilterSchema: z.ZodType<Prisma.EnumFundTypeFilter> = z.object({
   equals: z.lazy(() => FundTypeSchema).optional(),
   in: z.lazy(() => FundTypeSchema).array().optional(),
@@ -3022,6 +3061,11 @@ export const EnumFundTransactionsTypeFilterSchema: z.ZodType<Prisma.EnumFundTran
   not: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => NestedEnumFundTransactionsTypeFilterSchema) ]).optional(),
 }).strict();
 
+export const JournalEntriesNullableRelationFilterSchema: z.ZodType<Prisma.JournalEntriesNullableRelationFilter> = z.object({
+  is: z.lazy(() => JournalEntriesWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => JournalEntriesWhereInputSchema).optional().nullable()
+}).strict();
+
 export const MemberFundsRelationFilterSchema: z.ZodType<Prisma.MemberFundsRelationFilter> = z.object({
   is: z.lazy(() => MemberFundsWhereInputSchema).optional(),
   isNot: z.lazy(() => MemberFundsWhereInputSchema).optional()
@@ -3029,6 +3073,7 @@ export const MemberFundsRelationFilterSchema: z.ZodType<Prisma.MemberFundsRelati
 
 export const FundTransactionsCountOrderByAggregateInputSchema: z.ZodType<Prisma.FundTransactionsCountOrderByAggregateInput> = z.object({
   fundId: z.lazy(() => SortOrderSchema).optional(),
+  ledgerId: z.lazy(() => SortOrderSchema).optional(),
   fundType: z.lazy(() => SortOrderSchema).optional(),
   transactionType: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -3037,11 +3082,13 @@ export const FundTransactionsCountOrderByAggregateInputSchema: z.ZodType<Prisma.
 
 export const FundTransactionsAvgOrderByAggregateInputSchema: z.ZodType<Prisma.FundTransactionsAvgOrderByAggregateInput> = z.object({
   fundId: z.lazy(() => SortOrderSchema).optional(),
+  ledgerId: z.lazy(() => SortOrderSchema).optional(),
   postedBalance: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const FundTransactionsMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FundTransactionsMaxOrderByAggregateInput> = z.object({
   fundId: z.lazy(() => SortOrderSchema).optional(),
+  ledgerId: z.lazy(() => SortOrderSchema).optional(),
   fundType: z.lazy(() => SortOrderSchema).optional(),
   transactionType: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -3050,6 +3097,7 @@ export const FundTransactionsMaxOrderByAggregateInputSchema: z.ZodType<Prisma.Fu
 
 export const FundTransactionsMinOrderByAggregateInputSchema: z.ZodType<Prisma.FundTransactionsMinOrderByAggregateInput> = z.object({
   fundId: z.lazy(() => SortOrderSchema).optional(),
+  ledgerId: z.lazy(() => SortOrderSchema).optional(),
   fundType: z.lazy(() => SortOrderSchema).optional(),
   transactionType: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -3058,7 +3106,24 @@ export const FundTransactionsMinOrderByAggregateInputSchema: z.ZodType<Prisma.Fu
 
 export const FundTransactionsSumOrderByAggregateInputSchema: z.ZodType<Prisma.FundTransactionsSumOrderByAggregateInput> = z.object({
   fundId: z.lazy(() => SortOrderSchema).optional(),
+  ledgerId: z.lazy(() => SortOrderSchema).optional(),
   postedBalance: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const BigIntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.BigIntNullableWithAggregatesFilter> = z.object({
+  equals: z.bigint().optional().nullable(),
+  in: z.bigint().array().optional().nullable(),
+  notIn: z.bigint().array().optional().nullable(),
+  lt: z.bigint().optional(),
+  lte: z.bigint().optional(),
+  gt: z.bigint().optional(),
+  gte: z.bigint().optional(),
+  not: z.union([ z.bigint(),z.lazy(() => NestedBigIntNullableWithAggregatesFilterSchema) ]).optional().nullable(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
+  _sum: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedBigIntNullableFilterSchema).optional()
 }).strict();
 
 export const EnumFundTypeWithAggregatesFilterSchema: z.ZodType<Prisma.EnumFundTypeWithAggregatesFilter> = z.object({
@@ -3090,17 +3155,6 @@ export const BigIntFilterSchema: z.ZodType<Prisma.BigIntFilter> = z.object({
   gt: z.bigint().optional(),
   gte: z.bigint().optional(),
   not: z.union([ z.bigint(),z.lazy(() => NestedBigIntFilterSchema) ]).optional(),
-}).strict();
-
-export const BigIntNullableFilterSchema: z.ZodType<Prisma.BigIntNullableFilter> = z.object({
-  equals: z.bigint().optional().nullable(),
-  in: z.bigint().array().optional().nullable(),
-  notIn: z.bigint().array().optional().nullable(),
-  lt: z.bigint().optional(),
-  lte: z.bigint().optional(),
-  gt: z.bigint().optional(),
-  gte: z.bigint().optional(),
-  not: z.union([ z.bigint(),z.lazy(() => NestedBigIntNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
 export const InvoiceItemsListRelationFilterSchema: z.ZodType<Prisma.InvoiceItemsListRelationFilter> = z.object({
@@ -3178,22 +3232,6 @@ export const BigIntWithAggregatesFilterSchema: z.ZodType<Prisma.BigIntWithAggreg
   _sum: z.lazy(() => NestedBigIntFilterSchema).optional(),
   _min: z.lazy(() => NestedBigIntFilterSchema).optional(),
   _max: z.lazy(() => NestedBigIntFilterSchema).optional()
-}).strict();
-
-export const BigIntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.BigIntNullableWithAggregatesFilter> = z.object({
-  equals: z.bigint().optional().nullable(),
-  in: z.bigint().array().optional().nullable(),
-  notIn: z.bigint().array().optional().nullable(),
-  lt: z.bigint().optional(),
-  lte: z.bigint().optional(),
-  gt: z.bigint().optional(),
-  gte: z.bigint().optional(),
-  not: z.union([ z.bigint(),z.lazy(() => NestedBigIntNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
-  _sum: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedBigIntNullableFilterSchema).optional()
 }).strict();
 
 export const ItemsRelationFilterSchema: z.ZodType<Prisma.ItemsRelationFilter> = z.object({
@@ -3947,6 +3985,12 @@ export const FundTransactionsUncheckedUpdateManyWithoutMemberFundsNestedInputSch
   deleteMany: z.union([ z.lazy(() => FundTransactionsScalarWhereInputSchema),z.lazy(() => FundTransactionsScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const JournalEntriesCreateNestedOneWithoutMemberFundsTransactInputSchema: z.ZodType<Prisma.JournalEntriesCreateNestedOneWithoutMemberFundsTransactInput> = z.object({
+  create: z.union([ z.lazy(() => JournalEntriesCreateWithoutMemberFundsTransactInputSchema),z.lazy(() => JournalEntriesUncheckedCreateWithoutMemberFundsTransactInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => JournalEntriesCreateOrConnectWithoutMemberFundsTransactInputSchema).optional(),
+  connect: z.lazy(() => JournalEntriesWhereUniqueInputSchema).optional()
+}).strict();
+
 export const MemberFundsCreateNestedOneWithoutTransactionsInputSchema: z.ZodType<Prisma.MemberFundsCreateNestedOneWithoutTransactionsInput> = z.object({
   create: z.union([ z.lazy(() => MemberFundsCreateWithoutTransactionsInputSchema),z.lazy(() => MemberFundsUncheckedCreateWithoutTransactionsInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => MemberFundsCreateOrConnectWithoutTransactionsInputSchema).optional(),
@@ -3961,12 +4005,30 @@ export const EnumFundTransactionsTypeFieldUpdateOperationsInputSchema: z.ZodType
   set: z.lazy(() => FundTransactionsTypeSchema).optional()
 }).strict();
 
+export const JournalEntriesUpdateOneWithoutMemberFundsTransactNestedInputSchema: z.ZodType<Prisma.JournalEntriesUpdateOneWithoutMemberFundsTransactNestedInput> = z.object({
+  create: z.union([ z.lazy(() => JournalEntriesCreateWithoutMemberFundsTransactInputSchema),z.lazy(() => JournalEntriesUncheckedCreateWithoutMemberFundsTransactInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => JournalEntriesCreateOrConnectWithoutMemberFundsTransactInputSchema).optional(),
+  upsert: z.lazy(() => JournalEntriesUpsertWithoutMemberFundsTransactInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => JournalEntriesWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => JournalEntriesUpdateToOneWithWhereWithoutMemberFundsTransactInputSchema),z.lazy(() => JournalEntriesUpdateWithoutMemberFundsTransactInputSchema),z.lazy(() => JournalEntriesUncheckedUpdateWithoutMemberFundsTransactInputSchema) ]).optional(),
+}).strict();
+
 export const MemberFundsUpdateOneRequiredWithoutTransactionsNestedInputSchema: z.ZodType<Prisma.MemberFundsUpdateOneRequiredWithoutTransactionsNestedInput> = z.object({
   create: z.union([ z.lazy(() => MemberFundsCreateWithoutTransactionsInputSchema),z.lazy(() => MemberFundsUncheckedCreateWithoutTransactionsInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => MemberFundsCreateOrConnectWithoutTransactionsInputSchema).optional(),
   upsert: z.lazy(() => MemberFundsUpsertWithoutTransactionsInputSchema).optional(),
   connect: z.lazy(() => MemberFundsWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => MemberFundsUpdateToOneWithWhereWithoutTransactionsInputSchema),z.lazy(() => MemberFundsUpdateWithoutTransactionsInputSchema),z.lazy(() => MemberFundsUncheckedUpdateWithoutTransactionsInputSchema) ]).optional(),
+}).strict();
+
+export const NullableBigIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableBigIntFieldUpdateOperationsInput> = z.object({
+  set: z.bigint().optional().nullable(),
+  increment: z.bigint().optional(),
+  decrement: z.bigint().optional(),
+  multiply: z.bigint().optional(),
+  divide: z.bigint().optional()
 }).strict();
 
 export const MembersCreateNestedOneWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersCreateNestedOneWithoutInvoiceInput> = z.object({
@@ -4005,14 +4067,6 @@ export const InvoicePaymentsUncheckedCreateNestedManyWithoutInvoiceInputSchema: 
 
 export const BigIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.BigIntFieldUpdateOperationsInput> = z.object({
   set: z.bigint().optional(),
-  increment: z.bigint().optional(),
-  decrement: z.bigint().optional(),
-  multiply: z.bigint().optional(),
-  divide: z.bigint().optional()
-}).strict();
-
-export const NullableBigIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableBigIntFieldUpdateOperationsInput> = z.object({
-  set: z.bigint().optional().nullable(),
   increment: z.bigint().optional(),
   decrement: z.bigint().optional(),
   multiply: z.bigint().optional(),
@@ -4372,6 +4426,13 @@ export const JournalItemsCreateNestedManyWithoutJournalEntriesInputSchema: z.Zod
   connect: z.union([ z.lazy(() => JournalItemsWhereUniqueInputSchema),z.lazy(() => JournalItemsWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const FundTransactionsCreateNestedManyWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsCreateNestedManyWithoutJournalEntriesInput> = z.object({
+  create: z.union([ z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema).array(),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FundTransactionsCreateManyJournalEntriesInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const MembersCreateNestedOneWithoutJournalsInputSchema: z.ZodType<Prisma.MembersCreateNestedOneWithoutJournalsInput> = z.object({
   create: z.union([ z.lazy(() => MembersCreateWithoutJournalsInputSchema),z.lazy(() => MembersUncheckedCreateWithoutJournalsInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => MembersCreateOrConnectWithoutJournalsInputSchema).optional(),
@@ -4390,6 +4451,13 @@ export const JournalItemsUncheckedCreateNestedManyWithoutJournalEntriesInputSche
   connectOrCreate: z.union([ z.lazy(() => JournalItemsCreateOrConnectWithoutJournalEntriesInputSchema),z.lazy(() => JournalItemsCreateOrConnectWithoutJournalEntriesInputSchema).array() ]).optional(),
   createMany: z.lazy(() => JournalItemsCreateManyJournalEntriesInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => JournalItemsWhereUniqueInputSchema),z.lazy(() => JournalItemsWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const FundTransactionsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedCreateNestedManyWithoutJournalEntriesInput> = z.object({
+  create: z.union([ z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema).array(),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FundTransactionsCreateManyJournalEntriesInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const InvoicePaymentsUncheckedCreateNestedManyWithoutJournalEntryInputSchema: z.ZodType<Prisma.InvoicePaymentsUncheckedCreateNestedManyWithoutJournalEntryInput> = z.object({
@@ -4419,6 +4487,20 @@ export const JournalItemsUpdateManyWithoutJournalEntriesNestedInputSchema: z.Zod
   update: z.union([ z.lazy(() => JournalItemsUpdateWithWhereUniqueWithoutJournalEntriesInputSchema),z.lazy(() => JournalItemsUpdateWithWhereUniqueWithoutJournalEntriesInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => JournalItemsUpdateManyWithWhereWithoutJournalEntriesInputSchema),z.lazy(() => JournalItemsUpdateManyWithWhereWithoutJournalEntriesInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => JournalItemsScalarWhereInputSchema),z.lazy(() => JournalItemsScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const FundTransactionsUpdateManyWithoutJournalEntriesNestedInputSchema: z.ZodType<Prisma.FundTransactionsUpdateManyWithoutJournalEntriesNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema).array(),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => FundTransactionsUpsertWithWhereUniqueWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUpsertWithWhereUniqueWithoutJournalEntriesInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FundTransactionsCreateManyJournalEntriesInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => FundTransactionsUpdateWithWhereUniqueWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUpdateWithWhereUniqueWithoutJournalEntriesInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => FundTransactionsUpdateManyWithWhereWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUpdateManyWithWhereWithoutJournalEntriesInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => FundTransactionsScalarWhereInputSchema),z.lazy(() => FundTransactionsScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const MembersUpdateOneWithoutJournalsNestedInputSchema: z.ZodType<Prisma.MembersUpdateOneWithoutJournalsNestedInput> = z.object({
@@ -4457,6 +4539,20 @@ export const JournalItemsUncheckedUpdateManyWithoutJournalEntriesNestedInputSche
   update: z.union([ z.lazy(() => JournalItemsUpdateWithWhereUniqueWithoutJournalEntriesInputSchema),z.lazy(() => JournalItemsUpdateWithWhereUniqueWithoutJournalEntriesInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => JournalItemsUpdateManyWithWhereWithoutJournalEntriesInputSchema),z.lazy(() => JournalItemsUpdateManyWithWhereWithoutJournalEntriesInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => JournalItemsScalarWhereInputSchema),z.lazy(() => JournalItemsScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const FundTransactionsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateManyWithoutJournalEntriesNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema).array(),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => FundTransactionsUpsertWithWhereUniqueWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUpsertWithWhereUniqueWithoutJournalEntriesInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FundTransactionsCreateManyJournalEntriesInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => FundTransactionsWhereUniqueInputSchema),z.lazy(() => FundTransactionsWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => FundTransactionsUpdateWithWhereUniqueWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUpdateWithWhereUniqueWithoutJournalEntriesInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => FundTransactionsUpdateManyWithWhereWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUpdateManyWithWhereWithoutJournalEntriesInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => FundTransactionsScalarWhereInputSchema),z.lazy(() => FundTransactionsScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const InvoicePaymentsUncheckedUpdateManyWithoutJournalEntryNestedInputSchema: z.ZodType<Prisma.InvoicePaymentsUncheckedUpdateManyWithoutJournalEntryNestedInput> = z.object({
@@ -4722,6 +4818,17 @@ export const NestedFloatWithAggregatesFilterSchema: z.ZodType<Prisma.NestedFloat
   _max: z.lazy(() => NestedFloatFilterSchema).optional()
 }).strict();
 
+export const NestedBigIntNullableFilterSchema: z.ZodType<Prisma.NestedBigIntNullableFilter> = z.object({
+  equals: z.bigint().optional().nullable(),
+  in: z.bigint().array().optional().nullable(),
+  notIn: z.bigint().array().optional().nullable(),
+  lt: z.bigint().optional(),
+  lte: z.bigint().optional(),
+  gt: z.bigint().optional(),
+  gte: z.bigint().optional(),
+  not: z.union([ z.bigint(),z.lazy(() => NestedBigIntNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
 export const NestedEnumFundTypeFilterSchema: z.ZodType<Prisma.NestedEnumFundTypeFilter> = z.object({
   equals: z.lazy(() => FundTypeSchema).optional(),
   in: z.lazy(() => FundTypeSchema).array().optional(),
@@ -4734,6 +4841,22 @@ export const NestedEnumFundTransactionsTypeFilterSchema: z.ZodType<Prisma.Nested
   in: z.lazy(() => FundTransactionsTypeSchema).array().optional(),
   notIn: z.lazy(() => FundTransactionsTypeSchema).array().optional(),
   not: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => NestedEnumFundTransactionsTypeFilterSchema) ]).optional(),
+}).strict();
+
+export const NestedBigIntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBigIntNullableWithAggregatesFilter> = z.object({
+  equals: z.bigint().optional().nullable(),
+  in: z.bigint().array().optional().nullable(),
+  notIn: z.bigint().array().optional().nullable(),
+  lt: z.bigint().optional(),
+  lte: z.bigint().optional(),
+  gt: z.bigint().optional(),
+  gte: z.bigint().optional(),
+  not: z.union([ z.bigint(),z.lazy(() => NestedBigIntNullableWithAggregatesFilterSchema) ]).optional().nullable(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
+  _sum: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedBigIntNullableFilterSchema).optional()
 }).strict();
 
 export const NestedEnumFundTypeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumFundTypeWithAggregatesFilter> = z.object({
@@ -4767,17 +4890,6 @@ export const NestedBigIntFilterSchema: z.ZodType<Prisma.NestedBigIntFilter> = z.
   not: z.union([ z.bigint(),z.lazy(() => NestedBigIntFilterSchema) ]).optional(),
 }).strict();
 
-export const NestedBigIntNullableFilterSchema: z.ZodType<Prisma.NestedBigIntNullableFilter> = z.object({
-  equals: z.bigint().optional().nullable(),
-  in: z.bigint().array().optional().nullable(),
-  notIn: z.bigint().array().optional().nullable(),
-  lt: z.bigint().optional(),
-  lte: z.bigint().optional(),
-  gt: z.bigint().optional(),
-  gte: z.bigint().optional(),
-  not: z.union([ z.bigint(),z.lazy(() => NestedBigIntNullableFilterSchema) ]).optional().nullable(),
-}).strict();
-
 export const NestedBigIntWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBigIntWithAggregatesFilter> = z.object({
   equals: z.bigint().optional(),
   in: z.bigint().array().optional(),
@@ -4792,22 +4904,6 @@ export const NestedBigIntWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBigI
   _sum: z.lazy(() => NestedBigIntFilterSchema).optional(),
   _min: z.lazy(() => NestedBigIntFilterSchema).optional(),
   _max: z.lazy(() => NestedBigIntFilterSchema).optional()
-}).strict();
-
-export const NestedBigIntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBigIntNullableWithAggregatesFilter> = z.object({
-  equals: z.bigint().optional().nullable(),
-  in: z.bigint().array().optional().nullable(),
-  notIn: z.bigint().array().optional().nullable(),
-  lt: z.bigint().optional(),
-  lte: z.bigint().optional(),
-  gt: z.bigint().optional(),
-  gte: z.bigint().optional(),
-  not: z.union([ z.bigint(),z.lazy(() => NestedBigIntNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
-  _sum: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedBigIntNullableFilterSchema).optional()
 }).strict();
 
 export const NestedEnumItemTypeFilterSchema: z.ZodType<Prisma.NestedEnumItemTypeFilter> = z.object({
@@ -4993,6 +5089,7 @@ export const JournalEntriesCreateWithoutMembersInputSchema: z.ZodType<Prisma.Jou
   createdAt: z.coerce.date().optional(),
   journalType: z.lazy(() => JournalTypeSchema),
   JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsCreateNestedManyWithoutJournalEntryInputSchema).optional()
 }).strict();
 
@@ -5005,6 +5102,7 @@ export const JournalEntriesUncheckedCreateWithoutMembersInputSchema: z.ZodType<P
   createdAt: z.coerce.date().optional(),
   journalType: z.lazy(() => JournalTypeSchema),
   JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUncheckedCreateNestedManyWithoutJournalEntryInputSchema).optional()
 }).strict();
 
@@ -5194,10 +5292,12 @@ export const FundTransactionsCreateWithoutMemberFundsInputSchema: z.ZodType<Pris
   fundType: z.lazy(() => FundTypeSchema),
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
-  postedBalance: z.number()
+  postedBalance: z.number(),
+  JournalEntries: z.lazy(() => JournalEntriesCreateNestedOneWithoutMemberFundsTransactInputSchema).optional()
 }).strict();
 
 export const FundTransactionsUncheckedCreateWithoutMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedCreateWithoutMemberFundsInput> = z.object({
+  ledgerId: z.bigint().optional().nullable(),
   fundType: z.lazy(() => FundTypeSchema),
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
@@ -5300,10 +5400,42 @@ export const FundTransactionsScalarWhereInputSchema: z.ZodType<Prisma.FundTransa
   OR: z.lazy(() => FundTransactionsScalarWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FundTransactionsScalarWhereInputSchema),z.lazy(() => FundTransactionsScalarWhereInputSchema).array() ]).optional(),
   fundId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  ledgerId: z.union([ z.lazy(() => BigIntNullableFilterSchema),z.bigint() ]).optional().nullable(),
   fundType: z.union([ z.lazy(() => EnumFundTypeFilterSchema),z.lazy(() => FundTypeSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   postedBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+}).strict();
+
+export const JournalEntriesCreateWithoutMemberFundsTransactInputSchema: z.ZodType<Prisma.JournalEntriesCreateWithoutMemberFundsTransactInput> = z.object({
+  entryId: z.bigint().optional(),
+  entryDate: z.coerce.date(),
+  referenceName: z.string(),
+  referenceType: z.lazy(() => ReferenceTypeSchema),
+  notes: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  journalType: z.lazy(() => JournalTypeSchema),
+  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
+  Members: z.lazy(() => MembersCreateNestedOneWithoutJournalsInputSchema).optional(),
+  InvoicePayments: z.lazy(() => InvoicePaymentsCreateNestedManyWithoutJournalEntryInputSchema).optional()
+}).strict();
+
+export const JournalEntriesUncheckedCreateWithoutMemberFundsTransactInputSchema: z.ZodType<Prisma.JournalEntriesUncheckedCreateWithoutMemberFundsTransactInput> = z.object({
+  entryId: z.bigint().optional(),
+  entryDate: z.coerce.date(),
+  referenceName: z.string(),
+  referenceType: z.lazy(() => ReferenceTypeSchema),
+  notes: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  memberId: z.string().optional().nullable(),
+  journalType: z.lazy(() => JournalTypeSchema),
+  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
+  InvoicePayments: z.lazy(() => InvoicePaymentsUncheckedCreateNestedManyWithoutJournalEntryInputSchema).optional()
+}).strict();
+
+export const JournalEntriesCreateOrConnectWithoutMemberFundsTransactInputSchema: z.ZodType<Prisma.JournalEntriesCreateOrConnectWithoutMemberFundsTransactInput> = z.object({
+  where: z.lazy(() => JournalEntriesWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => JournalEntriesCreateWithoutMemberFundsTransactInputSchema),z.lazy(() => JournalEntriesUncheckedCreateWithoutMemberFundsTransactInputSchema) ]),
 }).strict();
 
 export const MemberFundsCreateWithoutTransactionsInputSchema: z.ZodType<Prisma.MemberFundsCreateWithoutTransactionsInput> = z.object({
@@ -5326,6 +5458,43 @@ export const MemberFundsUncheckedCreateWithoutTransactionsInputSchema: z.ZodType
 export const MemberFundsCreateOrConnectWithoutTransactionsInputSchema: z.ZodType<Prisma.MemberFundsCreateOrConnectWithoutTransactionsInput> = z.object({
   where: z.lazy(() => MemberFundsWhereUniqueInputSchema),
   create: z.union([ z.lazy(() => MemberFundsCreateWithoutTransactionsInputSchema),z.lazy(() => MemberFundsUncheckedCreateWithoutTransactionsInputSchema) ]),
+}).strict();
+
+export const JournalEntriesUpsertWithoutMemberFundsTransactInputSchema: z.ZodType<Prisma.JournalEntriesUpsertWithoutMemberFundsTransactInput> = z.object({
+  update: z.union([ z.lazy(() => JournalEntriesUpdateWithoutMemberFundsTransactInputSchema),z.lazy(() => JournalEntriesUncheckedUpdateWithoutMemberFundsTransactInputSchema) ]),
+  create: z.union([ z.lazy(() => JournalEntriesCreateWithoutMemberFundsTransactInputSchema),z.lazy(() => JournalEntriesUncheckedCreateWithoutMemberFundsTransactInputSchema) ]),
+  where: z.lazy(() => JournalEntriesWhereInputSchema).optional()
+}).strict();
+
+export const JournalEntriesUpdateToOneWithWhereWithoutMemberFundsTransactInputSchema: z.ZodType<Prisma.JournalEntriesUpdateToOneWithWhereWithoutMemberFundsTransactInput> = z.object({
+  where: z.lazy(() => JournalEntriesWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => JournalEntriesUpdateWithoutMemberFundsTransactInputSchema),z.lazy(() => JournalEntriesUncheckedUpdateWithoutMemberFundsTransactInputSchema) ]),
+}).strict();
+
+export const JournalEntriesUpdateWithoutMemberFundsTransactInputSchema: z.ZodType<Prisma.JournalEntriesUpdateWithoutMemberFundsTransactInput> = z.object({
+  entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
+  entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
+  Members: z.lazy(() => MembersUpdateOneWithoutJournalsNestedInputSchema).optional(),
+  InvoicePayments: z.lazy(() => InvoicePaymentsUpdateManyWithoutJournalEntryNestedInputSchema).optional()
+}).strict();
+
+export const JournalEntriesUncheckedUpdateWithoutMemberFundsTransactInputSchema: z.ZodType<Prisma.JournalEntriesUncheckedUpdateWithoutMemberFundsTransactInput> = z.object({
+  entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
+  entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  memberId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
+  InvoicePayments: z.lazy(() => InvoicePaymentsUncheckedUpdateManyWithoutJournalEntryNestedInputSchema).optional()
 }).strict();
 
 export const MemberFundsUpsertWithoutTransactionsInputSchema: z.ZodType<Prisma.MemberFundsUpsertWithoutTransactionsInput> = z.object({
@@ -5717,6 +5886,7 @@ export const JournalEntriesCreateWithoutInvoicePaymentsInputSchema: z.ZodType<Pr
   createdAt: z.coerce.date().optional(),
   journalType: z.lazy(() => JournalTypeSchema),
   JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
   Members: z.lazy(() => MembersCreateNestedOneWithoutJournalsInputSchema).optional()
 }).strict();
 
@@ -5729,7 +5899,8 @@ export const JournalEntriesUncheckedCreateWithoutInvoicePaymentsInputSchema: z.Z
   createdAt: z.coerce.date().optional(),
   memberId: z.string().optional().nullable(),
   journalType: z.lazy(() => JournalTypeSchema),
-  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema).optional()
 }).strict();
 
 export const JournalEntriesCreateOrConnectWithoutInvoicePaymentsInputSchema: z.ZodType<Prisma.JournalEntriesCreateOrConnectWithoutInvoicePaymentsInput> = z.object({
@@ -5782,6 +5953,7 @@ export const JournalEntriesUpdateWithoutInvoicePaymentsInputSchema: z.ZodType<Pr
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
   JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
   Members: z.lazy(() => MembersUpdateOneWithoutJournalsNestedInputSchema).optional()
 }).strict();
 
@@ -5794,7 +5966,8 @@ export const JournalEntriesUncheckedUpdateWithoutInvoicePaymentsInputSchema: z.Z
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   memberId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
-  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema).optional()
 }).strict();
 
 export const InvoiceUpsertWithoutInvoicePaymentsInputSchema: z.ZodType<Prisma.InvoiceUpsertWithoutInvoicePaymentsInput> = z.object({
@@ -6279,6 +6452,32 @@ export const JournalItemsCreateManyJournalEntriesInputEnvelopeSchema: z.ZodType<
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const FundTransactionsCreateWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsCreateWithoutJournalEntriesInput> = z.object({
+  fundType: z.lazy(() => FundTypeSchema),
+  transactionType: z.lazy(() => FundTransactionsTypeSchema),
+  createdAt: z.coerce.date().optional(),
+  postedBalance: z.number(),
+  MemberFunds: z.lazy(() => MemberFundsCreateNestedOneWithoutTransactionsInputSchema)
+}).strict();
+
+export const FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedCreateWithoutJournalEntriesInput> = z.object({
+  fundId: z.number().int(),
+  fundType: z.lazy(() => FundTypeSchema),
+  transactionType: z.lazy(() => FundTransactionsTypeSchema),
+  createdAt: z.coerce.date().optional(),
+  postedBalance: z.number()
+}).strict();
+
+export const FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsCreateOrConnectWithoutJournalEntriesInput> = z.object({
+  where: z.lazy(() => FundTransactionsWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema) ]),
+}).strict();
+
+export const FundTransactionsCreateManyJournalEntriesInputEnvelopeSchema: z.ZodType<Prisma.FundTransactionsCreateManyJournalEntriesInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => FundTransactionsCreateManyJournalEntriesInputSchema),z.lazy(() => FundTransactionsCreateManyJournalEntriesInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const MembersCreateWithoutJournalsInputSchema: z.ZodType<Prisma.MembersCreateWithoutJournalsInput> = z.object({
   memberId: z.string().cuid().optional(),
   lastName: z.string(),
@@ -6380,6 +6579,22 @@ export const JournalItemsUpdateManyWithWhereWithoutJournalEntriesInputSchema: z.
   data: z.union([ z.lazy(() => JournalItemsUpdateManyMutationInputSchema),z.lazy(() => JournalItemsUncheckedUpdateManyWithoutJournalEntriesInputSchema) ]),
 }).strict();
 
+export const FundTransactionsUpsertWithWhereUniqueWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsUpsertWithWhereUniqueWithoutJournalEntriesInput> = z.object({
+  where: z.lazy(() => FundTransactionsWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => FundTransactionsUpdateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUncheckedUpdateWithoutJournalEntriesInputSchema) ]),
+  create: z.union([ z.lazy(() => FundTransactionsCreateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema) ]),
+}).strict();
+
+export const FundTransactionsUpdateWithWhereUniqueWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsUpdateWithWhereUniqueWithoutJournalEntriesInput> = z.object({
+  where: z.lazy(() => FundTransactionsWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => FundTransactionsUpdateWithoutJournalEntriesInputSchema),z.lazy(() => FundTransactionsUncheckedUpdateWithoutJournalEntriesInputSchema) ]),
+}).strict();
+
+export const FundTransactionsUpdateManyWithWhereWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsUpdateManyWithWhereWithoutJournalEntriesInput> = z.object({
+  where: z.lazy(() => FundTransactionsScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => FundTransactionsUpdateManyMutationInputSchema),z.lazy(() => FundTransactionsUncheckedUpdateManyWithoutJournalEntriesInputSchema) ]),
+}).strict();
+
 export const MembersUpsertWithoutJournalsInputSchema: z.ZodType<Prisma.MembersUpsertWithoutJournalsInput> = z.object({
   update: z.union([ z.lazy(() => MembersUpdateWithoutJournalsInputSchema),z.lazy(() => MembersUncheckedUpdateWithoutJournalsInputSchema) ]),
   create: z.union([ z.lazy(() => MembersCreateWithoutJournalsInputSchema),z.lazy(() => MembersUncheckedCreateWithoutJournalsInputSchema) ]),
@@ -6469,6 +6684,7 @@ export const JournalEntriesCreateWithoutJournalItemsInputSchema: z.ZodType<Prism
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   journalType: z.lazy(() => JournalTypeSchema),
+  MemberFundsTransact: z.lazy(() => FundTransactionsCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
   Members: z.lazy(() => MembersCreateNestedOneWithoutJournalsInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsCreateNestedManyWithoutJournalEntryInputSchema).optional()
 }).strict();
@@ -6482,6 +6698,7 @@ export const JournalEntriesUncheckedCreateWithoutJournalItemsInputSchema: z.ZodT
   createdAt: z.coerce.date().optional(),
   memberId: z.string().optional().nullable(),
   journalType: z.lazy(() => JournalTypeSchema),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUncheckedCreateNestedManyWithoutJournalEntriesInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUncheckedCreateNestedManyWithoutJournalEntryInputSchema).optional()
 }).strict();
 
@@ -6538,6 +6755,7 @@ export const JournalEntriesUpdateWithoutJournalItemsInputSchema: z.ZodType<Prism
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
   Members: z.lazy(() => MembersUpdateOneWithoutJournalsNestedInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUpdateManyWithoutJournalEntryNestedInputSchema).optional()
 }).strict();
@@ -6551,6 +6769,7 @@ export const JournalEntriesUncheckedUpdateWithoutJournalItemsInputSchema: z.ZodT
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   memberId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUncheckedUpdateManyWithoutJournalEntryNestedInputSchema).optional()
 }).strict();
 
@@ -6672,6 +6891,7 @@ export const JournalEntriesUpdateWithoutMembersInputSchema: z.ZodType<Prisma.Jou
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
   JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUpdateManyWithoutJournalEntryNestedInputSchema).optional()
 }).strict();
 
@@ -6684,6 +6904,7 @@ export const JournalEntriesUncheckedUpdateWithoutMembersInputSchema: z.ZodType<P
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
   JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
+  MemberFundsTransact: z.lazy(() => FundTransactionsUncheckedUpdateManyWithoutJournalEntriesNestedInputSchema).optional(),
   InvoicePayments: z.lazy(() => InvoicePaymentsUncheckedUpdateManyWithoutJournalEntryNestedInputSchema).optional()
 }).strict();
 
@@ -6698,6 +6919,7 @@ export const JournalEntriesUncheckedUpdateManyWithoutMembersInputSchema: z.ZodTy
 }).strict();
 
 export const FundTransactionsCreateManyMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsCreateManyMemberFundsInput> = z.object({
+  ledgerId: z.bigint().optional().nullable(),
   fundType: z.lazy(() => FundTypeSchema),
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
@@ -6709,9 +6931,11 @@ export const FundTransactionsUpdateWithoutMemberFundsInputSchema: z.ZodType<Pris
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  JournalEntries: z.lazy(() => JournalEntriesUpdateOneWithoutMemberFundsTransactNestedInputSchema).optional()
 }).strict();
 
 export const FundTransactionsUncheckedUpdateWithoutMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateWithoutMemberFundsInput> = z.object({
+  ledgerId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6719,6 +6943,7 @@ export const FundTransactionsUncheckedUpdateWithoutMemberFundsInputSchema: z.Zod
 }).strict();
 
 export const FundTransactionsUncheckedUpdateManyWithoutMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateManyWithoutMemberFundsInput> = z.object({
+  ledgerId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6928,6 +7153,14 @@ export const JournalItemsCreateManyJournalEntriesInputSchema: z.ZodType<Prisma.J
   credit: z.number()
 }).strict();
 
+export const FundTransactionsCreateManyJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsCreateManyJournalEntriesInput> = z.object({
+  fundId: z.number().int(),
+  fundType: z.lazy(() => FundTypeSchema),
+  transactionType: z.lazy(() => FundTransactionsTypeSchema),
+  createdAt: z.coerce.date().optional(),
+  postedBalance: z.number()
+}).strict();
+
 export const InvoicePaymentsCreateManyJournalEntryInputSchema: z.ZodType<Prisma.InvoicePaymentsCreateManyJournalEntryInput> = z.object({
   paymentId: z.bigint().optional(),
   invoiceId: z.bigint(),
@@ -6955,6 +7188,30 @@ export const JournalItemsUncheckedUpdateManyWithoutJournalEntriesInputSchema: z.
   accountId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   debit: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   credit: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const FundTransactionsUpdateWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsUpdateWithoutJournalEntriesInput> = z.object({
+  fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  MemberFunds: z.lazy(() => MemberFundsUpdateOneRequiredWithoutTransactionsNestedInputSchema).optional()
+}).strict();
+
+export const FundTransactionsUncheckedUpdateWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateWithoutJournalEntriesInput> = z.object({
+  fundId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const FundTransactionsUncheckedUpdateManyWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateManyWithoutJournalEntriesInput> = z.object({
+  fundId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InvoicePaymentsUpdateWithoutJournalEntryInputSchema: z.ZodType<Prisma.InvoicePaymentsUpdateWithoutJournalEntryInput> = z.object({

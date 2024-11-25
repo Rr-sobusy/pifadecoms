@@ -2,12 +2,8 @@
 
 import * as React from 'react';
 import RouterLink from 'next/link';
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
-import LinearProgress from '@mui/material/LinearProgress';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Notepad as Info } from '@phosphor-icons/react/dist/ssr/Notepad';

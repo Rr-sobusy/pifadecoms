@@ -86,6 +86,10 @@ export const paths = {
       create: '/dashboard/members/create',
       view: (memberId: string) => `/dashboard/members/${memberId}`,
     },
+    funds: {
+      list: '/dashboard/memberFunds',
+      view: (fundId: number) => `/dashboard/memberFunds/${fundId}`,
+    },
     items: {
       list: '/dashboard/items',
       create: '/dashboard/items/create',

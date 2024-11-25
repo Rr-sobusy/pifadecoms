@@ -6,11 +6,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-
-import { fetchMembers } from '@/actions/members/fetch-members';
-import { MemberFilters } from '@/components/dashboard/members/members-filter';
-import { MembersTable } from '@/components/dashboard/members/members-table';
-import MembersPagination from '@/components/dashboard/members/members-table-pagination';
+import SavingsCard from '@/components/dashboard/funds/savings-card';
 
 interface PageProps {}
 
@@ -27,14 +23,10 @@ function page({}: PageProps) {
       <Stack spacing={4}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Member Savings</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button startIcon={<PlusIcon />} variant="contained">
-              Add
-            </Button>
+            <Typography variant="h4">Member Fund Dashboard</Typography>
           </Box>
         </Stack>
+        <SavingsCard />
       </Stack>
     </Box>
   );
