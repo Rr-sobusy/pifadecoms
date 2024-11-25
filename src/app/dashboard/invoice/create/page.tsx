@@ -49,9 +49,7 @@ const page = async () => {
               rate: item.sellingPrice,
             };
           })}
-          members={members.map((member) => {
-            return { ...member };
-          })}
+          members={members}
         />
       </Stack>
     </Box>

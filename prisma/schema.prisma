@@ -68,6 +68,18 @@ enum ReferenceType {
   ManualJournals
 }
 
+enum FundType {
+  Savings
+  ShareCapital
+}
+
+enum FundTransactionsType {
+  SavingsDeposit
+  SavingsWithdrawal
+  ShareCapDeposit
+  ShareCapWithdrawal
+}
+
 model Members {
   memberId         String        @id @default(cuid())
   lastName         String              
@@ -91,7 +103,7 @@ model Members {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @default(now())
 
-  Savings          MemberSavings?
+  Funds            MemberFunds?
 
   dividends        Dividends[]    
   invoice          Invoice[]
@@ -103,11 +115,32 @@ model Members {
 
 }
 
-model MemberSavings {
-  savingsId         Int         @id @default(autoincrement()) // Primary Key
-  memberId          String      @unique                      // Enforce one-to-one
-  balance           Float       @default(0)
+model MemberFunds {
+  fundId            Int         @id @default(autoincrement())
+  memberId          String      @unique   
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now())       
+  savingsBal        Float       @default(0)
+  shareCapBal       Float       @default(0)
   Member            Members     @relation(fields: [memberId], references: [memberId])
+
+  Transactions      FundTransactions[]
+
+  @@map("member_funds")
+}
+
+model FundTransactions {
+  fundId            Int             @id
+  ledgerId          BigInt?
+  fundType          FundType
+  transactionType   FundTransactionsType
+  createdAt         DateTime        @default(now())
+  postedBalance     Float  
+
+  JournalEntries    JournalEntries? @relation(fields: [ledgerId], references: [entryId])
+  MemberFunds       MemberFunds     @relation(fields: [fundId], references: [fundId])
+
+  @@map("fund_transactions")
 }
 
 model Invoice {
@@ -220,17 +253,6 @@ model Dividends {
   @@index([memberId, accountId, datePosted])
 }
 
-model Savings {
-  savingsId            String         @id @default(cuid())
-  memberID             String         @unique
-  savingsType          SavingsType
-  currentBalance       Float
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @default(now())
-
-  @@map("member_savings")
-}
-
 model SavingsTransact {
   transactionId       BigInt          @id @default(autoincrement())
   savingsId           String
@@ -248,6 +270,7 @@ model JournalEntries {
   journalType         JournalType
 
   JournalItems        JournalItems[]
+  MemberFundsTransact FundTransactions[]
 
   //* To be the particulars
   Members             Members?        @relation(fields: [memberId], references: [memberId])

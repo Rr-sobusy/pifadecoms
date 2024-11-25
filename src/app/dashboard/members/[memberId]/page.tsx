@@ -34,24 +34,24 @@ import { PropertyList } from '@/components/core/property-list';
 import { Notifications } from '@/components/dashboard/customer/notifications';
 import type { Address } from '@/components/dashboard/customer/shipping-address';
 import { ShippingAddress } from '@/components/dashboard/customer/shipping-address';
+import NotfoundToaster from '@/components/dashboard/members/member-not-found';
 import { Balances, NonNullableInvoice } from '@/components/dashboard/members/profile-balances';
-import { redirect } from 'next/navigation';
 
 export const metadata = { title: `Details | Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
   params: { memberId: string };
-};
+}
 
 export default async function Page({ params }: PageProps): Promise<React.JSX.Element> {
   const { memberId } = params;
 
   const memberData = await fetchMemberData(memberId);
 
-  if(!memberData){
-      redirect(paths.dashboard.members.list)
+  if (!memberData) {
+    return <NotfoundToaster errorMessage="Member Not Found redirecting..." routeLink={paths.dashboard.members.list} />;
   }
-  
+
   return (
     <Box
       sx={{
@@ -130,7 +130,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                     [
                       { key: 'Customer ID', value: <Chip label={memberData?.memberId} size="small" variant="soft" /> },
                       { key: 'Name', value: `${memberData?.lastName}, ${memberData?.firstName}` },
-                      { key: 'Birth Date', value: dayjs(memberData?.birthDate).format("MMM DD YYYY") },
+                      { key: 'Birth Date', value: dayjs(memberData?.birthDate).format('MMM DD YYYY') },
                       { key: 'Phone', value: memberData?.contactNo },
                       { key: 'Occupation', value: memberData?.occupation },
                       {
