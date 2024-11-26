@@ -10,15 +10,99 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowBendRightDown as WithdrawIcon } from '@phosphor-icons/react/dist/ssr/ArrowBendRightDown';
 import { Bank } from '@phosphor-icons/react/dist/ssr/Bank';
-import { PiggyBank } from '@phosphor-icons/react/dist/ssr/PiggyBank';
 import { CashRegister as TransactIcon } from '@phosphor-icons/react/dist/ssr/CashRegister';
+import { PiggyBank } from '@phosphor-icons/react/dist/ssr/PiggyBank';
+import { FundTransactionsType } from '@prisma/client';
+import { useRouter, usePathname } from 'next/navigation';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
-import { DataTable } from '@/components/core/data-table';
+import type { FundTransactions, MemberFundsType } from '@/actions/funds/types';
+import { ColumnDef, DataTable } from '@/components/core/data-table';
 
-type Props = {};
+type SavingsCardProps = {
+  rows: MemberFundsType[0]['Transactions'];
+};
 
-function SavingsCard({}: Props) {
+const FundTransactionMap: Record<FundTransactionsType, string> = {
+  SavingsDeposit: 'Deposit',
+  SavingsWithdrawal: 'Withdrawal',
+  ShareCapDeposit: 'Capital Deposit',
+  ShareCapWithdrawal: 'Capital Withdrawal',
+};
+
+const columns = [
+  {
+    name: 'Type',
+    formatter: (row) => (
+      <Stack alignItems="center" flexDirection="row" gap={2}>
+        <Avatar
+          sx={{
+            '--Avatar-size': '40px',
+            bgcolor: 'var(--mui-palette-background-paper)',
+            boxShadow: 'var(--mui-shadows-8)',
+            color: 'var(--mui-palette-text-primary)',
+          }}
+        >
+          <PiggyBank color="text.secondary" />
+        </Avatar>
+        <Stack>
+          <Typography fontWeight={600} variant="subtitle2">
+            {FundTransactionMap[row.transactionType]}
+          </Typography>
+          <Typography color="text.secondary" variant="caption">
+            {dayjs().format('MMM DD YYYY')}
+          </Typography>
+        </Stack>
+      </Stack>
+    ),
+  },
+  {
+    name: 'Reference',
+    formatter: (row) => (
+      <Stack>
+        <Typography fontWeight={600} variant="subtitle2">
+          Reference No.
+        </Typography>
+        <Typography color="text.secondary" variant="caption">
+         {row.JournalEntries?.referenceName ?? null}
+        </Typography>
+      </Stack>
+    ),
+  },
+  {
+    name: 'Posted Amount',
+    formatter: (row) => {
+      const textColor = row.transactionType === 'SavingsDeposit' ? 'success' : 'error';
+      const transactionBalance =
+        row.transactionType === 'SavingsDeposit'
+          ? `+${formatToCurrency(row.postedBalance, 'Fil-ph', 'Php')}`
+          : `-${formatToCurrency(row.postedBalance, 'Fil-ph', 'Php')}`;
+      return (
+        <Stack>
+          <Typography color={textColor} fontWeight={600} variant="subtitle1">
+            {transactionBalance}
+          </Typography>
+        </Stack>
+      );
+    },
+  },
+] satisfies ColumnDef<MemberFundsType[0]['Transactions'][0]>[];
+
+function SavingsCard({ rows }: SavingsCardProps) {
+  const router = useRouter()
+  const pathName = usePathname()
+
+  function addSavingsDeposit(){
+      const searchParams = new URLSearchParams()
+      searchParams.set("transactionType", "savingsDeposit")
+      
+      //* Trigger open of the modal
+      router.push(`${pathName}?${searchParams.toString()}`)
+  }
+
+  function addSavingsWithdrawal(){
+    
+  }
   return (
     <Card>
       <CardContent>
@@ -92,10 +176,10 @@ function SavingsCard({}: Props) {
                     </Avatar>
                   </Stack>
                   <Stack flexDirection="row" gap={2}>
-                    <Button startIcon={<PiggyBank />} variant="contained">
+                    <Button onClick={addSavingsDeposit} startIcon={<PiggyBank />} variant="contained">
                       Deposit
                     </Button>
-                    <Button startIcon={<WithdrawIcon />} variant="outlined">
+                    <Button onClick={addSavingsWithdrawal} startIcon={<WithdrawIcon />} variant="outlined">
                       Withdraw
                     </Button>
                   </Stack>
@@ -114,66 +198,11 @@ function SavingsCard({}: Props) {
                 </Typography>
               </Stack>
 
-              <DataTable
+              <DataTable<MemberFundsType[0]['Transactions'][0]>
                 sx={{ marginTop: 3 }}
                 hideHead
-                columns={[
-                  {
-                    name: 'Type',
-                    formatter: (row) => (
-                      <Stack alignItems="center" flexDirection="row" gap={2}>
-                        <Avatar
-                          sx={{
-                            '--Avatar-size': '40px',
-                            bgcolor: 'var(--mui-palette-background-paper)',
-                            boxShadow: 'var(--mui-shadows-8)',
-                            color: 'var(--mui-palette-text-primary)',
-                          }}
-                        >
-                          <PiggyBank color="text.secondary" />
-                        </Avatar>
-                        <Stack>
-                          <Typography fontWeight={600} variant="subtitle2">
-                            Deposit
-                          </Typography>
-                          <Typography color="text.secondary" variant="caption">
-                            {dayjs().format('MMM DD YYYY')}
-                          </Typography>
-                        </Stack>
-                      </Stack>
-                    ),
-                  },
-                  {
-                    name: 'Reference',
-                    formatter: (row) => (
-                      <Stack>
-                        <Typography fontWeight={600} variant="subtitle2">
-                          Reference No.
-                        </Typography>
-                        <Typography color="text.secondary" variant="caption">
-                          2251
-                        </Typography>
-                      </Stack>
-                    ),
-                  },
-                  {
-                    name: 'Aount',
-                    formatter: (row) => (
-                      <Stack>
-                        <Typography color="success" fontWeight={600} variant="subtitle1">
-                          +{formatToCurrency(13000, 'Fil-ph', 'Php')}
-                        </Typography>
-                      </Stack>
-                    ),
-                  },
-                ]}
-                rows={[
-                  { id: 1, Type: 'rexrandy' },
-                  { id: 1, Type: 'rexrandy' },
-                  { id: 1, Type: 'rexrandy' },
-                  { id: 1, Type: 'rexrandy' },
-                  { id: 1, Type: 'rexrandy' },
-                ]}
+                columns={columns}
+                rows={rows}
               />
             </CardContent>
           </Card>

@@ -15,7 +15,6 @@ interface PageProps {}
 
 async function page({}: PageProps): Promise<React.JSX.Element> {
   const [memberFunds] = await Promise.all([fetchMemberFunds()]);
-  console.log(memberFunds);
 
   return (
     <Box

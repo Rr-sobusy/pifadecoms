@@ -60,7 +60,6 @@ const columns = [
 ] satisfies ColumnDef<JournalType[0]>[];
 
 function ManualJournalTable({ journal }: ManualJournalTableProps) {
-  console.log(journal);
   return (
     <Card>
       <DataTable columns={columns} rows={journal} />

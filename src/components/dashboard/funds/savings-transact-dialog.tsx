@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
@@ -15,6 +15,7 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
@@ -22,64 +23,46 @@ import { Controller, useForm } from 'react-hook-form';
 import { paths } from '@/paths';
 import { createNewAccount } from '@/actions/accounts/add-new-child-account';
 import { accountSchema, AccountSchemaType, AccountType } from '@/actions/accounts/types';
+import type { FundTransactions, MemberFundsType } from '@/actions/funds/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-interface AddAccountProps {
+interface CreateSavingsTransactionProps {
   open: boolean;
-  accountType: { rootId: number; rootName: string; rootType: string }[];
+  fundTransactions: FundTransactions;
 }
 
-export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => {
-  const { executeAsync, result } = useAction(createNewAccount);
-
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<AccountSchemaType>({
-    resolver: zodResolver(accountSchema),
-  });
+export const CreateSavingsTransaction = ({ open, fundTransactions }: CreateSavingsTransactionProps) => {
+  console.log(fundTransactions);
 
   const router = useRouter();
+  const pathName = usePathname();
+  const submitHandler = (data: AccountSchemaType) => {};
+
   const handleClose = () => {
-    router.push(paths.dashboard.finance.list);
+    router.push(pathName);
   };
 
-  // form submit
-  const submitHandler = (data: AccountSchemaType) => {
-    try {
-      executeAsync(data);
-      const { serverError } = result;
-
-      if (!serverError) {
-        toast.success('Financial Account created!');
-        router.push(paths.dashboard.finance.list);
-      }
-    } catch (error) {
-      toast.error('Something went wrong!');
-    }
-  };
   return (
     <Dialog
       maxWidth="xs"
-      onClose={handleClose}
       open={open}
+      onClose={handleClose}
       sx={{
         '& .MuiDialog-container': { justifyContent: 'flex-end' },
         '& .MuiDialog-paper': { height: '100%', width: '100%' },
       }}
     >
-      <form onSubmit={handleSubmit(submitHandler)}>
+      <form>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, minHeight: 0 }}>
           <Stack
             direction="row"
-            sx={{ alignItems: 'center', flex: '0 0 auto', justifyContent: 'space-between', marginTop: 3 }}
+            sx={{ alignItems: 'center', flex: '0 0 auto', justifyContent: 'space-between', marginTop: 1 }}
           >
             <Stack>
-              <Typography variant="h6">Create new account</Typography>
+              <Typography variant="h6"> New Transaction</Typography>
               <Typography color="" variant="caption">
-                Create account based to its financial category
+                Transact member's savings
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -87,8 +70,55 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
             </IconButton>
           </Stack>
           <Divider />
-          <Stack spacing={3} marginTop={6} direction="column">
-            <Controller
+          <Stack spacing={2} direction="column">
+            <FormControl disabled>
+              <InputLabel>Transaction Type</InputLabel>
+              <OutlinedInput defaultValue="Deposit" />
+            </FormControl>
+            <FormControl disabled>
+              <InputLabel>Member Name</InputLabel>
+              <OutlinedInput
+                defaultValue={`${fundTransactions?.Member.lastName} ${fundTransactions?.Member.firstName}`}
+              />
+            </FormControl>
+            <DatePicker label="Date Posted" />
+            <Autocomplete
+              options={[]}
+              renderInput={(params) => (
+                <FormControl fullWidth>
+                  <InputLabel required>Depositing Acct. (Dr)</InputLabel>
+                  <OutlinedInput />
+                </FormControl>
+              )}
+              renderOption={(props, option) => (
+                <Option key={option} value={option}>
+                  {option}
+                </Option>
+              )}
+            />
+            <Autocomplete
+              options={[]}
+              renderInput={(params) => (
+                <FormControl fullWidth>
+                  <InputLabel required>Crediting Acct. (Cr)</InputLabel>
+                  <OutlinedInput />
+                </FormControl>
+              )}
+              renderOption={(props, option) => (
+                <Option key={option} value={option}>
+                  {option}
+                </Option>
+              )}
+            />
+            <FormControl>
+              <InputLabel required>Posting Amount</InputLabel>
+              <OutlinedInput type="number" />
+            </FormControl>
+            <FormControl>
+              <InputLabel required>OR No.</InputLabel>
+              <OutlinedInput />
+            </FormControl>
+            {/* <Controller
               name="accountName"
               control={control}
               render={({ field }) => (
@@ -98,10 +128,10 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
                   {errors.accountName ? <FormHelperText>{errors.accountName.message}</FormHelperText> : null}
                 </FormControl>
               )}
-            />
-            <Controller
+            /> */}
+            {/* <Controller
               name="rootId"
-              control={control}
+              control={[]}
               render={({ field }) => (
                 <Autocomplete
                   {...field}
@@ -119,11 +149,11 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
                       {errors.rootId ? <FormHelperText>{errors.rootId.message}</FormHelperText> : null}
                     </FormControl>
                   )}
-                  renderOption={(props, options) => (
-                    <Option {...props} key={options.rootId} value={options.rootId}>
-                      {`${options.rootName} (${options.rootType})`}
-                    </Option>
-                  )}
+                //   renderOption={(props, options) => (
+                //     <Option {...props} key={options.rootId} value={options.rootId}>
+                //       {`${options.rootName} (${options.rootType})`}
+                //     </Option>
+                //   )}
                 />
               )}
             />
@@ -137,10 +167,10 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
                   {errors.openingBalance ? <FormHelperText>{errors.openingBalance.message}</FormHelperText> : null}
                 </FormControl>
               )}
-            />
+            /> */}
             <Stack marginTop={1}>
               <Button type="submit" variant="contained">
-                Create Account
+                Post transaction
               </Button>
             </Stack>
           </Stack>

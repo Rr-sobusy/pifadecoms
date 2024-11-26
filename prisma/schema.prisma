@@ -130,7 +130,7 @@ model MemberFunds {
 }
 
 model FundTransactions {
-  id                BigInt          @id @default(autoincrement())
+  fundTransactId    Int             @id @default(autoincrement())
   fundId            Int             
   ledgerId          BigInt?
   fundType          FundType
@@ -142,6 +142,7 @@ model FundTransactions {
   MemberFunds       MemberFunds     @relation(fields: [fundId], references: [fundId])
 
   @@map("fund_transactions")
+  @@index([fundId])
 }
 
 model Invoice {
