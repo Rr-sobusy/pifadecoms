@@ -14,15 +14,15 @@ export const createNewAccount = actionClient.schema(accountSchema).action(async 
       data: {
         accountName: AccountSchema.accountName,
         rootId: AccountSchema.rootId.rootId,
-        openingBalance : AccountSchema.openingBalance,
-        runningBalance: AccountSchema.openingBalance
+        openingBalance: AccountSchema.openingBalance,
+        runningBalance: AccountSchema.openingBalance,
       },
     });
 
     return { message: 'New financial account created!', data: newAccount };
   } catch (error) {
     console.error({ message: 'Error occured in server!', error: error });
+  } finally {
+    revalidatePath(paths.dashboard.finance.list);
   }
-
-  revalidatePath(paths.dashboard.finance.list);
 });

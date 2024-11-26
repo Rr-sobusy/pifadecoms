@@ -16,33 +16,94 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { FileDashed } from '@phosphor-icons/react';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
 
 import { paths } from '@/paths';
+import { dayjs } from '@/lib/dayjs';
 import { createNewAccount } from '@/actions/accounts/add-new-child-account';
-import { accountSchema, AccountSchemaType, AccountType } from '@/actions/accounts/types';
+import { AccounTreeType, accountSchema, AccountSchemaType, AccountType } from '@/actions/accounts/types';
 import type { FundTransactions, MemberFundsType } from '@/actions/funds/types';
+import { IAddMemberSchema, memberFundsSchema } from '@/actions/funds/types';
 import { Option } from '@/components/core/option';
-import { toast } from '@/components/core/toaster';
 
 interface CreateSavingsTransactionProps {
   open: boolean;
   fundTransactions: FundTransactions;
+  accounts: AccounTreeType;
+  fundId: string;
 }
 
-export const CreateSavingsTransaction = ({ open, fundTransactions }: CreateSavingsTransactionProps) => {
-  console.log(fundTransactions);
-
+export const CreateSavingsTransaction = ({ open, fundTransactions, accounts , fundId}: CreateSavingsTransactionProps) => {
   const router = useRouter();
   const pathName = usePathname();
-  const submitHandler = (data: AccountSchemaType) => {};
+
+  const {
+    handleSubmit,
+    control,
+    getValues,
+    setValue,
+    formState: { errors },
+  } = useForm<IAddMemberSchema>({
+    resolver: zodResolver(memberFundsSchema),
+    defaultValues: {
+      fundId:Number(fundId),
+      journalLineItems: [
+        {
+          accountDetails: {
+            accountId: '',
+            accountName: '',
+          },
+          credit: 0,
+          debit: 0,
+          journalLineItemId: uuidv4(),
+        },
+        {
+          accountDetails: {
+            accountId: '',
+            accountName: '',
+          },
+          credit: 0,
+          debit: 0,
+          journalLineItemId: uuidv4(),
+        },
+      ],
+    },
+  });
 
   const handleClose = () => {
     router.push(pathName);
   };
 
+  const flattenAccounts = React.useMemo(
+    () =>
+      accounts.flatMap((group) =>
+        group.Children.map((account) => ({
+          ...account,
+          group: group.rootName,
+          rootType: group.rootType,
+        }))
+      ),
+    [accounts]
+  );
+
+  const updateJournalItems = React.useCallback(
+    (amount: number) => {
+      const [firstLine, secondLine] = getValues('journalLineItems');
+      setValue('journalLineItems', [
+        { ...firstLine, debit: amount },
+        { ...secondLine, credit: amount },
+      ]);
+    },
+    [getValues, setValue]
+  );
+
+  const submitHandler = (data: IAddMemberSchema) => {
+    console.log(data);
+  };
   return (
     <Dialog
       maxWidth="xs"
@@ -53,7 +114,7 @@ export const CreateSavingsTransaction = ({ open, fundTransactions }: CreateSavin
         '& .MuiDialog-paper': { height: '100%', width: '100%' },
       }}
     >
-      <form>
+      <form onSubmit={handleSubmit(submitHandler)}>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, minHeight: 0 }}>
           <Stack
             direction="row"
@@ -81,94 +142,101 @@ export const CreateSavingsTransaction = ({ open, fundTransactions }: CreateSavin
                 defaultValue={`${fundTransactions?.Member.lastName} ${fundTransactions?.Member.firstName}`}
               />
             </FormControl>
-            <DatePicker label="Date Posted" />
-            <Autocomplete
-              options={[]}
-              renderInput={(params) => (
-                <FormControl fullWidth>
-                  <InputLabel required>Depositing Acct. (Dr)</InputLabel>
-                  <OutlinedInput />
-                </FormControl>
-              )}
-              renderOption={(props, option) => (
-                <Option key={option} value={option}>
-                  {option}
-                </Option>
-              )}
-            />
-            <Autocomplete
-              options={[]}
-              renderInput={(params) => (
-                <FormControl fullWidth>
-                  <InputLabel required>Crediting Acct. (Cr)</InputLabel>
-                  <OutlinedInput />
-                </FormControl>
-              )}
-              renderOption={(props, option) => (
-                <Option key={option} value={option}>
-                  {option}
-                </Option>
-              )}
-            />
-            <FormControl>
-              <InputLabel required>Posting Amount</InputLabel>
-              <OutlinedInput type="number" />
-            </FormControl>
-            <FormControl>
-              <InputLabel required>OR No.</InputLabel>
-              <OutlinedInput />
-            </FormControl>
-            {/* <Controller
-              name="accountName"
+            <Controller
+              name="entryDate"
               control={control}
               render={({ field }) => (
-                <FormControl fullWidth error={Boolean(errors.accountName)}>
-                  <InputLabel required>Account Name</InputLabel>
-                  <OutlinedInput type="text" {...field} />
-                  {errors.accountName ? <FormHelperText>{errors.accountName.message}</FormHelperText> : null}
-                </FormControl>
-              )}
-            /> */}
-            {/* <Controller
-              name="rootId"
-              control={[]}
-              render={({ field }) => (
-                <Autocomplete
+                <DatePicker
                   {...field}
-                  getOptionLabel={(account) => account.rootName}
-                  onChange={(_, value) => {
-                    if (value) {
-                      field.onChange(value);
-                    }
+                  onChange={(date) => {
+                    field.onChange(date?.toDate());
                   }}
-                  options={accountType}
-                  renderInput={(params) => (
-                    <FormControl error={Boolean(errors.rootId)} fullWidth>
-                      <InputLabel required>Account Type</InputLabel>
-                      <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                      {errors.rootId ? <FormHelperText>{errors.rootId.message}</FormHelperText> : null}
-                    </FormControl>
-                  )}
-                //   renderOption={(props, options) => (
-                //     <Option {...props} key={options.rootId} value={options.rootId}>
-                //       {`${options.rootName} (${options.rootType})`}
-                //     </Option>
-                //   )}
+                  value={dayjs(field.value)}
+                  label="Date Posted"
                 />
               )}
             />
             <Controller
-              name="openingBalance"
+              control={control}
+              name={`journalLineItems.0.accountDetails`}
+              render={({ field }) => (
+                <Autocomplete
+                  {...field}
+                  onChange={(_, value) => {
+                    field.onChange(value);
+                  }}
+                  options={flattenAccounts}
+                  getOptionLabel={(option) => option.accountName}
+                  groupBy={(option) => option.group}
+                  renderInput={(params) => (
+                    <FormControl fullWidth>
+                      <InputLabel required>Depositing Acct. (Dr)</InputLabel>
+                      <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
+                    </FormControl>
+                  )}
+                  renderOption={(props, options) => (
+                    <Option {...props} key={options.accountId} value={options.accountId}>
+                      <span style={{ marginLeft: 8 }}>{options.accountName}</span>
+                    </Option>
+                  )}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name={`journalLineItems.1.accountDetails`}
+              render={({ field }) => (
+                <Autocomplete
+                  {...field}
+                  onChange={(_, value) => {
+                    field.onChange(value);
+                  }}
+                  options={flattenAccounts}
+                  getOptionLabel={(option) => option.accountName}
+                  groupBy={(option) => option.group}
+                  renderInput={(params) => (
+                    <FormControl fullWidth>
+                      <InputLabel required>Crediting Acct. (Cr)</InputLabel>
+                      <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
+                    </FormControl>
+                  )}
+                  renderOption={(props, options) => (
+                    <Option {...props} key={options.accountId} value={options.accountId}>
+                      <span style={{ marginLeft: 8 }}>{options.accountName}</span>
+                    </Option>
+                  )}
+                />
+              )}
+            />
+            <Controller
+              name="postedBalance"
               control={control}
               render={({ field }) => (
-                <FormControl fullWidth error={Boolean(errors.openingBalance)}>
-                  <InputLabel required>Opening Balance</InputLabel>
-                  <OutlinedInput type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
-                  {errors.openingBalance ? <FormHelperText>{errors.openingBalance.message}</FormHelperText> : null}
+                <FormControl>
+                  <InputLabel required>Posting Amount</InputLabel>
+                  <OutlinedInput
+                    {...field}
+                    onChange={(event) => {
+                      const amount = Number(event.target.value);
+
+                      if (!isNaN(amount)) {
+                        field.onChange(amount);
+                        updateJournalItems(amount);
+                      }
+                    }}
+                    type="number"
+                  />
                 </FormControl>
               )}
-            /> */}
-            <Stack marginTop={1}>
+            />
+            <FormControl>
+              <InputLabel required>OR No.</InputLabel>
+              <OutlinedInput />
+            </FormControl>
+            <Stack justifyContent="flex-end" gap={2} flexDirection="row" marginTop={1}>
+              <Button type="button" onClick={() => console.log(errors)} variant="outlined">
+                Cancel
+              </Button>
               <Button type="submit" variant="contained">
                 Post transaction
               </Button>

@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
 import { paths } from '@/paths';
+import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchFundTransactions } from '@/actions/funds/fetch-fund-transaction';
 import type { MemberFundsType } from '@/actions/funds/types';
 import SavingsCard from '@/components/dashboard/funds/savings-card';
@@ -20,9 +21,12 @@ interface PageProps {
 }
 
 async function page({ params, searchParams }: PageProps) {
-  const fundTransactions = await fetchFundTransactions(Number(params.fundId));
 
-  console.log(fundTransactions)
+  const [fundTransactions, accounts] = await Promise.all([
+    fetchFundTransactions(Number(params.fundId)),
+    fetchAccountTree(),
+  ]);
+
 
   if (!fundTransactions) {
     redirect(paths.dashboard.funds.list);
@@ -45,7 +49,7 @@ async function page({ params, searchParams }: PageProps) {
         </Stack>
         <SavingsCard rows={fundTransactions?.Transactions ?? []} />
       </Stack>
-      <CreateSavingsTransaction fundTransactions={fundTransactions} open={Boolean(searchParams.transactionType)} />
+      <CreateSavingsTransaction fundId={params.fundId} accounts={accounts} fundTransactions={fundTransactions} open={Boolean(searchParams.transactionType)} />
     </Box>
   );
 }

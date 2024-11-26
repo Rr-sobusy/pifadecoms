@@ -18,7 +18,7 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
           entryDate: Request.entryDate,
           journalType: Request.journalType,
           referenceName: Request.reference,
-          memberId : Request.particulars,
+          memberId: Request.particulars,
           referenceType: 'SalesPayments',
           JournalItems: {
             create: Request.journalLineItems.map((lineItem) => ({
@@ -38,7 +38,7 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
         },
       }),
 
-      // * second batch of query
+      // * second batch of query - update the outstanding amount in invoices.
       prisma.invoice.update({
         where: {
           invoiceId: Request.invoiceId,
