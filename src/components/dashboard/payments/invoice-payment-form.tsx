@@ -339,18 +339,18 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                               field.onChange(value);
                             }}
                             options={flattendAccounts}
-                            // filterOptions={(options, { inputValue }) =>
-                            //   /**
-                            //    * * Only render asset and revenue accounts
-                            //    */
-                            //   options.filter(
-                            //     (option) =>
-                            //       option. === 'Assets' ||
-                            //       (option.rootType === 'Revenue' &&
-                            //         (!inputValue ||
-                            //           option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
-                            //   )
-                            // }
+                            filterOptions={(options, { inputValue }) =>
+                              /**
+                               * * Only render asset and revenue accounts
+                               */
+                              options.filter(
+                                (option) =>
+                                  option.rootType === 'Assets' ||
+                                  (option.rootType === 'Revenue' &&
+                                    (!inputValue ||
+                                      option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
+                              )
+                            }
                             groupBy={(option) => option.group}
                             getOptionLabel={(account) => account.accountName}
                             renderInput={(params) => (

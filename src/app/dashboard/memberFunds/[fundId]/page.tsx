@@ -11,13 +11,13 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchFundTransactions } from '@/actions/funds/fetch-fund-transaction';
-import type { MemberFundsType } from '@/actions/funds/types';
+import type { FundTransactionsType } from '@prisma/client';
 import SavingsCard from '@/components/dashboard/funds/savings-card';
 import { CreateSavingsTransaction } from '@/components/dashboard/funds/savings-transact-dialog';
 
 interface PageProps {
   params: { fundId: number };
-  searchParams: { transactionType: string };
+  searchParams: { transactionType: FundTransactionsType };
 }
 
 async function page({ params, searchParams }: PageProps) {
@@ -47,9 +47,9 @@ async function page({ params, searchParams }: PageProps) {
             <Typography variant="h4">Member Fund Dashboard</Typography>
           </Box>
         </Stack>
-        <SavingsCard rows={fundTransactions?.Transactions ?? []} />
+        <SavingsCard fund={fundTransactions ?? []} />
       </Stack>
-      <CreateSavingsTransaction fundId={params.fundId} accounts={accounts} fundTransactions={fundTransactions} open={Boolean(searchParams.transactionType)} />
+      <CreateSavingsTransaction transactionType={searchParams.transactionType} fundId={params.fundId} accounts={accounts} fundTransactions={fundTransactions} open={Boolean(searchParams.transactionType)} />
     </Box>
   );
 }

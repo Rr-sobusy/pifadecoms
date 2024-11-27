@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -13,15 +14,27 @@ import { Bank } from '@phosphor-icons/react/dist/ssr/Bank';
 import { CashRegister as TransactIcon } from '@phosphor-icons/react/dist/ssr/CashRegister';
 import { PiggyBank } from '@phosphor-icons/react/dist/ssr/PiggyBank';
 import { FundTransactionsType } from '@prisma/client';
-import { useRouter, usePathname } from 'next/navigation';
+
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
-import type { FundTransactions, MemberFundsType } from '@/actions/funds/types';
+import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 
 type SavingsCardProps = {
-  rows: MemberFundsType[0]['Transactions'];
+  fund: MemberFundsType[0];
 };
+
+interface SearchParams {
+  transactionType: FundTransactionsType;
+}
+
+function toURLSearchParams(params: Partial<SearchParams>): URLSearchParams {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value) searchParams.append(key, value);
+  }
+  return searchParams;
+}
 
 const FundTransactionMap: Record<FundTransactionsType, string> = {
   SavingsDeposit: 'Deposit',
@@ -64,7 +77,7 @@ const columns = [
           Reference No.
         </Typography>
         <Typography color="text.secondary" variant="caption">
-         {row.JournalEntries?.referenceName ?? null}
+          {row.JournalEntries?.referenceName ?? null}
         </Typography>
       </Stack>
     ),
@@ -88,21 +101,25 @@ const columns = [
   },
 ] satisfies ColumnDef<MemberFundsType[0]['Transactions'][0]>[];
 
-function SavingsCard({ rows }: SavingsCardProps) {
-  const router = useRouter()
-  const pathName = usePathname()
+function SavingsCard({ fund }: SavingsCardProps) {
+  const router = useRouter();
+  const pathName = usePathname();
 
-  function addSavingsDeposit(){
-      const searchParams = new URLSearchParams()
-      searchParams.set("transactionType", "savingsDeposit")
-      
-      //* Trigger open of the modal
-      router.push(`${pathName}?${searchParams.toString()}`)
+  function addSavingsDeposit() {
+    const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsDeposit' });
+
+    //* Trigger open of the modal
+    router.push(`${pathName}?${urlSearchParams.toString()}`);
   }
 
-  function addSavingsWithdrawal(){
-    
+  function addSavingsWithdrawal() {
+    const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsWithdrawal' });
+
+    //* Trigger open of the modal
+    router.push(`${pathName}?${urlSearchParams.toString()}`);
   }
+
+  const currentSavings = fund.savingsBal;
   return (
     <Card>
       <CardContent>
@@ -141,7 +158,7 @@ function SavingsCard({ rows }: SavingsCardProps) {
                     </Avatar>
                   </Stack>
                   <Typography marginTop={3} fontWeight={700} variant="h6">
-                    {formatToCurrency(50000, 'Fil-ph', 'Php')}
+                    {formatToCurrency(currentSavings, 'Fil-ph', 'Php')}
                   </Typography>
                 </CardContent>
               </Card>
@@ -202,7 +219,7 @@ function SavingsCard({ rows }: SavingsCardProps) {
                 sx={{ marginTop: 3 }}
                 hideHead
                 columns={columns}
-                rows={rows}
+                rows={fund.Transactions}
               />
             </CardContent>
           </Card>

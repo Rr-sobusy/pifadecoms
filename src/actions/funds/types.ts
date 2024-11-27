@@ -7,7 +7,6 @@ import { fetchMemberFunds } from './fetch-funds';
 
 export const memberFundsSchema = transactionalSchema.extend({
   fundId: zod.number(),
-  ledgerId: zod.number(),
   fundType: zod.enum(['Savings', 'ShareCapital']),
   fundTransactionsType: zod.enum(['SavingsDeposit', 'SavingsWithdrawal', 'ShareCapDeposit', 'ShareCapWithdrawal']),
   postedBalance: zod.number(),
