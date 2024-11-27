@@ -4,13 +4,13 @@
  * * For creating manual journal entries
  */
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
+import { paths } from '@/paths';
 import prisma from '@/lib/prisma';
 import { actionClient } from '@/lib/safe-action';
 
 import { transactionalSchema } from './types';
-import { paths } from '@/paths';
-import { redirect } from 'next/navigation';
 
 export const createManualJournal = actionClient.schema(transactionalSchema).action(async ({ parsedInput: Request }) => {
   try {
@@ -53,9 +53,9 @@ export const createManualJournal = actionClient.schema(transactionalSchema).acti
       }),
     ]);
   } catch (error) {
-    console.error(error);
+    return { success: false, errorMessage: error };
+  } finally {
+    revalidatePath(paths.dashboard.finance.journal);
+    redirect(paths.dashboard.finance.journal);
   }
-
-    revalidatePath(paths.dashboard.finance.journal)
-    redirect(paths.dashboard.finance.journal)
 });

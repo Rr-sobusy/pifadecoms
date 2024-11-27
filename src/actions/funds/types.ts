@@ -1,4 +1,4 @@
-import { FundTransactionsType, FundType, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { z as zod } from 'zod';
 
 import { transactionalSchema } from '../transactional/types';

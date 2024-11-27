@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormControlLabel } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -21,7 +20,6 @@ import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
-import type { JournalType } from '@prisma/client';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -35,7 +33,7 @@ import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 import { JournalMap } from '@/lib/api-utils/journal-map';
 
-type NewJournalFromProps = {
+interface NewJournalFromProps {
   data: AccounTreeType;
 };
 

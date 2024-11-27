@@ -3,7 +3,6 @@
  *  of cash basis accounting. It will affect the balances when payment was settled
  */
 
-import type { Dayjs } from 'dayjs';
 
 import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';

@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import RouterLink from 'next/link';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
@@ -18,7 +17,6 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import type { EditorEvents } from '@tiptap/react';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -30,18 +28,16 @@ import { itemSchema, ItemsSchemaType } from '@/actions/items/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-type ItemCreateFormProps = {
+interface ItemCreateFormProps  {
   accounts?: { accountId: string; accountName: string; accountRootType: AccountType[0]['RootID']['rootType'] }[];
 };
 
 function ItemCreateForm({ accounts }: ItemCreateFormProps) {
-  const router = useRouter();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    getValues,
   } = useForm<ItemsSchemaType>({ resolver: zodResolver(itemSchema), defaultValues: {} });
 
   const { executeAsync, result } = useAction(createNewItems);

@@ -2,7 +2,6 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 import { paths } from '@/paths';
 import prisma from '@/lib/prisma';
@@ -74,15 +73,10 @@ export const createPaymentPosting = actionClient.schema(paymentSchema).action(as
       }),
     ]);
   } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
-      console.error('Prisma error code:', error.code);
-      console.error('Error message:', error.message);
-    } else {
-      console.error('Unknown error:', error);
-    }
+    return { success: false, errorMessage: error };
+  } finally {
+    revalidatePath(paths.dashboard.invoice.list);
+    revalidatePath(paths.dashboard.invoice.payments);
+    redirect(paths.dashboard.invoice.payments);
   }
-
-  revalidatePath(paths.dashboard.invoice.list);
-  revalidatePath(paths.dashboard.invoice.payments);
-  redirect(paths.dashboard.invoice.payments);
 });

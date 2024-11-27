@@ -9,48 +9,48 @@ import { formatToCurrency } from '@/lib/format-currency';
 import type { JournalType } from '@/actions/journals/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 
-type ManualJournalTableProps = {
+interface ManualJournalTableProps {
   journal: JournalType;
 };
 
 const columns = [
   {
-    formatter(row, index) {
+    formatter(row) {
       return <Stack>{dayjs(row.entryDate).format('MMM DD YYYY')}</Stack>;
     },
     name: 'Date Posted',
     width: '70px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return <Stack>{row.referenceName}</Stack>;
     },
     name: 'Reference #',
     width: '80px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return <Stack>{row.journalType}</Stack>;
     },
     name: 'Journal Type',
     width: '100px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return <Stack>{row.notes}</Stack>;
     },
     name: 'Notes?',
     width: '250px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return <Stack>{row.Members ? `${row.Members.lastName}, ${row.Members.firstName}` : 'N/A'}</Stack>;
     },
     name: 'Particulars?',
     width: '100px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       const totalAmountPosted = row.JournalItems.reduce((acc, ctx) => acc + ctx.debit, 0);
       return <Stack>{formatToCurrency(totalAmountPosted, 'Fil-ph', 'Php')}</Stack>;
     },

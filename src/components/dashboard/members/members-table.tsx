@@ -20,7 +20,7 @@ type ExtendedMemberType = MembersType[0] & {
 
 const columns = [
   {
-    formatter: (row, index): React.JSX.Element => (
+    formatter: (row): React.JSX.Element => (
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="body2">
@@ -33,7 +33,7 @@ const columns = [
     width: '50px',
   },
   {
-    formatter: (row, index): React.JSX.Element => (
+    formatter: (row): React.JSX.Element => (
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="subtitle2">

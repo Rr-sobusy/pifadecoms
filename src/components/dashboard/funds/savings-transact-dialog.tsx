@@ -9,26 +9,22 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { FileDashed } from '@phosphor-icons/react';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { FundTransactionsType } from '@prisma/client';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
-import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
-import { createNewAccount } from '@/actions/accounts/add-new-child-account';
-import { AccounTreeType, accountSchema, AccountSchemaType, AccountType } from '@/actions/accounts/types';
+import { AccounTreeType } from '@/actions/accounts/types';
 import { createFundTransaction } from '@/actions/funds/create-fund-transaction';
-import type { FundTransactions, MemberFundsType } from '@/actions/funds/types';
+import type { FundTransactions } from '@/actions/funds/types';
 import { IAddMemberSchema, memberFundsSchema } from '@/actions/funds/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
@@ -51,7 +47,7 @@ export const CreateSavingsTransaction = ({
   const router = useRouter();
   const pathName = usePathname();
 
-  const { executeAsync, isExecuting, result } = useAction(createFundTransaction);
+  const { executeAsync, result } = useAction(createFundTransaction);
 
   const {
     handleSubmit,
@@ -102,6 +98,7 @@ export const CreateSavingsTransaction = ({
     if (result.data) {
       toast.success(`Transaction Posted`);
       router.push(pathName);
+      reset();
     }
   }, [result]);
 
@@ -166,7 +163,7 @@ export const CreateSavingsTransaction = ({
             <Stack>
               <Typography variant="h6"> New Transaction</Typography>
               <Typography color="" variant="caption">
-                Transact member's savings + {transactionType}
+                Transact member's savings ({transactionType})
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -216,7 +213,8 @@ export const CreateSavingsTransaction = ({
                       //     (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
                       (option) =>
                         transactionType === 'SavingsDeposit'
-                          ? option.rootType === 'Assets'
+                          ? option.rootType === 'Assets' &&
+                            (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
                           : option.rootType === 'Liability'
                     )
                   }
@@ -254,7 +252,8 @@ export const CreateSavingsTransaction = ({
                       //     (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
                       (option) =>
                         transactionType === 'SavingsDeposit'
-                          ? option.rootType === 'Liability'
+                          ? option.rootType === 'Liability' &&
+                            (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
                           : option.rootType === 'Assets'
                     )
                   }

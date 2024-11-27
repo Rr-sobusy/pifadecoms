@@ -1,24 +1,15 @@
 import * as React from 'react';
-import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid2';
-import IconButton from '@mui/material/IconButton';
 import Popover from '@mui/material/Popover';
-import Stack from '@mui/material/Stack';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { type Dayjs } from 'dayjs';
-import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { toast } from '@/components/core/toaster';
-import { Typography } from '@mui/material';
 
 const dayjsSchema = z.string().refine((dateStr) => dayjs(dateStr).isValid(), {
   message: 'Invalid date',
@@ -37,7 +28,7 @@ type DateRangePopoverProps = {
   open?: boolean;
 };
 
-function DateRangePopover({ anchorEl, onClose, onMarkAllAsRead, onRemoveOne, open = false }: DateRangePopoverProps) {
+function DateRangePopover({ anchorEl, onClose, open = false }: DateRangePopoverProps) {
   const [dateRange, setDateRange] = React.useState<{ startDate: Dayjs; endDate: Dayjs }>({
     startDate: dayjs(),
     endDate: dayjs(),

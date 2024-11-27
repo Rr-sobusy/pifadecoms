@@ -20,7 +20,7 @@ export const createInvoice = actionClient
   .bindArgsSchemas<[grandTotal: z.ZodNumber]>([z.number()])
   .action(async ({ parsedInput: Request, bindArgsParsedInputs: Args }) => {
     try {
-      await prisma.invoice.create({
+      const queryResponse = await prisma.invoice.create({
         data: {
           dateOfInvoice: Request.invDate,
           baseGrandTotal: Args[0],
@@ -36,9 +36,12 @@ export const createInvoice = actionClient
           },
         },
       });
+
+      return { success: true, message: queryResponse };
     } catch (error) {
-      console.error(error);
+      return { success: false, errorMessage: error };
+    } finally {
+      revalidatePath(paths.dashboard.invoice.list);
+      redirect(paths.dashboard.invoice.list);
     }
-    revalidatePath(paths.dashboard.invoice.list);
-    redirect(paths.dashboard.invoice.list);
   });

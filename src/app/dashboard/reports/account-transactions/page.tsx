@@ -30,7 +30,7 @@ async function page(): Promise<React.JSX.Element> {
             Pinagsibaan Farmer&apos;s Development Multi-purpose Cooperative
           </Typography>
           <Typography fontWeight="600" fontSize="23px" variant="body1">
-            Summary of Account&apos;'s Transactions
+            Summary of Account&apos;s Transactions
           </Typography>
           <Typography color="textDisabled" variant="body2">
             From{' '}

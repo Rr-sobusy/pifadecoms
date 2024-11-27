@@ -20,7 +20,7 @@ import { formatToCurrency } from '@/lib/format-currency';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 
-type SavingsCardProps = {
+interface SavingsCardProps {
   fund: MemberFundsType[0];
 };
 

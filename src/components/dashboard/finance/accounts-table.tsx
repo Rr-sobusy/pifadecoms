@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography';
 import { PencilSimple as PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple';
 
 import { paths } from '@/paths';
-import { dayjs } from '@/lib/dayjs';
 import Chip from '@mui/material/Chip';
 import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
@@ -103,11 +102,10 @@ const columns = [
 ] satisfies ColumnDef<AccountType[0]>[];
 export interface MembersTableProps {
   rows: AccountType;
-  value?:any
 }
 
-export function AccountsTable({ rows, value }: MembersTableProps): React.JSX.Element {
-  console.log(value)
+export function AccountsTable({ rows }: MembersTableProps): React.JSX.Element {
+
   return (
     <React.Fragment>
       <DataTable<AccountType[0]> columns={columns} rows={rows} />

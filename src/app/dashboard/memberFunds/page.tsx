@@ -2,7 +2,6 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
@@ -11,9 +10,8 @@ import { fetchMemberFunds } from '@/actions/funds/fetch-funds';
 import FundsStats from '@/components/dashboard/funds/fund-stats';
 import { MemberFundsTable } from '@/components/dashboard/funds/member-funds-table';
 
-interface PageProps {}
 
-async function page({}: PageProps): Promise<React.JSX.Element> {
+async function page(): Promise<React.JSX.Element> {
   const [memberFunds] = await Promise.all([fetchMemberFunds()]);
 
   return (

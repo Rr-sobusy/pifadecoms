@@ -3,24 +3,15 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
-import type { SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Typography from '@mui/material/Typography';
+
 
 import { paths } from '@/paths';
 import { FilterButton, FilterPopover, useFilterContext } from '@/components/core/filter-button';
-import { Option } from '@/components/core/option';
 
-import { useCustomersSelection } from '../customer/customers-selection-context';
-
-// The tabs should be generated using API data.
 
 export interface Filters {
   memberName?: string;

@@ -4,17 +4,13 @@ import * as React from 'react';
 import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Autocomplete from '@mui/material/Autocomplete';
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid2';
 import InputLabel from '@mui/material/InputLabel';
@@ -23,10 +19,9 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Camera as CameraIcon } from '@phosphor-icons/react/dist/ssr/Camera';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
-import { z as zod } from 'zod';
+
 
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
@@ -56,11 +51,10 @@ export function CreateMemberForm(): React.JSX.Element {
       //    execute the action by invoking this !!
      const serverResponse = execute(val);
 
-      const { serverError, data } = result;
+      const { serverError } = result;
       if (!serverError) {
         toast.success('Member created.');
         router.push(paths.dashboard.members.list);
-        console.log(serverResponse)
       }
     } catch (err) {
       logger.error(err);

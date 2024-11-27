@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+
 import { paths } from '@/paths';
 import prisma from '@/lib/prisma';
 import { actionClient } from '@/lib/safe-action';
@@ -12,9 +13,10 @@ export const createNewMember = actionClient.schema(memberSchema).action(async ({
     const newMember = await prisma.members.create({
       data: _newMember,
     });
-    return { message: 'New member created!', data: newMember };
+    return { success: true, message: newMember };
   } catch (error) {
-    console.error({ message: `Error occureded in server: ${error} `});
+    return { success: false, errorMessage: error };
+  } finally {
+    revalidatePath(paths.dashboard.members.list);
   }
-  revalidatePath(paths.dashboard.members.list);
 });

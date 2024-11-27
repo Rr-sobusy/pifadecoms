@@ -5,7 +5,6 @@ import RouterLink from 'next/link';
 import Button from '@mui/material/Button';
 import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
-import { PaypalLogo as Pay } from '@phosphor-icons/react/dist/ssr/PaypalLogo';
 import { UserFocus as User } from '@phosphor-icons/react/dist/ssr/UserFocus';
 
 import { paths } from '@/paths';
@@ -22,8 +21,6 @@ type MemberPopoverProps = {
 function MemberPopover({
   anchorEl,
   onClose,
-  onMarkAllAsRead,
-  onRemoveOne,
   open = false,
   memberId,
 }: MemberPopoverProps) {

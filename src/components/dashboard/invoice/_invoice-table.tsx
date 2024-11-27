@@ -10,7 +10,6 @@ import IconButton from '@mui/material/IconButton';
 import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
 import { DotsThreeVertical as Dots } from '@phosphor-icons/react/dist/ssr/DotsThreeVertical';
@@ -22,11 +21,10 @@ import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { type InvoiceType } from '@/actions/invoices/types';
-import { usePopover } from '@/hooks/use-popover';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
 
-type InvoiceTableProps = {
+interface InvoiceTableProps {
   rows: InvoiceType;
 };
 
@@ -147,7 +145,7 @@ const columns = [
     width: '100px',
   },
   {
-    formatter: (row): React.JSX.Element => {
+    formatter: (): React.JSX.Element => {
       // const popover = usePopover<HTMLButtonElement>();
       return (
         <>
@@ -170,54 +168,54 @@ const columns = [
   },
 ] satisfies ColumnDef<InvoiceType[0]>[];
 
-const OptionPopOver = ({
-  anchorEl,
-  onClose,
-  onMarkAllAsRead,
-  onRemoveOne,
-  open = false,
-  invoiceId,
-  isPaid,
-}: {
-  anchorEl: null | Element;
-  onClose?: () => void;
-  onMarkAllAsRead?: () => void;
-  onRemoveOne?: (id: string) => void;
-  open?: boolean;
-  invoiceId: bigint;
-  isPaid: boolean;
-}): React.JSX.Element => {
-  return (
-    <Popover
-      anchorEl={anchorEl}
-      anchorOrigin={{ horizontal: 'right', vertical: 'center' }}
-      onClose={onClose}
-      open={open}
-      slotProps={{ paper: { sx: { width: '170px' } } }}
-      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-    >
-      <Stack spacing={1} padding={1}>
-        <Button
-          startIcon={<Pay />}
-          disabled={isPaid}
-          size="small"
-          component={RouterLink}
-          href={paths.dashboard.invoice.createPayment(invoiceId)}
-        >
-          Post Payment
-        </Button>
-        <Button
-          LinkComponent={RouterLink}
-          href={paths.dashboard.invoice.details(invoiceId)}
-          startIcon={<Details />}
-          size="small"
-        >
-          Invoice Details
-        </Button>
-      </Stack>
-    </Popover>
-  );
-};
+// const OptionPopOver = ({
+//   anchorEl,
+//   onClose,
+//   onMarkAllAsRead,
+//   onRemoveOne,
+//   open = false,
+//   invoiceId,
+//   isPaid,
+// }: {
+//   anchorEl: null | Element;
+//   onClose?: () => void;
+//   onMarkAllAsRead?: () => void;
+//   onRemoveOne?: (id: string) => void;
+//   open?: boolean;
+//   invoiceId: bigint;
+//   isPaid: boolean;
+// }): React.JSX.Element => {
+//   return (
+//     <Popover
+//       anchorEl={anchorEl}
+//       anchorOrigin={{ horizontal: 'right', vertical: 'center' }}
+//       onClose={onClose}
+//       open={open}
+//       slotProps={{ paper: { sx: { width: '170px' } } }}
+//       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+//     >
+//       <Stack spacing={1} padding={1}>
+//         <Button
+//           startIcon={<Pay />}
+//           disabled={isPaid}
+//           size="small"
+//           component={RouterLink}
+//           href={paths.dashboard.invoice.createPayment(invoiceId)}
+//         >
+//           Post Payment
+//         </Button>
+//         <Button
+//           LinkComponent={RouterLink}
+//           href={paths.dashboard.invoice.details(invoiceId)}
+//           startIcon={<Details />}
+//           size="small"
+//         >
+//           Invoice Details
+//         </Button>
+//       </Stack>
+//     </Popover>
+//   );
+// };
 
 const InvoiceTable = ({ rows }: InvoiceTableProps) => {
   return (

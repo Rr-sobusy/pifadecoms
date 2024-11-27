@@ -8,7 +8,6 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -25,7 +24,7 @@ export type NonNullableInvoice = Exclude<SingleInvoiceType, null>;
 
 const columns = [
   {
-    formatter: (row, index): React.JSX.Element => (
+    formatter: (row): React.JSX.Element => (
       <Typography sx={{ whiteSpace: 'nowrap' }} variant="subtitle2">
         {formatToCurrency(row?.outStandingAmt ?? 0, 'Fil-ph', 'Php')}
       </Typography>
@@ -34,7 +33,7 @@ const columns = [
     width: '200px',
   },
   {
-    formatter: (row, index): React.JSX.Element => (
+    formatter: (row): React.JSX.Element => (
       <Button component={RouterLink} href={paths.dashboard.invoice.details(row.invoiceId)} color="primary">
         {`INV - ${row?.invoiceId.toString().padStart(6, '0')}`}
       </Button>
@@ -43,7 +42,7 @@ const columns = [
     width: '200px',
   },
   {
-    formatter: (row, index): React.JSX.Element => (
+    formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2">{dayjs(row.dateOfInvoice).format('MMM DD YYYY')}</Typography>
     ),
     name: 'Invoice Date',

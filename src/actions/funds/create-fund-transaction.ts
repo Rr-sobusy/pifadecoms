@@ -26,7 +26,7 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
     /**
      * * Batching of queries
      */
-    const queryResult = await prisma.$transaction([
+    const [queryResult] = await prisma.$transaction([
       /**
        * * First batch - create ledger postings and create memberFunds Transactions
        */
@@ -75,6 +75,6 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
   } catch (error) {
     return { success: false, errorMessage: error };
   } finally {
-    revalidatePath(`${paths.dashboard.funds.view(Request.fundId)}`);
+    revalidatePath(paths.dashboard.funds.view(Request.fundId));
   }
 });

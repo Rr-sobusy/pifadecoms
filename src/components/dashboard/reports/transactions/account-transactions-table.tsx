@@ -2,16 +2,12 @@
 
 import React from 'react';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
-import { type InvoiceType } from '@/actions/invoices/types';
-import type { AccountTransactionTypes, LedgerTypes } from '@/actions/reports/types';
+import type { AccountTransactionTypes } from '@/actions/reports/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
 
@@ -21,7 +17,7 @@ type TransactionsTableProps = {
 
 const columns = [
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           <Typography variant="caption">{dayjs(row.JournalEntries.entryDate).format('MMM DD YYYY')}</Typography>
@@ -32,7 +28,7 @@ const columns = [
     width: '130px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           <Typography variant="caption">{row.Accounts.accountName}</Typography>
@@ -43,7 +39,7 @@ const columns = [
     width: '200px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           <Typography variant="caption">{row.JournalEntries.referenceType}</Typography>
@@ -54,7 +50,7 @@ const columns = [
     width: '140px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           <Typography variant="caption">
@@ -67,7 +63,7 @@ const columns = [
     width: '140px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           <Typography variant="caption">{row.JournalEntries.notes}</Typography>
@@ -78,7 +74,7 @@ const columns = [
     width: '150px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           <Typography variant="caption">
@@ -93,7 +89,7 @@ const columns = [
     width: '200px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           <Typography variant="caption">{row.JournalEntries.referenceName}</Typography>
@@ -104,7 +100,7 @@ const columns = [
     width: '120px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           <Typography variant="subtitle2">
@@ -117,7 +113,7 @@ const columns = [
     width: '100px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           <Typography variant="subtitle2">
@@ -130,7 +126,7 @@ const columns = [
     width: '100px',
   },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Typography variant="subtitle2">
           {row.credit !== 0

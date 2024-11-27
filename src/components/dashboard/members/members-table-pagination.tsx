@@ -6,7 +6,7 @@ import TablePagination from '@mui/material/TablePagination';
 
 import { paths } from '@/paths';
 
-type MembersPaginationProps = {
+interface MembersPaginationProps  {
   count?: number;
   offsetPage?: number;
 };

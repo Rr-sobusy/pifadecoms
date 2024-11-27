@@ -1,8 +1,8 @@
 import React from 'react'
 
-type Props = {}
 
-function JournalList({}: Props) {
+
+function JournalList() {
   return (
     <div>JournalList</div>
   )

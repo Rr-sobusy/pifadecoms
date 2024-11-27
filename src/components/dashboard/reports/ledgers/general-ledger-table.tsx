@@ -1,17 +1,10 @@
 'use client';
 
 import React from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-import { paths } from '@/paths';
-import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
-import { type InvoiceType } from '@/actions/invoices/types';
 import type { LedgerTypes } from '@/actions/reports/types';
-import { usePopover } from '@/hooks/use-popover';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
 

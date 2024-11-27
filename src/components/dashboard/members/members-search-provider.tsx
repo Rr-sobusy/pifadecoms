@@ -1,8 +1,7 @@
 import React from 'react';
 
-type Props = {};
 
-const MembersSearchProvider = (props: Props) => {
+const MembersSearchProvider = () => {
   return <div>MembersSearchProvider</div>;
 };
 

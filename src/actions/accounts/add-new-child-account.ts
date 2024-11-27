@@ -21,7 +21,7 @@ export const createNewAccount = actionClient.schema(accountSchema).action(async 
 
     return { message: 'New financial account created!', data: newAccount };
   } catch (error) {
-    console.error({ message: 'Error occured in server!', error: error });
+    return { sucess: true, errorMessage: error };
   } finally {
     revalidatePath(paths.dashboard.finance.list);
   }

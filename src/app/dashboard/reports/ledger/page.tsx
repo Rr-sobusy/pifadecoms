@@ -9,7 +9,7 @@ import { fetchLedgers } from '@/actions/reports/general-ledger';
 import DateRangeBtn from '@/components/dashboard/reports/ledgers/date-range-button';
 import GeneralLedgerTable from '@/components/dashboard/reports/ledgers/general-ledger-table';
 
-type PageProps = {
+interface PageProps {
   searchParams: { startDate: string; endDate: string };
 };
 
@@ -36,7 +36,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         </Stack>
         <Stack spacing={1} sx={{ alignItems: 'center', marginTop: 3 }}>
           <Typography color="" variant="overline">
-            Pinagsibaan Farmer's Development Multi-purpose Cooperative
+            Pinagsibaan Farmer&apos;s Development Multi-purpose Cooperative
           </Typography>
           <Typography fontWeight="600" fontSize="23px" variant="body1">
             General Ledger of Accounts

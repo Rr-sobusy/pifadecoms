@@ -9,9 +9,8 @@ import { Receipt as ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
 
 import { formatToCurrency } from '@/lib/format-currency';
 
-type FundStatsProps = {};
 
-function FundsStats({}: FundStatsProps) {
+function FundsStats() {
   return (
     <Grid spacing={4} container>
       <Grid

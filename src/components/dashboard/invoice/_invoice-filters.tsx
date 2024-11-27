@@ -92,7 +92,6 @@ export function InvoiceFilterer({
     handleSubmit,
     formState: { errors, isDirty },
     watch,
-    getValues,
     setValue,
   } = useForm<Values>({ values: getDefaultValues(filters), resolver: zodResolver(schema) });
 

@@ -17,14 +17,6 @@ import { Option } from '@/components/core/option';
 
 import { useCustomersSelection } from './customers-selection-context';
 
-// The tabs should be generated using API data.
-const tabs = [
-  { label: 'All', value: '', count: 5 },
-  { label: 'Active', value: 'active', count: 3 },
-  { label: 'Pending', value: 'pending', count: 1 },
-  { label: 'Blocked', value: 'blocked', count: 1 },
-] as const;
-
 export interface Filters {
   email?: string;
   phone?: string;
@@ -151,36 +143,6 @@ export function CustomersFilters({ filters = {}, sortDir = 'desc' }: CustomersFi
         </Select>
       </Stack>
     </div>
-  );
-}
-
-function LastNameFilterPopover(): React.JSX.Element {
-  const { anchorEl, onApply, onClose, open, value: initialValue } = useFilterContext();
-  const [value, setValue] = React.useState<string>('');
-  return (
-    <FilterPopover anchorEl={anchorEl} onClose={onClose} open={open} title="Filter by email">
-      <FormControl>
-        <OutlinedInput
-          onChange={(event) => {
-            setValue(event.target.value);
-          }}
-          onKeyUp={(event) => {
-            if (event.key === 'Enter') {
-              onApply(value);
-            }
-          }}
-          value={value}
-        />
-      </FormControl>
-      <Button
-        onClick={() => {
-          onApply(value);
-        }}
-        variant="contained"
-      >
-        Apply
-      </Button>
-    </FilterPopover>
   );
 }
 

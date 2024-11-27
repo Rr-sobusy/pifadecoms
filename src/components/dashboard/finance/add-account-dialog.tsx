@@ -21,7 +21,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { paths } from '@/paths';
 import { createNewAccount } from '@/actions/accounts/add-new-child-account';
-import { accountSchema, AccountSchemaType, AccountType } from '@/actions/accounts/types';
+import { accountSchema, AccountSchemaType } from '@/actions/accounts/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
@@ -31,7 +31,7 @@ interface AddAccountProps {
 }
 
 export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => {
-  const { executeAsync, result } = useAction(createNewAccount);
+  const { execute, result } = useAction(createNewAccount);
 
   const {
     handleSubmit,
@@ -49,7 +49,7 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
   // form submit
   const submitHandler = (data: AccountSchemaType) => {
     try {
-      executeAsync(data);
+      execute(data);
       const { serverError } = result;
 
       if (!serverError) {

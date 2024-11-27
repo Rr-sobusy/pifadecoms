@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { toast } from '@/components/core/toaster';
 
-type ToasterProps = {
+interface ToasterProps  {
   routeLink: string;
   errorMessage: string;
 };
