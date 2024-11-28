@@ -73,7 +73,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
     resolver: zodResolver(transactionalSchema),
   });
 
-  const { executeAsync, isExecuting, result } = useAction(createManualJournal);
+  const { execute, isExecuting, result } = useAction(createManualJournal);
 
   const lineItems = watch('journalLineItems');
 
@@ -119,7 +119,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
 
   const submitHandler = (data: TransactionalSchemaType) => {
     try {
-      executeAsync(data);
+      execute(data);
 
       if (!result.serverError) {
         toast.success('New Entry Posted.');
@@ -315,7 +315,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
             </Stack>
           </Stack>
           <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
-            <Button type="button" onClick={() => console.log(errors)}>
+            <Button type="button">
               Cancel
             </Button>
             <Button disabled={isExecuting} type="submit" variant="contained">

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { z as zod, ZodNumber } from 'zod';
+import { z as zod } from 'zod';
 
 import { paths } from '@/paths';
 import prisma from '@/lib/prisma';

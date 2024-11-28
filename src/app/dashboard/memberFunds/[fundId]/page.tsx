@@ -3,12 +3,14 @@ import { redirect } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import type { FundTransactionsType } from '@prisma/client';
+
 import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchFundTransactions } from '@/actions/funds/fetch-fund-transaction';
-import type { FundTransactionsType } from '@prisma/client';
 import SavingsCard from '@/components/dashboard/funds/savings-card';
 import { CreateSavingsTransaction } from '@/components/dashboard/funds/savings-transact-dialog';
+import SharesCard from '@/components/dashboard/funds/shares-card';
 
 interface PageProps {
   params: { fundId: number };
@@ -16,12 +18,10 @@ interface PageProps {
 }
 
 async function page({ params, searchParams }: PageProps) {
-
   const [fundTransactions, accounts] = await Promise.all([
     fetchFundTransactions(Number(params.fundId)),
     fetchAccountTree(),
   ]);
-
 
   if (!fundTransactions) {
     redirect(paths.dashboard.funds.list);
@@ -43,8 +43,19 @@ async function page({ params, searchParams }: PageProps) {
           </Box>
         </Stack>
         <SavingsCard fund={fundTransactions ?? []} />
+        <SharesCard fund={fundTransactions} />
       </Stack>
-      <CreateSavingsTransaction transactionType={searchParams.transactionType} fundId={params.fundId} accounts={accounts} fundTransactions={fundTransactions} open={Boolean(searchParams.transactionType)} />
+      <CreateSavingsTransaction
+        transactionType={searchParams.transactionType}
+        fundId={params.fundId}
+        accounts={accounts}
+        fundTransactions={fundTransactions}
+        open={Boolean(
+          ['SavingsDeposit', 'SavingsWithdrawal', 'ShareCapDeposit', 'ShareCapWithdrawal'].includes(
+            searchParams.transactionType
+          )
+        )}
+      />
     </Box>
   );
 }

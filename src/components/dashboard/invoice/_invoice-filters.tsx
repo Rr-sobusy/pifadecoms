@@ -23,9 +23,9 @@ import { Option } from '@/components/core/option';
 
 export interface Filters {
   memberId?: string;
-  endDate?: string;
-  invoiceId?: string;
-  startDate?: string;
+  endDate?: Date | string;
+  invoiceId?: number;
+  startDate?: Date | string;
   status?: string;
 }
 
@@ -39,7 +39,7 @@ const schema = zod
       lastName: zod.string(),
     }),
     endDate: zod.date().max(new Date('2099-01-01')).nullable().optional(),
-    invoiceId: zod.string().optional(),
+    invoiceId: zod.number().optional(),
     startDate: zod.date().max(new Date('2099-01-01')).nullable().optional(),
     status: zod.string().optional(),
   })
@@ -64,14 +64,14 @@ function getDefaultValues(filters: Filters): Values {
       lastName: '',
     },
     endDate: filters.endDate ? dayjs(filters.endDate).toDate() : null,
-    invoiceId: filters.invoiceId ?? '',
+    invoiceId: filters.invoiceId ?? 0,
     status: filters.status ?? '',
     startDate: filters.startDate ? dayjs(filters.startDate).toDate() : null,
   };
 }
 
 export interface InvoiceFiltererProps {
-  filters?: Filters;
+  filters?: { memberId?: string; endDate?: Date; invoiceId?: number; startDate?: Date; status?: string };
   onFiltersApplied?: () => void;
   onFiltersCleared?: () => void;
   sortDir?: SortDir;
@@ -79,7 +79,7 @@ export interface InvoiceFiltererProps {
 }
 
 export function InvoiceFilterer({
-  filters = {},
+  filters = { endDate: new Date(), invoiceId: 0, memberId: '0', startDate: new Date(), status: '' },
   onFiltersApplied,
   onFiltersCleared,
   sortDir = 'desc',
@@ -113,11 +113,8 @@ export function InvoiceFilterer({
           method: 'POST',
           body: JSON.stringify({ memberName: debouncedValue }),
         }).then((res) => res.json());
-        console.log(data);
         setMemberData(data);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);
@@ -141,7 +138,7 @@ export function InvoiceFilterer({
       }
 
       if (newFilters.invoiceId) {
-        searchParams.set('invoiceId', newFilters.invoiceId);
+        searchParams.set('invoiceId', String(newFilters.invoiceId));
       }
 
       if (newFilters.memberId) {
@@ -149,11 +146,11 @@ export function InvoiceFilterer({
       }
 
       if (newFilters.startDate) {
-        searchParams.set('startDate', newFilters.startDate);
+        searchParams.set('startDate', String(newFilters.startDate));
       }
 
       if (newFilters.endDate) {
-        searchParams.set('endDate', newFilters.endDate);
+        searchParams.set('endDate', String());
       }
 
       router.push(`${paths.dashboard.invoice.list}?${searchParams.toString()}`);
@@ -225,7 +222,7 @@ export function InvoiceFilterer({
               onChange={(event, value) => {
                 field.onChange(value); // Update form value on selection
               }}
-              options={member ?? []}
+              options={member}
               getOptionLabel={(option) =>
                 option && option.lastName && option.firstName ? `${option.lastName} ${option.firstName}` : ''
               }

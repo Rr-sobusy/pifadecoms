@@ -3,13 +3,13 @@
 import * as React from 'react';
 
 import { formatToCurrency } from '@/lib/format-currency';
-import type { InvoiceItemsWithItem, SingleInvoiceType } from '@/actions/invoices/types';
+import type { InvoiceItemsWithItem } from '@/actions/invoices/types';
 import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
 
 const columns = [
   {
-    formatter: (row, index) => row.Item.itemName,
+    formatter: (row) => row.Item.itemName,
     name: 'Item Name',
     width: '250px',
   },

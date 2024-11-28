@@ -11,7 +11,6 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
@@ -31,7 +30,6 @@ import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { logger } from '@/lib/default-logger';
 import type { MembersType } from '@/actions/members/types';
-import useDebounceUrlParams from '@/hooks/use-debounce';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
@@ -118,8 +116,6 @@ export function InvoiceCreateForm({ members }: { members?: MembersType }): React
     setValue,
     watch,
   } = useForm<Values>({ defaultValues, resolver: zodResolver(schema) });
-
-  console.log(members);
 
   const onSubmit = React.useCallback(
     async (_: Values): Promise<void> => {

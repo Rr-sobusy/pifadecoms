@@ -141,7 +141,6 @@ const columns = [
 ] satisfies ColumnDef<AccountTransactionTypes[0]>[];
 
 function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
-  console.log(accountTransactions)
   return (
     <>
       <DataTable hover columns={columns} rows={accountTransactions} />

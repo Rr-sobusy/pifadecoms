@@ -22,6 +22,17 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
     return undefined;
   };
 
+  const getShareCapUpdate = (transactionType: FundTransactionsType) => {
+    if (transactionType === 'ShareCapDeposit')
+      return {
+        increment: Request.postedBalance,
+      };
+    if (transactionType === 'ShareCapWithdrawal')
+      return {
+        decrement: Request.postedBalance,
+      };
+  };
+
   let serverResponse;
 
   try {
@@ -69,6 +80,7 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
         },
         data: {
           savingsBal: getSavingsUpdate(Request.fundTransactionsType),
+          shareCapBal: getShareCapUpdate(Request.fundTransactionsType),
         },
       }),
     ]);

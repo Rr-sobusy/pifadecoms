@@ -14,7 +14,7 @@ import type { MemberFundsType } from '@/actions/funds/types';
 import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
 
-type MemberFundsTableProps = {
+interface MemberFundsTableProps {
   rows?: MemberFundsType;
 };
 

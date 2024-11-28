@@ -15,9 +15,9 @@ import { InvoicesStats } from '@/components/dashboard/invoice/invoices-stats';
 interface PageProps {
   searchParams: {
     memberId?: string;
-    endDate?: string;
-    invoiceId?: string;
-    startDate?: string;
+    endDate?: Date;
+    invoiceId?: number;
+    startDate?: Date;
     status?: string;
   };
 }
@@ -28,8 +28,8 @@ export const metadata: Metadata = {
 
 const page = async ({ searchParams }: PageProps) => {
   const { memberId, endDate, invoiceId, startDate, status } = searchParams;
-  const filters = { memberId, endDate, invoiceId, startDate, status };
-  const invoices = await fetchInvoices(filters as any);
+  const filters = { memberId, endDate, invoiceId, startDate, status } 
+  const invoices = await fetchInvoices(filters);
 
   return (
     <Box

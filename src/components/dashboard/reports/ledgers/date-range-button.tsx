@@ -2,16 +2,14 @@
 
 import React from 'react';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 
 import { usePopover } from '@/hooks/use-popover';
 
 import DateRangePopover from './date-range-popover';
 
-type Props = {};
 
-function DateRangeBtn({}: Props) {
+function DateRangeBtn() {
   const popover = usePopover<HTMLButtonElement>();
   return (
     <>

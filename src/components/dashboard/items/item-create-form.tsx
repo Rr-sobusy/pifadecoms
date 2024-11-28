@@ -28,30 +28,29 @@ import { itemSchema, ItemsSchemaType } from '@/actions/items/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-interface ItemCreateFormProps  {
+interface ItemCreateFormProps {
   accounts?: { accountId: string; accountName: string; accountRootType: AccountType[0]['RootID']['rootType'] }[];
-};
+}
 
 function ItemCreateForm({ accounts }: ItemCreateFormProps) {
-
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<ItemsSchemaType>({ resolver: zodResolver(itemSchema), defaultValues: {} });
 
-  const { executeAsync, result } = useAction(createNewItems);
+  const { execute, result } = useAction(createNewItems);
 
-  const onSubmit = (ItemSchema: ItemsSchemaType) => {
-    try {
-      executeAsync(ItemSchema);
-
-      if (!result.serverError) {
-        toast.success('New item created.');
-      }
-    } catch (error) {
+  React.useEffect(() => {
+    if (result.data) {
+      toast.success('New Item Created.');
+    } else {
       toast.error('Error occured in server');
     }
+  }, [result]);
+
+  const onSubmit = (ItemSchema: ItemsSchemaType) => {
+    execute(ItemSchema);
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -193,9 +192,7 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                           <FormControl error={Boolean(errors.expenseAcct)} fullWidth>
                             <InputLabel>Expense Account (Expense)</InputLabel>
                             <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.expenseAcct ? (
-                              <FormHelperText>{errors.expenseAcct.message}</FormHelperText>
-                            ) : null}
+                            {errors.expenseAcct ? <FormHelperText>{errors.expenseAcct.message}</FormHelperText> : null}
                           </FormControl>
                         )}
                         renderOption={(props, options) => (
@@ -229,9 +226,7 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                           <FormControl error={Boolean(errors.expenseAcct)} fullWidth>
                             <InputLabel>Income Account (Revenue)</InputLabel>
                             <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.expenseAcct ? (
-                              <FormHelperText>{errors.expenseAcct.message}</FormHelperText>
-                            ) : null}
+                            {errors.expenseAcct ? <FormHelperText>{errors.expenseAcct.message}</FormHelperText> : null}
                           </FormControl>
                         )}
                         renderOption={(props, options) => (

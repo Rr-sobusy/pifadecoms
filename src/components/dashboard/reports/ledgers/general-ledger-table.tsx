@@ -8,7 +8,7 @@ import type { LedgerTypes } from '@/actions/reports/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
 
-type GeneralLedgerTableProps = {
+interface GeneralLedgerTableProps {
   rows: LedgerTypes;
 };
 

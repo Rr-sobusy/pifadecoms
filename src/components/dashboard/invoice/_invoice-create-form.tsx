@@ -35,15 +35,15 @@ import { invoiceSchema, type InvoiceSchemaType } from '@/actions/invoices/types'
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-type InvoiceCreateProps = {
+interface InvoiceCreateProps {
   members: { memberId: string; lastName: string; firstName: string }[];
   items: { itemId: string; itemName: string; itemType: 'product' | 'services'; rate: number }[];
-};
+}
 
 const defaultValues = {
   invNumber: 'INV-*',
   lineItems: [],
-  invDate: new Date()
+  invDate: new Date(),
 };
 
 function calculateGrandTotal(lineItems: { lineId: string; itemId: string; quantity: number; rate: number }[]): number {
@@ -98,17 +98,16 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
     [getValues, setValue]
   );
 
-  function submitHandler(data: InvoiceSchemaType) {
-    try {
-      executeAsync(data);
-
-      if (!result.serverError) {
-        toast.success('Invoice Created!');
-      
-      }
-    } catch (error) {
-      toast.error('Error occured in server!' + ' ' + 'error:' + error);
+  React.useEffect(() => {
+    if (result.data) {
+      toast.success('New Invoice Created');
+    } else {
+      toast.error('Error occured in server.');
     }
+  }, [result]);
+
+  function submitHandler(data: InvoiceSchemaType) {
+    executeAsync(data);
   }
 
   return (
@@ -284,7 +283,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                         </FormControl>
                       )}
                     />
-                       <Controller
+                    <Controller
                       control={control}
                       name={`lineItems.${index}.trade`}
                       render={({ field }) => (
@@ -383,7 +382,9 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                 </Stack>
               </Box>
               <CardActions sx={{ justifyContent: 'flex-end' }}>
-                <Button type='button' onClick={()=>router.push(paths.dashboard.invoice.list)} color="secondary">Cancel</Button>
+                <Button type="button" onClick={() => router.push(paths.dashboard.invoice.list)} color="secondary">
+                  Cancel
+                </Button>
                 <Button disabled={isExecuting} type="submit" variant="contained">
                   {isExecuting ? 'Creating Invoice ...' : 'Create Invoice'}
                 </Button>

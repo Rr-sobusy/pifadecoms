@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { FormHelperText } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -47,7 +48,7 @@ export const CreateSavingsTransaction = ({
   const router = useRouter();
   const pathName = usePathname();
 
-  const { executeAsync, result } = useAction(createFundTransaction);
+  const { execute, result } = useAction(createFundTransaction);
 
   const {
     handleSubmit,
@@ -60,7 +61,9 @@ export const CreateSavingsTransaction = ({
     resolver: zodResolver(memberFundsSchema),
     defaultValues: {
       fundId: Number(fundId),
-      journalType: ['SavingsDeposit', 'ShareCapDeposit'].includes(transactionType) ? 'cashReceipts' : undefined,
+      journalType: ['SavingsDeposit', 'ShareCapDeposit'].includes(transactionType)
+        ? 'cashReceipts'
+        : 'cashDisbursement',
       fundType: ['SavingsDeposit', 'SavingsWithdrawal'].includes(transactionType) ? 'Savings' : 'ShareCapital',
       fundTransactionsType: transactionType,
       entryDate: new Date(),
@@ -113,7 +116,6 @@ export const CreateSavingsTransaction = ({
       ),
     [accounts]
   );
-
   const updateJournalItems = React.useCallback(
     (amount: number) => {
       const [firstLine, secondLine] = getValues('journalLineItems');
@@ -141,7 +143,7 @@ export const CreateSavingsTransaction = ({
   }, [transactionType]);
 
   const submitHandler = (data: IAddMemberSchema) => {
-    executeAsync(data);
+    execute(data);
   };
 
   return (
@@ -191,6 +193,13 @@ export const CreateSavingsTransaction = ({
                   onChange={(date) => {
                     field.onChange(date?.toDate());
                   }}
+                  slotProps={{
+                    textField: {
+                      error: Boolean(errors.entryDate),
+                      fullWidth: true,
+                      helperText: errors.entryDate?.message,
+                    },
+                  }}
                   value={dayjs(field.value)}
                   label="Date Posted"
                 />
@@ -207,19 +216,22 @@ export const CreateSavingsTransaction = ({
                   }}
                   filterOptions={(options, { inputValue }) =>
                     options.filter((option) =>
-                      transactionType === 'SavingsDeposit'
+                      transactionType === 'SavingsDeposit' || transactionType === 'ShareCapDeposit'
                         ? option.rootType === 'Assets' &&
                           (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
-                        : option.rootType === 'Liability'
+                        : transactionType === 'ShareCapWithdrawal'
+                          ? option.rootType === 'Equity'
+                          : option.rootType === 'Liability'
                     )
                   }
                   options={flattenAccounts}
                   getOptionLabel={(option) => option.accountName}
                   groupBy={(option) => option.group}
                   renderInput={(params) => (
-                    <FormControl fullWidth>
+                    <FormControl error={Boolean(errors.journalLineItems)} fullWidth>
                       <InputLabel required>Depositing Acct. (Dr)</InputLabel>
                       <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
+                      {errors.journalLineItems && <FormHelperText>{errors.journalLineItems.message}</FormHelperText>}
                     </FormControl>
                   )}
                   renderOption={(props, options) => (
@@ -240,14 +252,11 @@ export const CreateSavingsTransaction = ({
                     field.onChange(value);
                   }}
                   filterOptions={(options, { inputValue }) =>
-                    options.filter(
-                      // (option) =>
-                      //   option.rootType === 'Assets' ||
-                      //   (currentTransactionType === 'SavingsDeposit' &&
-                      //     (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
-                      (option) =>
-                        transactionType === 'SavingsDeposit'
-                          ? option.rootType === 'Liability' &&
+                    options.filter((option) =>
+                      transactionType === 'SavingsDeposit'
+                        ? option.rootType === 'Liability'
+                        : transactionType === 'ShareCapDeposit'
+                          ? option.rootType === 'Equity' &&
                             (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
                           : option.rootType === 'Assets'
                     )
@@ -256,9 +265,10 @@ export const CreateSavingsTransaction = ({
                   getOptionLabel={(option) => option.accountName}
                   groupBy={(option) => option.group}
                   renderInput={(params) => (
-                    <FormControl fullWidth>
+                    <FormControl error={Boolean(errors.journalLineItems)} fullWidth>
                       <InputLabel required>Crediting Acct. (Cr)</InputLabel>
                       <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
+                      {errors.journalLineItems && <FormHelperText>{errors.journalLineItems.message}</FormHelperText>}
                     </FormControl>
                   )}
                   renderOption={(props, options) => (
@@ -273,7 +283,7 @@ export const CreateSavingsTransaction = ({
               name="postedBalance"
               control={control}
               render={({ field }) => (
-                <FormControl>
+                <FormControl error={Boolean(errors.postedBalance)}>
                   <InputLabel required>Posting Amount</InputLabel>
                   <OutlinedInput
                     {...field}
@@ -287,6 +297,7 @@ export const CreateSavingsTransaction = ({
                     }}
                     type="number"
                   />
+                  {errors.postedBalance && <FormHelperText>{errors.postedBalance.message}</FormHelperText>}
                 </FormControl>
               )}
             />
@@ -294,14 +305,15 @@ export const CreateSavingsTransaction = ({
               control={control}
               name="reference"
               render={({ field }) => (
-                <FormControl>
+                <FormControl error={Boolean(errors.reference)} fullWidth>
                   <InputLabel required>OR No.</InputLabel>
                   <OutlinedInput {...field} />
+                  {errors.reference && <FormHelperText>{errors.reference.message}</FormHelperText>}
                 </FormControl>
               )}
             />
             <Stack justifyContent="flex-end" gap={2} flexDirection="row" marginTop={1}>
-              <Button type="button" onClick={() => console.log(errors)} variant="outlined">
+              <Button type="button" onClick={handleClose} variant="outlined">
                 Cancel
               </Button>
               <Button type="submit" variant="contained">

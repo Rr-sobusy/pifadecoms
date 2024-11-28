@@ -20,7 +20,7 @@ const dateRangeSchema = z.object({
   endDate: dayjsSchema,
 });
 
-type DateRangePopoverProps = {
+interface DateRangePopoverProps {
   anchorEl: null | Element | HTMLButtonElement;
   onClose?: () => void;
   onMarkAllAsRead?: () => void;
@@ -83,7 +83,7 @@ function DateRangePopover({ anchorEl, onClose, open = false }: DateRangePopoverP
           }}
         >
           <DateCalendar
-            onChange={(date) => setDateRange({ endDate: dayjs(date), startDate: dateRange.startDate })}
+            onChange={(date:Date) => setDateRange({ endDate: dayjs(date), startDate: dateRange.startDate })}
             value={dayjs(dateRange.endDate)}
           />
         </Grid>

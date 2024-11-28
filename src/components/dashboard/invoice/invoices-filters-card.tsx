@@ -5,10 +5,9 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { InvoiceFilterer } from './_invoice-filters';
-import type { Filters } from './invoices-filters';
 
 interface InvoicesFiltersCardProps {
-  filters?: Filters;
+  filters?: { memberId?: string; endDate?: Date; invoiceId?: number; startDate?: Date; status?: string };
   sortDir?: 'asc' | 'desc';
   view?: 'group' | 'list';
 }

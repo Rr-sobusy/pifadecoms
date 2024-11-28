@@ -21,7 +21,7 @@ import { formatToCurrency } from '@/lib/format-currency';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 
-interface SavingsCardProps {
+interface SharesCardProps {
   fund: MemberFundsType[0];
 }
 
@@ -45,8 +45,8 @@ const FundTransactionMap: Record<FundTransactionsType, string> = {
 };
 
 const GetIcon = (transType: FundTransactionsType): React.JSX.Element | undefined => {
-  if (transType === 'SavingsDeposit') return <PiggyBank color="text.secondary" />;
-  if (transType === 'SavingsWithdrawal') return <WithdrawIcon color="text.secondary" />;
+  if (transType === 'ShareCapDeposit') return <PiggyBank color="text.secondary" />;
+  if (transType === 'ShareCapWithdrawal') return <WithdrawIcon color="text.secondary" />;
 
   return undefined;
 };
@@ -95,9 +95,9 @@ const columns = [
   {
     name: 'Posted Amount',
     formatter: (row) => {
-      const textColor = row.transactionType === 'SavingsDeposit' ? 'success' : 'error';
+      const textColor = row.transactionType === 'ShareCapDeposit' ? 'success' : 'error';
       const transactionBalance =
-        row.transactionType === 'SavingsDeposit'
+        row.transactionType === 'ShareCapDeposit'
           ? `+${formatToCurrency(row.postedBalance, 'Fil-ph', 'Php')}`
           : `-${formatToCurrency(row.postedBalance, 'Fil-ph', 'Php')}`;
       return (
@@ -111,31 +111,31 @@ const columns = [
   },
 ] satisfies ColumnDef<MemberFundsType[0]['Transactions'][0]>[];
 
-function SavingsCard({ fund }: SavingsCardProps) {
+function SharesCard({ fund }: SharesCardProps) {
   const router = useRouter();
   const pathName = usePathname();
 
   function addSavingsDeposit() {
-    const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsDeposit' });
+    const urlSearchParams = toURLSearchParams({ transactionType: 'ShareCapDeposit' });
 
     //* Trigger open of the modal
     router.push(`${pathName}?${urlSearchParams.toString()}`);
   }
 
-  function addSavingsWithdrawal() {
-    const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsWithdrawal' });
+//   function addSavingsWithdrawal() {
+//     const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsWithdrawal' });
 
-    //* Trigger open of the modal
-    router.push(`${pathName}?${urlSearchParams.toString()}`);
-  }
+//     //* Trigger open of the modal
+//     router.push(`${pathName}?${urlSearchParams.toString()}`);
+//   }
 
-  const currentSavings = fund.savingsBal;
+  const currentShare = fund.shareCapBal;
   return (
     <Card>
       <CardContent>
         <Stack spacing={2}>
           <Typography variant="h6" fontWeight={600}>
-            Member Savings
+            Member Share Capital
           </Typography>
           <Grid container spacing={2}>
             <Grid
@@ -150,10 +150,10 @@ function SavingsCard({ fund }: SavingsCardProps) {
                   <Stack flexDirection="row" justifyContent="space-between">
                     <Stack>
                       <Typography fontWeight={600} variant="subtitle1">
-                        Current Savings&apos; Balance
+                        Current Share Balance
                       </Typography>
                       <Typography color="text.secondary" variant="caption">
-                        Member savings as of today
+                        Member share capital as of today
                       </Typography>
                     </Stack>
                     <Avatar
@@ -168,7 +168,7 @@ function SavingsCard({ fund }: SavingsCardProps) {
                     </Avatar>
                   </Stack>
                   <Typography marginTop={3} fontWeight={700} variant="h6">
-                    {formatToCurrency(currentSavings, 'Fil-ph', 'Php')}
+                    {formatToCurrency(currentShare, 'Fil-ph', 'Php')}
                   </Typography>
                 </CardContent>
               </Card>
@@ -188,7 +188,7 @@ function SavingsCard({ fund }: SavingsCardProps) {
                         Quick Actions
                       </Typography>
                       <Typography color="text.secondary" variant="caption">
-                        Manage member savings
+                        Manage member share capital
                       </Typography>
                     </Stack>
                     <Avatar
@@ -203,11 +203,8 @@ function SavingsCard({ fund }: SavingsCardProps) {
                     </Avatar>
                   </Stack>
                   <Stack flexDirection="row" gap={2}>
-                    <Button onClick={addSavingsDeposit} startIcon={<PiggyBank />} variant="contained">
+                    <Button size='large' onClick={addSavingsDeposit} startIcon={<PiggyBank />} variant="contained">
                       Deposit
-                    </Button>
-                    <Button onClick={addSavingsWithdrawal} startIcon={<WithdrawIcon />} variant="outlined">
-                      Withdraw
                     </Button>
                   </Stack>
                 </CardContent>
@@ -230,7 +227,7 @@ function SavingsCard({ fund }: SavingsCardProps) {
                   sx={{ marginTop: 3 }}
                   hideHead
                   columns={columns}
-                  rows={fund.Transactions.filter((transaction)=>transaction.fundType === "Savings")}
+                  rows={fund.Transactions.filter((transaction)=> transaction.fundType === "ShareCapital" )}
                 />
                 {!fund.Transactions.length ? (
                   <Box sx={{ p: 3 }}>
@@ -248,4 +245,4 @@ function SavingsCard({ fund }: SavingsCardProps) {
   );
 }
 
-export default SavingsCard;
+export default SharesCard;

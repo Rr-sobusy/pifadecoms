@@ -33,10 +33,10 @@ import { SingleInvoiceType } from '@/actions/invoices/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-type PageProps = {
+interface PageProps {
   invoiceDetails: SingleInvoiceType;
   accounts: AccounTreeType;
-};
+}
 
 function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
   const {
@@ -69,9 +69,7 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
     },
   });
 
-  const { executeAsync, isExecuting, result } = useAction(
-    createPaymentPosting.bind(0, invoiceDetails?.outStandingAmt ?? 0)
-  );
+  const { execute, isExecuting, result } = useAction(createPaymentPosting.bind(0, invoiceDetails?.outStandingAmt ?? 0));
 
   const entryLineItems = watch('journalLineItems');
 
@@ -116,16 +114,16 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
     [setValue, getValues]
   );
 
-  const submitHandler = (data: PaymentSchema) => {
-    try {
-      executeAsync(data);
-
-      if (!result.serverError) {
-        toast.success('Payment posted.');
-      }
-    } catch (error) {
-      toast.error('Error occured in server!' + ' ' + error);
+  React.useEffect(() => {
+    if (result.data) {
+      toast.success('Payments Posted.');
+    } else {
+      toast.error('Error occured in server');
     }
+  }, [result]);
+
+  const submitHandler = (data: PaymentSchema) => {
+    execute(data);
   };
 
   return (
