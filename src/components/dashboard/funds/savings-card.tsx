@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -22,7 +23,7 @@ import { ColumnDef, DataTable } from '@/components/core/data-table';
 
 interface SavingsCardProps {
   fund: MemberFundsType[0];
-};
+}
 
 interface SearchParams {
   transactionType: FundTransactionsType;
@@ -43,31 +44,40 @@ const FundTransactionMap: Record<FundTransactionsType, string> = {
   ShareCapWithdrawal: 'Capital Withdrawal',
 };
 
+const GetIcon = (transType: FundTransactionsType): React.JSX.Element | undefined => {
+  if (transType === 'SavingsDeposit') return <PiggyBank color="text.secondary" />;
+  if (transType === 'SavingsWithdrawal') return <WithdrawIcon color="text.secondary" />;
+
+  return undefined;
+};
+
 const columns = [
   {
     name: 'Type',
-    formatter: (row) => (
-      <Stack alignItems="center" flexDirection="row" gap={2}>
-        <Avatar
-          sx={{
-            '--Avatar-size': '40px',
-            bgcolor: 'var(--mui-palette-background-paper)',
-            boxShadow: 'var(--mui-shadows-8)',
-            color: 'var(--mui-palette-text-primary)',
-          }}
-        >
-          <PiggyBank color="text.secondary" />
-        </Avatar>
-        <Stack>
-          <Typography fontWeight={600} variant="subtitle2">
-            {FundTransactionMap[row.transactionType]}
-          </Typography>
-          <Typography color="text.secondary" variant="caption">
-            {dayjs().format('MMM DD YYYY')}
-          </Typography>
+    formatter: (row) => {
+      return (
+        <Stack alignItems="center" flexDirection="row" gap={2}>
+          <Avatar
+            sx={{
+              '--Avatar-size': '40px',
+              bgcolor: 'var(--mui-palette-background-paper)',
+              boxShadow: 'var(--mui-shadows-8)',
+              color: 'var(--mui-palette-text-primary)',
+            }}
+          >
+            {GetIcon(row.transactionType)}
+          </Avatar>
+          <Stack>
+            <Typography fontWeight={600} variant="subtitle2">
+              {FundTransactionMap[row.transactionType]}
+            </Typography>
+            <Typography color="text.secondary" variant="caption">
+              {dayjs().format('MMM DD YYYY')}
+            </Typography>
+          </Stack>
         </Stack>
-      </Stack>
-    ),
+      );
+    },
   },
   {
     name: 'Reference',
@@ -215,12 +225,21 @@ function SavingsCard({ fund }: SavingsCardProps) {
                 </Typography>
               </Stack>
 
-              <DataTable<MemberFundsType[0]['Transactions'][0]>
-                sx={{ marginTop: 3 }}
-                hideHead
-                columns={columns}
-                rows={fund.Transactions}
-              />
+              <>
+                <DataTable<MemberFundsType[0]['Transactions'][0]>
+                  sx={{ marginTop: 3 }}
+                  hideHead
+                  columns={columns}
+                  rows={fund.Transactions}
+                />
+                {!fund.Transactions.length ? (
+                  <Box sx={{ p: 3 }}>
+                    <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="body2">
+                      No transactions found.
+                    </Typography>
+                  </Box>
+                ) : null}
+              </>
             </CardContent>
           </Card>
         </Stack>

@@ -7,7 +7,7 @@ export async function fetchMemberFunds() {
       Transactions: {
         include: {
           JournalEntries : true
-        }
+        },
       },
     },
   });

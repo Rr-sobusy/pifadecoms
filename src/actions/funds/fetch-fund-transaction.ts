@@ -10,6 +10,9 @@ export async function fetchFundTransactions(fundId: number) {
         include: {
           JournalEntries: true,
         },
+        orderBy: {
+          fundTransactId : "desc"
+        },
       },
       Member: true,
     },

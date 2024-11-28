@@ -206,16 +206,11 @@ export const CreateSavingsTransaction = ({
                     field.onChange(value);
                   }}
                   filterOptions={(options, { inputValue }) =>
-                    options.filter(
-                      // (option) =>
-                      //   option.rootType === 'Assets' ||
-                      //   (currentTransactionType === 'SavingsDeposit' &&
-                      //     (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase())))
-                      (option) =>
-                        transactionType === 'SavingsDeposit'
-                          ? option.rootType === 'Assets' &&
-                            (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
-                          : option.rootType === 'Liability'
+                    options.filter((option) =>
+                      transactionType === 'SavingsDeposit'
+                        ? option.rootType === 'Assets' &&
+                          (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
+                        : option.rootType === 'Liability'
                     )
                   }
                   options={flattenAccounts}

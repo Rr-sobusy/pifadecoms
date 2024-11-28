@@ -3,7 +3,6 @@
  * * Instead of fetching data in server, I prefer to use fetching of member's data in client side for better ux.
  */
 import prisma from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
 
 export async function POST(request: Request) {
   try {
@@ -37,8 +36,12 @@ export async function POST(request: Request) {
       take: 20, // Limit the number of results to improve UX and performance
     });
 
-    return { success: true, message: members };
+    return new Response(JSON.stringify(members), { status: 200 });
   } catch (error) {
-    return { success: false, errorMessage: error };
+    return new Response(
+      JSON.stringify({ error: 'Failed to fetch members' }),
+      { status: 500 }
+    );
   }
 }
+

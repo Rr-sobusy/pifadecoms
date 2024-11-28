@@ -22,6 +22,8 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
     return undefined;
   };
 
+  let serverResponse;
+
   try {
     /**
      * * Batching of queries
@@ -71,10 +73,13 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
       }),
     ]);
 
-    return { success: true, message: queryResult };
+    serverResponse = { success: true, message: queryResult };
   } catch (error) {
-    return { success: false, errorMessage: error };
-  } finally {
-    revalidatePath(paths.dashboard.funds.view(Request.fundId));
+    if (error instanceof Error) {
+      serverResponse = { success: false, message: `Error occured in server. Stack: ${error.stack}` };
+    }
   }
+
+  revalidatePath(paths.dashboard.funds.view(Request.fundId));
+  return serverResponse;
 });
