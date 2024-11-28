@@ -69,7 +69,9 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
     },
   });
 
-  const { executeAsync, isExecuting, result } = useAction(createPaymentPosting);
+  const { executeAsync, isExecuting, result } = useAction(
+    createPaymentPosting.bind(0, invoiceDetails?.outStandingAmt ?? 0)
+  );
 
   const entryLineItems = watch('journalLineItems');
 

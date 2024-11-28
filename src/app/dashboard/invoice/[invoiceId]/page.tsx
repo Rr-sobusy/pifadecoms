@@ -18,14 +18,14 @@ import { formatToCurrency } from '@/lib/format-currency';
 import { fetchSingleInvoice } from '@/actions/invoices/fetch-invoice';
 import type { InvoiceItemsWithItem } from '@/actions/invoices/types';
 import { DynamicLogo } from '@/components/core/logo';
-import { InvoicePDFLink } from '@/components/dashboard/invoice/invoice-pdf-link';
+// import { InvoicePDFLink } from '@/components/dashboard/invoice/invoice-pdf-link';
 import { LineItemsTable } from '@/components/dashboard/invoice/line-items-table';
 
 export const metadata = { title: `Details | Invoices | Dashboard | ${config.site.name}` } satisfies Metadata;
 
-interface PageProps  {
+interface PageProps {
   params: { invoiceId: bigint };
-};
+}
 
 export default async function Page({ params }: PageProps): Promise<React.JSX.Element> {
   const invoiceDetails = await fetchSingleInvoice(params.invoiceId);
@@ -63,13 +63,20 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
               </div>
             </Stack>
             <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-              <InvoicePDFLink invoice={undefined}>
+              {/* <InvoicePDFLink invoice={undefined}>
                 <Button disabled color="secondary">
                   Download
                 </Button>
               </InvoicePDFLink>
               <Button disabled component="a" href={paths.pdf.invoice('1')} target="_blank" variant="contained">
                 Preview
+              </Button> */}
+              <Button
+                LinkComponent={RouterLink}
+                href={paths.dashboard.invoice.createPayment(params.invoiceId)}
+                variant="outlined"
+              >
+                Post Payment
               </Button>
             </Stack>
           </Stack>
@@ -124,7 +131,9 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                 }}
               >
                 <Stack spacing={1}>
-                  <Typography variant="subtitle1">Pinagsibaan Farmer&apos;s Development Multi-purpose Cooperative</Typography>
+                  <Typography variant="subtitle1">
+                    Pinagsibaan Farmer&apos;s Development Multi-purpose Cooperative
+                  </Typography>
                   <Typography variant="body2">
                     Pinagsibaan, Rosario, Batangas
                     <br />
