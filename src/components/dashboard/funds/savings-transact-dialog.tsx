@@ -17,7 +17,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
-import { FundTransactionsType } from '@prisma/client';
+import { FundTransactionsType, ReferenceType } from '@prisma/client';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -38,6 +38,13 @@ interface CreateSavingsTransactionProps {
   transactionType: FundTransactionsType;
 }
 
+const referenceTypeMap: Record<FundTransactionsType, ReferenceType> = {
+  SavingsDeposit: 'SavingsDeposit',
+  SavingsWithdrawal: 'SavingsWithdrawal',
+  ShareCapDeposit: 'ShareDeposit',
+  ShareCapWithdrawal: 'ShareWithdrawal',
+};
+
 export const CreateSavingsTransaction = ({
   open,
   fundTransactions,
@@ -48,7 +55,7 @@ export const CreateSavingsTransaction = ({
   const router = useRouter();
   const pathName = usePathname();
 
-  const { execute, result } = useAction(createFundTransaction);
+  const { execute, result, isExecuting } = useAction(createFundTransaction);
 
   const {
     handleSubmit,
@@ -68,7 +75,6 @@ export const CreateSavingsTransaction = ({
       fundTransactionsType: transactionType,
       entryDate: new Date(),
       particulars: fundTransactions?.Member.memberId,
-      referenceType: 'ManualJournals',
 
       journalLineItems: [
         {
@@ -138,6 +144,7 @@ export const CreateSavingsTransaction = ({
         'journalType',
         ['SavingsDeposit', 'ShareCapDeposit'].includes(transactionType) ? 'cashReceipts' : 'cashDisbursement'
       );
+      setValue('referenceType', referenceTypeMap[transactionType]);
     }
     reconcileValue();
   }, [transactionType]);
@@ -316,8 +323,8 @@ export const CreateSavingsTransaction = ({
               <Button type="button" onClick={handleClose} variant="outlined">
                 Cancel
               </Button>
-              <Button type="submit" variant="contained">
-                Post transaction
+              <Button disabled={isExecuting} type="submit" variant="contained">
+                {isExecuting ? 'Posting' : 'Post Transaction'}
               </Button>
             </Stack>
           </Stack>

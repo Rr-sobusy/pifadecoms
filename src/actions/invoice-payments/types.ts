@@ -9,7 +9,7 @@ import { fetchReceivedPayments } from './fetch-payments'
 
 export const paymentSchema = transactionalSchema.extend({
         invoiceId : z.bigint(),
-        orNo : z.string().optional(),
+        // orNo : z.string().optional(),
         paymentReceived: z.number(),
         depositingAccount: z.object({
                 accountId : z.string(),

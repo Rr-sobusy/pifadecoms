@@ -117,10 +117,8 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
   React.useEffect(() => {
     if (result.data) {
       toast.success('Payments Posted.');
-    } else {
-      toast.error('Error occured in server');
     }
-  }, [result]);
+  }, [result.data]);
 
   const submitHandler = (data: PaymentSchema) => {
     execute(data);
@@ -268,10 +266,10 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
                     control={control}
                     name="reference"
                     render={({ field }) => (
-                      <FormControl error={Boolean(errors.orNo)} fullWidth>
+                      <FormControl error={Boolean(errors.reference)} fullWidth>
                         <InputLabel>Payment O.R / Ref No.</InputLabel>
                         <OutlinedInput {...field} type="text" />
-                        {errors.orNo ? <FormHelperText>{errors.orNo.message}</FormHelperText> : null}
+                        {errors.reference ? <FormHelperText>{errors.reference.message}</FormHelperText> : null}
                       </FormControl>
                     )}
                   />

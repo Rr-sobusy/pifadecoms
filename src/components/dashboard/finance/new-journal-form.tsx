@@ -24,6 +24,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
+import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
@@ -31,11 +32,10 @@ import { createManualJournal } from '@/actions/transactional/create-manual-entry
 import { transactionalSchema, type TransactionalSchemaType } from '@/actions/transactional/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
-import { JournalMap } from '@/lib/api-utils/journal-map';
 
 interface NewJournalFromProps {
   data: AccounTreeType;
-};
+}
 
 function NewJournalFrom({ data }: NewJournalFromProps) {
   const {
@@ -203,7 +203,15 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                 render={({ field }) => (
                   <FormControl error={Boolean(errors.reference)} fullWidth>
                     <InputLabel required>Reference #</InputLabel>
-                    <OutlinedInput {...field} type="text" />
+                    <OutlinedInput
+                      {...field}
+                      type="text"
+                      onChange={(event) => {
+                        const ref = event.target.value;
+                        if (ref) return field.onChange(ref);
+                        return null;
+                      }}
+                    />
                     {errors.reference && <FormHelperText>{errors.reference.message}</FormHelperText>}
                   </FormControl>
                 )}
@@ -315,9 +323,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
             </Stack>
           </Stack>
           <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
-            <Button type="button">
-              Cancel
-            </Button>
+            <Button type="button">Cancel</Button>
             <Button disabled={isExecuting} type="submit" variant="contained">
               {isExecuting ? 'Posting Entry...' : 'Post Entry'}
             </Button>

@@ -101,8 +101,6 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
   React.useEffect(() => {
     if (result.data) {
       toast.success('New Invoice Created');
-    } else {
-      toast.error('Error occured in server.');
     }
   }, [result]);
 

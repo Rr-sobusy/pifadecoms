@@ -162,6 +162,7 @@ export function InvoiceFilterer({
     (values: Values): void => {
       updateSearchParams({
         ...values,
+        invoiceId: values.invoiceId,
         memberId: values.member.memberId,
         startDate: values.startDate ? dayjs(values.startDate).format('YYYY-MM-DD') : undefined,
         endDate: values.endDate ? dayjs(values.endDate).format('YYYY-MM-DD') : undefined,
@@ -187,7 +188,17 @@ export function InvoiceFilterer({
           render={({ field }) => (
             <FormControl error={Boolean(errors.invoiceId)}>
               <InputLabel>Invoice ID</InputLabel>
-              <OutlinedInput {...field} type="number" />
+              <OutlinedInput
+                {...field}
+                onChange={(event) => {
+                  const invId = event?.target.value;
+                  if (invId) {
+                    field.onChange(Number(invId));
+                  }
+                  return 0;
+                }}
+                type="number"
+              />
             </FormControl>
           )}
         />

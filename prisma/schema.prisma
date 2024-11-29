@@ -65,6 +65,10 @@ enum ReferenceType {
   SalesPayments
   LoanDisbursements
   LoanRepayments
+  SavingsDeposit
+  SavingsWithdrawal
+  ShareDeposit 
+  ShareWithdrawal
   ManualJournals
 }
 
@@ -169,9 +173,6 @@ model InvoiceItems {
   rate            Int
   trade           Int?
   quantity        Int
-
-
-
   Item            Items      @relation(fields: [itemID] , references: [itemID])           
   Invoice         Invoice    @relation(fields: [invoiceId], references: [invoiceId], onDelete: Cascade)
 

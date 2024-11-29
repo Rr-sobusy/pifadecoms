@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { Divider } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -20,6 +21,8 @@ import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
+
+import FundTransactionPaginator from './fund-transcaction-table-paginator';
 
 interface SharesCardProps {
   fund: MemberFundsType[0];
@@ -115,6 +118,10 @@ function SharesCard({ fund }: SharesCardProps) {
   const router = useRouter();
   const pathName = usePathname();
 
+  const currentShareCapTransactions = fund.Transactions.filter((ctx) => ctx.fundType === 'ShareCapital');
+  const [currentPage, setCurrentPage] = React.useState<number>(0);
+  const paginatedTransaction = currentShareCapTransactions.slice(currentPage * 5, (currentPage + 1) * 5);
+
   function addSavingsDeposit() {
     const urlSearchParams = toURLSearchParams({ transactionType: 'ShareCapDeposit' });
 
@@ -122,12 +129,9 @@ function SharesCard({ fund }: SharesCardProps) {
     router.push(`${pathName}?${urlSearchParams.toString()}`);
   }
 
-//   function addSavingsWithdrawal() {
-//     const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsWithdrawal' });
-
-//     //* Trigger open of the modal
-//     router.push(`${pathName}?${urlSearchParams.toString()}`);
-//   }
+  function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currentPage: number) {
+    setCurrentPage(currentPage);
+  }
 
   const currentShare = fund.shareCapBal;
   return (
@@ -203,7 +207,7 @@ function SharesCard({ fund }: SharesCardProps) {
                     </Avatar>
                   </Stack>
                   <Stack flexDirection="row" gap={2}>
-                    <Button size='large' onClick={addSavingsDeposit} startIcon={<PiggyBank />} variant="contained">
+                    <Button size="large" onClick={addSavingsDeposit} startIcon={<PiggyBank />} variant="contained">
                       Deposit
                     </Button>
                   </Stack>
@@ -227,7 +231,7 @@ function SharesCard({ fund }: SharesCardProps) {
                   sx={{ marginTop: 3 }}
                   hideHead
                   columns={columns}
-                  rows={fund.Transactions.filter((transaction)=> transaction.fundType === "ShareCapital" )}
+                  rows={fund.Transactions.filter((transaction) => transaction.fundType === 'ShareCapital')}
                 />
                 {!fund.Transactions.length ? (
                   <Box sx={{ p: 3 }}>
@@ -237,6 +241,12 @@ function SharesCard({ fund }: SharesCardProps) {
                   </Box>
                 ) : null}
               </>
+              <Divider />
+              <FundTransactionPaginator
+                count={currentShareCapTransactions.length}
+                currentPage={currentPage}
+                handlePageChange={handlePageChange}
+              />
             </CardContent>
           </Card>
         </Stack>

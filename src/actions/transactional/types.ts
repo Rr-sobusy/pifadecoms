@@ -17,7 +17,17 @@ export const transactionalSchema = z.object({
   journalType: z.enum(['cashReceipts', 'cashDisbursement', 'generalJournal']),
   notes: z.string().optional(),
   particulars: z.string().optional(),
-  referenceType: z.enum(['MemberRegistration','SalesPayments','LoanDisbursements','LoanRepayments','ManualJournals']),
+  referenceType: z.enum([
+    'MemberRegistration',
+    'SalesPayments',
+    'LoanDisbursements',
+    'LoanRepayments',
+    'ManualJournals',
+    'SavingsDeposit',
+    'SavingsWithdrawal',
+    'ShareDeposit',
+    'ShareWithdrawal',
+  ]),
 
   // entries
   journalLineItems: z
@@ -34,7 +44,7 @@ export const transactionalSchema = z.object({
           updatedAt: z.date().optional(),
           isActive: z.boolean().optional(),
           group: z.string(),
-          rootType: z.enum(['Assets','Liability','Equity','Revenue','Expense']).optional()
+          rootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']).optional(),
         }),
         debit: z.number(),
         credit: z.number(),
@@ -54,4 +64,4 @@ export const transactionalSchema = z.object({
     }),
 });
 
-export type TransactionalSchemaType = z.infer<typeof transactionalSchema>
+export type TransactionalSchemaType = z.infer<typeof transactionalSchema>;

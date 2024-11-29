@@ -76,7 +76,7 @@ export const JournalTypeSchema = z.enum(['cashReceipts','cashDisbursement','gene
 
 export type JournalTypeType = `${z.infer<typeof JournalTypeSchema>}`
 
-export const ReferenceTypeSchema = z.enum(['MemberRegistration','SalesPayments','LoanDisbursements','LoanRepayments','ManualJournals']);
+export const ReferenceTypeSchema = z.enum(['MemberRegistration','SalesPayments','LoanDisbursements','LoanRepayments','SavingsDeposit','SavingsWithdrawal','ShareDeposit','ShareWithdrawal','ManualJournals']);
 
 export type ReferenceTypeType = `${z.infer<typeof ReferenceTypeSchema>}`
 

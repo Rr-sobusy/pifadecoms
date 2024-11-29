@@ -3,7 +3,6 @@
  *  of cash basis accounting. It will affect the balances when payment was settled
  */
 
-
 import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
@@ -52,7 +51,7 @@ export async function fetchInvoices(props: Filterers = {}) {
     where: isEmpty
       ? undefined
       : {
-          OR: conditions
+          OR: conditions,
         },
   });
 

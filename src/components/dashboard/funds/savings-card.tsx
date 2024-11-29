@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { Divider } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -20,6 +21,8 @@ import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
+
+import FundTransactionPaginator from './fund-transcaction-table-paginator';
 
 interface SavingsCardProps {
   fund: MemberFundsType[0];
@@ -115,6 +118,13 @@ function SavingsCard({ fund }: SavingsCardProps) {
   const router = useRouter();
   const pathName = usePathname();
 
+  /**
+   * * States used for showing data in data table with pagination
+   */
+  const currentSavingsTransactions = fund.Transactions.filter((ctx) => ctx.fundType === 'Savings');
+  const [currentPage, setCurrentPage] = React.useState<number>(0);
+  const paginatedData = currentSavingsTransactions.slice((currentPage * 5),  (currentPage + 1) * 5)
+
   function addSavingsDeposit() {
     const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsDeposit' });
 
@@ -129,7 +139,12 @@ function SavingsCard({ fund }: SavingsCardProps) {
     router.push(`${pathName}?${urlSearchParams.toString()}`);
   }
 
+  function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currentPage: number) {
+    setCurrentPage(currentPage);
+  }
+
   const currentSavings = fund.savingsBal;
+
   return (
     <Card>
       <CardContent>
@@ -230,7 +245,7 @@ function SavingsCard({ fund }: SavingsCardProps) {
                   sx={{ marginTop: 3 }}
                   hideHead
                   columns={columns}
-                  rows={fund.Transactions.filter((transaction)=>transaction.fundType === "Savings")}
+                  rows={paginatedData}
                 />
                 {!fund.Transactions.length ? (
                   <Box sx={{ p: 3 }}>
@@ -240,6 +255,12 @@ function SavingsCard({ fund }: SavingsCardProps) {
                   </Box>
                 ) : null}
               </>
+              <Divider />
+              <FundTransactionPaginator
+                currentPage={currentPage}
+                count={currentSavingsTransactions.length}
+                handlePageChange={handlePageChange}
+              />
             </CardContent>
           </Card>
         </Stack>
