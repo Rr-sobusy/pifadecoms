@@ -16,7 +16,8 @@ import type { ColumnDef } from '@/components/core/data-table';
 
 interface MemberFundsTableProps {
   rows?: MemberFundsType;
-};
+  value: any;
+}
 
 const columns = [
   {
@@ -56,8 +57,8 @@ const columns = [
   },
 ] satisfies ColumnDef<MemberFundsType[0]>[];
 
-
-export function MemberFundsTable({ rows = [] }: MemberFundsTableProps): React.JSX.Element {
+export function MemberFundsTable({ rows = [], value }: MemberFundsTableProps): React.JSX.Element {
+  console.log(value);
   return (
     <React.Fragment>
       <DataTable columns={columns} rows={rows} />

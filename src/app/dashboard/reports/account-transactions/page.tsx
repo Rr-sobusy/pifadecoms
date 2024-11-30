@@ -1,8 +1,12 @@
 import React from 'react';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
+import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
+
 import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
 
@@ -23,7 +27,14 @@ async function page(): Promise<React.JSX.Element> {
             <Typography variant="h4">Account Transactions</Typography>
           </Box>
 
-          <div>rex</div>
+          <Stack spacing={1} flexDirection="row">
+            <Button startIcon={<FilterIcon />} variant="text">
+              Filters
+            </Button>
+            <Button startIcon={<ExportIcon />} variant="text">
+              Export
+            </Button>
+          </Stack>
         </Stack>
         <Stack spacing={1} sx={{ alignItems: 'center', marginTop: 3 }}>
           <Typography color="" variant="overline">

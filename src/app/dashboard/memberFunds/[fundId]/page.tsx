@@ -1,5 +1,6 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
+import { Chip } from '@mui/material';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -40,6 +41,12 @@ async function page({ params, searchParams }: PageProps) {
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
           <Box sx={{ flex: '1 1 auto' }}>
             <Typography variant="h4">Member Fund Dashboard</Typography>
+            <Chip
+              sx={{marginTop : 1}}
+              color="default"
+              variant="outlined"
+              label={`${fundTransactions.Member.lastName}, ${fundTransactions.Member.firstName}`}
+            />
           </Box>
         </Stack>
         <SavingsCard fund={fundTransactions ?? []} />
