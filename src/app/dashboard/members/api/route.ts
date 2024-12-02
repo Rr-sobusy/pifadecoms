@@ -32,6 +32,7 @@ export async function POST(request: Request) {
             },
           },
         ],
+        accountStatus : "Active"
       },
       take: 20, // Limit the number of results to improve UX and performance
     });

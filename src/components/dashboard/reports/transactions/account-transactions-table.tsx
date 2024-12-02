@@ -3,8 +3,9 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
-
+import Divider from '@mui/material/Divider'
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -152,8 +153,14 @@ function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
           </Typography>
         </Box>
       ) : null}
+      <Divider />
+      <Paginator />
     </React.Fragment>
   );
+}
+
+function Paginator() {
+  return <TablePagination    component="div" page={1} rowsPerPage={25} count={10} onPageChange={() => null} />;
 }
 
 export default TransactionsTable;

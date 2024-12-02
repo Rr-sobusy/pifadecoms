@@ -1,4 +1,5 @@
 import React from 'react';
+import RouterLink from 'next/link';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -7,10 +8,15 @@ import Typography from '@mui/material/Typography';
 import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 
+import { paths } from '@/paths';
 import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
+import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
 
-async function page(): Promise<React.JSX.Element> {
+interface PageProps {
+  searchParams: { filterList: boolean };
+}
+async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const accountTransactions = await fetchAccountTransactions();
   return (
     <Box
@@ -28,7 +34,12 @@ async function page(): Promise<React.JSX.Element> {
           </Box>
 
           <Stack spacing={1} flexDirection="row">
-            <Button startIcon={<FilterIcon />} variant="text">
+            <Button
+              LinkComponent={RouterLink}
+              href={`${paths.dashboard.reports.accountTransaction}?filterList=true`}
+              startIcon={<FilterIcon />}
+              variant="text"
+            >
               Filters
             </Button>
             <Button startIcon={<ExportIcon />} variant="text">
@@ -59,6 +70,7 @@ async function page(): Promise<React.JSX.Element> {
           </Box>
         </Card>
       </Stack>
+      <FilterModal open={Boolean(searchParams.filterList)} />
     </Box>
   );
 }
