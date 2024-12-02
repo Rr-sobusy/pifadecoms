@@ -10,8 +10,9 @@ import { actionClient } from '@/lib/safe-action';
 import { itemSchema } from './types';
 
 export const createNewItems = actionClient.schema(itemSchema).action(async ({ parsedInput: Request }) => {
+  let queryResponse;
   try {
-    const queryResponse = await prisma.items.create({
+    const newItem = await prisma.items.create({
       data: {
         itemName: Request.itemName,
         itemDescription: Request.itemDescription,
@@ -21,11 +22,10 @@ export const createNewItems = actionClient.schema(itemSchema).action(async ({ pa
       },
     });
 
-    return { success: true, message: queryResponse };
+    queryResponse = { success: true, message: newItem };
   } catch (error) {
-    return { success: false, errorMessage: error };
-  } finally {
-    revalidatePath(paths.dashboard.items.list);
-    redirect(paths.dashboard.items.list);
+    queryResponse = { success: false, errorMessage: JSON.stringify(error) };
   }
+  revalidatePath(paths.dashboard.items.list);
+  return queryResponse;
 });

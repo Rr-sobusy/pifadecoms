@@ -17,7 +17,7 @@ interface PageProps {
   searchParams: { addNewFund: boolean}
 }
 async function page({searchParams}:PageProps): Promise<React.JSX.Element> {
-  const [memberFunds, stillNot] = await Promise.all([fetchMemberFunds(), membersStillNotRegistered()]);
+  const [memberFunds, membersList] = await Promise.all([fetchMemberFunds(), membersStillNotRegistered()]);
 
   return (
     <Box
@@ -35,18 +35,24 @@ async function page({searchParams}:PageProps): Promise<React.JSX.Element> {
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button LinkComponent={RouterLink} href={`${paths.dashboard.funds.list}?addNewFund=true`} startIcon={<PlusIcon />} variant="contained">
-              Add Member Funds
+              Add Member
             </Button>
           </Box>
         </Stack>
         <FundsStats />
         <Card>
           <Box sx={{ overflowX: 'auto' }}>
-            <MemberFundsTable value={stillNot} rows={memberFunds} />
+            <MemberFundsTable rows={memberFunds} />
           </Box>
         </Card>
       </Stack>
-      <AddFundsMember open={Boolean(searchParams.addNewFund)} />
+      <AddFundsMember membersList={membersList.map((member)=>{
+        return {
+          memberId: member.memberId,
+          lastName: member.lastName,
+          firstName: member.firstName
+        }
+      })} open={Boolean(searchParams.addNewFund)} />
     </Box>
   );
 }

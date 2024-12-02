@@ -24,9 +24,6 @@ async function page(): Promise<React.JSX.Element> {
           <Box sx={{ flex: '1 1 auto' }}>
             <Typography variant="h4">Received Payments</Typography>
           </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button LinkComponent={RouterLink} href={paths.dashboard.invoice.create} variant="contained"></Button>
-          </Box>
         </Stack>
         <Stack spacing={4}>
           <PaymentsTable rows={receivedPayments} />

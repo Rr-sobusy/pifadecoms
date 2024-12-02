@@ -36,6 +36,7 @@ export const createPaymentPosting = actionClient
                 paymentReceived: Request.paymentReceived,
                 paymentDate: Request.entryDate,
                 invoiceId: Request.invoiceId,
+                
               },
             },
           },

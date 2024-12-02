@@ -4,6 +4,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -142,16 +143,16 @@ const columns = [
 
 function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
   return (
-    <>
+    <React.Fragment>
       <DataTable hover columns={columns} rows={accountTransactions} />
       {!accountTransactions.length ? (
         <Box sx={{ p: 3 }}>
           <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="overline">
-            No members found
+            No transactions found
           </Typography>
         </Box>
       ) : null}
-    </>
+    </React.Fragment>
   );
 }
 

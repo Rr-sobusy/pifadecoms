@@ -27,8 +27,8 @@ enum Gender {
 
 
 enum AccountStatus {
-  active
-  inactive
+  Active
+  Inactive
 }
 
 
@@ -86,6 +86,7 @@ enum FundTransactionsType {
 
 model Members {
   memberId         String        @id @default(cuid())
+  accountStatus    AccountStatus @default(Active)
   lastName         String              
   firstName        String
   gender           Gender

@@ -12,7 +12,7 @@ import type { Prisma } from '@prisma/client';
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const MembersScalarFieldEnumSchema = z.enum(['memberId','lastName','firstName','gender','idNumber','tin','dateAccepted','arb','bodResNo','membershipType','civilStatus','highestEdAttain','numOfDependents','religion','annualIncom','birthDate','address','occupation','contactNo','createdAt','updatedAt']);
+export const MembersScalarFieldEnumSchema = z.enum(['memberId','accountStatus','lastName','firstName','gender','idNumber','tin','dateAccepted','arb','bodResNo','membershipType','civilStatus','highestEdAttain','numOfDependents','religion','annualIncom','birthDate','address','occupation','contactNo','createdAt','updatedAt']);
 
 export const MemberFundsScalarFieldEnumSchema = z.enum(['fundId','memberId','createdAt','updatedAt','savingsBal','shareCapBal']);
 
@@ -52,7 +52,7 @@ export const GenderSchema = z.enum(['Male','Female']);
 
 export type GenderType = `${z.infer<typeof GenderSchema>}`
 
-export const AccountStatusSchema = z.enum(['active','inactive']);
+export const AccountStatusSchema = z.enum(['Active','Inactive']);
 
 export type AccountStatusType = `${z.infer<typeof AccountStatusSchema>}`
 
@@ -97,6 +97,7 @@ export type FundTransactionsTypeType = `${z.infer<typeof FundTransactionsTypeSch
 /////////////////////////////////////////
 
 export const MembersSchema = z.object({
+  accountStatus: AccountStatusSchema,
   gender: GenderSchema,
   memberId: z.string().cuid(),
   lastName: z.string(),
@@ -335,6 +336,7 @@ export const MembersCountOutputTypeSelectSchema: z.ZodType<Prisma.MembersCountOu
 
 export const MembersSelectSchema: z.ZodType<Prisma.MembersSelect> = z.object({
   memberId: z.boolean().optional(),
+  accountStatus: z.boolean().optional(),
   lastName: z.boolean().optional(),
   firstName: z.boolean().optional(),
   gender: z.boolean().optional(),
@@ -717,6 +719,7 @@ export const MembersWhereInputSchema: z.ZodType<Prisma.MembersWhereInput> = z.ob
   OR: z.lazy(() => MembersWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => MembersWhereInputSchema),z.lazy(() => MembersWhereInputSchema).array() ]).optional(),
   memberId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  accountStatus: z.union([ z.lazy(() => EnumAccountStatusFilterSchema),z.lazy(() => AccountStatusSchema) ]).optional(),
   lastName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   firstName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   gender: z.union([ z.lazy(() => EnumGenderFilterSchema),z.lazy(() => GenderSchema) ]).optional(),
@@ -745,6 +748,7 @@ export const MembersWhereInputSchema: z.ZodType<Prisma.MembersWhereInput> = z.ob
 
 export const MembersOrderByWithRelationInputSchema: z.ZodType<Prisma.MembersOrderByWithRelationInput> = z.object({
   memberId: z.lazy(() => SortOrderSchema).optional(),
+  accountStatus: z.lazy(() => SortOrderSchema).optional(),
   lastName: z.lazy(() => SortOrderSchema).optional(),
   firstName: z.lazy(() => SortOrderSchema).optional(),
   gender: z.lazy(() => SortOrderSchema).optional(),
@@ -779,6 +783,7 @@ export const MembersWhereUniqueInputSchema: z.ZodType<Prisma.MembersWhereUniqueI
   AND: z.union([ z.lazy(() => MembersWhereInputSchema),z.lazy(() => MembersWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => MembersWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => MembersWhereInputSchema),z.lazy(() => MembersWhereInputSchema).array() ]).optional(),
+  accountStatus: z.union([ z.lazy(() => EnumAccountStatusFilterSchema),z.lazy(() => AccountStatusSchema) ]).optional(),
   lastName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   firstName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   gender: z.union([ z.lazy(() => EnumGenderFilterSchema),z.lazy(() => GenderSchema) ]).optional(),
@@ -807,6 +812,7 @@ export const MembersWhereUniqueInputSchema: z.ZodType<Prisma.MembersWhereUniqueI
 
 export const MembersOrderByWithAggregationInputSchema: z.ZodType<Prisma.MembersOrderByWithAggregationInput> = z.object({
   memberId: z.lazy(() => SortOrderSchema).optional(),
+  accountStatus: z.lazy(() => SortOrderSchema).optional(),
   lastName: z.lazy(() => SortOrderSchema).optional(),
   firstName: z.lazy(() => SortOrderSchema).optional(),
   gender: z.lazy(() => SortOrderSchema).optional(),
@@ -839,6 +845,7 @@ export const MembersScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Membe
   OR: z.lazy(() => MembersScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => MembersScalarWhereWithAggregatesInputSchema),z.lazy(() => MembersScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   memberId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  accountStatus: z.union([ z.lazy(() => EnumAccountStatusWithAggregatesFilterSchema),z.lazy(() => AccountStatusSchema) ]).optional(),
   lastName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   firstName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   gender: z.union([ z.lazy(() => EnumGenderWithAggregatesFilterSchema),z.lazy(() => GenderSchema) ]).optional(),
@@ -1693,6 +1700,7 @@ export const JournalItemsScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.
 
 export const MembersCreateInputSchema: z.ZodType<Prisma.MembersCreateInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -1721,6 +1729,7 @@ export const MembersCreateInputSchema: z.ZodType<Prisma.MembersCreateInput> = z.
 
 export const MembersUncheckedCreateInputSchema: z.ZodType<Prisma.MembersUncheckedCreateInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -1749,6 +1758,7 @@ export const MembersUncheckedCreateInputSchema: z.ZodType<Prisma.MembersUnchecke
 
 export const MembersUpdateInputSchema: z.ZodType<Prisma.MembersUpdateInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1777,6 +1787,7 @@ export const MembersUpdateInputSchema: z.ZodType<Prisma.MembersUpdateInput> = z.
 
 export const MembersUncheckedUpdateInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1805,6 +1816,7 @@ export const MembersUncheckedUpdateInputSchema: z.ZodType<Prisma.MembersUnchecke
 
 export const MembersCreateManyInputSchema: z.ZodType<Prisma.MembersCreateManyInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -1829,6 +1841,7 @@ export const MembersCreateManyInputSchema: z.ZodType<Prisma.MembersCreateManyInp
 
 export const MembersUpdateManyMutationInputSchema: z.ZodType<Prisma.MembersUpdateManyMutationInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1853,6 +1866,7 @@ export const MembersUpdateManyMutationInputSchema: z.ZodType<Prisma.MembersUpdat
 
 export const MembersUncheckedUpdateManyInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateManyInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -2670,6 +2684,13 @@ export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z.object({
   not: z.union([ z.string(),z.lazy(() => NestedStringFilterSchema) ]).optional(),
 }).strict();
 
+export const EnumAccountStatusFilterSchema: z.ZodType<Prisma.EnumAccountStatusFilter> = z.object({
+  equals: z.lazy(() => AccountStatusSchema).optional(),
+  in: z.lazy(() => AccountStatusSchema).array().optional(),
+  notIn: z.lazy(() => AccountStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => NestedEnumAccountStatusFilterSchema) ]).optional(),
+}).strict();
+
 export const EnumGenderFilterSchema: z.ZodType<Prisma.EnumGenderFilter> = z.object({
   equals: z.lazy(() => GenderSchema).optional(),
   in: z.lazy(() => GenderSchema).array().optional(),
@@ -2767,6 +2788,7 @@ export const JournalEntriesOrderByRelationAggregateInputSchema: z.ZodType<Prisma
 
 export const MembersCountOrderByAggregateInputSchema: z.ZodType<Prisma.MembersCountOrderByAggregateInput> = z.object({
   memberId: z.lazy(() => SortOrderSchema).optional(),
+  accountStatus: z.lazy(() => SortOrderSchema).optional(),
   lastName: z.lazy(() => SortOrderSchema).optional(),
   firstName: z.lazy(() => SortOrderSchema).optional(),
   gender: z.lazy(() => SortOrderSchema).optional(),
@@ -2797,6 +2819,7 @@ export const MembersAvgOrderByAggregateInputSchema: z.ZodType<Prisma.MembersAvgO
 
 export const MembersMaxOrderByAggregateInputSchema: z.ZodType<Prisma.MembersMaxOrderByAggregateInput> = z.object({
   memberId: z.lazy(() => SortOrderSchema).optional(),
+  accountStatus: z.lazy(() => SortOrderSchema).optional(),
   lastName: z.lazy(() => SortOrderSchema).optional(),
   firstName: z.lazy(() => SortOrderSchema).optional(),
   gender: z.lazy(() => SortOrderSchema).optional(),
@@ -2821,6 +2844,7 @@ export const MembersMaxOrderByAggregateInputSchema: z.ZodType<Prisma.MembersMaxO
 
 export const MembersMinOrderByAggregateInputSchema: z.ZodType<Prisma.MembersMinOrderByAggregateInput> = z.object({
   memberId: z.lazy(() => SortOrderSchema).optional(),
+  accountStatus: z.lazy(() => SortOrderSchema).optional(),
   lastName: z.lazy(() => SortOrderSchema).optional(),
   firstName: z.lazy(() => SortOrderSchema).optional(),
   gender: z.lazy(() => SortOrderSchema).optional(),
@@ -2865,6 +2889,16 @@ export const StringWithAggregatesFilterSchema: z.ZodType<Prisma.StringWithAggreg
   _count: z.lazy(() => NestedIntFilterSchema).optional(),
   _min: z.lazy(() => NestedStringFilterSchema).optional(),
   _max: z.lazy(() => NestedStringFilterSchema).optional()
+}).strict();
+
+export const EnumAccountStatusWithAggregatesFilterSchema: z.ZodType<Prisma.EnumAccountStatusWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => AccountStatusSchema).optional(),
+  in: z.lazy(() => AccountStatusSchema).array().optional(),
+  notIn: z.lazy(() => AccountStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => NestedEnumAccountStatusWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumAccountStatusFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumAccountStatusFilterSchema).optional()
 }).strict();
 
 export const EnumGenderWithAggregatesFilterSchema: z.ZodType<Prisma.EnumGenderWithAggregatesFilter> = z.object({
@@ -3801,6 +3835,10 @@ export const StringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.StringFiel
   set: z.string().optional()
 }).strict();
 
+export const EnumAccountStatusFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumAccountStatusFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => AccountStatusSchema).optional()
+}).strict();
+
 export const EnumGenderFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumGenderFieldUpdateOperationsInput> = z.object({
   set: z.lazy(() => GenderSchema).optional()
 }).strict();
@@ -4627,6 +4665,13 @@ export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z.
   not: z.union([ z.string(),z.lazy(() => NestedStringFilterSchema) ]).optional(),
 }).strict();
 
+export const NestedEnumAccountStatusFilterSchema: z.ZodType<Prisma.NestedEnumAccountStatusFilter> = z.object({
+  equals: z.lazy(() => AccountStatusSchema).optional(),
+  in: z.lazy(() => AccountStatusSchema).array().optional(),
+  notIn: z.lazy(() => AccountStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => NestedEnumAccountStatusFilterSchema) ]).optional(),
+}).strict();
+
 export const NestedEnumGenderFilterSchema: z.ZodType<Prisma.NestedEnumGenderFilter> = z.object({
   equals: z.lazy(() => GenderSchema).optional(),
   in: z.lazy(() => GenderSchema).array().optional(),
@@ -4707,6 +4752,16 @@ export const NestedIntFilterSchema: z.ZodType<Prisma.NestedIntFilter> = z.object
   gt: z.number().optional(),
   gte: z.number().optional(),
   not: z.union([ z.number(),z.lazy(() => NestedIntFilterSchema) ]).optional(),
+}).strict();
+
+export const NestedEnumAccountStatusWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumAccountStatusWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => AccountStatusSchema).optional(),
+  in: z.lazy(() => AccountStatusSchema).array().optional(),
+  notIn: z.lazy(() => AccountStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => NestedEnumAccountStatusWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumAccountStatusFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumAccountStatusFilterSchema).optional()
 }).strict();
 
 export const NestedEnumGenderWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumGenderWithAggregatesFilter> = z.object({
@@ -5247,6 +5302,7 @@ export const JournalEntriesScalarWhereInputSchema: z.ZodType<Prisma.JournalEntri
 
 export const MembersCreateWithoutFundsInputSchema: z.ZodType<Prisma.MembersCreateWithoutFundsInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -5274,6 +5330,7 @@ export const MembersCreateWithoutFundsInputSchema: z.ZodType<Prisma.MembersCreat
 
 export const MembersUncheckedCreateWithoutFundsInputSchema: z.ZodType<Prisma.MembersUncheckedCreateWithoutFundsInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -5344,6 +5401,7 @@ export const MembersUpdateToOneWithWhereWithoutFundsInputSchema: z.ZodType<Prism
 
 export const MembersUpdateWithoutFundsInputSchema: z.ZodType<Prisma.MembersUpdateWithoutFundsInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5371,6 +5429,7 @@ export const MembersUpdateWithoutFundsInputSchema: z.ZodType<Prisma.MembersUpdat
 
 export const MembersUncheckedUpdateWithoutFundsInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateWithoutFundsInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5545,6 +5604,7 @@ export const MemberFundsUncheckedUpdateWithoutTransactionsInputSchema: z.ZodType
 
 export const MembersCreateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersCreateWithoutInvoiceInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -5572,6 +5632,7 @@ export const MembersCreateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersCre
 
 export const MembersUncheckedCreateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersUncheckedCreateWithoutInvoiceInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -5667,6 +5728,7 @@ export const MembersUpdateToOneWithWhereWithoutInvoiceInputSchema: z.ZodType<Pri
 
 export const MembersUpdateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersUpdateWithoutInvoiceInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5694,6 +5756,7 @@ export const MembersUpdateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersUpd
 
 export const MembersUncheckedUpdateWithoutInvoiceInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateWithoutInvoiceInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6260,6 +6323,7 @@ export const JournalItemsScalarWhereInputSchema: z.ZodType<Prisma.JournalItemsSc
 
 export const MembersCreateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersCreateWithoutDividendsInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -6287,6 +6351,7 @@ export const MembersCreateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersC
 
 export const MembersUncheckedCreateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersUncheckedCreateWithoutDividendsInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -6359,6 +6424,7 @@ export const MembersUpdateToOneWithWhereWithoutDividendsInputSchema: z.ZodType<P
 
 export const MembersUpdateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersUpdateWithoutDividendsInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6386,6 +6452,7 @@ export const MembersUpdateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersU
 
 export const MembersUncheckedUpdateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateWithoutDividendsInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6499,6 +6566,7 @@ export const FundTransactionsCreateManyJournalEntriesInputEnvelopeSchema: z.ZodT
 
 export const MembersCreateWithoutJournalsInputSchema: z.ZodType<Prisma.MembersCreateWithoutJournalsInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -6526,6 +6594,7 @@ export const MembersCreateWithoutJournalsInputSchema: z.ZodType<Prisma.MembersCr
 
 export const MembersUncheckedCreateWithoutJournalsInputSchema: z.ZodType<Prisma.MembersUncheckedCreateWithoutJournalsInput> = z.object({
   memberId: z.string().cuid().optional(),
+  accountStatus: z.lazy(() => AccountStatusSchema).optional(),
   lastName: z.string(),
   firstName: z.string(),
   gender: z.lazy(() => GenderSchema),
@@ -6627,6 +6696,7 @@ export const MembersUpdateToOneWithWhereWithoutJournalsInputSchema: z.ZodType<Pr
 
 export const MembersUpdateWithoutJournalsInputSchema: z.ZodType<Prisma.MembersUpdateWithoutJournalsInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6654,6 +6724,7 @@ export const MembersUpdateWithoutJournalsInputSchema: z.ZodType<Prisma.MembersUp
 
 export const MembersUncheckedUpdateWithoutJournalsInputSchema: z.ZodType<Prisma.MembersUncheckedUpdateWithoutJournalsInput> = z.object({
   memberId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountStatus: z.union([ z.lazy(() => AccountStatusSchema),z.lazy(() => EnumAccountStatusFieldUpdateOperationsInputSchema) ]).optional(),
   lastName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   gender: z.union([ z.lazy(() => GenderSchema),z.lazy(() => EnumGenderFieldUpdateOperationsInputSchema) ]).optional(),

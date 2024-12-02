@@ -9,6 +9,7 @@ import { actionClient } from '@/lib/safe-action';
 import { accountSchema } from './types';
 
 export const createNewAccount = actionClient.schema(accountSchema).action(async ({ parsedInput: AccountSchema }) => {
+  let queryResult;
   try {
     const newAccount = await prisma.accountsThirdLvl.create({
       data: {
@@ -19,10 +20,10 @@ export const createNewAccount = actionClient.schema(accountSchema).action(async 
       },
     });
 
-    return { message: 'New financial account created!', data: newAccount };
+    queryResult = { success: true, message: newAccount };
   } catch (error) {
-    return { sucess: true, errorMessage: error };
-  } finally {
-    revalidatePath(paths.dashboard.finance.list);
+    queryResult = { sucesss: false, errorMessage: JSON.stringify(error) };
   }
+  revalidatePath(paths.dashboard.finance.list);
+  return queryResult;
 });

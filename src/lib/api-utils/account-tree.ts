@@ -32,6 +32,7 @@ export const AccountType = [
  "Depreciation",
 "Interest Expense",
 "Tax Expense",
+"Admin Expenses"
 
   // // Other accounts
   // ContraAsset : "Contra Asset",

@@ -3,19 +3,19 @@
 import * as React from 'react';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
+import { Minus as MinusIcon } from '@phosphor-icons/react/dist/ssr/Minus';
 import { PencilSimple as PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple';
 
 import { paths } from '@/paths';
-import Chip from '@mui/material/Chip';
+import { formatToCurrency } from '@/lib/format-currency';
+import { AccountType } from '@/actions/accounts/types';
 import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
-import { AccountType } from '@/actions/accounts/types';
-import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import { Minus as MinusIcon } from '@phosphor-icons/react/dist/ssr/Minus';
-
 
 const columns = [
   {
@@ -49,7 +49,7 @@ const columns = [
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="body2">
-           {row.RootID.rootType}
+            {row.RootID.rootType}
           </Typography>
         </div>
       </Stack>
@@ -62,7 +62,7 @@ const columns = [
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="body2">
-           {row.RootID.rootName}
+            {row.RootID.rootName}
           </Typography>
         </div>
       </Stack>
@@ -71,19 +71,31 @@ const columns = [
     width: '150px',
   },
   {
+    formatter: (row): React.JSX.Element => (
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <div>
+          <Typography color="inherit" variant="body2">
+            {formatToCurrency(row.openingBalance, 'Fil-ph', 'Php')}
+          </Typography>
+        </div>
+      </Stack>
+    ),
+    name: 'Opening balance',
+    width: '150px',
+  },
+  {
     formatter: (row): React.JSX.Element => {
-
       const mapping = {
-          active : { icon : <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" />, title: "active"},
-          inactive :  { icon : <MinusIcon color="var(--mui-palette-error-main)"  />, title: "active"}
-      }
+        active: { icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" />, title: 'active' },
+        inactive: { icon: <MinusIcon color="var(--mui-palette-error-main)" />, title: 'active' },
+      };
 
-      const { title, icon } = row.isActive ? mapping["active"] : mapping["inactive"]
+      const { title, icon } = row.isActive ? mapping['active'] : mapping['inactive'];
       return (
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <Chip size='small' variant='outlined' icon={icon} label={title} /> 
+          <Chip size="small" variant="outlined" icon={icon} label={title} />
         </Stack>
-      )
+      );
     },
     name: 'Status',
     width: '100px',
@@ -105,7 +117,6 @@ export interface MembersTableProps {
 }
 
 export function AccountsTable({ rows }: MembersTableProps): React.JSX.Element {
-
   return (
     <React.Fragment>
       <DataTable<AccountType[0]> columns={columns} rows={rows} />

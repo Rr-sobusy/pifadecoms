@@ -8,9 +8,9 @@ import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 // import xl from 'exceljs';
 
-// import { AccountType } from '@/lib/api-utils/account-tree';
+import { AccountType } from '@/lib/api-utils/account-tree';
 // import { dayjs } from '@/lib/dayjs';
-// import prisma from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 // import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
 import { fetchMembers } from '@/actions/members/fetch-members';
 import { MemberFilters } from '@/components/dashboard/members/members-filter';
@@ -63,22 +63,24 @@ interface PageProps {
 //   }
 // }
 
-// async function seed(arr: string[]) {
-//   arr.map(async (rex) => {
-//     await prisma.accountsSecondLvl.create({
-//       data: {
-//         rootType: 'Expense',
-//         rootName : rex,
-//       },
-//     });
-//   });
-// }
+async function seed(arr: string[]) {
+  arr.map(async (rex) => {
+    await prisma.accountsSecondLvl.create({
+      data: {
+        rootType: 'Expense',
+        rootName : rex,
+      },
+    });
+  });
+}
 
 const Page = async ({ searchParams }: PageProps): Promise<React.JSX.Element> => {
   // const rex = await seed(AccountType)
+  // const rex = await populateMembers();
 
   const { memberName, offsetPage } = searchParams;
   const members = await fetchMembers({ memberName, offsetPage });
+  // const rex = await seed(AccountType)
   return (
     <Box
       sx={{

@@ -44,8 +44,6 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
   React.useEffect(() => {
     if (result.data) {
       toast.success('New Item Created.');
-    } else {
-      toast.error('Error occured in server');
     }
   }, [result]);
 

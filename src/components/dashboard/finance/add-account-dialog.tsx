@@ -31,12 +31,13 @@ interface AddAccountProps {
 }
 
 export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => {
-  const { execute, result } = useAction(createNewAccount);
+  const { execute, result, isExecuting } = useAction(createNewAccount);
 
   const {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm<AccountSchemaType>({
     resolver: zodResolver(accountSchema),
   });
@@ -46,19 +47,18 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
     router.push(paths.dashboard.finance.list);
   };
 
+  //* Listen to server response
+  React.useEffect(() => {
+    if (result.data?.success) {
+      toast.success('Financial Account created!');
+      router.push(paths.dashboard.finance.list);
+      reset();
+    }
+  }, [result]);
+
   // form submit
   const submitHandler = (data: AccountSchemaType) => {
-    try {
-      execute(data);
-      const { serverError } = result;
-
-      if (!serverError) {
-        toast.success('Financial Account created!');
-        router.push(paths.dashboard.finance.list);
-      }
-    } catch (error) {
-      toast.error('Something went wrong!');
-    }
+    execute(data);
   };
   return (
     <Dialog
@@ -139,7 +139,7 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
               )}
             />
             <Stack marginTop={1}>
-              <Button type="submit" variant="contained">
+              <Button disabled={isExecuting} type="submit" variant="contained">
                 Create Account
               </Button>
             </Stack>

@@ -16,7 +16,6 @@ import type { ColumnDef } from '@/components/core/data-table';
 
 interface MemberFundsTableProps {
   rows?: MemberFundsType;
-  value: any;
 }
 
 const columns = [
@@ -57,14 +56,13 @@ const columns = [
   },
 ] satisfies ColumnDef<MemberFundsType[0]>[];
 
-export function MemberFundsTable({ rows = [], value }: MemberFundsTableProps): React.JSX.Element {
-  console.log(value);
+export function MemberFundsTable({ rows = [] }: MemberFundsTableProps): React.JSX.Element {
   return (
     <React.Fragment>
       <DataTable columns={columns} rows={rows} />
       {!rows.length ? (
         <Box sx={{ p: 3 }}>
-          <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="body2">
+          <Typography color="text.secondary" variant="body2">
             No fund savings record found.
           </Typography>
         </Box>
