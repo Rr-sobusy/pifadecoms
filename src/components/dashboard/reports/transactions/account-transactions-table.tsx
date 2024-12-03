@@ -2,10 +2,11 @@
 
 import React from 'react';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider'
+
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -143,9 +144,18 @@ const columns = [
 ] satisfies ColumnDef<AccountTransactionTypes[0]>[];
 
 function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(10);
+  const [currentPage, setCurrentPage] = React.useState<number>(0);
+
+  function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, pageNumber: number) {
+    setCurrentPage(pageNumber);
+  }
+
+  const paginatedTransactions = accountTransactions.slice((currentPage * rowsPerPage), (currentPage + 1 ) * rowsPerPage);
+  
   return (
     <React.Fragment>
-      <DataTable hover columns={columns} rows={accountTransactions} />
+      <DataTable hover columns={columns} rows={paginatedTransactions} />
       {!accountTransactions.length ? (
         <Box sx={{ p: 3 }}>
           <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="overline">
@@ -154,13 +164,44 @@ function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
         </Box>
       ) : null}
       <Divider />
-      <Paginator />
+      <Paginator
+        rowsPerPage={rowsPerPage}
+        count={accountTransactions.length}
+        onPageChange={handlePageChange}
+        page={currentPage}
+        onRowsPerPageChange={(event) => {
+          const currRow = event.target.value;
+          if (currRow) return setRowsPerPage(Number(currRow));
+        }}
+      />
     </React.Fragment>
   );
 }
 
-function Paginator() {
-  return <TablePagination    component="div" page={1} rowsPerPage={25} count={10} onPageChange={() => null} />;
+function Paginator({
+  count,
+  rowsPerPage,
+  page,
+  onPageChange,
+  onRowsPerPageChange,
+}: {
+  count: number;
+  rowsPerPage: number;
+  page: number;
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, pageNumber: number) => void;
+  onRowsPerPageChange: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+}) {
+  return (
+    <TablePagination
+      component="div"
+      page={page}
+      rowsPerPageOptions={[10, 25, 50, 100]}
+      rowsPerPage={rowsPerPage}
+      count={count}
+      onRowsPerPageChange={onRowsPerPageChange}
+      onPageChange={onPageChange}
+    />
+  );
 }
 
 export default TransactionsTable;
