@@ -150,7 +150,7 @@ export function InvoiceFilterer({
       }
 
       if (newFilters.endDate) {
-        searchParams.set('endDate', String());
+        searchParams.set('endDate', String(newFilters.endDate));
       }
 
       router.push(`${paths.dashboard.invoice.list}?${searchParams.toString()}`);
