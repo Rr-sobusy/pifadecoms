@@ -16,13 +16,13 @@ import { Bank } from '@phosphor-icons/react/dist/ssr/Bank';
 import { CashRegister as TransactIcon } from '@phosphor-icons/react/dist/ssr/CashRegister';
 import { PiggyBank } from '@phosphor-icons/react/dist/ssr/PiggyBank';
 import { FundTransactionsType } from '@prisma/client';
-
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 
 import FundTransactionPaginator from './fund-transcaction-table-paginator';
+import AdbCalculator from './adb-interest-card';
 
 interface SavingsCardProps {
   fund: MemberFundsType[0];
@@ -75,7 +75,7 @@ const columns = [
               {FundTransactionMap[row.transactionType]}
             </Typography>
             <Typography color="text.secondary" variant="caption">
-              {dayjs().format('MMM DD YYYY')}
+              {dayjs(row.JournalEntries?.entryDate).format('MMM DD YYYY')}
             </Typography>
           </Stack>
         </Stack>
@@ -91,6 +91,19 @@ const columns = [
         </Typography>
         <Typography color="text.secondary" variant="caption">
           {row.JournalEntries?.referenceName ?? null}
+        </Typography>
+      </Stack>
+    ),
+  },
+  {
+    name: 'New Balance',
+    formatter: (row) => (
+      <Stack>
+        <Typography fontWeight={600} variant="subtitle2">
+          New Balance
+        </Typography>
+        <Typography color="text.secondary" variant="caption">
+          {formatToCurrency(row.newBalance, 'Fil-ph', 'Php')}
         </Typography>
       </Stack>
     ),
@@ -123,7 +136,7 @@ function SavingsCard({ fund }: SavingsCardProps) {
    */
   const currentSavingsTransactions = fund.Transactions.filter((ctx) => ctx.fundType === 'Savings');
   const [currentPage, setCurrentPage] = React.useState<number>(0);
-  const paginatedData = currentSavingsTransactions.slice((currentPage * 5),  (currentPage + 1) * 5)
+  const paginatedData = currentSavingsTransactions.slice(currentPage * 5, (currentPage + 1) * 5);
 
   function addSavingsDeposit() {
     const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsDeposit' });
@@ -239,7 +252,6 @@ function SavingsCard({ fund }: SavingsCardProps) {
                   Member previous transactions up-to date
                 </Typography>
               </Stack>
-
               <>
                 <DataTable<MemberFundsType[0]['Transactions'][0]>
                   sx={{ marginTop: 3 }}
@@ -263,6 +275,7 @@ function SavingsCard({ fund }: SavingsCardProps) {
               />
             </CardContent>
           </Card>
+          <AdbCalculator fund={fund}/>
         </Stack>
       </CardContent>
     </Card>

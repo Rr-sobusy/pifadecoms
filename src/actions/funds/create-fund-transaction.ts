@@ -33,11 +33,31 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
       };
   };
 
+  const postNewBalance = (
+    fundTransactionsType: FundTransactionsType,
+    postedBalance: number,
+    prevBalance: number
+  ): number => {
+    switch (fundTransactionsType) {
+      case 'SavingsDeposit':
+        return postedBalance + prevBalance;
+      case 'SavingsWithdrawal':
+        return prevBalance - postedBalance;
+      case 'ShareCapDeposit':
+        return prevBalance + postedBalance;
+      case 'ShareCapWithdrawal':
+        return prevBalance - postedBalance;
+    }
+  };
+
   let serverResponse;
 
   try {
-
-
+    const currentBalance = await prisma.memberFunds.findUniqueOrThrow({
+      where: {
+        fundId: Request.fundId,
+      },
+    });
     /**
      * * Batching of queries
      */
@@ -68,6 +88,11 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
               postedBalance: Request.postedBalance,
               transactionType: Request.fundTransactionsType,
               createdAt: Request.entryDate,
+              newBalance:
+                Request.fundTransactionsType === 'SavingsDeposit' ||
+                Request.fundTransactionsType === 'SavingsWithdrawal'
+                  ? postNewBalance(Request.fundTransactionsType, Request.postedBalance, currentBalance.savingsBal)
+                  : postNewBalance(Request.fundTransactionsType, Request.postedBalance, currentBalance.shareCapBal),
             },
           },
         },
