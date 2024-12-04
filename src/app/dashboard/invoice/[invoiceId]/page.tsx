@@ -10,6 +10,8 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
+import { CurrencyRub as PayIcon } from '@phosphor-icons/react/dist/ssr/CurrencyRub';
+import { Printer as PrinterIcon } from '@phosphor-icons/react/dist/ssr/Printer';
 
 import { config } from '@/config';
 import { paths } from '@/paths';
@@ -74,9 +76,19 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
               <Button
                 LinkComponent={RouterLink}
                 href={paths.dashboard.invoice.createPayment(params.invoiceId)}
-                variant="outlined"
+                variant="text"
+                startIcon={<PayIcon />}
               >
                 Post Payment
+              </Button>
+              <Button
+                target="_blank"
+                LinkComponent={RouterLink}
+                href={paths.pdf.invoice(String(invoiceDetails?.invoiceId ?? 0))}
+                variant="text"
+                startIcon={<PrinterIcon />}
+              >
+                Print
               </Button>
             </Stack>
           </Stack>

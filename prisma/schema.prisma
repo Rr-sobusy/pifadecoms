@@ -142,7 +142,7 @@ model FundTransactions {
   transactionType   FundTransactionsType
   createdAt         DateTime        @default(now())
   postedBalance     Float  
-
+  previousBalance   Float
   JournalEntries    JournalEntries? @relation(fields: [ledgerId], references: [entryId])
   MemberFunds       MemberFunds     @relation(fields: [fundId], references: [fundId])
 
