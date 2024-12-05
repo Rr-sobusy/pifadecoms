@@ -15,6 +15,7 @@ import { ArrowBendRightDown as WithdrawIcon } from '@phosphor-icons/react/dist/s
 import { Bank } from '@phosphor-icons/react/dist/ssr/Bank';
 import { CashRegister as TransactIcon } from '@phosphor-icons/react/dist/ssr/CashRegister';
 import { PiggyBank } from '@phosphor-icons/react/dist/ssr/PiggyBank';
+import { Calculator as CalcuIcon } from '@phosphor-icons/react/dist/ssr/Calculator';
 import { FundTransactionsType } from '@prisma/client';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -31,6 +32,8 @@ interface SavingsCardProps {
 interface SearchParams {
   transactionType: FundTransactionsType;
 }
+
+
 
 function toURLSearchParams(params: Partial<SearchParams>): URLSearchParams {
   const searchParams = new URLSearchParams();
@@ -152,6 +155,10 @@ function SavingsCard({ fund }: SavingsCardProps) {
     router.push(`${pathName}?${urlSearchParams.toString()}`);
   }
 
+  function computeAdb(){
+    router.push(`${pathName}?computeAdb=Savings`)
+  }
+
   function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currentPage: number) {
     setCurrentPage(currentPage);
   }
@@ -237,6 +244,9 @@ function SavingsCard({ fund }: SavingsCardProps) {
                     <Button onClick={addSavingsWithdrawal} startIcon={<WithdrawIcon />} variant="outlined">
                       Withdraw
                     </Button>
+                    <Button onClick={computeAdb} variant='text' startIcon={<CalcuIcon />}>
+                      Compute ADB & Interest
+                    </Button>
                   </Stack>
                 </CardContent>
               </Card>
@@ -275,7 +285,6 @@ function SavingsCard({ fund }: SavingsCardProps) {
               />
             </CardContent>
           </Card>
-          <AdbCalculator fund={fund}/>
         </Stack>
       </CardContent>
     </Card>

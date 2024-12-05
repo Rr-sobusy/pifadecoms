@@ -6,9 +6,13 @@ import type { Dayjs } from 'dayjs';
 import { dayjs } from '@/lib/dayjs';
 import type { MemberFundsType } from '@/actions/funds/types';
 
-export function calculateADB(fundTransactions: MemberFundsType[0]['Transactions'], startDate: Dayjs, endDate: Dayjs ,currentBalance:number) {
+export function calculateADB(fundTransactions: MemberFundsType[0]['Transactions'], startDate: Dayjs, endDate: Dayjs, currentBalance:number) {
   const start = dayjs(startDate);
   const end = dayjs(endDate);
+
+  if (fundTransactions.length === 0) {
+    return currentBalance;
+  }
 
   let totalDays = 0;
   let weightedSum = 0;
@@ -32,7 +36,7 @@ export function calculateADB(fundTransactions: MemberFundsType[0]['Transactions'
     }
   }
 
-  //* Fall back to current balance if the inquiry date is not sufficient to dates or still no transactions found.
+  //* Fall back to current balance if still no transactions recorded
 
-  return totalDays > 0 ? weightedSum / totalDays : currentBalance ;
+  return totalDays > 0 ? weightedSum / totalDays : currentBalance;
 }

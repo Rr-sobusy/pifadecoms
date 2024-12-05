@@ -9,13 +9,14 @@ import type { FundTransactionsType } from '@prisma/client';
 import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchFundTransactions } from '@/actions/funds/fetch-fund-transaction';
+import AdbCalculator from '@/components/dashboard/funds/adb-interest-card';
 import SavingsCard from '@/components/dashboard/funds/savings-card';
 import { CreateSavingsTransaction } from '@/components/dashboard/funds/savings-transact-dialog';
 import SharesCard from '@/components/dashboard/funds/shares-card';
 
 interface PageProps {
   params: { fundId: number };
-  searchParams: { transactionType: FundTransactionsType };
+  searchParams: { transactionType: FundTransactionsType , computeAdb :  "Savings" | "Share"};
 }
 
 async function page({ params, searchParams }: PageProps) {
@@ -42,7 +43,7 @@ async function page({ params, searchParams }: PageProps) {
           <Box sx={{ flex: '1 1 auto' }}>
             <Typography variant="h4">Member Fund Dashboard</Typography>
             <Chip
-              sx={{marginTop : 1}}
+              sx={{ marginTop: 1 }}
               color="default"
               variant="outlined"
               label={`${fundTransactions.Member.lastName}, ${fundTransactions.Member.firstName}`}
@@ -63,6 +64,7 @@ async function page({ params, searchParams }: PageProps) {
           )
         )}
       />
+      <AdbCalculator open={Boolean(searchParams.computeAdb === "Savings" || searchParams.computeAdb === "Share")} fund={fundTransactions} />
     </Box>
   );
 }
