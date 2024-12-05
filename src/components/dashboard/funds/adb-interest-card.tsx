@@ -3,12 +3,12 @@
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import  Divider  from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
+import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid2';
@@ -30,6 +30,7 @@ import type { MemberFundsType } from '@/actions/funds/types';
 type Props = {
   fund: MemberFundsType[0];
   open: boolean;
+  computeAdbType: 'Savings' | 'Share';
 };
 
 const adbComponentsSchema = zod.object({
@@ -40,7 +41,7 @@ const adbComponentsSchema = zod.object({
 
 type IAdbSchema = zod.infer<typeof adbComponentsSchema>;
 
-function AdbCalculator({ fund, open }: Props) {
+function AdbCalculator({ fund, open, computeAdbType }: Props) {
   const pathName = usePathname();
   const router = useRouter();
 
@@ -54,21 +55,21 @@ function AdbCalculator({ fund, open }: Props) {
     resolver: zodResolver(adbComponentsSchema),
   });
 
-  const savingsTransactions = fund.Transactions.filter((transaction) => transaction.fundType === 'Savings');
+  const fundTransaction = fund.Transactions.filter((transaction) =>
+    computeAdbType === 'Savings' ? transaction.fundType === 'Savings' : transaction.fundType === 'ShareCapital'
+  );
 
   function handleClose() {
     router.push(pathName);
   }
 
-  function submitHandler(data: IAdbSchema) {
-    console.log(data);
-  }
+  function submitHandler(_: IAdbSchema) {}
 
   const currentAdb = calculateADB(
-    savingsTransactions.sort((a, b) => a.fundTransactId - b.fundTransactId),
+    fundTransaction.sort((a, b) => a.fundTransactId - b.fundTransactId),
     dayjs(getValues('startDate')),
     dayjs(getValues('endDate')),
-    fund.savingsBal
+    computeAdbType === 'Savings' ? fund.savingsBal : fund.shareCapBal
   );
 
   return (
@@ -88,9 +89,9 @@ function AdbCalculator({ fund, open }: Props) {
             sx={{ alignItems: 'center', flex: '0 0 auto', justifyContent: 'space-between', marginTop: 1 }}
           >
             <Stack>
-              <Typography variant="h6">ADB and Interest Payables</Typography>
+              <Typography variant="h6">{`ADB and Interest Payables (${computeAdbType ?? ''})`}</Typography>
               <Typography color="" variant="caption">
-                Compute the Average Daily Balance based on movement of savings fund subject to date
+                {` Compute the Average Daily Balance based on movement of savings fund subject to date`}
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>

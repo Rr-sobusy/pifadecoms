@@ -64,7 +64,7 @@ async function page({ params, searchParams }: PageProps) {
           )
         )}
       />
-      <AdbCalculator open={Boolean(searchParams.computeAdb === "Savings" || searchParams.computeAdb === "Share")} fund={fundTransactions} />
+      <AdbCalculator computeAdbType={searchParams.computeAdb} open={Boolean(searchParams.computeAdb === "Savings" || searchParams.computeAdb === "Share")} fund={fundTransactions} />
     </Box>
   );
 }

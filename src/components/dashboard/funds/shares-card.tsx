@@ -13,6 +13,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowBendRightDown as WithdrawIcon } from '@phosphor-icons/react/dist/ssr/ArrowBendRightDown';
 import { Bank } from '@phosphor-icons/react/dist/ssr/Bank';
+import { Calculator as CalcuIcon } from '@phosphor-icons/react/dist/ssr/Calculator';
 import { CashRegister as TransactIcon } from '@phosphor-icons/react/dist/ssr/CashRegister';
 import { PiggyBank } from '@phosphor-icons/react/dist/ssr/PiggyBank';
 import { FundTransactionsType } from '@prisma/client';
@@ -133,6 +134,10 @@ function SharesCard({ fund }: SharesCardProps) {
     setCurrentPage(currentPage);
   }
 
+  function computeAdb() {
+    router.push(`${pathName}?computeAdb=Share`);
+  }
+
   const currentShare = fund.shareCapBal;
   return (
     <Card>
@@ -207,8 +212,11 @@ function SharesCard({ fund }: SharesCardProps) {
                     </Avatar>
                   </Stack>
                   <Stack flexDirection="row" gap={2}>
-                    <Button size="large" onClick={addSavingsDeposit} startIcon={<PiggyBank />} variant="contained">
+                    <Button onClick={addSavingsDeposit} startIcon={<PiggyBank />} variant="contained">
                       Deposit
+                    </Button>
+                    <Button onClick={computeAdb} startIcon={<CalcuIcon />} variant="text">
+                      Compute ADB & Interest
                     </Button>
                   </Stack>
                 </CardContent>
