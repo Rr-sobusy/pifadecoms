@@ -41,6 +41,7 @@
 //   return totalDays > 0 ? weightedSum / totalDays : currentBalance;
 // }
 import type { Dayjs } from 'dayjs';
+
 import { dayjs } from '@/lib/dayjs';
 import type { MemberFundsType } from '@/actions/funds/types';
 
@@ -61,15 +62,13 @@ export function calculateADB(
   let weightedSum = 0;
 
   // Sort transactions by date for accurate processing
-  fundTransactions.sort((a, b) =>
-    dayjs(a.JournalEntries?.entryDate).diff(dayjs(b.JournalEntries?.entryDate))
-  );
+  fundTransactions.sort((a, b) => dayjs(a.JournalEntries?.entryDate).diff(dayjs(b.JournalEntries?.entryDate)));
 
   // Handle the gap before the first transaction
   const firstTransactionDate = dayjs(fundTransactions[0].JournalEntries?.entryDate);
   if (start.isBefore(firstTransactionDate)) {
     const daysBeforeFirstTransaction = firstTransactionDate.diff(start, 'day');
-    weightedSum += (fundTransactions[0].newBalance - fundTransactions[0].postedBalance)* daysBeforeFirstTransaction;
+    weightedSum += (fundTransactions[0].newBalance - fundTransactions[0].postedBalance) * daysBeforeFirstTransaction;
     totalDays += daysBeforeFirstTransaction;
   }
 
@@ -93,9 +92,7 @@ export function calculateADB(
   }
 
   // Handle the gap after the last transaction until the end date
-  const lastTransactionDate = dayjs(
-    fundTransactions[fundTransactions.length - 1].JournalEntries?.entryDate
-  );
+  const lastTransactionDate = dayjs(fundTransactions[fundTransactions.length - 1].JournalEntries?.entryDate);
   if (end.isAfter(lastTransactionDate)) {
     const daysAfterLastTransaction = end.diff(lastTransactionDate, 'day');
     weightedSum += (fundTransactions[fundTransactions.length - 1].newBalance || 0) * daysAfterLastTransaction;

@@ -26,6 +26,7 @@ import { calculateADB } from '@/lib/api-utils/calculate-adb';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { MemberFundsType } from '@/actions/funds/types';
+import { computeMonthlyBalances } from '@/lib/api-utils/calculate-balance-every-14th';
 
 type Props = {
   fund: MemberFundsType[0];
@@ -58,6 +59,8 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
   const fundTransaction = fund.Transactions.filter((transaction) =>
     computeAdbType === 'Savings' ? transaction.fundType === 'Savings' : transaction.fundType === 'ShareCapital'
   );
+
+  console.log(computeMonthlyBalances(fund , 2026 ))
 
   function handleClose() {
     router.push(pathName);

@@ -3,11 +3,13 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import minMax from 'dayjs/plugin/minMax'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 
 extend(relativeTime);
 extend(updateLocale);
 extend(isSameOrAfter)
 extend(minMax)
+extend(isSameOrBefore)
 
 dayjs.updateLocale('en', {
   relativeTime: {
