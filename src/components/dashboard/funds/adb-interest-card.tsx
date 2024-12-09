@@ -15,6 +15,7 @@ import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -23,10 +24,13 @@ import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
 import { calculateADB } from '@/lib/api-utils/calculate-adb';
+import { computeMonthlyBalances } from '@/lib/api-utils/calculate-balance-every-14th';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { MemberFundsType } from '@/actions/funds/types';
-import { computeMonthlyBalances } from '@/lib/api-utils/calculate-balance-every-14th';
+import { Option } from '@/components/core/option';
+
+import MonthBalancesChart from './month-balances-chart';
 
 type Props = {
   fund: MemberFundsType[0];
@@ -34,9 +38,14 @@ type Props = {
   computeAdbType: 'Savings' | 'Share';
 };
 
+ enum YearsEnum {
+  one = 2024,
+  two = 2025,
+  three = 2026
+}
+
 const adbComponentsSchema = zod.object({
-  startDate: zod.date(),
-  endDate: zod.date(),
+  year: zod.nativeEnum(YearsEnum),
   interestRate: zod.number(),
 });
 
@@ -60,7 +69,8 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
     computeAdbType === 'Savings' ? transaction.fundType === 'Savings' : transaction.fundType === 'ShareCapital'
   );
 
-  console.log(computeMonthlyBalances(fund , 2026 ))
+  const rex = computeMonthlyBalances(fund, getValues("year") ?? 0);
+  console.log(rex);
 
   function handleClose() {
     router.push(pathName);
@@ -68,12 +78,12 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
 
   function submitHandler(_: IAdbSchema) {}
 
-  const currentAdb = calculateADB(
-    fundTransaction.sort((a, b) => a.fundTransactId - b.fundTransactId),
-    dayjs(getValues('startDate')),
-    dayjs(getValues('endDate')),
-    computeAdbType === 'Savings' ? fund.savingsBal : fund.shareCapBal
-  );
+  // const currentAdb = calculateADB(
+  //   fundTransaction.sort((a, b) => a.fundTransactId - b.fundTransactId),
+  //   dayjs(getValues('startDate')),
+  //   dayjs(getValues('endDate')),
+  //   computeAdbType === 'Savings' ? fund.savingsBal : fund.shareCapBal
+  // );
 
   return (
     <Dialog
@@ -82,7 +92,7 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
       onClose={handleClose}
       sx={{
         '& .MuiDialog-container': { justifyContent: 'center' },
-        '& .MuiDialog-paper': { height: '60%', width: '100%' },
+        '& .MuiDialog-paper': { height: '85%', width: '100%' },
       }}
     >
       <form onSubmit={handleSubmit(submitHandler)}>
@@ -106,65 +116,30 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
             <Grid container spacing={2}>
               <Grid
                 size={{
-                  xl: 4,
+                  xl: 6,
                   md: 12,
                 }}
               >
                 <Controller
                   control={control}
-                  name="startDate"
+                  name="year"
                   render={({ field }) => (
-                    <DatePicker
-                      {...field}
-                      slotProps={{
-                        textField: {
-                          error: Boolean(errors.startDate),
-                          fullWidth: true,
-                          helperText: errors.startDate?.message,
-                        },
-                      }}
-                      value={dayjs(field.value)}
-                      onChange={(date) => {
-                        field.onChange(date?.toDate());
-                      }}
-                      label="Start Date"
-                      sx={{ width: '100%' }}
-                    />
+                    <FormControl fullWidth>
+                      <InputLabel>Year</InputLabel>
+                      <Select {...field}>
+                        {[2024, 2025, 2026, 2027, 2028].map((years) => (
+                          <Option value={years} key={years}>
+                            {years}
+                          </Option>
+                        ))}
+                      </Select>
+                    </FormControl>
                   )}
                 />
               </Grid>
               <Grid
                 size={{
-                  xl: 4,
-                  md: 12,
-                }}
-              >
-                <Controller
-                  control={control}
-                  name="endDate"
-                  render={({ field }) => (
-                    <DatePicker
-                      {...field}
-                      slotProps={{
-                        textField: {
-                          error: Boolean(errors.endDate),
-                          fullWidth: true,
-                          helperText: errors.endDate?.message,
-                        },
-                      }}
-                      value={dayjs(field.value)}
-                      onChange={(date) => {
-                        field.onChange(date?.toDate());
-                      }}
-                      label="End Date"
-                      sx={{ width: '100%' }}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid
-                size={{
-                  xl: 4,
+                  xl: 6,
                   md: 12,
                 }}
               >
@@ -192,7 +167,7 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
             </Grid>
             <Card>
               <CardContent>
-                <Stack justifyContent="center" alignItems="center" gap={1} flexDirection="row">
+                {/* <Stack justifyContent="center" alignItems="center" gap={1} flexDirection="row">
                   <Typography>Accrued Average Daily Balance:</Typography>
                   <Typography>{formatToCurrency(currentAdb, 'Fil-ph', 'Php')}</Typography>
                   <Typography>X</Typography>
@@ -206,7 +181,8 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
                       {formatToCurrency((currentAdb * (getValues('interestRate') ?? 0)) / 100, 'Fil-ph', 'Php')}
                     </Typography>
                   </Stack>
-                </Stack>
+                </Stack> */}
+                <MonthBalancesChart interestRate={getValues("interestRate")} data={rex} />
               </CardContent>
             </Card>
           </Stack>

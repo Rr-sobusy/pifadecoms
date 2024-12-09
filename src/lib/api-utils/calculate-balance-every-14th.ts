@@ -1,37 +1,67 @@
 import { dayjs } from '@/lib/dayjs';
 import { MemberFundsType } from '@/actions/funds/types';
 
-export const computeMonthlyBalances = (transactions: MemberFundsType[0], year: 2024 | 2025 | 2026) => {
-  // Prepare months template
+export const computeMonthlyBalances = (
+  transactions: MemberFundsType[0],
+  year: 2024 | 2025 | 2026
+): { month: string; balance: number }[] => {
   const months = Array.from({ length: 12 }, (_, i) => ({
     month: i + 1,
     balance: 0,
   }));
 
-  let lastBalance = 0;
+  const transactionsList = transactions.Transactions || [];
+
+  const yearTransactions = transactionsList.filter((transaction) => {
+    const transactionDate = dayjs(transaction.JournalEntries?.entryDate);
+    return (
+      transactionDate.isValid() &&
+      transactionDate.year() === year &&
+      transaction.fundType === 'Savings'
+    );
+  });
+
+  const latestTransactionsByMonth = yearTransactions.reduce(
+    (acc, transaction) => {
+      const transactionDate = dayjs(transaction.JournalEntries?.entryDate);
+      const month = transactionDate.month() + 1;
+
+      // Keep only the latest transaction for each month
+      if (
+        !acc[month] || 
+        transactionDate.isAfter(dayjs(acc[month].JournalEntries?.entryDate))
+      ) {
+        acc[month] = transaction;
+      }
+
+      return acc;
+    },
+    {} as Record<number, typeof yearTransactions[0]>
+  );
+
+  let lastBalance =
+    yearTransactions.length > 0
+      ? yearTransactions[yearTransactions.length - 1].newBalance -
+        yearTransactions[yearTransactions.length - 1].postedBalance
+      : transactions.savingsBal || 0;
 
   months.forEach((monthData) => {
     const { month } = monthData;
 
-    // Find transactions in the current month
-    const monthTransactions = transactions.Transactions.filter((transaction) => {
-      const transactionDate = dayjs(transaction.JournalEntries?.entryDate);
-      return (
-        transactionDate.year() === year && transactionDate.month() + 1 === month // dayjs months are 0-indexed
-      );
-    });
+    // Get the latest transaction for the current month, if any
+    const latestTransaction = latestTransactionsByMonth[month];
 
-    if (monthTransactions.length > 0) {
-      // Update balance to the latest transaction in the month
-      lastBalance = monthTransactions[monthTransactions.length - 1].newBalance;
+    // Update the last balance if there's a transaction for this month
+    if (latestTransaction) {
+      lastBalance = latestTransaction.newBalance;
     }
 
-    // Set balance for the month
-    monthData.balance = !transactions.Transactions.length ? transactions.savingsBal : lastBalance;
+    // Assign the balance for the current month
+    monthData.balance = lastBalance;
   });
 
   return months.map(({ month, balance }) => ({
-    month,
+    month: dayjs().month(month - 1).format('MMMM'),
     balance,
   }));
 };
