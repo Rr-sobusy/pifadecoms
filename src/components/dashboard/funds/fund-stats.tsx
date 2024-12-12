@@ -8,9 +8,13 @@ import Typography from '@mui/material/Typography';
 import { Receipt as ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
 
 import { formatToCurrency } from '@/lib/format-currency';
+import type { AggregatedFundsType } from '@/actions/funds/types';
 
+interface FundStatsProps {
+  aggregatedFunds: AggregatedFundsType;
+}
 
-function FundsStats() {
+function FundsStats({ aggregatedFunds }: FundStatsProps) {
   return (
     <Grid spacing={4} container>
       <Grid
@@ -37,9 +41,11 @@ function FundsStats() {
                 <Typography color="text.secondary" variant="body2">
                   Member Built-up Capital
                 </Typography>
-                <Typography variant="h6">{formatToCurrency(20000, 'Fil-ph', 'Php')}</Typography>
+                <Typography variant="h6">
+                  {formatToCurrency(aggregatedFunds._sum.shareCapBal ?? 0, 'Fil-ph', 'Php')}
+                </Typography>
                 <Typography color="text.secondary" variant="body2">
-                  From _ _ member
+                  {`From ${aggregatedFunds._count.fundId} members`}
                 </Typography>
               </Stack>
             </Stack>
@@ -70,9 +76,11 @@ function FundsStats() {
                 <Typography color="text.secondary" variant="body2">
                   Total Savings Deposits
                 </Typography>
-                <Typography variant="h6">{formatToCurrency(20000, 'Fil-ph', 'Php')}</Typography>
+                <Typography variant="h6">
+                  {formatToCurrency(aggregatedFunds._sum.savingsBal ?? 0, 'Fil-ph', 'Php')}
+                </Typography>
                 <Typography color="text.secondary" variant="body2">
-                  From _ _ member
+                {`From ${aggregatedFunds._count.fundId} members`}
                 </Typography>
               </Stack>
             </Stack>

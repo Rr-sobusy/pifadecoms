@@ -63,23 +63,23 @@ export const createPaymentPosting = actionClient
          * * Increase balance of assets and expense account on debit and decrease in credit.
          * * Increase balance of income, equity and liability on credit and decrease in debit.
          */
-        ...Request.journalLineItems.map((lineItem) => {
-          const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.rootType ?? '');
-          const amount = isIncrement
-            ? lineItem.debit - lineItem.credit // For Assets and Expense Acct
-            : lineItem.credit - lineItem.debit; // For Equity, Revenue, and Liabilities acct
+        // ...Request.journalLineItems.map((lineItem) => {
+        //   const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.rootType ?? '');
+        //   const amount = isIncrement
+        //     ? lineItem.debit - lineItem.credit // For Assets and Expense Acct
+        //     : lineItem.credit - lineItem.debit; // For Equity, Revenue, and Liabilities acct
 
-          return prisma.accountsThirdLvl.update({
-            where: {
-              accountId: lineItem.accountDetails.accountId,
-            },
-            data: {
-              runningBalance: {
-                [isIncrement ? 'increment' : 'decrement']: amount,
-              },
-            },
-          });
-        }),
+        //   return prisma.accountsThirdLvl.update({
+        //     where: {
+        //       accountId: lineItem.accountDetails.accountId,
+        //     },
+        //     data: {
+        //       runningBalance: {
+        //         [isIncrement ? 'increment' : 'decrement']: amount,
+        //       },
+        //     },
+        //   });
+        // }),
       ]);
     } catch (error) {
       return { success: false, errorMessage: error };

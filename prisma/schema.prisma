@@ -84,6 +84,11 @@ enum FundTransactionsType {
   ShareCapWithdrawal
 }
 
+enum ReconcilationStatus {
+  Pending
+  Reconciled
+}
+
 model Members {
   memberId         String        @id @default(cuid())
   accountStatus    AccountStatus @default(Active)
@@ -229,7 +234,7 @@ model AccountsThirdLvl {
   accountName    String
   rootId         Int
   openingBalance Float
-  runningBalance Float                  @default(0)
+  runningBalance Float                @default(0)
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @default(now())
   isActive       Boolean              @default(true)
@@ -265,14 +270,14 @@ model SavingsTransact {
 
 model JournalEntries {
   entryId             BigInt         @id @default(autoincrement())
-  entryDate           DateTime      
-  referenceName       String         
+  entryDate           DateTime   
+  referenceName       String     
+  status              ReconcilationStatus @default(Pending)    
   referenceType       ReferenceType
   notes               String?
   createdAt           DateTime       @default(now())
   memberId            String?
   journalType         JournalType
-
   JournalItems        JournalItems[]
   MemberFundsTransact FundTransactions[]
 
@@ -290,7 +295,6 @@ model JournalItems {
   accountId          String
   debit              Float
   credit             Float
-
   
   JournalEntries     JournalEntries     @relation(references: [entryId], fields: [entryId], onDelete: Cascade)
   Accounts           AccountsThirdLvl   @relation(references: [accountId], fields: [accountId])

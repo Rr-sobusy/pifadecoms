@@ -2,10 +2,13 @@
 
 import React from 'react';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
+import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
+import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
 
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
@@ -29,6 +32,27 @@ const columns = [
     },
     name: 'Posting Date',
     width: '130px',
+  },
+  {
+    formatter(row) {
+      const mapping = {
+        pending: { label: 'Pending', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
+        reconciled: {
+          label: 'Reconciled',
+          icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" />,
+        },
+      } as const;
+
+      function getMapping() {
+        if (row.JournalEntries.status === 'Pending') return mapping['pending'];
+        return mapping['reconciled'];
+      }
+
+      const { icon, label } = getMapping();
+      return <Chip icon={icon} label={label} size="small" variant="outlined" />;
+    },
+    name: 'Reconcilation Status',
+    width: '120px',
   },
   {
     formatter(row) {
@@ -151,8 +175,8 @@ function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
     setCurrentPage(pageNumber);
   }
 
-  const paginatedTransactions = accountTransactions.slice((currentPage * rowsPerPage), (currentPage + 1 ) * rowsPerPage);
-  
+  const paginatedTransactions = accountTransactions.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+
   return (
     <React.Fragment>
       <DataTable hover columns={columns} rows={paginatedTransactions} />
