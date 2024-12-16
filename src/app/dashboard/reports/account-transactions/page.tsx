@@ -12,12 +12,15 @@ import { paths } from '@/paths';
 import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
+import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 
 interface PageProps {
   searchParams: { filterList: boolean };
 }
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const accountTransactions = await fetchAccountTransactions();
+
+  const [accountTransactions, accounts ] = await Promise.all([fetchAccountTransactions(), fetchAccountTree()])
+
   return (
     <Box
       sx={{
@@ -70,7 +73,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
           </Box>
         </Card>
       </Stack>
-      <FilterModal open={Boolean(searchParams.filterList)} />
+      <FilterModal accounts={accounts} open={Boolean(searchParams.filterList)} />
     </Box>
   );
 }

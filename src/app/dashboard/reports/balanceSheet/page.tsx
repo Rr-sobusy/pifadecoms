@@ -1,7 +1,80 @@
 import React from 'react';
+import RouterLink from 'next/link';
+import { Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
+import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 
-function page() {
-  return <div>page</div>;
+import { paths } from '@/paths';
+import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
+import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
+import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
+import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
+import { getBalanceSheet } from '@/actions/reports/balance-sheet';
+
+interface PageProps {
+  searchParams: { filterList: boolean };
+}
+async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
+
+  const [accountTransactions, accounts ] = await Promise.all([fetchAccountTransactions(), fetchAccountTree()])
+  const balance = await getBalanceSheet()
+  console.log(balance
+    
+  )
+  return (
+    <Box
+      sx={{
+        maxWidth: 'var(--Content-maxWidth)',
+        m: 'var(--Content-margin)',
+        p: 'var(--Content-padding)',
+        width: 'var(--Content-width)',
+      }}
+    >
+      <Stack spacing={4}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
+          <Box sx={{ flex: '1 1 auto' }}>
+            <Typography variant="h4">Balance Sheet</Typography>
+          </Box>
+
+          <Stack spacing={1} flexDirection="row">
+            <Button
+              LinkComponent={RouterLink}
+              href={`${paths.dashboard.reports.accountTransaction}?filterList=true`}
+              startIcon={<FilterIcon />}
+              variant="text"
+            >
+              Filters
+            </Button>
+            <Button startIcon={<ExportIcon />} variant="text">
+              Export
+            </Button>
+          </Stack>
+        </Stack>
+        <Stack spacing={1} sx={{ alignItems: 'center', marginTop: 3 }}>
+          <Typography color="" variant="overline">
+            Pinagsibaan Farmer&apos;s Development Multi-purpose Cooperative
+          </Typography>
+          <Typography fontWeight="600" fontSize="23px" variant="body1">
+           Balance Sheet
+          </Typography>
+          <Typography color="textDisabled" variant="body2">
+           As of December 31 2024
+          </Typography>
+        </Stack>
+
+        <Card sx={{ marginTop: 3 }}>
+          <Box sx={{ overflowX: 'auto' }}>
+           
+          </Box>
+        </Card>
+      </Stack>
+      <FilterModal accounts={accounts} open={Boolean(searchParams.filterList)} />
+    </Box>
+  );
 }
 
 export default page;

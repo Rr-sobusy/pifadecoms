@@ -179,7 +179,7 @@ function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
 
   return (
     <React.Fragment>
-      <DataTable hover columns={columns} rows={paginatedTransactions} />
+      <DataTable onClick={(_, row)=>console.log(row)} hover columns={columns} rows={paginatedTransactions} />
       {!accountTransactions.length ? (
         <Box sx={{ p: 3 }}>
           <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="overline">
