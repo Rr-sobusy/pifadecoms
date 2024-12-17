@@ -14,6 +14,7 @@ import FilterModal from '@/components/dashboard/reports/transactions/account-tra
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { getBalanceSheet } from '@/actions/reports/balance-sheet';
+import BalanceTable from '@/components/dashboard/reports/balancesheet/balance-table';
 
 interface PageProps {
   searchParams: { filterList: boolean };
@@ -23,7 +24,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const [accountTransactions, accounts ] = await Promise.all([fetchAccountTransactions(), fetchAccountTree()])
   const balance = await getBalanceSheet()
   console.log(balance
-    
+
   )
   return (
     <Box
@@ -42,12 +43,10 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
 
           <Stack spacing={1} flexDirection="row">
             <Button
-              LinkComponent={RouterLink}
-              href={`${paths.dashboard.reports.accountTransaction}?filterList=true`}
               startIcon={<FilterIcon />}
               variant="text"
             >
-              Filters
+              Reconcile/Unrencile Records
             </Button>
             <Button startIcon={<ExportIcon />} variant="text">
               Export
@@ -68,7 +67,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
 
         <Card sx={{ marginTop: 3 }}>
           <Box sx={{ overflowX: 'auto' }}>
-           
+            <BalanceTable balances={balance} />
           </Box>
         </Card>
       </Stack>

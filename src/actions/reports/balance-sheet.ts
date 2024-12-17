@@ -1,6 +1,6 @@
-import prisma from '@/lib/prisma';
 import type { AccountTypes } from '@prisma/client';
 
+import prisma from '@/lib/prisma';
 
 interface ChildAccount {
   accountName: string;
@@ -13,9 +13,7 @@ interface ParentAccount {
   children: ChildAccount[];
 }
 
-
-
-type BalanceSheet = Record<Exclude<AccountTypes, 'Expense'| 'Revenue'>, ParentAccount[]>;
+type BalanceSheet = Record<Exclude<AccountTypes, 'Expense' | 'Revenue'>, ParentAccount[]>;
 
 const balanceSheet: BalanceSheet = {
   Assets: [],
@@ -25,8 +23,8 @@ const balanceSheet: BalanceSheet = {
 
 export async function getBalanceSheet() {
   const accounts = await prisma.accountsSecondLvl.findMany({
-    where : {
-    OR : [{rootType : "Assets"}, {rootType : "Equity"}, {rootType : "Liability"}]
+    where: {
+      OR: [{ rootType: 'Assets' }, { rootType: 'Equity' }, { rootType: 'Liability' }],
     },
     include: {
       Children: {
@@ -37,24 +35,18 @@ export async function getBalanceSheet() {
         },
       },
     },
-    orderBy: {
-      rootType: 'asc',
-    },
   });
 
-  accounts.forEach(account => {
-    const category = account.rootType as Exclude<AccountTypes, 'Expense'| 'Revenue'>; // Narrow the type
+  accounts.forEach((account) => {
+    const category = account.rootType as Exclude<AccountTypes, 'Expense' | 'Revenue'>; 
 
-    const totalBalance = account.Children.reduce(
-      (sum, child) => sum + child.runningBalance,
-      0
-    );
+    const totalBalance = account.Children.reduce((sum, child) => sum + child.runningBalance, 0);
 
     if (totalBalance !== 0) {
       balanceSheet[category].push({
         parentAccount: account.rootName,
         totalBalance,
-        children: account.Children.map(child => ({
+        children: account.Children.map((child) => ({
           accountName: child.accountName,
           balance: child.runningBalance,
         })),
@@ -66,4 +58,3 @@ export async function getBalanceSheet() {
 }
 
 // Example usage
-
