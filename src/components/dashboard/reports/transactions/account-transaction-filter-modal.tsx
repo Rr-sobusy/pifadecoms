@@ -28,7 +28,7 @@ import type { AccounTreeType } from '@/actions/accounts/types';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
 
-type FilteModalProps = {
+type FilterModalProps = {
   open: boolean;
   accounts: AccounTreeType;
 };
@@ -36,28 +36,32 @@ type FilteModalProps = {
 const filterSchema = zod.object({
   startDate: zod.date().optional(),
   endDate: zod.date().optional(),
-  accountDetails: zod.object({
-    accountId: zod.string(),
-    accountName: zod.string(),
-    createdAt: zod.date().optional(),
-    rootId: zod.number().optional(),
-    openingBalance: zod.number().optional(),
-    runningBalance: zod.number().optional(),
-    updatedAt: zod.date().optional(),
-    isActive: zod.boolean().optional(),
-    group: zod.string(),
-    rootType: zod.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']).optional(),
-  }),
-  member: zod.object({
-    memberId: zod.string(),
-    firstName: zod.string(),
-    lastName: zod.string(),
-  }),
+  accountDetails: zod
+    .object({
+      accountId: zod.string(),
+      accountName: zod.string(),
+      createdAt: zod.date().optional(),
+      rootId: zod.number().optional(),
+      openingBalance: zod.number().optional(),
+      runningBalance: zod.number().optional(),
+      updatedAt: zod.date().optional(),
+      isActive: zod.boolean().optional(),
+      group: zod.string(),
+      rootType: zod.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']).optional(),
+    })
+    .optional(),
+  member: zod
+    .object({
+      memberId: zod.string(),
+      firstName: zod.string(),
+      lastName: zod.string(),
+    })
+    .optional(),
 });
 
 type FilterSchema = zod.infer<typeof filterSchema>;
 
-function FilterModal({ open, accounts }: FilteModalProps) {
+function FilterModal({ open, accounts }: FilterModalProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -85,7 +89,7 @@ function FilterModal({ open, accounts }: FilteModalProps) {
 
   const memberData = watch('member');
 
-  const debouncedValue = useDebounce(memberData?.lastName, 300);
+  const debouncedValue = useDebounce(memberData?.lastName ?? '', 300);
 
   React.useEffect(() => {
     if (!debouncedValue) {
@@ -110,7 +114,16 @@ function FilterModal({ open, accounts }: FilteModalProps) {
   }
 
   function submitHandler(data: FilterSchema) {
-    alert(data.accountDetails.accountId);
+    
+    const searchParams = new URLSearchParams();
+    if (data.accountDetails) {
+      searchParams.set('accountId', data.accountDetails.accountId);
+    }
+    if (data.member) {
+      searchParams.set('memberId', data.member.memberId);
+    }
+
+    router.push(`${pathname}?${searchParams.toString()}`);
   }
   return (
     <Dialog
@@ -130,7 +143,7 @@ function FilterModal({ open, accounts }: FilteModalProps) {
             <Stack>
               <Typography variant="h6">Filter results</Typography>
               <Typography color="text.secondary" variant="caption">
-                Filter the data table based on filter inputs. {JSON.stringify(errors)}
+                Filter the data table based on filter inputs.
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -192,7 +205,7 @@ function FilterModal({ open, accounts }: FilteModalProps) {
                         },
                       }}
                       value={dayjs(field.value)}
-                      label="Start Date"
+                      label="End Date"
                       sx={{ width: '100%' }}
                     />
                   )}
@@ -213,7 +226,7 @@ function FilterModal({ open, accounts }: FilteModalProps) {
                   groupBy={(option) => option.group}
                   renderInput={(params) => (
                     <FormControl error={Boolean(errors.accountDetails?.message)} fullWidth>
-                      <InputLabel required>Depositing Acct. (Dr)</InputLabel>
+                      <InputLabel>Filter by account</InputLabel>
                       <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
                     </FormControl>
                   )}

@@ -7,19 +7,27 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
-
+import { X as CloseIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { paths } from '@/paths';
+import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
-import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 
 interface PageProps {
-  searchParams: { filterList: boolean };
+  searchParams: {
+    filterList: boolean;
+
+    memberId: string;
+    accountId: string;
+    startDate: Date;
+    endDate: Date;
+  };
 }
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-
-  const [accountTransactions, accounts ] = await Promise.all([fetchAccountTransactions(), fetchAccountTree()])
+  const { memberId, accountId, startDate, endDate } = searchParams;
+  const filters = { memberId, accountId, startDate, endDate };
+  const [accountTransactions, accounts] = await Promise.all([fetchAccountTransactions(filters), fetchAccountTree()]);
 
   return (
     <Box
@@ -37,6 +45,17 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
           </Box>
 
           <Stack spacing={1} flexDirection="row">
+            {Object.keys(searchParams).length > 0 && !searchParams.filterList && (
+              <Button
+                LinkComponent={RouterLink}
+                href={`${paths.dashboard.reports.accountTransaction}`}
+                startIcon={<CloseIcon />}
+                variant="text"
+                color="error"
+              >
+                Clear Filters
+              </Button>
+            )}
             <Button
               LinkComponent={RouterLink}
               href={`${paths.dashboard.reports.accountTransaction}?filterList=true`}

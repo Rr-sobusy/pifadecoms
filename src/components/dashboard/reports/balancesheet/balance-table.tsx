@@ -6,19 +6,19 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { formatToCurrency } from '@/lib/format-currency';
 import type { BalanceSheetTypes } from '@/actions/reports/types';
+import { useTheme } from '@emotion/react';
 
 type Props = {
   balances: BalanceSheetTypes;
 };
 
 function BalanceTable({ balances }: Props) {
-  const arr = Object.entries(balances);
-  console.log(arr);
+  const theme = useTheme()
   return (
     <Box padding={3}>
       {Object.entries(balances).map(([category, accounts]) => (
         <Stack key={category}>
-          <Typography sx={{background:"gray"}} paddingLeft={4} variant='h5'>{category}</Typography>
+          <Typography sx={{backgroundColor : "#CCCED1"}} paddingLeft={4} paddingY={.5} variant='h5'>{category}</Typography>
           {accounts.map((account, idx) => (
             <div key={idx}>
               <h3>{account.parentAccount}</h3>
