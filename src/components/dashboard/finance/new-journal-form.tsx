@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { FormLabel } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -25,9 +26,11 @@ import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
 import { JournalMap } from '@/lib/api-utils/journal-map';
+import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
+import type { MembersType } from '@/actions/members/types';
 import { createManualJournal } from '@/actions/transactional/create-manual-entry';
 import { transactionalSchema, type TransactionalSchemaType } from '@/actions/transactional/types';
 import { Option } from '@/components/core/option';
@@ -72,6 +75,30 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
     },
     resolver: zodResolver(transactionalSchema),
   });
+
+  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
+
+  const memberData = watch('particulars');
+
+  const debouncedValue = useDebounce(memberData?.lastName ?? '', 300);
+
+  React.useEffect(() => {
+    if (!debouncedValue) {
+      setMemberData([]);
+      return;
+    }
+
+    async function fetchMemberDataOnDebounce() {
+      try {
+        const data: MembersType = await fetch('/dashboard/members/api', {
+          method: 'POST',
+          body: JSON.stringify({ memberName: debouncedValue }),
+        }).then((res) => res.json());
+        setMemberData(data);
+      } catch (error) {}
+    }
+    fetchMemberDataOnDebounce();
+  }, [debouncedValue]);
 
   const { execute, isExecuting, result } = useAction(createManualJournal);
 
@@ -194,6 +221,40 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                       field.onChange(JournalMap[value ?? '']);
                     }}
                     fullWidth
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="particulars"
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    onInputChange={(_, value) => {
+                      if (!value) {
+                        return setValue('particulars.lastName', '');
+                      }
+
+                      setValue('particulars.lastName', value); // Update form value when input changes
+                    }}
+                    onChange={(event, value) => {
+                      field.onChange(value); // Update form value on selection
+                    }}
+                    options={member}
+                    getOptionLabel={(option) =>
+                      option && option.lastName && option.firstName ? `${option.lastName} ${option.firstName}` : ''
+                    }
+                    renderInput={(params) => (
+                      <FormControl error={Boolean(errors.particulars?.message)} fullWidth>
+                        <FormLabel>Member Name</FormLabel>
+                        <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
+                      </FormControl>
+                    )}
+                    renderOption={(props, options) => (
+                      <Option {...props} key={options.memberId} value={options.memberId}>
+                        {`${options.lastName}, ${options.firstName}`}
+                      </Option>
+                    )}
                   />
                 )}
               />

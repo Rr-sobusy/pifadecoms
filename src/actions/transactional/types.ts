@@ -16,7 +16,11 @@ export const transactionalSchema = z.object({
   reference: z.string(),
   journalType: z.enum(['cashReceipts', 'cashDisbursement', 'generalJournal']),
   notes: z.string().optional(),
-  particulars: z.string().optional(),
+  particulars: z.object({
+    memberId: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+  }),
   referenceType: z.enum([
     'MemberRegistration',
     'SalesPayments',

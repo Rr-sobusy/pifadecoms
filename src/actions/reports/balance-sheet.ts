@@ -15,13 +15,12 @@ interface ParentAccount {
 
 type BalanceSheet = Record<Exclude<AccountTypes, 'Expense' | 'Revenue'>, ParentAccount[]>;
 
-const balanceSheet: BalanceSheet = {
-  Assets: [],
-  Liability: [],
-  Equity: [],
-};
-
-export async function getBalanceSheet() {
+export async function getBalanceSheet(): Promise<BalanceSheet> {
+  const balanceSheet: BalanceSheet = {
+    Assets: [],
+    Liability: [],
+    Equity: [],
+  };
   const accounts = await prisma.accountsSecondLvl.findMany({
     where: {
       OR: [{ rootType: 'Assets' }, { rootType: 'Equity' }, { rootType: 'Liability' }],
@@ -38,7 +37,7 @@ export async function getBalanceSheet() {
   });
 
   accounts.forEach((account) => {
-    const category = account.rootType as Exclude<AccountTypes, 'Expense' | 'Revenue'>; 
+    const category = account.rootType as Exclude<AccountTypes, 'Expense' | 'Revenue'>;
 
     const totalBalance = account.Children.reduce((sum, child) => sum + child.runningBalance, 0);
 
@@ -57,4 +56,3 @@ export async function getBalanceSheet() {
   return balanceSheet;
 }
 
-// Example usage

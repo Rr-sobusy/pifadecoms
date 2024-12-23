@@ -28,6 +28,7 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { config } from '@/config';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
+import { formatToCurrency } from '@/lib/format-currency';
 import { fetchMemberData } from '@/actions/members/fetch-members';
 import { PropertyItem } from '@/components/core/property-item';
 import { PropertyList } from '@/components/core/property-list';
@@ -131,18 +132,16 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                       { key: 'Customer ID', value: <Chip label={memberData?.memberId} size="small" variant="soft" /> },
                       { key: 'Name', value: `${memberData?.lastName}, ${memberData?.firstName}` },
                       { key: 'Birth Date', value: dayjs(memberData?.birthDate).format('MMM DD YYYY') },
-                      { key: 'Phone', value: memberData?.contactNo },
+                      { key: 'Phone', value: memberData?.contactNo ?? 'N/A' },
                       { key: 'Occupation', value: memberData?.occupation },
+                      { key: 'Date Accepted', value: dayjs(memberData?.dateAccepted).format('MM DD YYYY') },
+                      { key: 'TIN', value: memberData?.tin ?? 'N/A' },
+                      { key: 'Civil Status', value: memberData?.civilStatus },
+                      { key: 'Highest Education Attainment', value: memberData?.highestEdAttain },
                       {
-                        key: 'Quota',
-                        value: (
-                          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-                            <LinearProgress sx={{ flex: '1 1 auto' }} value={50} variant="determinate" />
-                            <Typography color="text.secondary" variant="body2">
-                              50%
-                            </Typography>
-                          </Stack>
-                        ),
+                        key: 'Annual Income',
+                        value:
+                          memberData?.annualIncom ?? formatToCurrency(memberData.annualIncom ?? 0, 'Fil-ph', 'Php'),
                       },
                     ] satisfies { key: string; value: React.ReactNode }[]
                   ).map(

@@ -122,6 +122,12 @@ function FilterModal({ open, accounts }: FilterModalProps) {
     if (data.member) {
       searchParams.set('memberId', data.member.memberId);
     }
+    if(data.startDate){
+      searchParams.set('startDate', String(data.startDate))
+    }
+    if(data.endDate){
+      searchParams.set('endDate', String(data.endDate))
+    }
 
     router.push(`${pathname}?${searchParams.toString()}`);
   }

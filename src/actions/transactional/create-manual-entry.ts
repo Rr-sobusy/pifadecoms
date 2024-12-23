@@ -22,7 +22,7 @@ export const createManualJournal = actionClient.schema(transactionalSchema).acti
           referenceName: Request.reference,
           notes: Request.notes,
           referenceType: Request.referenceType,
-
+          memberId: Request.particulars.memberId,
           JournalItems: {
             create: Request.journalLineItems.map((lineItem) => ({
               accountId: lineItem.accountDetails.accountId,
