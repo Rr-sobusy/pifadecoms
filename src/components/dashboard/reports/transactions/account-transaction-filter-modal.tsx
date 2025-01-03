@@ -71,7 +71,13 @@ function FilterModal({ open, accounts }: FilterModalProps) {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<FilterSchema>({ resolver: zodResolver(filterSchema) });
+  } = useForm<FilterSchema>({
+    resolver: zodResolver(filterSchema),
+    defaultValues: {
+      startDate: new Date(),
+      endDate: new Date(),
+    },
+  });
 
   const [member, setMemberData] = React.useState<MembersType[0][]>([]);
 
@@ -114,7 +120,6 @@ function FilterModal({ open, accounts }: FilterModalProps) {
   }
 
   function submitHandler(data: FilterSchema) {
-    
     const searchParams = new URLSearchParams();
     if (data.accountDetails) {
       searchParams.set('accountId', data.accountDetails.accountId);
@@ -122,11 +127,11 @@ function FilterModal({ open, accounts }: FilterModalProps) {
     if (data.member) {
       searchParams.set('memberId', data.member.memberId);
     }
-    if(data.startDate){
-      searchParams.set('startDate', String(data.startDate))
+    if (data.startDate) {
+      searchParams.set('startDate', String(data.startDate));
     }
-    if(data.endDate){
-      searchParams.set('endDate', String(data.endDate))
+    if (data.endDate) {
+      searchParams.set('endDate', String(data.endDate));
     }
 
     router.push(`${pathname}?${searchParams.toString()}`);

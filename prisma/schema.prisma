@@ -89,6 +89,13 @@ enum ReconcilationStatus {
   Reconciled
 }
 
+enum LoanType {
+  Weekly
+  Monthly
+  Diminishing
+  EndOfTerm
+}
+
 model Members {
   memberId         String        @id @default(cuid())
   accountStatus    AccountStatus @default(Active)
@@ -123,6 +130,31 @@ model Members {
   @@map("members")
   @@index([lastName, firstName])
 
+}
+
+model MemberLoans {
+  loanId          BigInt      @id @default(autoincrement())
+  memberId        String
+  loanType        LoanType
+  interestRate    Float
+  termInMonths    Int
+  issueDate       DateTime
+  dueDate         DateTime
+  isExisting      Boolean     @default(false)
+  journalRef      BigInt?
+
+  Repayments      LoanRepayments[]
+}
+
+model LoanRepayments {
+  repaymentId     BigInt       @id @default(autoincrement())
+  loanId          BigInt
+  paymentDate     DateTime
+  amountPaid      Float
+  remarks         String?
+  
+
+  Loan            MemberLoans   @relation(references: [loanId], fields: [loanId])
 }
 
 model MemberFunds {

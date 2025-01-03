@@ -64,17 +64,11 @@ export const layoutConfig = {
               items: [
                 {
                   key: 'memberLoans:list',
-                  title: 'arwa',
+                  title: 'Loan List',
                 },
-              ],
-            },
-            {
-              key: 'employeeLoan',
-              title: 'Employee Loans',
-              items: [
                 {
-                  key: 'memberLoans:list',
-                  title: 'arwa',
+                  key: 'memberLoans:create',
+                  title: 'Create Loan',
                 },
               ],
             },
@@ -170,6 +164,7 @@ export const layoutConfig = {
             { key: 'ledger', title: 'General Ledger', href: paths.dashboard.reports.ledgerList },
             { key: 'acctTransactions', title: 'Account Transactions', href: paths.dashboard.reports.accountTransaction },
             { key: 'balance', title: 'Balance Sheet', href: paths.dashboard.reports.balanceSheet },
+            { key: 'incomeAndLoss', title: 'Statement of Income/Loss', href: paths.dashboard.reports.incomeAndLoss },
             // { key: 'balanceSheet', title: 'Balance Sheet', href: paths.dashboard.reports.ledgerList },
             // { key: 'profitLoss', title: 'Income/Loss Statement', href: paths.dashboard.reports.ledgerList },
             // { key: 'trialBalance', title: 'Trial Balance', href: paths.dashboard.reports.ledgerList },

@@ -13,6 +13,7 @@ import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
+import { redirect } from 'next/navigation';
 
 interface PageProps {
   searchParams: {
@@ -28,6 +29,8 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const { memberId, accountId, startDate, endDate } = searchParams;
   const filters = { memberId, accountId, startDate, endDate };
   const [accountTransactions, accounts] = await Promise.all([fetchAccountTransactions(filters), fetchAccountTree()]);
+
+  // redirect(`${paths.dashboard.reports.accountTransaction}`)
 
   return (
     <Box
@@ -77,7 +80,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
             Summary of Account&apos;s Transactions
           </Typography>
           <Typography color="textDisabled" variant="body2">
-            From{' '}
+            From
             {/* {searchParams.startDate
             ? dayjs(searchParams.startDate).format('MMM DD YYYY')
             : dayjs().subtract(30, 'day').format('MMM DD YYYY')}{' '}

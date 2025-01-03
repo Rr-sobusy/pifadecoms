@@ -111,6 +111,7 @@ export const paths = {
       ledgerList: '/dashboard/reports/ledger',
       balanceSheet: '/dashboard/reports/balanceSheet',
       accountTransaction: '/dashboard/reports/account-transactions',
+      incomeAndLoss: '/dashboard/reports/incomeAndLoss'
     },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',
