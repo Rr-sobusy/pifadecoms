@@ -92,8 +92,21 @@ enum ReconcilationStatus {
 enum LoanType {
   Weekly
   Monthly
+  Yearly
   Diminishing
   EndOfTerm
+}
+
+enum Roles {
+   Admin
+   Regular
+}
+
+model Users {
+  userId          String        @id @default(cuid())
+  userName        String
+  password        String
+  role            Roles
 }
 
 model Members {
@@ -122,7 +135,8 @@ model Members {
 
   Funds            MemberFunds?
 
-  dividends        Dividends[]    
+  dividends        Dividends[]   
+  loans            MemberLoans[] 
   invoice          Invoice[]
   Journals         JournalEntries[]
 
@@ -135,26 +149,34 @@ model Members {
 model MemberLoans {
   loanId          BigInt      @id @default(autoincrement())
   memberId        String
-  loanType        LoanType
+  loanType        LoanType    
+  amountLoaned    Float       @default(0)
   interestRate    Float
   termInMonths    Int
   issueDate       DateTime
   dueDate         DateTime
   isExisting      Boolean     @default(false)
-  journalRef      BigInt?
+  ledgerId        BigInt?     @unique
+  JournalEntries  JournalEntries? @relation(fields: [ledgerId], references: [entryId])
 
   Repayments      LoanRepayments[]
+  Member          Members     @relation(references: [memberId], fields: [memberId])
 }
 
 model LoanRepayments {
   repaymentId     BigInt       @id @default(autoincrement())
   loanId          BigInt
-  paymentDate     DateTime
-  amountPaid      Float
+  paymentSched    DateTime
+  paymentDate     DateTime?
+  isExisting      Boolean     @default(false)
+  principal       Float       @default(0)
+  interest        Float       @default(0)
+  amountDue       Float
   remarks         String?
-  
 
-  Loan            MemberLoans   @relation(references: [loanId], fields: [loanId])
+  journalRef      BigInt?
+
+  Loan            MemberLoans   @relation(references: [loanId], fields: [loanId], onDelete: Cascade)
 }
 
 model MemberFunds {
@@ -316,6 +338,9 @@ model JournalEntries {
   //* To be the particulars
   Members             Members?        @relation(fields: [memberId], references: [memberId])
   InvoicePayments     InvoicePayments[]
+
+  MemberLoans         MemberLoans?
+
 
   @@map("journal_entries")
   @@index([entryDate, memberId])

@@ -74,7 +74,7 @@ export const CreateSavingsTransaction = ({
       fundType: ['SavingsDeposit', 'SavingsWithdrawal'].includes(transactionType) ? 'Savings' : 'ShareCapital',
       fundTransactionsType: transactionType,
       entryDate: new Date(),
-      particulars: fundTransactions?.Member.memberId,
+      particulars: { memberId: fundTransactions?.Member.memberId, firstName: '', lastName: '' },
 
       journalLineItems: [
         {
@@ -320,7 +320,7 @@ export const CreateSavingsTransaction = ({
               )}
             />
             <Stack justifyContent="flex-end" gap={2} flexDirection="row" marginTop={1}>
-              <Button type="button" onClick={handleClose} variant="outlined">
+              <Button type="button" onClick={() => console.log(errors)} variant="outlined">
                 Cancel
               </Button>
               <Button disabled={isExecuting} type="submit" variant="contained">

@@ -6,9 +6,10 @@ interface Filterers {
   accountId?: string;
   startDate?: Date;
   endDate?: Date;
+  condition?: 'OR' | 'AND';
 }
 
-export async function fetchAccountTransactions(props: Filterers = {}) {
+export async function fetchAccountTransactions(props: Filterers = { condition: 'OR' }) {
   const isEmpty = !props.accountId && !props.memberId && !props.startDate && !props.endDate;
 
   const conditions = [];
@@ -36,6 +37,8 @@ export async function fetchAccountTransactions(props: Filterers = {}) {
     });
   }
 
+  const conditionType = props.condition === 'AND' ? 'AND' : 'OR';
+
   const accountTransactions = await prisma.journalItems.findMany({
     include: {
       JournalEntries: {
@@ -45,7 +48,7 @@ export async function fetchAccountTransactions(props: Filterers = {}) {
       },
       Accounts: true,
     },
-    where: isEmpty ? undefined : { OR: conditions },
+    where: isEmpty ? undefined : { [conditionType]: conditions },
   });
 
   return accountTransactions;

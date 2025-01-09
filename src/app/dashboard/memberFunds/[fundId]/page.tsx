@@ -16,7 +16,7 @@ import SharesCard from '@/components/dashboard/funds/shares-card';
 
 interface PageProps {
   params: { fundId: number };
-  searchParams: { transactionType: FundTransactionsType , computeAdb :  "Savings" | "Share"};
+  searchParams: { transactionType: FundTransactionsType; computeAdb: 'Savings' | 'Share' };
 }
 
 async function page({ params, searchParams }: PageProps) {
@@ -64,7 +64,11 @@ async function page({ params, searchParams }: PageProps) {
           )
         )}
       />
-      <AdbCalculator computeAdbType={searchParams.computeAdb} open={Boolean(searchParams.computeAdb === "Savings" || searchParams.computeAdb === "Share")} fund={fundTransactions} />
+      <AdbCalculator
+        computeAdbType={searchParams.computeAdb}
+        open={Boolean(searchParams.computeAdb === 'Savings' || searchParams.computeAdb === 'Share')}
+        fund={fundTransactions}
+      />
     </Box>
   );
 }

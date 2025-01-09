@@ -54,8 +54,8 @@ export const layoutConfig = {
           ],
         },
         {
-          key: 'loans',
-          title: 'Loans',
+          key: 'microFinance',
+          title: 'Micro-finance',
           icon: 'loan',
           items: [
             {
@@ -65,10 +65,12 @@ export const layoutConfig = {
                 {
                   key: 'memberLoans:list',
                   title: 'Loan List',
+                  href: paths.dashboard.loans.list,
                 },
                 {
                   key: 'memberLoans:create',
                   title: 'Create Loan',
+                  href: paths.dashboard.loans.create,
                 },
               ],
             },
@@ -162,7 +164,11 @@ export const layoutConfig = {
           icon: 'receipt',
           items: [
             { key: 'ledger', title: 'General Ledger', href: paths.dashboard.reports.ledgerList },
-            { key: 'acctTransactions', title: 'Account Transactions', href: paths.dashboard.reports.accountTransaction },
+            {
+              key: 'acctTransactions',
+              title: 'Account Transactions',
+              href: paths.dashboard.reports.accountTransaction,
+            },
             { key: 'balance', title: 'Balance Sheet', href: paths.dashboard.reports.balanceSheet },
             { key: 'incomeAndLoss', title: 'Statement of Income/Loss', href: paths.dashboard.reports.incomeAndLoss },
             // { key: 'balanceSheet', title: 'Balance Sheet', href: paths.dashboard.reports.ledgerList },
