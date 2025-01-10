@@ -27,7 +27,14 @@ export async function getBalanceSheet(): Promise<BalanceSheet> {
     },
     include: {
       Children: {
-        where: { isActive: true },
+        where: {
+          AND: {
+            isActive: true,
+            runningBalance: {
+              not: 0,
+            },
+          },
+        },
         select: {
           accountName: true,
           runningBalance: true,
@@ -55,4 +62,3 @@ export async function getBalanceSheet(): Promise<BalanceSheet> {
 
   return balanceSheet;
 }
-

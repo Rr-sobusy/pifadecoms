@@ -16,40 +16,50 @@ export async function fetchAccountTransactions(props: Filterers = { condition: '
 
   if (props.memberId) {
     conditions.push({
-      JournalEntries: {
-        memberId: props.memberId,
-      },
+      memberId: props.memberId,
     });
   }
 
   if (props.accountId) {
-    conditions.push({ accountId: props.accountId });
+    conditions.push({
+      JournalItems: {
+        accountId: props.accountId,
+      },
+    });
   }
 
   if (props.startDate || props.endDate) {
     conditions.push({
-      JournalEntries: {
-        entryDate: {
-          ...(props.startDate && { gte: dayjs(props.startDate).startOf('day').toISOString() }),
-          ...(props.endDate && { lte: dayjs(props.endDate).endOf('day').toISOString() }),
-        },
+      entryDate: {
+        ...(props.startDate && { gte: dayjs(props.startDate).startOf('day').toISOString() }),
+        ...(props.endDate && { lte: dayjs(props.endDate).endOf('day').toISOString() }),
       },
     });
   }
 
   const conditionType = props.condition === 'AND' ? 'AND' : 'OR';
 
-  const accountTransactions = await prisma.journalItems.findMany({
+  const _journalEntries = await prisma.journalEntries.findMany({
     include: {
-      JournalEntries: {
+      JournalItems: {
         include: {
-          Members: true,
+          Accounts: true,
         },
       },
-      Accounts: true,
+      Members: true,
     },
     where: isEmpty ? undefined : { [conditionType]: conditions },
   });
 
-  return accountTransactions;
+  const sortedJournalEntries = _journalEntries.map((entry) => {
+    return {
+      ...entry,
+      JournalItems: entry.JournalItems.sort((a, b) => {
+        if (a.debit && !b.debit) return -1;
+        if (!a.debit && b.debit) return 1;
+        return 0;
+      }),
+    };
+  });
+  return sortedJournalEntries;
 }

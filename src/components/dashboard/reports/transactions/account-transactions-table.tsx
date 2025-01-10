@@ -26,7 +26,7 @@ const columns = [
     formatter(row) {
       return (
         <Stack>
-          <Typography variant="caption">{dayjs(row.JournalEntries.entryDate).format('MMM DD YYYY')}</Typography>
+          <Typography variant="caption">{dayjs(row.entryDate).format('MMM DD YYYY')}</Typography>
         </Stack>
       );
     },
@@ -44,7 +44,7 @@ const columns = [
       } as const;
 
       function getMapping() {
-        if (row.JournalEntries.status === 'Pending') return mapping['pending'];
+        if (row.status === 'Pending') return mapping['pending'];
         return mapping['reconciled'];
       }
 
@@ -58,18 +58,7 @@ const columns = [
     formatter(row) {
       return (
         <Stack>
-          <Typography variant="caption">{row.Accounts.accountName}</Typography>
-        </Stack>
-      );
-    },
-    name: 'Account',
-    width: '200px',
-  },
-  {
-    formatter(row) {
-      return (
-        <Stack>
-          <Typography variant="caption">{row.JournalEntries.referenceType}</Typography>
+          <Typography variant="caption">{row.referenceType}</Typography>
         </Stack>
       );
     },
@@ -81,7 +70,7 @@ const columns = [
       return (
         <Stack>
           <Typography variant="caption">
-            {Object.keys(JournalMap).find((key) => JournalMap[key] === row.JournalEntries.journalType)}
+            {Object.keys(JournalMap).find((key) => JournalMap[key] === row.journalType)}
           </Typography>
         </Stack>
       );
@@ -93,7 +82,7 @@ const columns = [
     formatter(row) {
       return (
         <Stack>
-          <Typography variant="caption">{row.JournalEntries.notes}</Typography>
+          <Typography variant="caption">{row.notes}</Typography>
         </Stack>
       );
     },
@@ -105,9 +94,7 @@ const columns = [
       return (
         <Stack>
           <Typography variant="caption">
-            {row.JournalEntries.Members === null
-              ? ' '
-              : `${row.JournalEntries.Members?.lastName} ${row.JournalEntries.Members.firstName}`}
+            {row.Members === null ? ' ' : `${row.Members?.lastName} ${row.Members.firstName}`}
           </Typography>
         </Stack>
       );
@@ -119,50 +106,100 @@ const columns = [
     formatter(row) {
       return (
         <Stack>
-          <Typography variant="caption">{row.JournalEntries.referenceName}</Typography>
+          <Typography variant="caption">{row.referenceName}</Typography>
         </Stack>
       );
     },
     name: 'Reference #',
     width: '120px',
   },
+  // {
+  //   formatter(row) {
+  //     return (
+  //       <Stack>
+  //         <Typography variant="subtitle2">
+  //           {row.debit !== 0 ? formatToCurrency(row.debit, 'Fil-ph', 'Php') : ''}
+  //         </Typography>
+  //       </Stack>
+  //     );
+  //   },
+  //   name: 'Debit',
+  //   width: '100px',
+  // },
+  // {
+  //   formatter(row, index) {
+  //     return (
+  //       <Stack>
+  //         <Typography variant="subtitle2">
+  //           {row.JournalItems[index].credit !== 0 ? formatToCurrency(row.JournalItems[index].credit, 'Fil-ph', 'Php') : ''}
+  //         </Typography>
+  //       </Stack>
+  //     );
+  //   },
+  //   name: 'Credit',
+  //   width: '100px',
+  // },
+  // {
+  //   formatter(row) {
+  //     return (
+  //       <Typography variant="subtitle2">
+  //         {row.credit !== 0
+  //           ? formatToCurrency(row.credit, 'Fil-ph', 'Php')
+  //           : formatToCurrency(row.debit, 'Fil-ph', 'Php')}
+  //       </Typography>
+  //     );
+  //   },
+  //   name: 'Amount',
+  //   width: '100px',
+  // },
+  {
+    formatter(row, index) {
+      return (
+        <Stack>
+          {row.JournalItems.map((ctx) => (
+            <Typography
+              sx={{
+                marginLeft: ctx.debit === 0 ? 3 : 0,
+              }}
+              variant="caption"
+            >
+              {ctx.Accounts.accountName}
+            </Typography>
+          ))}
+        </Stack>
+      );
+    },
+    name: 'Account',
+    width: '200px',
+  },
   {
     formatter(row) {
       return (
         <Stack>
-          <Typography variant="subtitle2">
-            {row.debit !== 0 ? formatToCurrency(row.debit, 'Fil-ph', 'Php') : ''}
-          </Typography>
+          {row.JournalItems.map((ctx, index) => (
+            <Typography color="info" variant="subtitle2">
+              {ctx.debit !== 0 ? formatToCurrency(row.JournalItems[index].debit, 'Fil-ph', 'Php') : '-'}
+            </Typography>
+          ))}
         </Stack>
       );
     },
-    name: 'Debit',
+    name: 'Debit (Php)',
     width: '100px',
   },
   {
     formatter(row) {
       return (
         <Stack>
-          <Typography variant="subtitle2">
-            {row.credit !== 0 ? formatToCurrency(row.credit, 'Fil-ph', 'Php') : ''}
-          </Typography>
+          {row.JournalItems.map((ctx, index) => (
+            <Typography color="info" variant="subtitle2">
+              {ctx.credit !== 0 ? formatToCurrency(row.JournalItems[index].credit, 'Fil-ph', 'Php') : '-'}
+            </Typography>
+          ))}
         </Stack>
       );
     },
-    name: 'Credit',
-    width: '100px',
-  },
-  {
-    formatter(row) {
-      return (
-        <Typography variant="subtitle2">
-          {row.credit !== 0
-            ? formatToCurrency(row.credit, 'Fil-ph', 'Php')
-            : formatToCurrency(row.debit, 'Fil-ph', 'Php')}
-        </Typography>
-      );
-    },
-    name: 'Amount',
+    name: 'Credit (Php)',
     width: '100px',
   },
 ] satisfies ColumnDef<AccountTransactionTypes[0]>[];
@@ -179,7 +216,7 @@ function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
 
   return (
     <React.Fragment>
-      <DataTable onClick={(_, row)=>console.log(row)} hover columns={columns} rows={paginatedTransactions} />
+      <DataTable onClick={(_, row) => console.log(row)} hover columns={columns} rows={paginatedTransactions} />
       {!accountTransactions.length ? (
         <Box sx={{ p: 3 }}>
           <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="overline">

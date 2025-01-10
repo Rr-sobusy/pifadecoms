@@ -32,7 +32,11 @@ export default async function Page(): Promise<React.JSX.Element> {
       <form
         action={async () => {
           'use server';
-          await signIn('credentials', { username: 'rex', password: 'rex' });
+          try {
+            await signIn('credentials', { username: 'rexrany', password: 'rexrandy' });
+          } catch (error) {
+            console.error(error);
+          }
         }}
       >
         <Stack spacing={4}>
