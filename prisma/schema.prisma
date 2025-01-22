@@ -84,11 +84,6 @@ enum FundTransactionsType {
   ShareCapWithdrawal
 }
 
-enum ReconcilationStatus {
-  Pending
-  Reconciled
-}
-
 enum LoanType {
   Weekly
   Monthly
@@ -148,7 +143,7 @@ model Members {
 
 model MemberLoans {
   loanId          BigInt      @id @default(autoincrement())
-  memberId        String
+  memberId        String      
   loanType        LoanType    
   amountLoaned    Float       @default(0)
   interestRate    Float
@@ -325,8 +320,7 @@ model SavingsTransact {
 model JournalEntries {
   entryId             BigInt         @id @default(autoincrement())
   entryDate           DateTime   
-  referenceName       String     
-  status              ReconcilationStatus @default(Pending)    
+  referenceName       String       
   referenceType       ReferenceType
   notes               String?
   createdAt           DateTime       @default(now())

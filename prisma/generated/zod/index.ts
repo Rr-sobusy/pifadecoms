@@ -40,7 +40,7 @@ export const DividendsScalarFieldEnumSchema = z.enum(['dividendId','memberId','a
 
 export const SavingsTransactScalarFieldEnumSchema = z.enum(['transactionId','savingsId','transactionType']);
 
-export const JournalEntriesScalarFieldEnumSchema = z.enum(['entryId','entryDate','referenceName','status','referenceType','notes','createdAt','memberId','journalType']);
+export const JournalEntriesScalarFieldEnumSchema = z.enum(['entryId','entryDate','referenceName','referenceType','notes','createdAt','memberId','journalType']);
 
 export const JournalItemsScalarFieldEnumSchema = z.enum(['journalItemsId','entryId','accountId','debit','credit']);
 
@@ -93,10 +93,6 @@ export type FundTypeType = `${z.infer<typeof FundTypeSchema>}`
 export const FundTransactionsTypeSchema = z.enum(['SavingsDeposit','SavingsWithdrawal','ShareCapDeposit','ShareCapWithdrawal']);
 
 export type FundTransactionsTypeType = `${z.infer<typeof FundTransactionsTypeSchema>}`
-
-export const ReconcilationStatusSchema = z.enum(['Pending','Reconciled']);
-
-export type ReconcilationStatusType = `${z.infer<typeof ReconcilationStatusSchema>}`
 
 export const LoanTypeSchema = z.enum(['Weekly','Monthly','Yearly','Diminishing','EndOfTerm']);
 
@@ -348,7 +344,6 @@ export type SavingsTransact = z.infer<typeof SavingsTransactSchema>
 /////////////////////////////////////////
 
 export const JournalEntriesSchema = z.object({
-  status: ReconcilationStatusSchema,
   referenceType: ReferenceTypeSchema,
   journalType: JournalTypeSchema,
   entryId: z.bigint(),
@@ -826,7 +821,6 @@ export const JournalEntriesSelectSchema: z.ZodType<Prisma.JournalEntriesSelect> 
   entryId: z.boolean().optional(),
   entryDate: z.boolean().optional(),
   referenceName: z.boolean().optional(),
-  status: z.boolean().optional(),
   referenceType: z.boolean().optional(),
   notes: z.boolean().optional(),
   createdAt: z.boolean().optional(),
@@ -1955,7 +1949,6 @@ export const JournalEntriesWhereInputSchema: z.ZodType<Prisma.JournalEntriesWher
   entryId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   entryDate: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   referenceName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  status: z.union([ z.lazy(() => EnumReconcilationStatusFilterSchema),z.lazy(() => ReconcilationStatusSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => EnumReferenceTypeFilterSchema),z.lazy(() => ReferenceTypeSchema) ]).optional(),
   notes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -1972,7 +1965,6 @@ export const JournalEntriesOrderByWithRelationInputSchema: z.ZodType<Prisma.Jour
   entryId: z.lazy(() => SortOrderSchema).optional(),
   entryDate: z.lazy(() => SortOrderSchema).optional(),
   referenceName: z.lazy(() => SortOrderSchema).optional(),
-  status: z.lazy(() => SortOrderSchema).optional(),
   referenceType: z.lazy(() => SortOrderSchema).optional(),
   notes: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -1995,7 +1987,6 @@ export const JournalEntriesWhereUniqueInputSchema: z.ZodType<Prisma.JournalEntri
   NOT: z.union([ z.lazy(() => JournalEntriesWhereInputSchema),z.lazy(() => JournalEntriesWhereInputSchema).array() ]).optional(),
   entryDate: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   referenceName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  status: z.union([ z.lazy(() => EnumReconcilationStatusFilterSchema),z.lazy(() => ReconcilationStatusSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => EnumReferenceTypeFilterSchema),z.lazy(() => ReferenceTypeSchema) ]).optional(),
   notes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -2012,7 +2003,6 @@ export const JournalEntriesOrderByWithAggregationInputSchema: z.ZodType<Prisma.J
   entryId: z.lazy(() => SortOrderSchema).optional(),
   entryDate: z.lazy(() => SortOrderSchema).optional(),
   referenceName: z.lazy(() => SortOrderSchema).optional(),
-  status: z.lazy(() => SortOrderSchema).optional(),
   referenceType: z.lazy(() => SortOrderSchema).optional(),
   notes: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -2032,7 +2022,6 @@ export const JournalEntriesScalarWhereWithAggregatesInputSchema: z.ZodType<Prism
   entryId: z.union([ z.lazy(() => BigIntWithAggregatesFilterSchema),z.bigint() ]).optional(),
   entryDate: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   referenceName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  status: z.union([ z.lazy(() => EnumReconcilationStatusWithAggregatesFilterSchema),z.lazy(() => ReconcilationStatusSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => EnumReferenceTypeWithAggregatesFilterSchema),z.lazy(() => ReferenceTypeSchema) ]).optional(),
   notes: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
@@ -3179,7 +3168,6 @@ export const JournalEntriesCreateInputSchema: z.ZodType<Prisma.JournalEntriesCre
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -3195,7 +3183,6 @@ export const JournalEntriesUncheckedCreateInputSchema: z.ZodType<Prisma.JournalE
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -3211,7 +3198,6 @@ export const JournalEntriesUpdateInputSchema: z.ZodType<Prisma.JournalEntriesUpd
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3227,7 +3213,6 @@ export const JournalEntriesUncheckedUpdateInputSchema: z.ZodType<Prisma.JournalE
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3243,7 +3228,6 @@ export const JournalEntriesCreateManyInputSchema: z.ZodType<Prisma.JournalEntrie
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -3255,7 +3239,6 @@ export const JournalEntriesUpdateManyMutationInputSchema: z.ZodType<Prisma.Journ
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3266,7 +3249,6 @@ export const JournalEntriesUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Jour
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4515,13 +4497,6 @@ export const EnumSavingsTransactionTypeWithAggregatesFilterSchema: z.ZodType<Pri
   _max: z.lazy(() => NestedEnumSavingsTransactionTypeFilterSchema).optional()
 }).strict();
 
-export const EnumReconcilationStatusFilterSchema: z.ZodType<Prisma.EnumReconcilationStatusFilter> = z.object({
-  equals: z.lazy(() => ReconcilationStatusSchema).optional(),
-  in: z.lazy(() => ReconcilationStatusSchema).array().optional(),
-  notIn: z.lazy(() => ReconcilationStatusSchema).array().optional(),
-  not: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => NestedEnumReconcilationStatusFilterSchema) ]).optional(),
-}).strict();
-
 export const EnumReferenceTypeFilterSchema: z.ZodType<Prisma.EnumReferenceTypeFilter> = z.object({
   equals: z.lazy(() => ReferenceTypeSchema).optional(),
   in: z.lazy(() => ReferenceTypeSchema).array().optional(),
@@ -4550,7 +4525,6 @@ export const JournalEntriesCountOrderByAggregateInputSchema: z.ZodType<Prisma.Jo
   entryId: z.lazy(() => SortOrderSchema).optional(),
   entryDate: z.lazy(() => SortOrderSchema).optional(),
   referenceName: z.lazy(() => SortOrderSchema).optional(),
-  status: z.lazy(() => SortOrderSchema).optional(),
   referenceType: z.lazy(() => SortOrderSchema).optional(),
   notes: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -4566,7 +4540,6 @@ export const JournalEntriesMaxOrderByAggregateInputSchema: z.ZodType<Prisma.Jour
   entryId: z.lazy(() => SortOrderSchema).optional(),
   entryDate: z.lazy(() => SortOrderSchema).optional(),
   referenceName: z.lazy(() => SortOrderSchema).optional(),
-  status: z.lazy(() => SortOrderSchema).optional(),
   referenceType: z.lazy(() => SortOrderSchema).optional(),
   notes: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -4578,7 +4551,6 @@ export const JournalEntriesMinOrderByAggregateInputSchema: z.ZodType<Prisma.Jour
   entryId: z.lazy(() => SortOrderSchema).optional(),
   entryDate: z.lazy(() => SortOrderSchema).optional(),
   referenceName: z.lazy(() => SortOrderSchema).optional(),
-  status: z.lazy(() => SortOrderSchema).optional(),
   referenceType: z.lazy(() => SortOrderSchema).optional(),
   notes: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -4588,16 +4560,6 @@ export const JournalEntriesMinOrderByAggregateInputSchema: z.ZodType<Prisma.Jour
 
 export const JournalEntriesSumOrderByAggregateInputSchema: z.ZodType<Prisma.JournalEntriesSumOrderByAggregateInput> = z.object({
   entryId: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const EnumReconcilationStatusWithAggregatesFilterSchema: z.ZodType<Prisma.EnumReconcilationStatusWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => ReconcilationStatusSchema).optional(),
-  in: z.lazy(() => ReconcilationStatusSchema).array().optional(),
-  notIn: z.lazy(() => ReconcilationStatusSchema).array().optional(),
-  not: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => NestedEnumReconcilationStatusWithAggregatesFilterSchema) ]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumReconcilationStatusFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumReconcilationStatusFilterSchema).optional()
 }).strict();
 
 export const EnumReferenceTypeWithAggregatesFilterSchema: z.ZodType<Prisma.EnumReferenceTypeWithAggregatesFilter> = z.object({
@@ -5550,10 +5512,6 @@ export const MemberLoansUncheckedCreateNestedOneWithoutJournalEntriesInputSchema
   connect: z.lazy(() => MemberLoansWhereUniqueInputSchema).optional()
 }).strict();
 
-export const EnumReconcilationStatusFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumReconcilationStatusFieldUpdateOperationsInput> = z.object({
-  set: z.lazy(() => ReconcilationStatusSchema).optional()
-}).strict();
-
 export const EnumReferenceTypeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumReferenceTypeFieldUpdateOperationsInput> = z.object({
   set: z.lazy(() => ReferenceTypeSchema).optional()
 }).strict();
@@ -6128,13 +6086,6 @@ export const NestedEnumSavingsTransactionTypeWithAggregatesFilterSchema: z.ZodTy
   _max: z.lazy(() => NestedEnumSavingsTransactionTypeFilterSchema).optional()
 }).strict();
 
-export const NestedEnumReconcilationStatusFilterSchema: z.ZodType<Prisma.NestedEnumReconcilationStatusFilter> = z.object({
-  equals: z.lazy(() => ReconcilationStatusSchema).optional(),
-  in: z.lazy(() => ReconcilationStatusSchema).array().optional(),
-  notIn: z.lazy(() => ReconcilationStatusSchema).array().optional(),
-  not: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => NestedEnumReconcilationStatusFilterSchema) ]).optional(),
-}).strict();
-
 export const NestedEnumReferenceTypeFilterSchema: z.ZodType<Prisma.NestedEnumReferenceTypeFilter> = z.object({
   equals: z.lazy(() => ReferenceTypeSchema).optional(),
   in: z.lazy(() => ReferenceTypeSchema).array().optional(),
@@ -6147,16 +6098,6 @@ export const NestedEnumJournalTypeFilterSchema: z.ZodType<Prisma.NestedEnumJourn
   in: z.lazy(() => JournalTypeSchema).array().optional(),
   notIn: z.lazy(() => JournalTypeSchema).array().optional(),
   not: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => NestedEnumJournalTypeFilterSchema) ]).optional(),
-}).strict();
-
-export const NestedEnumReconcilationStatusWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumReconcilationStatusWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => ReconcilationStatusSchema).optional(),
-  in: z.lazy(() => ReconcilationStatusSchema).array().optional(),
-  notIn: z.lazy(() => ReconcilationStatusSchema).array().optional(),
-  not: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => NestedEnumReconcilationStatusWithAggregatesFilterSchema) ]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumReconcilationStatusFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumReconcilationStatusFilterSchema).optional()
 }).strict();
 
 export const NestedEnumReferenceTypeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumReferenceTypeWithAggregatesFilter> = z.object({
@@ -6295,7 +6236,6 @@ export const JournalEntriesCreateWithoutMembersInputSchema: z.ZodType<Prisma.Jou
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -6310,7 +6250,6 @@ export const JournalEntriesUncheckedCreateWithoutMembersInputSchema: z.ZodType<P
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -6469,7 +6408,6 @@ export const JournalEntriesScalarWhereInputSchema: z.ZodType<Prisma.JournalEntri
   entryId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   entryDate: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   referenceName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  status: z.union([ z.lazy(() => EnumReconcilationStatusFilterSchema),z.lazy(() => ReconcilationStatusSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => EnumReferenceTypeFilterSchema),z.lazy(() => ReferenceTypeSchema) ]).optional(),
   notes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -6481,7 +6419,6 @@ export const JournalEntriesCreateWithoutMemberLoansInputSchema: z.ZodType<Prisma
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -6496,7 +6433,6 @@ export const JournalEntriesUncheckedCreateWithoutMemberLoansInputSchema: z.ZodTy
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -6624,7 +6560,6 @@ export const JournalEntriesUpdateWithoutMemberLoansInputSchema: z.ZodType<Prisma
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6639,7 +6574,6 @@ export const JournalEntriesUncheckedUpdateWithoutMemberLoansInputSchema: z.ZodTy
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -7014,7 +6948,6 @@ export const JournalEntriesCreateWithoutMemberFundsTransactInputSchema: z.ZodTyp
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -7029,7 +6962,6 @@ export const JournalEntriesUncheckedCreateWithoutMemberFundsTransactInputSchema:
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -7082,7 +7014,6 @@ export const JournalEntriesUpdateWithoutMemberFundsTransactInputSchema: z.ZodTyp
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -7097,7 +7028,6 @@ export const JournalEntriesUncheckedUpdateWithoutMemberFundsTransactInputSchema:
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -7500,7 +7430,6 @@ export const JournalEntriesCreateWithoutInvoicePaymentsInputSchema: z.ZodType<Pr
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -7515,7 +7444,6 @@ export const JournalEntriesUncheckedCreateWithoutInvoicePaymentsInputSchema: z.Z
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -7571,7 +7499,6 @@ export const JournalEntriesUpdateWithoutInvoicePaymentsInputSchema: z.ZodType<Pr
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -7586,7 +7513,6 @@ export const JournalEntriesUncheckedUpdateWithoutInvoicePaymentsInputSchema: z.Z
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8394,7 +8320,6 @@ export const JournalEntriesCreateWithoutJournalItemsInputSchema: z.ZodType<Prism
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -8409,7 +8334,6 @@ export const JournalEntriesUncheckedCreateWithoutJournalItemsInputSchema: z.ZodT
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -8469,7 +8393,6 @@ export const JournalEntriesUpdateWithoutJournalItemsInputSchema: z.ZodType<Prism
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8484,7 +8407,6 @@ export const JournalEntriesUncheckedUpdateWithoutJournalItemsInputSchema: z.ZodT
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8561,7 +8483,6 @@ export const JournalEntriesCreateManyMembersInputSchema: z.ZodType<Prisma.Journa
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
   referenceName: z.string(),
-  status: z.lazy(() => ReconcilationStatusSchema).optional(),
   referenceType: z.lazy(() => ReferenceTypeSchema),
   notes: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -8659,7 +8580,6 @@ export const JournalEntriesUpdateWithoutMembersInputSchema: z.ZodType<Prisma.Jou
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8674,7 +8594,6 @@ export const JournalEntriesUncheckedUpdateWithoutMembersInputSchema: z.ZodType<P
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8689,7 +8608,6 @@ export const JournalEntriesUncheckedUpdateManyWithoutMembersInputSchema: z.ZodTy
   entryId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   entryDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   referenceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  status: z.union([ z.lazy(() => ReconcilationStatusSchema),z.lazy(() => EnumReconcilationStatusFieldUpdateOperationsInputSchema) ]).optional(),
   referenceType: z.union([ z.lazy(() => ReferenceTypeSchema),z.lazy(() => EnumReferenceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),

@@ -11,6 +11,7 @@ import { config } from '@/config';
 export const metadata = { title: `Blank | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default function Page(): React.JSX.Element {
+  
   return (
     <Box
       sx={{

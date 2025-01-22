@@ -77,7 +77,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
             Pinagsibaan Farmer&apos;s Development Multi-purpose Cooperative
           </Typography>
           <Typography fontWeight="600" fontSize="23px" variant="body1">
-            Summary of Account&apos;s Transactions
+            Account Transactions History
           </Typography>
           <Typography color="textDisabled" variant="body2">
             From
