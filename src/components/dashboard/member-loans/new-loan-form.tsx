@@ -9,6 +9,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
@@ -23,16 +24,17 @@ import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import type { LoanType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-
+import { formatToCurrency } from '@/lib/format-currency';
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import { loanSchemaExtended, type ILoanSchemaExtended } from '@/actions/loans/types';
+import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
-
+import { createNewLoan } from '@/actions/loans/create-loan';
 import { FormInputFields } from './InputFields';
 import LoanTabs from './loan-tabs';
-
+import { useAction } from 'next-safe-action/hooks';
 type Props = { accounts: AccounTreeType };
 
 const LoanTypeMap: Record<LoanType, string> = {
@@ -43,22 +45,22 @@ const LoanTypeMap: Record<LoanType, string> = {
   EndOfTerm: 'End of Term',
 };
 
-// const RenderInputFields = ({ control, watch, setValue }) => (<FormControl fullWidth></FormControl>)
-
-
-
 function CreateNewLoan({ accounts }: Props) {
+  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
+  const {execute} = useAction(createNewLoan);
   const {
     control,
     watch,
     getValues,
     setValue,
     handleSubmit,
-    
+
     formState: { errors },
   } = useForm<ILoanSchemaExtended>({
     resolver: zodResolver(loanSchemaExtended),
     defaultValues: {
+      journalType: 'cashDisbursement',
+      referenceType: 'LoanDisbursements',
       paymentSched: [],
       journalLineItems: [
         {
@@ -85,24 +87,44 @@ function CreateNewLoan({ accounts }: Props) {
     },
   });
 
-  const watchIsExisting = watch('isExisting');
   const watchLoanType = watch('loanType');
   const watchAmountLoaned = watch('amountLoaned');
   const watchInterest = watch('interest');
   const watchTermsInMonths = watch('termsInMonths');
-  const watchIssueDate = watch('issueDate');
+  const watchIssueDate = watch('entryDate');
   const paymentSched = watch('paymentSched');
   const lineItems = watch('journalLineItems');
 
+  const memberData = watch('particulars');
 
+  const debouncedValue = useDebounce(memberData?.lastName ?? '', 300);
+
+  React.useEffect(() => {
+    if (!debouncedValue) {
+      setMemberData([]);
+      return;
+    }
+
+    async function fetchMemberDataOnDebounce() {
+      try {
+        const data: MembersType = await fetch('/dashboard/members/api', {
+          method: 'POST',
+          body: JSON.stringify({ memberName: debouncedValue }),
+        }).then((res) => res.json());
+        setMemberData(data);
+      } catch (error) {}
+    }
+    fetchMemberDataOnDebounce();
+  }, [debouncedValue]);
 
   const flattenedAccounts = React.useMemo(() => {
-    return accounts.flatMap((group) =>
-      group.Children?.map((option) => ({
-        ...option,
-        rootType: group.rootType,
-        group: group.rootName,
-      })) || []
+    return accounts.flatMap(
+      (group) =>
+        group.Children?.map((option) => ({
+          ...option,
+          rootType: group.rootType,
+          group: group.rootName,
+        })) || []
     );
   }, [accounts]);
 
@@ -135,6 +157,9 @@ function CreateNewLoan({ accounts }: Props) {
     [setValue, getValues]
   );
 
+  const totalDebits = lineItems.reduce((sum, item) => sum + item.debit, 0);
+  const totalCredits = lineItems.reduce((sum, item) => sum + item.credit, 0);
+
   const memoizedComputeAmortizationSched = React.useCallback(() => {
     switch (watchLoanType) {
       case 'Weekly':
@@ -161,7 +186,6 @@ function CreateNewLoan({ accounts }: Props) {
                 .add(index + 1, 'month')
                 .toDate(),
               amountPaid: monthlyPayment,
-              datePaid: null,
               isExisitng: false,
             };
           });
@@ -177,7 +201,7 @@ function CreateNewLoan({ accounts }: Props) {
   }, [watchLoanType, watchInterest, watchAmountLoaned, watchTermsInMonths, watchIssueDate, setValue]);
 
   return (
-    <form onSubmit={handleSubmit((data) => console.log(errors))}>
+    <form onSubmit={handleSubmit((data) => execute(data))}>
       <Card>
         <CardContent>
           <LoanTabs />
@@ -204,17 +228,34 @@ function CreateNewLoan({ accounts }: Props) {
                 >
                   <Controller
                     control={control}
-                    name="member.memberId"
+                    name="particulars"
                     render={({ field }) => (
                       <Autocomplete
                         {...field}
-                        options={[]}
-                        getOptionLabel={(option) => option}
+                        onInputChange={(_, value) => {
+                          if (!value) {
+                            return setValue('particulars.lastName', '');
+                          }
+
+                          setValue('particulars.lastName', value); // Update form value when input changes
+                        }}
+                        onChange={(event, value) => {
+                          field.onChange(value); // Update form value on selection
+                        }}
+                        options={member}
+                        getOptionLabel={(option) =>
+                          option && option.lastName && option.firstName ? `${option.lastName} ${option.firstName}` : ''
+                        }
                         renderInput={(params) => (
-                          <FormControl fullWidth>
-                            <InputLabel required>Loaner Name</InputLabel>
+                          <FormControl error={Boolean(errors.particulars?.message)} fullWidth>
+                            <FormLabel>Member Name</FormLabel>
                             <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
                           </FormControl>
+                        )}
+                        renderOption={(props, options) => (
+                          <Option {...props} key={options.memberId} value={options.memberId}>
+                            {`${options.lastName}, ${options.firstName}`}
+                          </Option>
                         )}
                       />
                     )}
@@ -249,11 +290,15 @@ function CreateNewLoan({ accounts }: Props) {
                     xs: 12,
                   }}
                 >
-                  <FormControl disabled={watchIsExisting} fullWidth>
-                    <InputLabel>Journal Referenceee</InputLabel>
-                    <OutlinedInput type="text" />
-                  </FormControl>
+                  <FormInputFields
+                    control={control}
+                    name="reference"
+                    inputLabel="Reference"
+                    errors={errors}
+                    variant="text"
+                  />
                 </Grid>
+
                 <Grid
                   size={{
                     md: 3,
@@ -305,10 +350,21 @@ function CreateNewLoan({ accounts }: Props) {
                     xs: 12,
                   }}
                 >
-                  <FormControl fullWidth>
-                    <InputLabel required>Release date</InputLabel>
-                    <DatePicker />
-                  </FormControl>
+                  <Controller
+                    control={control}
+                    name="entryDate"
+                    render={({ field }) => (
+                      <DatePicker
+                        {...field}
+                        onChange={(date) => {
+                          field.onChange(date?.toDate());
+                          setValue('dueDate', dayjs(date?.toDate()).add(watchTermsInMonths, 'month').toDate());
+                        }}
+                        value={dayjs(field.value)}
+                        label="Released Date"
+                      />
+                    )}
+                  />
                 </Grid>
                 <Grid
                   size={{
@@ -373,18 +429,6 @@ function CreateNewLoan({ accounts }: Props) {
                         <OutlinedInput type="number" />
                       </FormControl>
                     </Stack>
-                    <Stack
-                      direction={{
-                        md: 'row',
-                        xs: 'column',
-                      }}
-                      spacing={2}
-                    >
-                      <FormControl fullWidth>
-                        <InputLabel>Balance</InputLabel>
-                        <OutlinedInput type="number" />
-                      </FormControl>
-                    </Stack>
                   </Stack>
                 ))}
               </Grid>
@@ -416,35 +460,17 @@ function CreateNewLoan({ accounts }: Props) {
                       />
                     )}
                   />
-                  <Controller
+                  <FormInputFields
                     control={control}
                     name={`journalLineItems.${index}.debit`}
-                    render={({ field }) => (
-                      <FormControl sx={{ width: '10%' }}>
-                        <InputLabel>Debit</InputLabel>
-                        <OutlinedInput
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                          defaultValue={0}
-                          type="number"
-                        />
-                      </FormControl>
-                    )}
+                    inputLabel="Debit"
+                    variant="number"
                   />
-                  <Controller
+                  <FormInputFields
                     control={control}
                     name={`journalLineItems.${index}.credit`}
-                    render={({ field }) => (
-                      <FormControl sx={{ width: '10%' }}>
-                        <InputLabel>Credit</InputLabel>
-                        <OutlinedInput
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                          defaultValue={0}
-                          type="number"
-                        />
-                      </FormControl>
-                    )}
+                    inputLabel="Credit"
+                    variant="number"
                   />
                   <IconButton
                     onClick={() => removeJournalLineItemHandler(items.journalLineItemId)}
@@ -456,6 +482,17 @@ function CreateNewLoan({ accounts }: Props) {
                   </IconButton>
                 </Stack>
               ))}
+                  <Stack spacing={4} flexDirection="row">
+                <Stack sx={{ width: '50%' }} spacing={3}>
+                  <Typography variant="subtitle2">Totals</Typography>
+                </Stack>
+                <Stack sx={{ width: '10%' }} spacing={3}>
+                  <Typography variant="subtitle2">{formatToCurrency(totalDebits, 'Fil-ph', 'Php')}</Typography>
+                </Stack>
+                <Stack sx={{ width: '10%', marginLeft: '-7px' }} spacing={3}>
+                  <Typography variant="subtitle2">{formatToCurrency(totalCredits, 'Fil-ph', 'Php')}</Typography>
+                </Stack>
+              </Stack>
               <div>
                 <Typography marginBottom={1} color="error">
                   {errors.journalLineItems?.root?.message}

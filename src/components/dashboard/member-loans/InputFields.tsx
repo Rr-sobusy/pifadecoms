@@ -7,9 +7,9 @@ import { Controller, FieldValues, Path, type Control, type FieldErrors } from 'r
 type FormInputFieldsProps<TFormValues extends FieldValues> = {
   control: Control<TFormValues>;
   name: Path<TFormValues>;
-  errors: FieldErrors<TFormValues>;
+  errors?: FieldErrors<TFormValues> | undefined;
   variant: 'text' | 'number';
-  inputLabel:string;
+  inputLabel: string;
   isRequired?: boolean;
 };
 
@@ -27,7 +27,7 @@ export const FormInputFields = <TFormValues extends FieldValues>({
         name={name}
         control={control}
         render={({ field }) => (
-          <FormControl error={Boolean(errors[name])} fullWidth>
+          <FormControl error={Boolean(errors ? errors[name] : false)} fullWidth>
             <InputLabel required={isRequired}>{inputLabel}</InputLabel>
             <OutlinedInput
               {...field}
@@ -37,7 +37,7 @@ export const FormInputFields = <TFormValues extends FieldValues>({
                 field.onChange(value);
               }}
             />
-            {errors[name] && <FormHelperText>{errors[name].message?.toString()}</FormHelperText>}
+            {errors?.[name] && <FormHelperText>{errors[name]?.message?.toString()}</FormHelperText>}
           </FormControl>
         )}
       />

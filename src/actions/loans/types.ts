@@ -10,7 +10,6 @@ export const addLoanSchema = zod.object({
   amountLoaned: zod.number(),
   interest: zod.number(),
   termsInMonths: zod.number(),
-  issueDate: zod.date(),
   dueDate: zod.date(),
   isExisting: zod.boolean().default(false),
   ledgerId: zod.bigint().optional(),
