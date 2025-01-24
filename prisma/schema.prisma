@@ -151,8 +151,8 @@ model MemberLoans {
   issueDate       DateTime
   dueDate         DateTime
   isExisting      Boolean     @default(false)
-  ledgerId        BigInt?     @unique
-  JournalEntries  JournalEntries? @relation(fields: [ledgerId], references: [entryId])
+  journalRef        BigInt?     @unique
+  JournalEntries  JournalEntries? @relation(fields: [journalRef], references: [entryId])
 
   Repayments      LoanRepayments[]
   Member          Members     @relation(references: [memberId], fields: [memberId])
@@ -166,10 +166,11 @@ model LoanRepayments {
   isExisting      Boolean     @default(false)
   principal       Float       @default(0)
   interest        Float       @default(0)
-  amountDue       Float
+  amountDue       Float       @default(0)
   remarks         String?
 
-  journalRef      BigInt?
+  journalRef      BigInt?     @unique
+  JournalEntries  JournalEntries? @relation(fields: [journalRef], references: [entryId])
 
   Loan            MemberLoans   @relation(references: [loanId], fields: [loanId], onDelete: Cascade)
 }
@@ -334,6 +335,7 @@ model JournalEntries {
   InvoicePayments     InvoicePayments[]
 
   MemberLoans         MemberLoans?
+  LoanRepayments      LoanRepayments?
 
 
   @@map("journal_entries")

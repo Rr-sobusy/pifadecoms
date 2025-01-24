@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -8,8 +8,7 @@ import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/Arrow
 import { paths } from '@/paths';
 import { fetchItems } from '@/actions/items/fetch-items';
 import { fetchMembers } from '@/actions/members/fetch-members';
-import InvoiceCreateForm2 from '@/components/dashboard/invoice/_invoice-create-form';
-import LoanCreateForm from '@/components/dashboard/member-loans/loan-create-form';
+import CreateExistingLoan from '@/components/dashboard/member-loans/existing-loan-form';
 
 const page = async () => {
   const members = await fetchMembers({ returnAll: true });
@@ -41,7 +40,7 @@ const page = async () => {
             <Typography variant="h4">Create New Loan</Typography>
           </div>
         </Stack>
-        <LoanCreateForm />
+        <CreateExistingLoan />
       </Stack>
     </Box>
   );

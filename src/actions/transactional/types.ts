@@ -20,7 +20,7 @@ export const transactionalSchema = z.object({
     memberId: z.string(),
     firstName: z.string(),
     lastName: z.string(),
-  }),
+  }).optional(),
   referenceType: z.enum([
     'MemberRegistration',
     'SalesPayments',

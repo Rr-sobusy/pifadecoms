@@ -25,5 +25,7 @@ export const addLoanSchema = zod.object({
   }))
 })
 
+export const loanSchemaExtended = transactionalSchema.merge(addLoanSchema);
 
 export type IAddLoanSchema = zod.infer<typeof addLoanSchema>;
+export type ILoanSchemaExtended = zod.infer<typeof loanSchemaExtended>;

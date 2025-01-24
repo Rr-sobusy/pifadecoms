@@ -3,20 +3,21 @@
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import FormControlText from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import type { LoanType } from '@prisma/client';
@@ -26,6 +27,8 @@ import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
 import { addLoanSchema, type IAddLoanSchema } from '@/actions/loans/types';
 import { Option } from '@/components/core/option';
+
+import LoanTabs from './loan-tabs';
 
 type Props = {};
 
@@ -37,13 +40,16 @@ const LoanTypeMap: Record<LoanType, string> = {
   EndOfTerm: 'End of Term',
 };
 
-function LoanCreateForm({}: Props) {
+// const RenderInputFields = ({ control, watch, setValue }) => (<FormControl fullWidth></FormControl>)
+
+function CreateExistingLoan({}: Props) {
   const { control, watch, getValues, setValue } = useForm<IAddLoanSchema>({
     resolver: zodResolver(addLoanSchema),
     defaultValues: {
-      paymentSched: [{ paymentSched: new Date(), datePaid: new Date(), amountPaid: 0, balance: 0, isExisitng: false }],
+      paymentSched: [],
     },
   });
+
   const watchIsExisting = watch('isExisting');
   const watchLoanType = watch('loanType');
   const watchAmountLoaned = watch('amountLoaned');
@@ -70,22 +76,23 @@ function LoanCreateForm({}: Props) {
             .add(index + 1, 'month')
             .toDate(),
           amountPaid: monthlyPayment,
-          datePaid: dayjs().toDate(),
+          datePaid: null,
           isExisitng: false,
         };
       });
       console.log(amortization);
-      setValue('paymentSched', amortization);
+      setValue('paymentSched', amortization as any);
     }
   };
   return (
     <form>
       <Card>
         <CardContent>
+          <LoanTabs />
           <Stack divider={<Divider />} spacing={4}>
             <Stack spacing={3}>
               <Typography variant="h6">Loan Information</Typography>
-              <Controller
+              {/* <Controller
                 control={control}
                 name="isExisting"
                 render={({ field }) => (
@@ -94,7 +101,7 @@ function LoanCreateForm({}: Props) {
                     control={<Checkbox onChange={field.onChange} />}
                   />
                 )}
-              />
+              /> */}
               <Grid container spacing={3}>
                 <Grid
                   size={{
@@ -339,6 +346,12 @@ function LoanCreateForm({}: Props) {
                 ))}
               </Grid>
             </Stack>
+            <Stack spacing={3}>
+              <Typography variant="h6">Journal Entries</Typography>
+              <Grid container spacing={3}>
+                <Stack direction="row" spacing={2}></Stack>
+              </Grid>
+            </Stack>
           </Stack>
         </CardContent>
       </Card>
@@ -346,4 +359,4 @@ function LoanCreateForm({}: Props) {
   );
 }
 
-export default LoanCreateForm;
+export default CreateExistingLoan;

@@ -109,7 +109,7 @@ export const paths = {
     },
     loans : {
       list : '/dashboard/memberLoans/list',
-      create : '/dashboard/memberLoans/create'
+      create : '/dashboard/memberLoans/create/new'
     },
     reports: {
       ledgerList: '/dashboard/reports/ledger',
