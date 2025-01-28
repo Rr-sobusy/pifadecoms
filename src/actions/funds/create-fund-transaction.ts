@@ -71,7 +71,7 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
           journalType: Request.journalType,
           referenceName: Request.reference,
           referenceType: Request.referenceType,
-          memberId: Request.particulars.memberId,
+          memberId: Request.particulars?.memberId,
 
           JournalItems: {
             create: Request.journalLineItems.map((lineItems) => ({

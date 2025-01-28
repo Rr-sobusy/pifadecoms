@@ -22,19 +22,25 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import type { LoanType } from '@prisma/client';
+import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import { formatToCurrency } from '@/lib/format-currency';
+
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
+import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
+import { createNewLoan } from '@/actions/loans/create-loan';
 import { loanSchemaExtended, type ILoanSchemaExtended } from '@/actions/loans/types';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
-import { createNewLoan } from '@/actions/loans/create-loan';
+import { toast } from '@/components/core/toaster';
+
 import { FormInputFields } from './InputFields';
 import LoanTabs from './loan-tabs';
-import { useAction } from 'next-safe-action/hooks';
+import { useRouter } from 'next/navigation';
+import { paths } from '@/paths';
+
 type Props = { accounts: AccounTreeType };
 
 const LoanTypeMap: Record<LoanType, string> = {
@@ -47,7 +53,7 @@ const LoanTypeMap: Record<LoanType, string> = {
 
 function CreateNewLoan({ accounts }: Props) {
   const [member, setMemberData] = React.useState<MembersType[0][]>([]);
-  const {execute} = useAction(createNewLoan);
+  const { execute, result, isExecuting } = useAction(createNewLoan);
   const {
     control,
     watch,
@@ -97,7 +103,16 @@ function CreateNewLoan({ accounts }: Props) {
 
   const memberData = watch('particulars');
 
+  const router = useRouter();
+
   const debouncedValue = useDebounce(memberData?.lastName ?? '', 300);
+
+  React.useEffect(() => {
+    if (result.data?.success) {
+      toast.success(result.data.message.toString());
+      router.push(paths.dashboard.loans.list);
+    }
+  }, [result]);
 
   React.useEffect(() => {
     if (!debouncedValue) {
@@ -222,7 +237,7 @@ function CreateNewLoan({ accounts }: Props) {
                 </Grid>
                 <Grid
                   size={{
-                    md: 5,
+                    md: 3,
                     xs: 12,
                   }}
                 >
@@ -263,7 +278,7 @@ function CreateNewLoan({ accounts }: Props) {
                 </Grid>
                 <Grid
                   size={{
-                    md: 5,
+                    md: 3,
                     xs: 12,
                   }}
                 >
@@ -339,6 +354,21 @@ function CreateNewLoan({ accounts }: Props) {
                     control={control}
                     name="amountLoaned"
                     inputLabel="Amount loaned"
+                    errors={errors}
+                    variant="number"
+                    isRequired
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <FormInputFields
+                    control={control}
+                    name="amountPayable"
+                    inputLabel="Amount Payables"
                     errors={errors}
                     variant="number"
                     isRequired
@@ -434,7 +464,7 @@ function CreateNewLoan({ accounts }: Props) {
               </Grid>
             </Stack>
             <Stack spacing={3}>
-              <Typography variant="body2">Journal Entries</Typography>
+              <Typography variant="h6">Journal Entries</Typography>
               {lineItems.map((items, index) => (
                 <Stack spacing={3} direction="row" key={index}>
                   <Controller
@@ -482,7 +512,7 @@ function CreateNewLoan({ accounts }: Props) {
                   </IconButton>
                 </Stack>
               ))}
-                  <Stack spacing={4} flexDirection="row">
+              <Stack spacing={4} flexDirection="row">
                 <Stack sx={{ width: '50%' }} spacing={3}>
                   <Typography variant="subtitle2">Totals</Typography>
                 </Stack>
@@ -513,7 +543,7 @@ function CreateNewLoan({ accounts }: Props) {
           <Button onClick={() => console.log(errors)} variant="outlined">
             Cancel
           </Button>
-          <Button type="submit" variant="contained">
+          <Button disabled={isExecuting} type="submit" variant="contained">
             Submit
           </Button>
         </CardActions>

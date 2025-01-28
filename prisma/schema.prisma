@@ -145,7 +145,8 @@ model MemberLoans {
   loanId          BigInt      @id @default(autoincrement())
   memberId        String      
   loanType        LoanType    
-  amountLoaned    Float       @default(0)
+  amountLoaned    Float       
+  amountPayable   Float
   interestRate    Float
   termInMonths    Int
   issueDate       DateTime

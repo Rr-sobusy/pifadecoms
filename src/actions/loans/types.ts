@@ -1,13 +1,15 @@
 import { z as zod } from 'zod';
 
 import { transactionalSchema } from '../transactional/types';
-
+import { fetchLoans } from './fetch-loans';
+import { Prisma } from '@prisma/client';
 export const addLoanSchema = zod.object({
   loanType: zod.enum(['Weekly', 'Monthly', 'Yearly', 'Diminishing', 'EndOfTerm']),
   member: zod.object({
     memberId: zod.string(),
   }).optional(),
   amountLoaned: zod.number(),
+  amountPayable: zod.number(),
   interest: zod.number(),
   termsInMonths: zod.number(),
   dueDate: zod.date(),
@@ -28,3 +30,4 @@ export const loanSchemaExtended = transactionalSchema.merge(addLoanSchema);
 
 export type IAddLoanSchema = zod.infer<typeof addLoanSchema>;
 export type ILoanSchemaExtended = zod.infer<typeof loanSchemaExtended>;
+export type ILoanType = Prisma.PromiseReturnType<typeof fetchLoans>;
