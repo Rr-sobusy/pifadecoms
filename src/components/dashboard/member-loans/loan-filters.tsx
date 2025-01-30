@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormLabel } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -32,9 +32,18 @@ const filterSchema = zod.object({
 });
 
 function LoanFilters({}: Props) {
-  const { control, watch, setValue } = useForm<zod.infer<typeof filterSchema>>({ resolver: zodResolver(filterSchema) });
+  const {
+    control,
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<zod.infer<typeof filterSchema>>({
+    resolver: zodResolver(filterSchema),
+  });
   const [member, setMemberData] = React.useState<MembersType[0][]>([]);
-
+  const router = useRouter();
+  const pathname = usePathname();
   const memberData = watch('member');
 
   const debouncedValue = useDebounce(memberData?.lastName ?? '', 300);
@@ -56,8 +65,23 @@ function LoanFilters({}: Props) {
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);
+
+  function submitHandler(data: zod.infer<typeof filterSchema>): void {
+    const urlSearchParams = new URLSearchParams();
+    if (data.loanId) {
+      urlSearchParams.set('loanId', data.loanId.toString());
+    }
+    if (data.status) {
+      urlSearchParams.set('status', data.status);
+    }
+    if (data.member) {
+      urlSearchParams.set('memberId', data.member.memberId);
+    }
+    router.push(`${pathname}?${urlSearchParams.toString()}`);
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(submitHandler)}>
       <Card>
         <CardContent>
           <Stack spacing={3}>
@@ -88,10 +112,10 @@ function LoanFilters({}: Props) {
                 <FormControl fullWidth>
                   <InputLabel required>Status</InputLabel>
                   <Select {...field}>
-                    <Option value="">All</Option>
-                    <Option value="pending">Running</Option>
-                    <Option value="paid">Overdue</Option>
-                    <Option value="paid">Paid</Option>
+                    <Option value="All">All</Option>
+                    <Option value="Running">Running</Option>
+                    <Option value="Overdue">Overdue</Option>
+                    <Option value="Paid">Paid</Option>
                   </Select>
                 </FormControl>
               )}
@@ -134,7 +158,9 @@ function LoanFilters({}: Props) {
               Apply
             </Button>
 
-            <Button color="secondary">Clear filters</Button>
+            <Button onClick={() => console.log(errors)} color="secondary">
+              Clear filters
+            </Button>
           </Stack>
         </CardContent>
       </Card>

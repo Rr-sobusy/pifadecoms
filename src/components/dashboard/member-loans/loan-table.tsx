@@ -10,10 +10,10 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { dayjs } from '@/lib/dayjs';
+import { formatToCurrency } from '@/lib/format-currency';
 import { ILoanType } from '@/actions/loans/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
-import { formatToCurrency } from '@/lib/format-currency';
 
 const columns = [
   {
@@ -55,7 +55,7 @@ const columns = [
     sortable: true,
     formatter: (row): React.JSX.Element => (
       <Typography variant="body2" color="text.primary">
-        {formatToCurrency(row.amountLoaned, "Fil-ph","Php")}
+        {formatToCurrency(row.amountLoaned, 'Fil-ph', 'Php')}
       </Typography>
     ),
   },
@@ -63,7 +63,7 @@ const columns = [
     name: 'Amount to pay',
     formatter: (row): React.JSX.Element => (
       <Typography variant="body2" color="text.primary">
-        {formatToCurrency(row.amountPayable, "Fil-ph","Php")}
+        {formatToCurrency(row.amountPayable, 'Fil-ph', 'Php')}
       </Typography>
     ),
   },
@@ -71,7 +71,7 @@ const columns = [
     name: 'Amortization Paid',
     formatter: (row): React.JSX.Element => (
       <Typography variant="body2" color="text.primary">
-        {formatToCurrency(5000, "Fil-ph","Php")}
+        {row.Repayments.reduce((acc, curr) => acc + curr.amountDue, 0)}
       </Typography>
     ),
   },
@@ -84,6 +84,7 @@ const columns = [
       </Typography>
     ),
   },
+  
 ] as ColumnDef<ILoanType[0]>[];
 export function LoanTable({ rows }: { rows: ILoanType }) {
   return (

@@ -43,7 +43,6 @@ export const createNewLoan = actionClient.schema(loanSchemaExtended).action(asyn
                 paymentDate: payment.datePaid,
                 principal: payment.principal,
                 interest: payment.interest,
-                amountDue: 2000,
                 paymentSched: payment.paymentSched,
               })),
             },

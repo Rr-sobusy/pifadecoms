@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CardActions } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -26,6 +27,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
+import { paths } from '@/paths';
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -38,8 +40,6 @@ import { toast } from '@/components/core/toaster';
 
 import { FormInputFields } from './InputFields';
 import LoanTabs from './loan-tabs';
-import { useRouter } from 'next/navigation';
-import { paths } from '@/paths';
 
 type Props = { accounts: AccounTreeType };
 
@@ -390,6 +390,7 @@ function CreateNewLoan({ accounts }: Props) {
                           field.onChange(date?.toDate());
                           setValue('dueDate', dayjs(date?.toDate()).add(watchTermsInMonths, 'month').toDate());
                         }}
+                        defaultValue={dayjs()}
                         value={dayjs(field.value)}
                         label="Released Date"
                       />

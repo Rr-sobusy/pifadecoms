@@ -27,7 +27,7 @@ async function page(): Promise<React.ReactElement> {
             <Typography variant="h4">Loan lists</Typography>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button LinkComponent={Link} href={paths.dashboard.invoice.create} variant="contained">
+            <Button LinkComponent={Link} href={paths.dashboard.loans.create} variant="contained">
               Create New Loan
             </Button>
           </Box>
