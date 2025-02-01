@@ -41,6 +41,11 @@ export async function fetchLedgers({ dateRange }: LedgerType) {
     select: {
       accountName: true,
       accountId: true,
+      RootID : {
+        select : {
+          rootType : true
+        }
+      }
     },
   });
 
