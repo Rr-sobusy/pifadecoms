@@ -29,7 +29,7 @@ const page = async () => {
           <div>
             <Typography
               component={RouterLink}
-              href={paths.dashboard.invoice.list}
+              href={paths.dashboard.loans.list}
               color="text.primary"
               sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
               variant="subtitle2"

@@ -34,6 +34,10 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
 
   const invDueDate = dayjs(dayjs(invoiceDetails?.dateOfInvoice).add(1, 'M')).format('MMM DD,YYYY');
 
+  function ChipMapping (){
+    
+  }
+
   return (
     <Box
       sx={{

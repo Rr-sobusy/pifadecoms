@@ -68,8 +68,9 @@ function CreateNewLoan({ accounts }: Props) {
       journalType: 'cashDisbursement',
       referenceType: 'LoanDisbursements',
       paymentSched: [],
-      journalLineItems: [
-        {
+      journalLineItems: Array(2)
+        .fill(null)
+        .map(() => ({
           journalLineItemId: uuidv4(),
           debit: 0,
           credit: 0,
@@ -78,18 +79,7 @@ function CreateNewLoan({ accounts }: Props) {
             accountName: '',
             group: '',
           },
-        },
-        {
-          journalLineItemId: uuidv4(),
-          debit: 0,
-          credit: 0,
-          accountDetails: {
-            accountId: '',
-            accountName: '',
-            group: '',
-          },
-        },
-      ],
+        })),
     },
   });
 
@@ -178,34 +168,84 @@ function CreateNewLoan({ accounts }: Props) {
   const memoizedComputeAmortizationSched = React.useCallback(() => {
     switch (watchLoanType) {
       case 'Weekly':
+        {
+          const weeklyInterest = watchInterest / 100;
+          const weeklyPayment =
+            watchAmountLoaned * (weeklyInterest / (1 - Math.pow(1 + weeklyInterest, -watchTermsInMonths)));
+          if (isNaN(weeklyPayment)) return;
+          if (watchLoanType === 'Weekly') {
+            const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
+              const balance = watchAmountLoaned - weeklyPayment * index;
+              const interest = balance * weeklyInterest;
+              const principal = weeklyPayment - interest;
+              return {
+                balance,
+                interest,
+                principal,
+                paymentSched: dayjs(watchIssueDate)
+                  .add(index + 1, 'week')
+                  .toDate(),
+                amountPaid: weeklyPayment,
+                isExisitng: false,
+              };
+            });
+            setValue('paymentSched', amortization as any);
+          }
+        }
         break;
       case 'Monthly':
+        {
+          const monthlyInterest = watchInterest / 100;
+          const monthlyPayment =
+            watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
+          if (isNaN(monthlyPayment)) return;
+          if (watchLoanType === 'Monthly') {
+            const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
+              const balance = watchAmountLoaned - monthlyPayment * index;
+              const interest = balance * monthlyInterest;
+              const principal = monthlyPayment - interest;
+              return {
+                balance,
+                interest,
+                principal,
+                paymentSched: dayjs(watchIssueDate)
+                  .add(index + 1, 'month')
+                  .toDate(),
+                amountPaid: monthlyPayment,
+                isExisitng: false,
+              };
+            });
+            setValue('paymentSched', amortization as any);
+          }
+        }
         break;
       case 'Yearly':
         break;
       case 'Diminishing':
-        const monthlyInterest = watchInterest / 100;
-        const monthlyPayment =
-          watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
-        if (isNaN(monthlyPayment)) return;
-        if (watchLoanType === 'Diminishing') {
-          const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
-            const balance = watchAmountLoaned - monthlyPayment * index;
-            const interest = balance * monthlyInterest;
-            const principal = monthlyPayment - interest;
-            return {
-              balance,
-              interest,
-              principal,
-              paymentSched: dayjs(watchIssueDate)
-                .add(index + 1, 'month')
-                .toDate(),
-              amountPaid: monthlyPayment,
-              isExisitng: false,
-            };
-          });
-          console.log(amortization, monthlyInterest);
-          setValue('paymentSched', amortization as any);
+        {
+          const monthlyInterest = watchInterest / 100;
+          const monthlyPayment =
+            watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
+          if (isNaN(monthlyPayment)) return;
+          if (watchLoanType === 'Diminishing') {
+            const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
+              const balance = watchAmountLoaned - monthlyPayment * index;
+              const interest = balance * monthlyInterest;
+              const principal = monthlyPayment - interest;
+              return {
+                balance,
+                interest,
+                principal,
+                paymentSched: dayjs(watchIssueDate)
+                  .add(index + 1, 'month')
+                  .toDate(),
+                amountPaid: monthlyPayment,
+                isExisitng: false,
+              };
+            });
+            console.log(amortization, monthlyInterest);
+            setValue('paymentSched', amortization as any);
+          }
         }
         break;
       case 'EndOfTerm':
@@ -214,6 +254,8 @@ function CreateNewLoan({ accounts }: Props) {
         break;
     }
   }, [watchLoanType, watchInterest, watchAmountLoaned, watchTermsInMonths, watchIssueDate, setValue]);
+
+  // const memoizedComputeAmortizationSched = React.useCallback(() => {}, []);
 
   return (
     <form onSubmit={handleSubmit((data) => execute(data))}>

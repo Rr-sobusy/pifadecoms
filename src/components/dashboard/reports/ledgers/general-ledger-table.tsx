@@ -32,7 +32,7 @@ const columns = [
   },
   {
     formatter: (row) => {
-      const balance = ['Assets', 'Expenses'].includes(row.account?.RootID.rootType ?? '')
+      const balance = ['Assets', 'Expense'].includes(row.account?.RootID.rootType ?? '')
         ? (row._sum.debit ?? 0) - (row._sum.credit ?? 0)
         : (row._sum.credit ?? 0) - (row._sum.debit ?? 0);
       return <Typography variant="subtitle2">{formatToCurrency(balance, 'Fil-ph', 'Php')}</Typography>;

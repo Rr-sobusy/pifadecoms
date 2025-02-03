@@ -107,15 +107,16 @@ export const paths = {
       payments: '/dashboard/invoice/payments',
       createPayment: (invoiceId: bigint) => `/dashboard/invoice/payments/create/${invoiceId}`,
     },
-    loans : {
-      list : '/dashboard/memberLoans/list',
-      create : '/dashboard/memberLoans/create/new'
+    loans: {
+      list: '/dashboard/memberLoans/list',
+      create: '/dashboard/memberLoans/create/new',
+      view: (loanId: bigint) => `/dashboard/memberLoans/${loanId}`,
     },
     reports: {
       ledgerList: '/dashboard/reports/ledger',
       balanceSheet: '/dashboard/reports/balanceSheet',
       accountTransaction: '/dashboard/reports/account-transactions',
-      incomeAndLoss: '/dashboard/reports/incomeAndLoss'
+      incomeAndLoss: '/dashboard/reports/incomeAndLoss',
     },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',
