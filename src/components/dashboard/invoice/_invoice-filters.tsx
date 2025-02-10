@@ -230,7 +230,7 @@ export function InvoiceFilterer({
 
                 setValue('member.lastName', value); // Update form value when input changes
               }}
-              onChange={(event, value) => {
+              onChange={(_, value) => {
                 field.onChange(value); // Update form value on selection
               }}
               options={member}

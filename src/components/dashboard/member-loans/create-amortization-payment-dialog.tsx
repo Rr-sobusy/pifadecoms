@@ -1,4 +1,7 @@
+'use client';
+
 import React, { memo } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
@@ -17,16 +20,16 @@ import Typography from '@mui/material/Typography';
 import { DatePicker, DatePickerFieldProps } from '@mui/x-date-pickers';
 import { Rows } from '@phosphor-icons/react';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
+import { stringify } from 'json-bigint';
+import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
+import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import type { AccounTreeType } from '@/actions/accounts/types';
-import {
-  ILoanType,
-  IRepaymentAction,
-  repaymentAction,
-} from '@/actions/loans/types';
+import { createAmortizationPayment } from '@/actions/loans/create-amortization-payment';
+import { ILoanType, IRepaymentAction, repaymentAction } from '@/actions/loans/types';
 import { Option } from '@/components/core/option';
 
 import { FormInputFields } from './InputFields';
@@ -37,9 +40,10 @@ interface PageProps {
   selectedRows: ILoanType[0]['Repayments'][0][];
   accounts: AccounTreeType;
   memberId: string | undefined;
+  loanId: bigint | undefined;
 }
 
-function CreateAmortizationPayment({ open = true, handleClose, selectedRows, accounts, memberId }: PageProps) {
+function CreateAmortizationPayment({ open = true, handleClose, selectedRows, accounts, memberId, loanId }: PageProps) {
   const {
     control,
     watch,
@@ -50,6 +54,7 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
   } = useForm<IRepaymentAction>({
     defaultValues: {
       paymentSched: [],
+      loanId: Number(loanId),
       particulars: { firstName: '', lastName: '', memberId: memberId },
       journalType: 'cashReceipts',
       referenceType: 'LoanRepayments',
@@ -69,21 +74,27 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
     resolver: zodResolver(repaymentAction),
   });
 
-  // React.useEffect(() => {
-  //   if (selectedRows.length > 0) {
-  //     setValue(
-  //       'paymentSched',
-  //       selectedRows.map((rows) => ({
-  //         ...rows,
-  //         principal: Number(rows.principal),
-  //         interest: Number(rows.interest),
-  //         paymentSched: rows.paymentSched,
-  //         repaymentId: rows.repaymentId,
-  //       }))
-  //     );
-  //     console.log(getValues('paymentSched'));
-  //   }
-  // }, [selectedRows, setValue]);
+  const { execute, result, isExecuting } = useAction(createAmortizationPayment);
+
+  const pathname = usePathname();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (selectedRows.length > 0) {
+      setValue(
+        'paymentSched',
+        selectedRows.map((rows) => ({
+          ...rows,
+          isExisting: true,
+          principal: Number(rows.principal),
+          interest: Number(rows.interest),
+          paymentSched: rows.paymentSched,
+          repaymentId: Number(rows.repaymentId),
+        }))
+      );
+      console.log(getValues('paymentSched'));
+    }
+  }, [selectedRows, setValue]);
 
   const watchJournalLines = watch('journalLineItems');
 
@@ -100,8 +111,15 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
   );
 
   function submitHandler(data: any) {
-    console.log(data);
+    execute(data);
   }
+
+  React.useEffect(() => {
+    if (result.data?.success) {
+      handleClose();
+      router.push(pathname);
+    }
+  }, [result]);
 
   const handleAddJournalLine = React.useCallback(() => {
     const existingLines = getValues('journalLineItems');
@@ -184,7 +202,7 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
                   )}
                 />
                 <Controller
-                  name={`paymentSched.${index}.interest`}
+                  name={`paymentSched.${index}.principal`}
                   control={control}
                   render={({ field }) => (
                     <FormControl>
@@ -204,7 +222,7 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
                   )}
                 />
                 <Controller
-                  name={`paymentSched.${index}.principal`}
+                  name={`paymentSched.${index}.interest`}
                   control={control}
                   render={({ field }) => (
                     <FormControl>
@@ -228,6 +246,7 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
           </Stack>
           <Divider />
           <Stack spacing={2} marginY={2}>
+          <Typography variant="h6">Journal Line</Typography>
             {watchJournalLines.map((_, index) => (
               <Stack key={index} direction="row" spacing={1}>
                 <Controller
@@ -276,7 +295,7 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
               <Button onClick={() => console.log(errors)} variant="contained">
                 details
               </Button>
-              <Button type="submit" variant="contained">
+              <Button disabled={isExecuting} type="submit" variant="contained">
                 Post Payment
               </Button>
             </DialogAction>

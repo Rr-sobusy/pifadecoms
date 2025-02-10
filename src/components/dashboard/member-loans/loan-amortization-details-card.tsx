@@ -42,7 +42,7 @@ function LoanAmortizationDetails({ loanDetails,accounts, ...props }: PageProps) 
         <Stack spacing={3}>
           <Stack alignItems="center" direction="row" spacing={2}>
             <Info fontSize="var(--icon-fontSize-md)" />
-            <Typography variant="h6">Ammorization Details</Typography>
+            <Typography variant="h6">Amortization Details</Typography>
           </Stack>
           <Stack direction="row" spacing={2}>
             <Typography variant="body2">Total amortization paid:</Typography>
@@ -57,7 +57,7 @@ function LoanAmortizationDetails({ loanDetails,accounts, ...props }: PageProps) 
           <Divider />
           <Stack spacing={2}>
             <Typography variant="h6">Amortization schedules</Typography>
-            <AmortizationTable accounts={accounts} memberId={loanDetails?.Member.memberId} rows={loanDetails?.Repayments as ILoanType[0]['Repayments'][0][]} />
+            <AmortizationTable loanId={loanDetails?.loanId} accounts={accounts} memberId={loanDetails?.Member.memberId} rows={loanDetails?.Repayments as ILoanType[0]['Repayments'][0][]} />
           </Stack>
         </Stack>
       </CardContent>

@@ -14,19 +14,21 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
+import type { AccounTreeType } from '@/actions/accounts/types';
 import { ILoanType } from '@/actions/loans/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
 
 import CreateAmortizationPayment from './create-amortization-payment-dialog';
-import type { AccounTreeType } from '@/actions/accounts/types';
+
 type Props = {
   rows: ILoanType[0]['Repayments'][0][];
-  accounts: AccounTreeType
-  memberId:string | undefined
+  accounts: AccounTreeType;
+  memberId: string | undefined;
+  loanId: bigint | undefined;
 };
 
-function AmortizationTable({ rows , accounts, memberId}: Props) {
+function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
   const { control, getValues } = useForm<{ rows: ILoanType[0]['Repayments'][0][] }>({ defaultValues: { rows: rows } });
   const [isDialogOpen, setDialogStatus] = useState<boolean>(false);
   const watchedRows = useWatch({ control, name: 'rows' });
@@ -68,7 +70,7 @@ function AmortizationTable({ rows , accounts, memberId}: Props) {
     },
     {
       name: 'Payment O.R',
-      formatter: (row) => <div>{ row.JournalEntries?.referenceName.toString()}</div>,
+      formatter: (row) => <div>{row.JournalEntries?.referenceName.toString()}</div>,
     },
     {
       name: 'Principal Amount',
@@ -97,12 +99,21 @@ function AmortizationTable({ rows , accounts, memberId}: Props) {
     if (!row.paymentDate) {
       setSelectedRows((prevSelected) => {
         const isAlreadySelected = prevSelected.some((r) => Number(r.repaymentId) === Number(row.repaymentId));
-
         return isAlreadySelected
-          ? prevSelected.filter((r) => r.repaymentId !== row.repaymentId) // Remove if already selected
-          : [...prevSelected, row]; // Add if not selected
+          ? prevSelected.filter((r) => r.repaymentId !== row.repaymentId)
+          : [...prevSelected, row];
       });
     }
+  }
+
+  function handleDeselectOne(_: React.ChangeEvent, row: ILoanType[0]['Repayments'][0]) {
+    setSelectedRows((prevSelected) => {
+      const isAlreadySelected = prevSelected.some((r) => Number(r.repaymentId) === Number(row.repaymentId));
+      if (isAlreadySelected) {
+        return prevSelected.filter((r) => r.repaymentId !== row.repaymentId);
+      }
+      return prevSelected;
+    });
   }
 
   function handleSelectAll(_: React.ChangeEvent) {
@@ -131,6 +142,7 @@ function AmortizationTable({ rows , accounts, memberId}: Props) {
       <DataTable
         selected={new Set(selectedRows.map((r) => Number(r.repaymentId)))}
         onSelectOne={handleSelectOne}
+        onDeselectOne={handleDeselectOne}
         onSelectAll={handleSelectAll}
         onDeselectAll={handleDeselectAll}
         selectable
@@ -167,7 +179,14 @@ function AmortizationTable({ rows , accounts, memberId}: Props) {
           </Button>
         </Stack>
       </div>
-      <CreateAmortizationPayment memberId={memberId} accounts={accounts} selectedRows={selectedRows} handleClose={setDialogClose} open={isDialogOpen} />
+      <CreateAmortizationPayment
+        loanId={loanId}
+        memberId={memberId}
+        accounts={accounts}
+        selectedRows={selectedRows}
+        handleClose={setDialogClose}
+        open={isDialogOpen}
+      />
     </>
   );
 }

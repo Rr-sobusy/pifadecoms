@@ -168,7 +168,7 @@ model LoanRepayments {
   interest        Decimal       @default(0) @db.Decimal(10, 2)
   remarks         String?
 
-  journalRef      BigInt?     @unique
+  journalRef      BigInt?     
   JournalEntries  JournalEntries? @relation(fields: [journalRef], references: [entryId])
 
   Loan            MemberLoans   @relation(references: [loanId], fields: [loanId], onDelete: Cascade)
@@ -336,7 +336,7 @@ model JournalEntries {
   InvoicePayments     InvoicePayments[]
 
   MemberLoans         MemberLoans?
-  LoanRepayments      LoanRepayments?
+  LoanRepayments      LoanRepayments[]
 
 
   @@map("journal_entries")

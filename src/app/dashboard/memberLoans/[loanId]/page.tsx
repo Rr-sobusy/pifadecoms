@@ -91,4 +91,4 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
 }
 
 export default page;
-``;
+
