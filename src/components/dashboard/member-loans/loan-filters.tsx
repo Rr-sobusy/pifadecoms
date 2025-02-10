@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormLabel } from '@mui/material';
+import { FormLabel, Typography } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -84,7 +84,8 @@ function LoanFilters({}: Props) {
     <form onSubmit={handleSubmit(submitHandler)}>
       <Card>
         <CardContent>
-          <Stack spacing={3}>
+          <Typography variant='h6'>Filters</Typography>
+          <Stack marginTop={2} spacing={3}>
             <Controller
               control={control}
               name="loanId"

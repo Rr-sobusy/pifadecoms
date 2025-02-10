@@ -67,6 +67,7 @@ function CreateNewLoan({ accounts }: Props) {
     defaultValues: {
       journalType: 'cashDisbursement',
       referenceType: 'LoanDisbursements',
+      issueDate: new Date(),
       paymentSched: [],
       journalLineItems: Array(2)
         .fill(null)

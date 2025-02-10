@@ -172,6 +172,8 @@ model LoanRepayments {
   JournalEntries  JournalEntries? @relation(fields: [journalRef], references: [entryId])
 
   Loan            MemberLoans   @relation(references: [loanId], fields: [loanId], onDelete: Cascade)
+
+  @@index([loanId, paymentDate])
 }
 
 model MemberFunds {

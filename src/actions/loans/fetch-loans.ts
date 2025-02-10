@@ -9,6 +9,9 @@ export async function fetchLoans() {
             not: null,
           },
         },
+        include: {
+          JournalEntries: true
+        },
       },
       Member: {
         select: {
@@ -17,6 +20,11 @@ export async function fetchLoans() {
           lastName: true,
         },
       },
+      JournalEntries : {
+        select : {
+          referenceName : true
+        }
+      }
     },
   });
 
@@ -37,7 +45,29 @@ export async function fetchLoanDetails(loanId: bigint) {
     where: {
       loanId: loanId,
     },
+    include: {
+      Member: {
+        select: {
+          memberId: true,
+          lastName: true,
+          firstName: true,
+        },
+      },
+      Repayments: {
+        orderBy: {
+          paymentSched: 'asc',
+        },
+        include : {
+          JournalEntries : {
+            select : {
+              referenceName : true
+            }
+          }
+        }
+      },
+      JournalEntries: true,
+    },
   });
 
-  return loanDetails
+  return loanDetails;
 }

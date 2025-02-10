@@ -36,7 +36,7 @@ const columns = [
                 {`LOAN-${row.loanId.toString().padStart(5, '0')}`}
               </Typography>
             </Stack>
-            <Typography color="text.secondary" variant="body2">
+            <Typography color="text.secondary" variant="subtitle2">
               {row.Member.lastName + ', ' + row.Member.firstName}
             </Typography>
           </div>
@@ -69,8 +69,17 @@ const columns = [
     name: 'Amortization Type',
     sortable: true,
     formatter: (row): React.JSX.Element => (
-      <Typography variant="body2" color="text.primary">
+      <Typography variant="subtitle2" color="text.primary">
         {row.loanType}
+      </Typography>
+    ),
+  },
+  {
+    name: 'No. of terms',
+    sortable: true,
+    formatter: (row): React.JSX.Element => (
+      <Typography variant="subtitle2" color="text.primary">
+        {row.termInMonths}
       </Typography>
     ),
   },
@@ -78,15 +87,24 @@ const columns = [
     name: 'Date Released',
     sortable: true,
     formatter: (row): React.JSX.Element => (
-      <Typography variant="body2" color="text.primary">
+      <Typography variant="subtitle2" color="text.primary">
         {dayjs(row.issueDate).format('MM-DD-YYYY')}
+      </Typography>
+    ),
+  },
+  {
+    name: 'Voucher No.',
+    sortable: true,
+    formatter: (row): React.JSX.Element => (
+      <Typography variant="subtitle2" color="text.primary">
+        {row.journalRef && row.JournalEntries?.referenceName}
       </Typography>
     ),
   },
   {
     name: 'Amount to pay',
     formatter: (row): React.JSX.Element => (
-      <Typography variant="body2" color="text.primary">
+      <Typography variant="subtitle2" color="text.primary">
         {formatToCurrency(Number(row.amountPayable), 'Fil-ph', 'Php')}
       </Typography>
     ),
@@ -94,7 +112,7 @@ const columns = [
   {
     name: 'Total Amortizations Paid',
     formatter: (row): React.JSX.Element => (
-      <Typography variant="body2" color="text.primary">
+      <Typography variant="subtitle2" color="text.primary">
         {formatToCurrency(Number(row.totalPayment), 'Fil-ph', 'Php')}
       </Typography>
     ),

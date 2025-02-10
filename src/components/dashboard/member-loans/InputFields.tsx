@@ -1,4 +1,5 @@
 import { FormControl } from '@mui/material';
+import type { SxProps } from '@mui/material';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -11,6 +12,7 @@ type FormInputFieldsProps<TFormValues extends FieldValues> = {
   variant: 'text' | 'number';
   inputLabel: string;
   isRequired?: boolean;
+  sx?: SxProps;
 };
 
 export const FormInputFields = <TFormValues extends FieldValues>({
@@ -20,6 +22,7 @@ export const FormInputFields = <TFormValues extends FieldValues>({
   inputLabel,
   variant,
   isRequired = false,
+  sx,
 }: FormInputFieldsProps<TFormValues>) => {
   return (
     <div>
@@ -27,7 +30,7 @@ export const FormInputFields = <TFormValues extends FieldValues>({
         name={name}
         control={control}
         render={({ field }) => (
-          <FormControl error={Boolean(errors ? errors[name] : false)} fullWidth>
+          <FormControl sx={sx} error={Boolean(errors ? errors[name] : false)} fullWidth>
             <InputLabel required={isRequired}>{inputLabel}</InputLabel>
             <OutlinedInput
               {...field}
