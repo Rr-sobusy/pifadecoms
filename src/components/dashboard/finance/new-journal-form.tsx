@@ -24,7 +24,7 @@ import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-
+import Decimal from 'decimal.js';
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
@@ -124,6 +124,13 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
           accountId: '',
           accountName: '',
           group: '',
+          createdAt: new Date(),
+          isActive: true,
+          openingBalance: new Decimal(0),
+          runningBalance: new Decimal(0),
+          rootId: 1,
+          rootType: 'Assets',
+          updatedAt: new Date(),
         },
       },
     ]);

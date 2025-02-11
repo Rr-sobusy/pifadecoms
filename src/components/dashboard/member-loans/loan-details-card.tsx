@@ -27,6 +27,7 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
             [
               { title: 'Loaner Name', value: `${loanDetails?.Member.lastName} ${loanDetails?.Member.firstName}` },
               { title: 'Contract Type', value: loanDetails?.loanType ?? '' },
+              { title: 'Loan Source', value: loanDetails?.Source.sourceName ?? '' },
               { title: 'Amortization Count', value: loanDetails?.termInMonths ?? 0 },
               { title: 'Interest Rate', value: `${loanDetails?.interestRate ?? 0} %` },
               {
@@ -38,6 +39,7 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
                 value: formatToCurrency(Number(loanDetails?.amountPayable) ?? 0, 'Fil-ph', 'Php'),
               },
               { title: 'Date Released', value: dayjs(loanDetails?.issueDate).format('MMM DD YYYY') },
+              { title: 'Due Date', value: dayjs(loanDetails?.Repayments[loanDetails?.Repayments.length - 1].paymentSched).format('MMM DD YYYY') },
             ] satisfies { title: string; value: string | number }[]
           ).map((item) => (
             <Stack spacing={2}>

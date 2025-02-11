@@ -11,8 +11,8 @@ import { fetchMembers } from '@/actions/members/fetch-members';
 import CreateExistingLoan from '@/components/dashboard/member-loans/existing-loan-form';
 
 const page = async () => {
-  const members = await fetchMembers({ returnAll: true });
-  const items = await fetchItems();
+  // const members = await fetchMembers({ returnAll: true });
+  // const items = await fetchItems();
   return (
     <Box
       sx={{

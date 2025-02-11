@@ -38,7 +38,9 @@ export const UsersScalarFieldEnumSchema = z.enum(['userId','userName','password'
 
 export const MembersScalarFieldEnumSchema = z.enum(['memberId','accountStatus','lastName','firstName','gender','idNumber','tin','dateAccepted','arb','bodResNo','membershipType','civilStatus','highestEdAttain','numOfDependents','religion','annualIncom','birthDate','address','occupation','contactNo','createdAt','updatedAt']);
 
-export const MemberLoansScalarFieldEnumSchema = z.enum(['loanId','memberId','loanType','amountLoaned','amountPayable','interestRate','termInMonths','issueDate','dueDate','isExisting','journalRef']);
+export const LoanSourceScalarFieldEnumSchema = z.enum(['sourceId','sourceName','defaultAccount']);
+
+export const MemberLoansScalarFieldEnumSchema = z.enum(['loanId','memberId','loanType','sourceId','amountLoaned','amountPayable','interestRate','termInMonths','issueDate','dueDate','isExisting','journalRef']);
 
 export const LoanRepaymentsScalarFieldEnumSchema = z.enum(['repaymentId','loanId','paymentSched','paymentDate','isExisting','principal','interest','remarks','journalRef']);
 
@@ -173,6 +175,18 @@ export const MembersSchema = z.object({
 export type Members = z.infer<typeof MembersSchema>
 
 /////////////////////////////////////////
+// LOAN SOURCE SCHEMA
+/////////////////////////////////////////
+
+export const LoanSourceSchema = z.object({
+  sourceId: z.number().int(),
+  sourceName: z.string(),
+  defaultAccount: z.string(),
+})
+
+export type LoanSource = z.infer<typeof LoanSourceSchema>
+
+/////////////////////////////////////////
 // MEMBER LOANS SCHEMA
 /////////////////////////////////////////
 
@@ -180,6 +194,7 @@ export const MemberLoansSchema = z.object({
   loanType: LoanTypeSchema,
   loanId: z.bigint(),
   memberId: z.string(),
+  sourceId: z.number().int(),
   amountLoaned: z.instanceof(Prisma.Decimal, { message: "Field 'amountLoaned' must be a Decimal. Location: ['Models', 'MemberLoans']"}),
   amountPayable: z.instanceof(Prisma.Decimal, { message: "Field 'amountPayable' must be a Decimal. Location: ['Models', 'MemberLoans']"}),
   interestRate: z.instanceof(Prisma.Decimal, { message: "Field 'interestRate' must be a Decimal. Location: ['Models', 'MemberLoans']"}),
@@ -237,7 +252,7 @@ export const FundTransactionsSchema = z.object({
   ledgerId: z.bigint().nullable(),
   createdAt: z.coerce.date(),
   postedBalance: z.number(),
-  newBalance: z.number(),
+  newBalance: z.instanceof(Prisma.Decimal, { message: "Field 'newBalance' must be a Decimal. Location: ['Models', 'FundTransactions']"}),
 })
 
 export type FundTransactions = z.infer<typeof FundTransactionsSchema>
@@ -280,7 +295,7 @@ export const InvoicePaymentsSchema = z.object({
   paymentId: z.bigint(),
   invoiceId: z.bigint(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.instanceof(Prisma.Decimal, { message: "Field 'paymentReceived' must be a Decimal. Location: ['Models', 'InvoicePayments']"}),
   journalRef: z.bigint(),
   paymentDate: z.coerce.date(),
 })
@@ -326,8 +341,8 @@ export const AccountsThirdLvlSchema = z.object({
   accountId: z.string().cuid(),
   accountName: z.string(),
   rootId: z.number().int(),
-  openingBalance: z.number(),
-  runningBalance: z.number(),
+  openingBalance: z.instanceof(Prisma.Decimal, { message: "Field 'openingBalance' must be a Decimal. Location: ['Models', 'AccountsThirdLvl']"}),
+  runningBalance: z.instanceof(Prisma.Decimal, { message: "Field 'runningBalance' must be a Decimal. Location: ['Models', 'AccountsThirdLvl']"}),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
   isActive: z.boolean(),
@@ -465,6 +480,37 @@ export const MembersSelectSchema: z.ZodType<Prisma.MembersSelect> = z.object({
   _count: z.union([z.boolean(),z.lazy(() => MembersCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
+// LOAN SOURCE
+//------------------------------------------------------
+
+export const LoanSourceIncludeSchema: z.ZodType<Prisma.LoanSourceInclude> = z.object({
+  Loans: z.union([z.boolean(),z.lazy(() => MemberLoansFindManyArgsSchema)]).optional(),
+  DefaultAccount: z.union([z.boolean(),z.lazy(() => AccountsThirdLvlArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => LoanSourceCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+export const LoanSourceArgsSchema: z.ZodType<Prisma.LoanSourceDefaultArgs> = z.object({
+  select: z.lazy(() => LoanSourceSelectSchema).optional(),
+  include: z.lazy(() => LoanSourceIncludeSchema).optional(),
+}).strict();
+
+export const LoanSourceCountOutputTypeArgsSchema: z.ZodType<Prisma.LoanSourceCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => LoanSourceCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const LoanSourceCountOutputTypeSelectSchema: z.ZodType<Prisma.LoanSourceCountOutputTypeSelect> = z.object({
+  Loans: z.boolean().optional(),
+}).strict();
+
+export const LoanSourceSelectSchema: z.ZodType<Prisma.LoanSourceSelect> = z.object({
+  sourceId: z.boolean().optional(),
+  sourceName: z.boolean().optional(),
+  defaultAccount: z.boolean().optional(),
+  Loans: z.union([z.boolean(),z.lazy(() => MemberLoansFindManyArgsSchema)]).optional(),
+  DefaultAccount: z.union([z.boolean(),z.lazy(() => AccountsThirdLvlArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => LoanSourceCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
 // MEMBER LOANS
 //------------------------------------------------------
 
@@ -472,6 +518,7 @@ export const MemberLoansIncludeSchema: z.ZodType<Prisma.MemberLoansInclude> = z.
   JournalEntries: z.union([z.boolean(),z.lazy(() => JournalEntriesArgsSchema)]).optional(),
   Repayments: z.union([z.boolean(),z.lazy(() => LoanRepaymentsFindManyArgsSchema)]).optional(),
   Member: z.union([z.boolean(),z.lazy(() => MembersArgsSchema)]).optional(),
+  Source: z.union([z.boolean(),z.lazy(() => LoanSourceArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => MemberLoansCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -492,6 +539,7 @@ export const MemberLoansSelectSchema: z.ZodType<Prisma.MemberLoansSelect> = z.ob
   loanId: z.boolean().optional(),
   memberId: z.boolean().optional(),
   loanType: z.boolean().optional(),
+  sourceId: z.boolean().optional(),
   amountLoaned: z.boolean().optional(),
   amountPayable: z.boolean().optional(),
   interestRate: z.boolean().optional(),
@@ -503,6 +551,7 @@ export const MemberLoansSelectSchema: z.ZodType<Prisma.MemberLoansSelect> = z.ob
   JournalEntries: z.union([z.boolean(),z.lazy(() => JournalEntriesArgsSchema)]).optional(),
   Repayments: z.union([z.boolean(),z.lazy(() => LoanRepaymentsFindManyArgsSchema)]).optional(),
   Member: z.union([z.boolean(),z.lazy(() => MembersArgsSchema)]).optional(),
+  Source: z.union([z.boolean(),z.lazy(() => LoanSourceArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => MemberLoansCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -750,6 +799,7 @@ export const AccountsThirdLvlIncludeSchema: z.ZodType<Prisma.AccountsThirdLvlInc
   RootID: z.union([z.boolean(),z.lazy(() => AccountsSecondLvlArgsSchema)]).optional(),
   Dividends: z.union([z.boolean(),z.lazy(() => DividendsFindManyArgsSchema)]).optional(),
   JournalItems: z.union([z.boolean(),z.lazy(() => JournalItemsFindManyArgsSchema)]).optional(),
+  LoanSource: z.union([z.boolean(),z.lazy(() => LoanSourceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AccountsThirdLvlCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -765,6 +815,7 @@ export const AccountsThirdLvlCountOutputTypeArgsSchema: z.ZodType<Prisma.Account
 export const AccountsThirdLvlCountOutputTypeSelectSchema: z.ZodType<Prisma.AccountsThirdLvlCountOutputTypeSelect> = z.object({
   Dividends: z.boolean().optional(),
   JournalItems: z.boolean().optional(),
+  LoanSource: z.boolean().optional(),
 }).strict();
 
 export const AccountsThirdLvlSelectSchema: z.ZodType<Prisma.AccountsThirdLvlSelect> = z.object({
@@ -779,6 +830,7 @@ export const AccountsThirdLvlSelectSchema: z.ZodType<Prisma.AccountsThirdLvlSele
   RootID: z.union([z.boolean(),z.lazy(() => AccountsSecondLvlArgsSchema)]).optional(),
   Dividends: z.union([z.boolean(),z.lazy(() => DividendsFindManyArgsSchema)]).optional(),
   JournalItems: z.union([z.boolean(),z.lazy(() => JournalItemsFindManyArgsSchema)]).optional(),
+  LoanSource: z.union([z.boolean(),z.lazy(() => LoanSourceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AccountsThirdLvlCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -1096,6 +1148,59 @@ export const MembersScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Membe
   updatedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
+export const LoanSourceWhereInputSchema: z.ZodType<Prisma.LoanSourceWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => LoanSourceWhereInputSchema),z.lazy(() => LoanSourceWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => LoanSourceWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => LoanSourceWhereInputSchema),z.lazy(() => LoanSourceWhereInputSchema).array() ]).optional(),
+  sourceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  sourceName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  defaultAccount: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  Loans: z.lazy(() => MemberLoansListRelationFilterSchema).optional(),
+  DefaultAccount: z.union([ z.lazy(() => AccountsThirdLvlRelationFilterSchema),z.lazy(() => AccountsThirdLvlWhereInputSchema) ]).optional(),
+}).strict();
+
+export const LoanSourceOrderByWithRelationInputSchema: z.ZodType<Prisma.LoanSourceOrderByWithRelationInput> = z.object({
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
+  sourceName: z.lazy(() => SortOrderSchema).optional(),
+  defaultAccount: z.lazy(() => SortOrderSchema).optional(),
+  Loans: z.lazy(() => MemberLoansOrderByRelationAggregateInputSchema).optional(),
+  DefaultAccount: z.lazy(() => AccountsThirdLvlOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const LoanSourceWhereUniqueInputSchema: z.ZodType<Prisma.LoanSourceWhereUniqueInput> = z.object({
+  sourceId: z.number().int()
+})
+.and(z.object({
+  sourceId: z.number().int().optional(),
+  AND: z.union([ z.lazy(() => LoanSourceWhereInputSchema),z.lazy(() => LoanSourceWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => LoanSourceWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => LoanSourceWhereInputSchema),z.lazy(() => LoanSourceWhereInputSchema).array() ]).optional(),
+  sourceName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  defaultAccount: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  Loans: z.lazy(() => MemberLoansListRelationFilterSchema).optional(),
+  DefaultAccount: z.union([ z.lazy(() => AccountsThirdLvlRelationFilterSchema),z.lazy(() => AccountsThirdLvlWhereInputSchema) ]).optional(),
+}).strict());
+
+export const LoanSourceOrderByWithAggregationInputSchema: z.ZodType<Prisma.LoanSourceOrderByWithAggregationInput> = z.object({
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
+  sourceName: z.lazy(() => SortOrderSchema).optional(),
+  defaultAccount: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => LoanSourceCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => LoanSourceAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => LoanSourceMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => LoanSourceMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => LoanSourceSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const LoanSourceScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.LoanSourceScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => LoanSourceScalarWhereWithAggregatesInputSchema),z.lazy(() => LoanSourceScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => LoanSourceScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => LoanSourceScalarWhereWithAggregatesInputSchema),z.lazy(() => LoanSourceScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  sourceId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  sourceName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  defaultAccount: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+}).strict();
+
 export const MemberLoansWhereInputSchema: z.ZodType<Prisma.MemberLoansWhereInput> = z.object({
   AND: z.union([ z.lazy(() => MemberLoansWhereInputSchema),z.lazy(() => MemberLoansWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => MemberLoansWhereInputSchema).array().optional(),
@@ -1103,6 +1208,7 @@ export const MemberLoansWhereInputSchema: z.ZodType<Prisma.MemberLoansWhereInput
   loanId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   memberId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   loanType: z.union([ z.lazy(() => EnumLoanTypeFilterSchema),z.lazy(() => LoanTypeSchema) ]).optional(),
+  sourceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   amountLoaned: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   amountPayable: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   interestRate: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -1114,12 +1220,14 @@ export const MemberLoansWhereInputSchema: z.ZodType<Prisma.MemberLoansWhereInput
   JournalEntries: z.union([ z.lazy(() => JournalEntriesNullableRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional().nullable(),
   Repayments: z.lazy(() => LoanRepaymentsListRelationFilterSchema).optional(),
   Member: z.union([ z.lazy(() => MembersRelationFilterSchema),z.lazy(() => MembersWhereInputSchema) ]).optional(),
+  Source: z.union([ z.lazy(() => LoanSourceRelationFilterSchema),z.lazy(() => LoanSourceWhereInputSchema) ]).optional(),
 }).strict();
 
 export const MemberLoansOrderByWithRelationInputSchema: z.ZodType<Prisma.MemberLoansOrderByWithRelationInput> = z.object({
   loanId: z.lazy(() => SortOrderSchema).optional(),
   memberId: z.lazy(() => SortOrderSchema).optional(),
   loanType: z.lazy(() => SortOrderSchema).optional(),
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
   amountLoaned: z.lazy(() => SortOrderSchema).optional(),
   amountPayable: z.lazy(() => SortOrderSchema).optional(),
   interestRate: z.lazy(() => SortOrderSchema).optional(),
@@ -1130,7 +1238,8 @@ export const MemberLoansOrderByWithRelationInputSchema: z.ZodType<Prisma.MemberL
   journalRef: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   JournalEntries: z.lazy(() => JournalEntriesOrderByWithRelationInputSchema).optional(),
   Repayments: z.lazy(() => LoanRepaymentsOrderByRelationAggregateInputSchema).optional(),
-  Member: z.lazy(() => MembersOrderByWithRelationInputSchema).optional()
+  Member: z.lazy(() => MembersOrderByWithRelationInputSchema).optional(),
+  Source: z.lazy(() => LoanSourceOrderByWithRelationInputSchema).optional()
 }).strict();
 
 export const MemberLoansWhereUniqueInputSchema: z.ZodType<Prisma.MemberLoansWhereUniqueInput> = z.union([
@@ -1153,6 +1262,7 @@ export const MemberLoansWhereUniqueInputSchema: z.ZodType<Prisma.MemberLoansWher
   NOT: z.union([ z.lazy(() => MemberLoansWhereInputSchema),z.lazy(() => MemberLoansWhereInputSchema).array() ]).optional(),
   memberId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   loanType: z.union([ z.lazy(() => EnumLoanTypeFilterSchema),z.lazy(() => LoanTypeSchema) ]).optional(),
+  sourceId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
   amountLoaned: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   amountPayable: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   interestRate: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -1163,12 +1273,14 @@ export const MemberLoansWhereUniqueInputSchema: z.ZodType<Prisma.MemberLoansWher
   JournalEntries: z.union([ z.lazy(() => JournalEntriesNullableRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional().nullable(),
   Repayments: z.lazy(() => LoanRepaymentsListRelationFilterSchema).optional(),
   Member: z.union([ z.lazy(() => MembersRelationFilterSchema),z.lazy(() => MembersWhereInputSchema) ]).optional(),
+  Source: z.union([ z.lazy(() => LoanSourceRelationFilterSchema),z.lazy(() => LoanSourceWhereInputSchema) ]).optional(),
 }).strict());
 
 export const MemberLoansOrderByWithAggregationInputSchema: z.ZodType<Prisma.MemberLoansOrderByWithAggregationInput> = z.object({
   loanId: z.lazy(() => SortOrderSchema).optional(),
   memberId: z.lazy(() => SortOrderSchema).optional(),
   loanType: z.lazy(() => SortOrderSchema).optional(),
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
   amountLoaned: z.lazy(() => SortOrderSchema).optional(),
   amountPayable: z.lazy(() => SortOrderSchema).optional(),
   interestRate: z.lazy(() => SortOrderSchema).optional(),
@@ -1191,6 +1303,7 @@ export const MemberLoansScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.M
   loanId: z.union([ z.lazy(() => BigIntWithAggregatesFilterSchema),z.bigint() ]).optional(),
   memberId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   loanType: z.union([ z.lazy(() => EnumLoanTypeWithAggregatesFilterSchema),z.lazy(() => LoanTypeSchema) ]).optional(),
+  sourceId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   amountLoaned: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   amountPayable: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   interestRate: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -1372,7 +1485,7 @@ export const FundTransactionsWhereInputSchema: z.ZodType<Prisma.FundTransactions
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   postedBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
-  newBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  newBalance: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   JournalEntries: z.union([ z.lazy(() => JournalEntriesNullableRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional().nullable(),
   MemberFunds: z.union([ z.lazy(() => MemberFundsRelationFilterSchema),z.lazy(() => MemberFundsWhereInputSchema) ]).optional(),
 }).strict();
@@ -1404,7 +1517,7 @@ export const FundTransactionsWhereUniqueInputSchema: z.ZodType<Prisma.FundTransa
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   postedBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
-  newBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  newBalance: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   JournalEntries: z.union([ z.lazy(() => JournalEntriesNullableRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional().nullable(),
   MemberFunds: z.union([ z.lazy(() => MemberFundsRelationFilterSchema),z.lazy(() => MemberFundsWhereInputSchema) ]).optional(),
 }).strict());
@@ -1436,7 +1549,7 @@ export const FundTransactionsScalarWhereWithAggregatesInputSchema: z.ZodType<Pri
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeWithAggregatesFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   postedBalance: z.union([ z.lazy(() => FloatWithAggregatesFilterSchema),z.number() ]).optional(),
-  newBalance: z.union([ z.lazy(() => FloatWithAggregatesFilterSchema),z.number() ]).optional(),
+  newBalance: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
 }).strict();
 
 export const InvoiceWhereInputSchema: z.ZodType<Prisma.InvoiceWhereInput> = z.object({
@@ -1585,7 +1698,7 @@ export const InvoicePaymentsWhereInputSchema: z.ZodType<Prisma.InvoicePaymentsWh
   paymentId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   invoiceId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   orNo: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  paymentReceived: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  paymentReceived: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   journalRef: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   paymentDate: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   JournalEntry: z.union([ z.lazy(() => JournalEntriesRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional(),
@@ -1613,7 +1726,7 @@ export const InvoicePaymentsWhereUniqueInputSchema: z.ZodType<Prisma.InvoicePaym
   NOT: z.union([ z.lazy(() => InvoicePaymentsWhereInputSchema),z.lazy(() => InvoicePaymentsWhereInputSchema).array() ]).optional(),
   invoiceId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   orNo: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  paymentReceived: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  paymentReceived: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   journalRef: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   paymentDate: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   JournalEntry: z.union([ z.lazy(() => JournalEntriesRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional(),
@@ -1641,7 +1754,7 @@ export const InvoicePaymentsScalarWhereWithAggregatesInputSchema: z.ZodType<Pris
   paymentId: z.union([ z.lazy(() => BigIntWithAggregatesFilterSchema),z.bigint() ]).optional(),
   invoiceId: z.union([ z.lazy(() => BigIntWithAggregatesFilterSchema),z.bigint() ]).optional(),
   orNo: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  paymentReceived: z.union([ z.lazy(() => FloatWithAggregatesFilterSchema),z.number() ]).optional(),
+  paymentReceived: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   journalRef: z.union([ z.lazy(() => BigIntWithAggregatesFilterSchema),z.bigint() ]).optional(),
   paymentDate: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
@@ -1788,14 +1901,15 @@ export const AccountsThirdLvlWhereInputSchema: z.ZodType<Prisma.AccountsThirdLvl
   accountId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   accountName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rootId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  openingBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
-  runningBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  openingBalance: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  runningBalance: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   isActive: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   RootID: z.union([ z.lazy(() => AccountsSecondLvlRelationFilterSchema),z.lazy(() => AccountsSecondLvlWhereInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsListRelationFilterSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsListRelationFilterSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsListRelationFilterSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceListRelationFilterSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlOrderByWithRelationInputSchema: z.ZodType<Prisma.AccountsThirdLvlOrderByWithRelationInput> = z.object({
@@ -1809,7 +1923,8 @@ export const AccountsThirdLvlOrderByWithRelationInputSchema: z.ZodType<Prisma.Ac
   isActive: z.lazy(() => SortOrderSchema).optional(),
   RootID: z.lazy(() => AccountsSecondLvlOrderByWithRelationInputSchema).optional(),
   Dividends: z.lazy(() => DividendsOrderByRelationAggregateInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsOrderByRelationAggregateInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsOrderByRelationAggregateInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlWhereUniqueInputSchema: z.ZodType<Prisma.AccountsThirdLvlWhereUniqueInput> = z.object({
@@ -1822,14 +1937,15 @@ export const AccountsThirdLvlWhereUniqueInputSchema: z.ZodType<Prisma.AccountsTh
   NOT: z.union([ z.lazy(() => AccountsThirdLvlWhereInputSchema),z.lazy(() => AccountsThirdLvlWhereInputSchema).array() ]).optional(),
   accountName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rootId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
-  openingBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
-  runningBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  openingBalance: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  runningBalance: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   isActive: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   RootID: z.union([ z.lazy(() => AccountsSecondLvlRelationFilterSchema),z.lazy(() => AccountsSecondLvlWhereInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsListRelationFilterSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsListRelationFilterSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsListRelationFilterSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceListRelationFilterSchema).optional()
 }).strict());
 
 export const AccountsThirdLvlOrderByWithAggregationInputSchema: z.ZodType<Prisma.AccountsThirdLvlOrderByWithAggregationInput> = z.object({
@@ -1855,8 +1971,8 @@ export const AccountsThirdLvlScalarWhereWithAggregatesInputSchema: z.ZodType<Pri
   accountId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   accountName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   rootId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  openingBalance: z.union([ z.lazy(() => FloatWithAggregatesFilterSchema),z.number() ]).optional(),
-  runningBalance: z.union([ z.lazy(() => FloatWithAggregatesFilterSchema),z.number() ]).optional(),
+  openingBalance: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  runningBalance: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   isActive: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
@@ -2369,6 +2485,48 @@ export const MembersUncheckedUpdateManyInputSchema: z.ZodType<Prisma.MembersUnch
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const LoanSourceCreateInputSchema: z.ZodType<Prisma.LoanSourceCreateInput> = z.object({
+  sourceName: z.string(),
+  Loans: z.lazy(() => MemberLoansCreateNestedManyWithoutSourceInputSchema).optional(),
+  DefaultAccount: z.lazy(() => AccountsThirdLvlCreateNestedOneWithoutLoanSourceInputSchema)
+}).strict();
+
+export const LoanSourceUncheckedCreateInputSchema: z.ZodType<Prisma.LoanSourceUncheckedCreateInput> = z.object({
+  sourceId: z.number().int().optional(),
+  sourceName: z.string(),
+  defaultAccount: z.string(),
+  Loans: z.lazy(() => MemberLoansUncheckedCreateNestedManyWithoutSourceInputSchema).optional()
+}).strict();
+
+export const LoanSourceUpdateInputSchema: z.ZodType<Prisma.LoanSourceUpdateInput> = z.object({
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  Loans: z.lazy(() => MemberLoansUpdateManyWithoutSourceNestedInputSchema).optional(),
+  DefaultAccount: z.lazy(() => AccountsThirdLvlUpdateOneRequiredWithoutLoanSourceNestedInputSchema).optional()
+}).strict();
+
+export const LoanSourceUncheckedUpdateInputSchema: z.ZodType<Prisma.LoanSourceUncheckedUpdateInput> = z.object({
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  defaultAccount: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  Loans: z.lazy(() => MemberLoansUncheckedUpdateManyWithoutSourceNestedInputSchema).optional()
+}).strict();
+
+export const LoanSourceCreateManyInputSchema: z.ZodType<Prisma.LoanSourceCreateManyInput> = z.object({
+  sourceId: z.number().int().optional(),
+  sourceName: z.string(),
+  defaultAccount: z.string()
+}).strict();
+
+export const LoanSourceUpdateManyMutationInputSchema: z.ZodType<Prisma.LoanSourceUpdateManyMutationInput> = z.object({
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const LoanSourceUncheckedUpdateManyInputSchema: z.ZodType<Prisma.LoanSourceUncheckedUpdateManyInput> = z.object({
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  defaultAccount: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const MemberLoansCreateInputSchema: z.ZodType<Prisma.MemberLoansCreateInput> = z.object({
   loanId: z.bigint().optional(),
   loanType: z.lazy(() => LoanTypeSchema),
@@ -2381,13 +2539,15 @@ export const MemberLoansCreateInputSchema: z.ZodType<Prisma.MemberLoansCreateInp
   isExisting: z.boolean().optional(),
   JournalEntries: z.lazy(() => JournalEntriesCreateNestedOneWithoutMemberLoansInputSchema).optional(),
   Repayments: z.lazy(() => LoanRepaymentsCreateNestedManyWithoutLoanInputSchema).optional(),
-  Member: z.lazy(() => MembersCreateNestedOneWithoutLoansInputSchema)
+  Member: z.lazy(() => MembersCreateNestedOneWithoutLoansInputSchema),
+  Source: z.lazy(() => LoanSourceCreateNestedOneWithoutLoansInputSchema)
 }).strict();
 
 export const MemberLoansUncheckedCreateInputSchema: z.ZodType<Prisma.MemberLoansUncheckedCreateInput> = z.object({
   loanId: z.bigint().optional(),
   memberId: z.string(),
   loanType: z.lazy(() => LoanTypeSchema),
+  sourceId: z.number().int(),
   amountLoaned: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   amountPayable: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   interestRate: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -2411,13 +2571,15 @@ export const MemberLoansUpdateInputSchema: z.ZodType<Prisma.MemberLoansUpdateInp
   isExisting: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   JournalEntries: z.lazy(() => JournalEntriesUpdateOneWithoutMemberLoansNestedInputSchema).optional(),
   Repayments: z.lazy(() => LoanRepaymentsUpdateManyWithoutLoanNestedInputSchema).optional(),
-  Member: z.lazy(() => MembersUpdateOneRequiredWithoutLoansNestedInputSchema).optional()
+  Member: z.lazy(() => MembersUpdateOneRequiredWithoutLoansNestedInputSchema).optional(),
+  Source: z.lazy(() => LoanSourceUpdateOneRequiredWithoutLoansNestedInputSchema).optional()
 }).strict();
 
 export const MemberLoansUncheckedUpdateInputSchema: z.ZodType<Prisma.MemberLoansUncheckedUpdateInput> = z.object({
   loanId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   memberId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   loanType: z.union([ z.lazy(() => LoanTypeSchema),z.lazy(() => EnumLoanTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   amountLoaned: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   amountPayable: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestRate: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -2433,6 +2595,7 @@ export const MemberLoansCreateManyInputSchema: z.ZodType<Prisma.MemberLoansCreat
   loanId: z.bigint().optional(),
   memberId: z.string(),
   loanType: z.lazy(() => LoanTypeSchema),
+  sourceId: z.number().int(),
   amountLoaned: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   amountPayable: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   interestRate: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -2459,6 +2622,7 @@ export const MemberLoansUncheckedUpdateManyInputSchema: z.ZodType<Prisma.MemberL
   loanId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   memberId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   loanType: z.union([ z.lazy(() => LoanTypeSchema),z.lazy(() => EnumLoanTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   amountLoaned: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   amountPayable: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestRate: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -2619,7 +2783,7 @@ export const FundTransactionsCreateInputSchema: z.ZodType<Prisma.FundTransaction
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
-  newBalance: z.number(),
+  newBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   JournalEntries: z.lazy(() => JournalEntriesCreateNestedOneWithoutMemberFundsTransactInputSchema).optional(),
   MemberFunds: z.lazy(() => MemberFundsCreateNestedOneWithoutTransactionsInputSchema)
 }).strict();
@@ -2632,7 +2796,7 @@ export const FundTransactionsUncheckedCreateInputSchema: z.ZodType<Prisma.FundTr
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
-  newBalance: z.number()
+  newBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const FundTransactionsUpdateInputSchema: z.ZodType<Prisma.FundTransactionsUpdateInput> = z.object({
@@ -2640,7 +2804,7 @@ export const FundTransactionsUpdateInputSchema: z.ZodType<Prisma.FundTransaction
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   JournalEntries: z.lazy(() => JournalEntriesUpdateOneWithoutMemberFundsTransactNestedInputSchema).optional(),
   MemberFunds: z.lazy(() => MemberFundsUpdateOneRequiredWithoutTransactionsNestedInputSchema).optional()
 }).strict();
@@ -2653,7 +2817,7 @@ export const FundTransactionsUncheckedUpdateInputSchema: z.ZodType<Prisma.FundTr
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FundTransactionsCreateManyInputSchema: z.ZodType<Prisma.FundTransactionsCreateManyInput> = z.object({
@@ -2664,7 +2828,7 @@ export const FundTransactionsCreateManyInputSchema: z.ZodType<Prisma.FundTransac
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
-  newBalance: z.number()
+  newBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const FundTransactionsUpdateManyMutationInputSchema: z.ZodType<Prisma.FundTransactionsUpdateManyMutationInput> = z.object({
@@ -2672,7 +2836,7 @@ export const FundTransactionsUpdateManyMutationInputSchema: z.ZodType<Prisma.Fun
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FundTransactionsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateManyInput> = z.object({
@@ -2683,7 +2847,7 @@ export const FundTransactionsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Fu
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InvoiceCreateInputSchema: z.ZodType<Prisma.InvoiceCreateInput> = z.object({
@@ -2820,7 +2984,7 @@ export const InvoiceItemsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Invoic
 export const InvoicePaymentsCreateInputSchema: z.ZodType<Prisma.InvoicePaymentsCreateInput> = z.object({
   paymentId: z.bigint().optional(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   paymentDate: z.coerce.date().optional(),
   JournalEntry: z.lazy(() => JournalEntriesCreateNestedOneWithoutInvoicePaymentsInputSchema),
   Invoice: z.lazy(() => InvoiceCreateNestedOneWithoutInvoicePaymentsInputSchema)
@@ -2830,7 +2994,7 @@ export const InvoicePaymentsUncheckedCreateInputSchema: z.ZodType<Prisma.Invoice
   paymentId: z.bigint().optional(),
   invoiceId: z.bigint(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   journalRef: z.bigint(),
   paymentDate: z.coerce.date().optional()
 }).strict();
@@ -2838,7 +3002,7 @@ export const InvoicePaymentsUncheckedCreateInputSchema: z.ZodType<Prisma.Invoice
 export const InvoicePaymentsUpdateInputSchema: z.ZodType<Prisma.InvoicePaymentsUpdateInput> = z.object({
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   JournalEntry: z.lazy(() => JournalEntriesUpdateOneRequiredWithoutInvoicePaymentsNestedInputSchema).optional(),
   Invoice: z.lazy(() => InvoiceUpdateOneRequiredWithoutInvoicePaymentsNestedInputSchema).optional()
@@ -2848,7 +3012,7 @@ export const InvoicePaymentsUncheckedUpdateInputSchema: z.ZodType<Prisma.Invoice
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   invoiceId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   journalRef: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -2857,7 +3021,7 @@ export const InvoicePaymentsCreateManyInputSchema: z.ZodType<Prisma.InvoicePayme
   paymentId: z.bigint().optional(),
   invoiceId: z.bigint(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   journalRef: z.bigint(),
   paymentDate: z.coerce.date().optional()
 }).strict();
@@ -2865,7 +3029,7 @@ export const InvoicePaymentsCreateManyInputSchema: z.ZodType<Prisma.InvoicePayme
 export const InvoicePaymentsUpdateManyMutationInputSchema: z.ZodType<Prisma.InvoicePaymentsUpdateManyMutationInput> = z.object({
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -2873,7 +3037,7 @@ export const InvoicePaymentsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Inv
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   invoiceId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   journalRef: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -3019,61 +3183,65 @@ export const AccountsSecondLvlUncheckedUpdateManyInputSchema: z.ZodType<Prisma.A
 export const AccountsThirdLvlCreateInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   RootID: z.lazy(() => AccountsSecondLvlCreateNestedOneWithoutChildrenInputSchema),
   Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedCreateInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
   rootId: z.number().int(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUpdateInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   RootID: z.lazy(() => AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema).optional(),
   Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rootId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlCreateManyInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateManyInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
   rootId: z.number().int(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional()
@@ -3082,8 +3250,8 @@ export const AccountsThirdLvlCreateManyInputSchema: z.ZodType<Prisma.AccountsThi
 export const AccountsThirdLvlUpdateManyMutationInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateManyMutationInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3093,8 +3261,8 @@ export const AccountsThirdLvlUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Ac
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rootId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3698,6 +3866,64 @@ export const DateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.DateTimeWithAg
   _max: z.lazy(() => NestedDateTimeFilterSchema).optional()
 }).strict();
 
+export const IntFilterSchema: z.ZodType<Prisma.IntFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntFilterSchema) ]).optional(),
+}).strict();
+
+export const AccountsThirdLvlRelationFilterSchema: z.ZodType<Prisma.AccountsThirdLvlRelationFilter> = z.object({
+  is: z.lazy(() => AccountsThirdLvlWhereInputSchema).optional(),
+  isNot: z.lazy(() => AccountsThirdLvlWhereInputSchema).optional()
+}).strict();
+
+export const LoanSourceCountOrderByAggregateInputSchema: z.ZodType<Prisma.LoanSourceCountOrderByAggregateInput> = z.object({
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
+  sourceName: z.lazy(() => SortOrderSchema).optional(),
+  defaultAccount: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const LoanSourceAvgOrderByAggregateInputSchema: z.ZodType<Prisma.LoanSourceAvgOrderByAggregateInput> = z.object({
+  sourceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const LoanSourceMaxOrderByAggregateInputSchema: z.ZodType<Prisma.LoanSourceMaxOrderByAggregateInput> = z.object({
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
+  sourceName: z.lazy(() => SortOrderSchema).optional(),
+  defaultAccount: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const LoanSourceMinOrderByAggregateInputSchema: z.ZodType<Prisma.LoanSourceMinOrderByAggregateInput> = z.object({
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
+  sourceName: z.lazy(() => SortOrderSchema).optional(),
+  defaultAccount: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const LoanSourceSumOrderByAggregateInputSchema: z.ZodType<Prisma.LoanSourceSumOrderByAggregateInput> = z.object({
+  sourceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const IntWithAggregatesFilterSchema: z.ZodType<Prisma.IntWithAggregatesFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _sum: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedIntFilterSchema).optional(),
+  _max: z.lazy(() => NestedIntFilterSchema).optional()
+}).strict();
+
 export const BigIntFilterSchema: z.ZodType<Prisma.BigIntFilter> = z.object({
   equals: z.bigint().optional(),
   in: z.bigint().array().optional(),
@@ -3725,17 +3951,6 @@ export const DecimalFilterSchema: z.ZodType<Prisma.DecimalFilter> = z.object({
   gt: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   gte: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   not: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => NestedDecimalFilterSchema) ]).optional(),
-}).strict();
-
-export const IntFilterSchema: z.ZodType<Prisma.IntFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([ z.number(),z.lazy(() => NestedIntFilterSchema) ]).optional(),
 }).strict();
 
 export const BoolFilterSchema: z.ZodType<Prisma.BoolFilter> = z.object({
@@ -3770,6 +3985,11 @@ export const MembersRelationFilterSchema: z.ZodType<Prisma.MembersRelationFilter
   isNot: z.lazy(() => MembersWhereInputSchema).optional()
 }).strict();
 
+export const LoanSourceRelationFilterSchema: z.ZodType<Prisma.LoanSourceRelationFilter> = z.object({
+  is: z.lazy(() => LoanSourceWhereInputSchema).optional(),
+  isNot: z.lazy(() => LoanSourceWhereInputSchema).optional()
+}).strict();
+
 export const LoanRepaymentsOrderByRelationAggregateInputSchema: z.ZodType<Prisma.LoanRepaymentsOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -3778,6 +3998,7 @@ export const MemberLoansCountOrderByAggregateInputSchema: z.ZodType<Prisma.Membe
   loanId: z.lazy(() => SortOrderSchema).optional(),
   memberId: z.lazy(() => SortOrderSchema).optional(),
   loanType: z.lazy(() => SortOrderSchema).optional(),
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
   amountLoaned: z.lazy(() => SortOrderSchema).optional(),
   amountPayable: z.lazy(() => SortOrderSchema).optional(),
   interestRate: z.lazy(() => SortOrderSchema).optional(),
@@ -3790,6 +4011,7 @@ export const MemberLoansCountOrderByAggregateInputSchema: z.ZodType<Prisma.Membe
 
 export const MemberLoansAvgOrderByAggregateInputSchema: z.ZodType<Prisma.MemberLoansAvgOrderByAggregateInput> = z.object({
   loanId: z.lazy(() => SortOrderSchema).optional(),
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
   amountLoaned: z.lazy(() => SortOrderSchema).optional(),
   amountPayable: z.lazy(() => SortOrderSchema).optional(),
   interestRate: z.lazy(() => SortOrderSchema).optional(),
@@ -3801,6 +4023,7 @@ export const MemberLoansMaxOrderByAggregateInputSchema: z.ZodType<Prisma.MemberL
   loanId: z.lazy(() => SortOrderSchema).optional(),
   memberId: z.lazy(() => SortOrderSchema).optional(),
   loanType: z.lazy(() => SortOrderSchema).optional(),
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
   amountLoaned: z.lazy(() => SortOrderSchema).optional(),
   amountPayable: z.lazy(() => SortOrderSchema).optional(),
   interestRate: z.lazy(() => SortOrderSchema).optional(),
@@ -3815,6 +4038,7 @@ export const MemberLoansMinOrderByAggregateInputSchema: z.ZodType<Prisma.MemberL
   loanId: z.lazy(() => SortOrderSchema).optional(),
   memberId: z.lazy(() => SortOrderSchema).optional(),
   loanType: z.lazy(() => SortOrderSchema).optional(),
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
   amountLoaned: z.lazy(() => SortOrderSchema).optional(),
   amountPayable: z.lazy(() => SortOrderSchema).optional(),
   interestRate: z.lazy(() => SortOrderSchema).optional(),
@@ -3827,6 +4051,7 @@ export const MemberLoansMinOrderByAggregateInputSchema: z.ZodType<Prisma.MemberL
 
 export const MemberLoansSumOrderByAggregateInputSchema: z.ZodType<Prisma.MemberLoansSumOrderByAggregateInput> = z.object({
   loanId: z.lazy(() => SortOrderSchema).optional(),
+  sourceId: z.lazy(() => SortOrderSchema).optional(),
   amountLoaned: z.lazy(() => SortOrderSchema).optional(),
   amountPayable: z.lazy(() => SortOrderSchema).optional(),
   interestRate: z.lazy(() => SortOrderSchema).optional(),
@@ -3874,22 +4099,6 @@ export const DecimalWithAggregatesFilterSchema: z.ZodType<Prisma.DecimalWithAggr
   _sum: z.lazy(() => NestedDecimalFilterSchema).optional(),
   _min: z.lazy(() => NestedDecimalFilterSchema).optional(),
   _max: z.lazy(() => NestedDecimalFilterSchema).optional()
-}).strict();
-
-export const IntWithAggregatesFilterSchema: z.ZodType<Prisma.IntWithAggregatesFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([ z.number(),z.lazy(() => NestedIntWithAggregatesFilterSchema) ]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _sum: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedIntFilterSchema).optional(),
-  _max: z.lazy(() => NestedIntFilterSchema).optional()
 }).strict();
 
 export const BoolWithAggregatesFilterSchema: z.ZodType<Prisma.BoolWithAggregatesFilter> = z.object({
@@ -4429,7 +4638,17 @@ export const JournalItemsListRelationFilterSchema: z.ZodType<Prisma.JournalItems
   none: z.lazy(() => JournalItemsWhereInputSchema).optional()
 }).strict();
 
+export const LoanSourceListRelationFilterSchema: z.ZodType<Prisma.LoanSourceListRelationFilter> = z.object({
+  every: z.lazy(() => LoanSourceWhereInputSchema).optional(),
+  some: z.lazy(() => LoanSourceWhereInputSchema).optional(),
+  none: z.lazy(() => LoanSourceWhereInputSchema).optional()
+}).strict();
+
 export const JournalItemsOrderByRelationAggregateInputSchema: z.ZodType<Prisma.JournalItemsOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const LoanSourceOrderByRelationAggregateInputSchema: z.ZodType<Prisma.LoanSourceOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -4476,11 +4695,6 @@ export const AccountsThirdLvlSumOrderByAggregateInputSchema: z.ZodType<Prisma.Ac
   rootId: z.lazy(() => SortOrderSchema).optional(),
   openingBalance: z.lazy(() => SortOrderSchema).optional(),
   runningBalance: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const AccountsThirdLvlRelationFilterSchema: z.ZodType<Prisma.AccountsThirdLvlRelationFilter> = z.object({
-  is: z.lazy(() => AccountsThirdLvlWhereInputSchema).optional(),
-  isNot: z.lazy(() => AccountsThirdLvlWhereInputSchema).optional()
 }).strict();
 
 export const DividendsCountOrderByAggregateInputSchema: z.ZodType<Prisma.DividendsCountOrderByAggregateInput> = z.object({
@@ -4919,6 +5133,70 @@ export const JournalEntriesUncheckedUpdateManyWithoutMembersNestedInputSchema: z
   deleteMany: z.union([ z.lazy(() => JournalEntriesScalarWhereInputSchema),z.lazy(() => JournalEntriesScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const MemberLoansCreateNestedManyWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansCreateNestedManyWithoutSourceInput> = z.object({
+  create: z.union([ z.lazy(() => MemberLoansCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansCreateWithoutSourceInputSchema).array(),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => MemberLoansCreateOrConnectWithoutSourceInputSchema),z.lazy(() => MemberLoansCreateOrConnectWithoutSourceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => MemberLoansCreateManySourceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const AccountsThirdLvlCreateNestedOneWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateNestedOneWithoutLoanSourceInput> = z.object({
+  create: z.union([ z.lazy(() => AccountsThirdLvlCreateWithoutLoanSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedCreateWithoutLoanSourceInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AccountsThirdLvlCreateOrConnectWithoutLoanSourceInputSchema).optional(),
+  connect: z.lazy(() => AccountsThirdLvlWhereUniqueInputSchema).optional()
+}).strict();
+
+export const MemberLoansUncheckedCreateNestedManyWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansUncheckedCreateNestedManyWithoutSourceInput> = z.object({
+  create: z.union([ z.lazy(() => MemberLoansCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansCreateWithoutSourceInputSchema).array(),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => MemberLoansCreateOrConnectWithoutSourceInputSchema),z.lazy(() => MemberLoansCreateOrConnectWithoutSourceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => MemberLoansCreateManySourceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const MemberLoansUpdateManyWithoutSourceNestedInputSchema: z.ZodType<Prisma.MemberLoansUpdateManyWithoutSourceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => MemberLoansCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansCreateWithoutSourceInputSchema).array(),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => MemberLoansCreateOrConnectWithoutSourceInputSchema),z.lazy(() => MemberLoansCreateOrConnectWithoutSourceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => MemberLoansUpsertWithWhereUniqueWithoutSourceInputSchema),z.lazy(() => MemberLoansUpsertWithWhereUniqueWithoutSourceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => MemberLoansCreateManySourceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => MemberLoansUpdateWithWhereUniqueWithoutSourceInputSchema),z.lazy(() => MemberLoansUpdateWithWhereUniqueWithoutSourceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => MemberLoansUpdateManyWithWhereWithoutSourceInputSchema),z.lazy(() => MemberLoansUpdateManyWithWhereWithoutSourceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => MemberLoansScalarWhereInputSchema),z.lazy(() => MemberLoansScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const AccountsThirdLvlUpdateOneRequiredWithoutLoanSourceNestedInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateOneRequiredWithoutLoanSourceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => AccountsThirdLvlCreateWithoutLoanSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedCreateWithoutLoanSourceInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AccountsThirdLvlCreateOrConnectWithoutLoanSourceInputSchema).optional(),
+  upsert: z.lazy(() => AccountsThirdLvlUpsertWithoutLoanSourceInputSchema).optional(),
+  connect: z.lazy(() => AccountsThirdLvlWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => AccountsThirdLvlUpdateToOneWithWhereWithoutLoanSourceInputSchema),z.lazy(() => AccountsThirdLvlUpdateWithoutLoanSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedUpdateWithoutLoanSourceInputSchema) ]).optional(),
+}).strict();
+
+export const IntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.IntFieldUpdateOperationsInput> = z.object({
+  set: z.number().optional(),
+  increment: z.number().optional(),
+  decrement: z.number().optional(),
+  multiply: z.number().optional(),
+  divide: z.number().optional()
+}).strict();
+
+export const MemberLoansUncheckedUpdateManyWithoutSourceNestedInputSchema: z.ZodType<Prisma.MemberLoansUncheckedUpdateManyWithoutSourceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => MemberLoansCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansCreateWithoutSourceInputSchema).array(),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => MemberLoansCreateOrConnectWithoutSourceInputSchema),z.lazy(() => MemberLoansCreateOrConnectWithoutSourceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => MemberLoansUpsertWithWhereUniqueWithoutSourceInputSchema),z.lazy(() => MemberLoansUpsertWithWhereUniqueWithoutSourceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => MemberLoansCreateManySourceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => MemberLoansWhereUniqueInputSchema),z.lazy(() => MemberLoansWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => MemberLoansUpdateWithWhereUniqueWithoutSourceInputSchema),z.lazy(() => MemberLoansUpdateWithWhereUniqueWithoutSourceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => MemberLoansUpdateManyWithWhereWithoutSourceInputSchema),z.lazy(() => MemberLoansUpdateManyWithWhereWithoutSourceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => MemberLoansScalarWhereInputSchema),z.lazy(() => MemberLoansScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const JournalEntriesCreateNestedOneWithoutMemberLoansInputSchema: z.ZodType<Prisma.JournalEntriesCreateNestedOneWithoutMemberLoansInput> = z.object({
   create: z.union([ z.lazy(() => JournalEntriesCreateWithoutMemberLoansInputSchema),z.lazy(() => JournalEntriesUncheckedCreateWithoutMemberLoansInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => JournalEntriesCreateOrConnectWithoutMemberLoansInputSchema).optional(),
@@ -4936,6 +5214,12 @@ export const MembersCreateNestedOneWithoutLoansInputSchema: z.ZodType<Prisma.Mem
   create: z.union([ z.lazy(() => MembersCreateWithoutLoansInputSchema),z.lazy(() => MembersUncheckedCreateWithoutLoansInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => MembersCreateOrConnectWithoutLoansInputSchema).optional(),
   connect: z.lazy(() => MembersWhereUniqueInputSchema).optional()
+}).strict();
+
+export const LoanSourceCreateNestedOneWithoutLoansInputSchema: z.ZodType<Prisma.LoanSourceCreateNestedOneWithoutLoansInput> = z.object({
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutLoansInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutLoansInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => LoanSourceCreateOrConnectWithoutLoansInputSchema).optional(),
+  connect: z.lazy(() => LoanSourceWhereUniqueInputSchema).optional()
 }).strict();
 
 export const LoanRepaymentsUncheckedCreateNestedManyWithoutLoanInputSchema: z.ZodType<Prisma.LoanRepaymentsUncheckedCreateNestedManyWithoutLoanInput> = z.object({
@@ -4963,14 +5247,6 @@ export const DecimalFieldUpdateOperationsInputSchema: z.ZodType<Prisma.DecimalFi
   decrement: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   multiply: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   divide: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional()
-}).strict();
-
-export const IntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.IntFieldUpdateOperationsInput> = z.object({
-  set: z.number().optional(),
-  increment: z.number().optional(),
-  decrement: z.number().optional(),
-  multiply: z.number().optional(),
-  divide: z.number().optional()
 }).strict();
 
 export const BoolFieldUpdateOperationsInputSchema: z.ZodType<Prisma.BoolFieldUpdateOperationsInput> = z.object({
@@ -5007,6 +5283,14 @@ export const MembersUpdateOneRequiredWithoutLoansNestedInputSchema: z.ZodType<Pr
   upsert: z.lazy(() => MembersUpsertWithoutLoansInputSchema).optional(),
   connect: z.lazy(() => MembersWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => MembersUpdateToOneWithWhereWithoutLoansInputSchema),z.lazy(() => MembersUpdateWithoutLoansInputSchema),z.lazy(() => MembersUncheckedUpdateWithoutLoansInputSchema) ]).optional(),
+}).strict();
+
+export const LoanSourceUpdateOneRequiredWithoutLoansNestedInputSchema: z.ZodType<Prisma.LoanSourceUpdateOneRequiredWithoutLoansNestedInput> = z.object({
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutLoansInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutLoansInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => LoanSourceCreateOrConnectWithoutLoansInputSchema).optional(),
+  upsert: z.lazy(() => LoanSourceUpsertWithoutLoansInputSchema).optional(),
+  connect: z.lazy(() => LoanSourceWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => LoanSourceUpdateToOneWithWhereWithoutLoansInputSchema),z.lazy(() => LoanSourceUpdateWithoutLoansInputSchema),z.lazy(() => LoanSourceUncheckedUpdateWithoutLoansInputSchema) ]).optional(),
 }).strict();
 
 export const NullableBigIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableBigIntFieldUpdateOperationsInput> = z.object({
@@ -5429,6 +5713,13 @@ export const JournalItemsCreateNestedManyWithoutAccountsInputSchema: z.ZodType<P
   connect: z.union([ z.lazy(() => JournalItemsWhereUniqueInputSchema),z.lazy(() => JournalItemsWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceCreateNestedManyWithoutDefaultAccountInput> = z.object({
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema).array(),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => LoanSourceCreateManyDefaultAccountInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const DividendsUncheckedCreateNestedManyWithoutAccountInputSchema: z.ZodType<Prisma.DividendsUncheckedCreateNestedManyWithoutAccountInput> = z.object({
   create: z.union([ z.lazy(() => DividendsCreateWithoutAccountInputSchema),z.lazy(() => DividendsCreateWithoutAccountInputSchema).array(),z.lazy(() => DividendsUncheckedCreateWithoutAccountInputSchema),z.lazy(() => DividendsUncheckedCreateWithoutAccountInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => DividendsCreateOrConnectWithoutAccountInputSchema),z.lazy(() => DividendsCreateOrConnectWithoutAccountInputSchema).array() ]).optional(),
@@ -5441,6 +5732,13 @@ export const JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema: z.
   connectOrCreate: z.union([ z.lazy(() => JournalItemsCreateOrConnectWithoutAccountsInputSchema),z.lazy(() => JournalItemsCreateOrConnectWithoutAccountsInputSchema).array() ]).optional(),
   createMany: z.lazy(() => JournalItemsCreateManyAccountsInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => JournalItemsWhereUniqueInputSchema),z.lazy(() => JournalItemsWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInput> = z.object({
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema).array(),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => LoanSourceCreateManyDefaultAccountInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema: z.ZodType<Prisma.AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInput> = z.object({
@@ -5479,6 +5777,20 @@ export const JournalItemsUpdateManyWithoutAccountsNestedInputSchema: z.ZodType<P
   deleteMany: z.union([ z.lazy(() => JournalItemsScalarWhereInputSchema),z.lazy(() => JournalItemsScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema: z.ZodType<Prisma.LoanSourceUpdateManyWithoutDefaultAccountNestedInput> = z.object({
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema).array(),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => LoanSourceUpsertWithWhereUniqueWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUpsertWithWhereUniqueWithoutDefaultAccountInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => LoanSourceCreateManyDefaultAccountInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => LoanSourceUpdateWithWhereUniqueWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUpdateWithWhereUniqueWithoutDefaultAccountInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => LoanSourceUpdateManyWithWhereWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUpdateManyWithWhereWithoutDefaultAccountInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => LoanSourceScalarWhereInputSchema),z.lazy(() => LoanSourceScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema: z.ZodType<Prisma.DividendsUncheckedUpdateManyWithoutAccountNestedInput> = z.object({
   create: z.union([ z.lazy(() => DividendsCreateWithoutAccountInputSchema),z.lazy(() => DividendsCreateWithoutAccountInputSchema).array(),z.lazy(() => DividendsUncheckedCreateWithoutAccountInputSchema),z.lazy(() => DividendsUncheckedCreateWithoutAccountInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => DividendsCreateOrConnectWithoutAccountInputSchema),z.lazy(() => DividendsCreateOrConnectWithoutAccountInputSchema).array() ]).optional(),
@@ -5505,6 +5817,20 @@ export const JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema: z.
   update: z.union([ z.lazy(() => JournalItemsUpdateWithWhereUniqueWithoutAccountsInputSchema),z.lazy(() => JournalItemsUpdateWithWhereUniqueWithoutAccountsInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => JournalItemsUpdateManyWithWhereWithoutAccountsInputSchema),z.lazy(() => JournalItemsUpdateManyWithWhereWithoutAccountsInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => JournalItemsScalarWhereInputSchema),z.lazy(() => JournalItemsScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema: z.ZodType<Prisma.LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInput> = z.object({
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema).array(),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => LoanSourceUpsertWithWhereUniqueWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUpsertWithWhereUniqueWithoutDefaultAccountInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => LoanSourceCreateManyDefaultAccountInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => LoanSourceUpdateWithWhereUniqueWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUpdateWithWhereUniqueWithoutDefaultAccountInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => LoanSourceUpdateManyWithWhereWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUpdateManyWithWhereWithoutDefaultAccountInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => LoanSourceScalarWhereInputSchema),z.lazy(() => LoanSourceScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const MembersCreateNestedOneWithoutDividendsInputSchema: z.ZodType<Prisma.MembersCreateNestedOneWithoutDividendsInput> = z.object({
@@ -6003,6 +6329,33 @@ export const NestedDateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedDa
   _max: z.lazy(() => NestedDateTimeFilterSchema).optional()
 }).strict();
 
+export const NestedIntWithAggregatesFilterSchema: z.ZodType<Prisma.NestedIntWithAggregatesFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _sum: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedIntFilterSchema).optional(),
+  _max: z.lazy(() => NestedIntFilterSchema).optional()
+}).strict();
+
+export const NestedFloatFilterSchema: z.ZodType<Prisma.NestedFloatFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedFloatFilterSchema) ]).optional(),
+}).strict();
+
 export const NestedBigIntFilterSchema: z.ZodType<Prisma.NestedBigIntFilter> = z.object({
   equals: z.bigint().optional(),
   in: z.bigint().array().optional(),
@@ -6064,17 +6417,6 @@ export const NestedBigIntWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBigI
   _max: z.lazy(() => NestedBigIntFilterSchema).optional()
 }).strict();
 
-export const NestedFloatFilterSchema: z.ZodType<Prisma.NestedFloatFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([ z.number(),z.lazy(() => NestedFloatFilterSchema) ]).optional(),
-}).strict();
-
 export const NestedEnumLoanTypeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumLoanTypeWithAggregatesFilter> = z.object({
   equals: z.lazy(() => LoanTypeSchema).optional(),
   in: z.lazy(() => LoanTypeSchema).array().optional(),
@@ -6099,22 +6441,6 @@ export const NestedDecimalWithAggregatesFilterSchema: z.ZodType<Prisma.NestedDec
   _sum: z.lazy(() => NestedDecimalFilterSchema).optional(),
   _min: z.lazy(() => NestedDecimalFilterSchema).optional(),
   _max: z.lazy(() => NestedDecimalFilterSchema).optional()
-}).strict();
-
-export const NestedIntWithAggregatesFilterSchema: z.ZodType<Prisma.NestedIntWithAggregatesFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([ z.number(),z.lazy(() => NestedIntWithAggregatesFilterSchema) ]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _sum: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedIntFilterSchema).optional(),
-  _max: z.lazy(() => NestedIntFilterSchema).optional()
 }).strict();
 
 export const NestedBoolWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBoolWithAggregatesFilter> = z.object({
@@ -6333,12 +6659,14 @@ export const MemberLoansCreateWithoutMemberInputSchema: z.ZodType<Prisma.MemberL
   dueDate: z.coerce.date(),
   isExisting: z.boolean().optional(),
   JournalEntries: z.lazy(() => JournalEntriesCreateNestedOneWithoutMemberLoansInputSchema).optional(),
-  Repayments: z.lazy(() => LoanRepaymentsCreateNestedManyWithoutLoanInputSchema).optional()
+  Repayments: z.lazy(() => LoanRepaymentsCreateNestedManyWithoutLoanInputSchema).optional(),
+  Source: z.lazy(() => LoanSourceCreateNestedOneWithoutLoansInputSchema)
 }).strict();
 
 export const MemberLoansUncheckedCreateWithoutMemberInputSchema: z.ZodType<Prisma.MemberLoansUncheckedCreateWithoutMemberInput> = z.object({
   loanId: z.bigint().optional(),
   loanType: z.lazy(() => LoanTypeSchema),
+  sourceId: z.number().int(),
   amountLoaned: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   amountPayable: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   interestRate: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -6508,6 +6836,7 @@ export const MemberLoansScalarWhereInputSchema: z.ZodType<Prisma.MemberLoansScal
   loanId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   memberId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   loanType: z.union([ z.lazy(() => EnumLoanTypeFilterSchema),z.lazy(() => LoanTypeSchema) ]).optional(),
+  sourceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   amountLoaned: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   amountPayable: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   interestRate: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -6574,6 +6903,130 @@ export const JournalEntriesScalarWhereInputSchema: z.ZodType<Prisma.JournalEntri
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   memberId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   journalType: z.union([ z.lazy(() => EnumJournalTypeFilterSchema),z.lazy(() => JournalTypeSchema) ]).optional(),
+}).strict();
+
+export const MemberLoansCreateWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansCreateWithoutSourceInput> = z.object({
+  loanId: z.bigint().optional(),
+  loanType: z.lazy(() => LoanTypeSchema),
+  amountLoaned: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  amountPayable: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  interestRate: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  termInMonths: z.number().int(),
+  issueDate: z.coerce.date(),
+  dueDate: z.coerce.date(),
+  isExisting: z.boolean().optional(),
+  JournalEntries: z.lazy(() => JournalEntriesCreateNestedOneWithoutMemberLoansInputSchema).optional(),
+  Repayments: z.lazy(() => LoanRepaymentsCreateNestedManyWithoutLoanInputSchema).optional(),
+  Member: z.lazy(() => MembersCreateNestedOneWithoutLoansInputSchema)
+}).strict();
+
+export const MemberLoansUncheckedCreateWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansUncheckedCreateWithoutSourceInput> = z.object({
+  loanId: z.bigint().optional(),
+  memberId: z.string(),
+  loanType: z.lazy(() => LoanTypeSchema),
+  amountLoaned: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  amountPayable: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  interestRate: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  termInMonths: z.number().int(),
+  issueDate: z.coerce.date(),
+  dueDate: z.coerce.date(),
+  isExisting: z.boolean().optional(),
+  journalRef: z.bigint().optional().nullable(),
+  Repayments: z.lazy(() => LoanRepaymentsUncheckedCreateNestedManyWithoutLoanInputSchema).optional()
+}).strict();
+
+export const MemberLoansCreateOrConnectWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansCreateOrConnectWithoutSourceInput> = z.object({
+  where: z.lazy(() => MemberLoansWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => MemberLoansCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema) ]),
+}).strict();
+
+export const MemberLoansCreateManySourceInputEnvelopeSchema: z.ZodType<Prisma.MemberLoansCreateManySourceInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => MemberLoansCreateManySourceInputSchema),z.lazy(() => MemberLoansCreateManySourceInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const AccountsThirdLvlCreateWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateWithoutLoanSourceInput> = z.object({
+  accountId: z.string().cuid().optional(),
+  accountName: z.string(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  isActive: z.boolean().optional(),
+  RootID: z.lazy(() => AccountsSecondLvlCreateNestedOneWithoutChildrenInputSchema),
+  Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional(),
+  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional()
+}).strict();
+
+export const AccountsThirdLvlUncheckedCreateWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateWithoutLoanSourceInput> = z.object({
+  accountId: z.string().cuid().optional(),
+  accountName: z.string(),
+  rootId: z.number().int(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  isActive: z.boolean().optional(),
+  Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional(),
+  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
+}).strict();
+
+export const AccountsThirdLvlCreateOrConnectWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateOrConnectWithoutLoanSourceInput> = z.object({
+  where: z.lazy(() => AccountsThirdLvlWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => AccountsThirdLvlCreateWithoutLoanSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedCreateWithoutLoanSourceInputSchema) ]),
+}).strict();
+
+export const MemberLoansUpsertWithWhereUniqueWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansUpsertWithWhereUniqueWithoutSourceInput> = z.object({
+  where: z.lazy(() => MemberLoansWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => MemberLoansUpdateWithoutSourceInputSchema),z.lazy(() => MemberLoansUncheckedUpdateWithoutSourceInputSchema) ]),
+  create: z.union([ z.lazy(() => MemberLoansCreateWithoutSourceInputSchema),z.lazy(() => MemberLoansUncheckedCreateWithoutSourceInputSchema) ]),
+}).strict();
+
+export const MemberLoansUpdateWithWhereUniqueWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansUpdateWithWhereUniqueWithoutSourceInput> = z.object({
+  where: z.lazy(() => MemberLoansWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => MemberLoansUpdateWithoutSourceInputSchema),z.lazy(() => MemberLoansUncheckedUpdateWithoutSourceInputSchema) ]),
+}).strict();
+
+export const MemberLoansUpdateManyWithWhereWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansUpdateManyWithWhereWithoutSourceInput> = z.object({
+  where: z.lazy(() => MemberLoansScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => MemberLoansUpdateManyMutationInputSchema),z.lazy(() => MemberLoansUncheckedUpdateManyWithoutSourceInputSchema) ]),
+}).strict();
+
+export const AccountsThirdLvlUpsertWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpsertWithoutLoanSourceInput> = z.object({
+  update: z.union([ z.lazy(() => AccountsThirdLvlUpdateWithoutLoanSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedUpdateWithoutLoanSourceInputSchema) ]),
+  create: z.union([ z.lazy(() => AccountsThirdLvlCreateWithoutLoanSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedCreateWithoutLoanSourceInputSchema) ]),
+  where: z.lazy(() => AccountsThirdLvlWhereInputSchema).optional()
+}).strict();
+
+export const AccountsThirdLvlUpdateToOneWithWhereWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateToOneWithWhereWithoutLoanSourceInput> = z.object({
+  where: z.lazy(() => AccountsThirdLvlWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => AccountsThirdLvlUpdateWithoutLoanSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedUpdateWithoutLoanSourceInputSchema) ]),
+}).strict();
+
+export const AccountsThirdLvlUpdateWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateWithoutLoanSourceInput> = z.object({
+  accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  RootID: z.lazy(() => AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema).optional(),
+  Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional(),
+  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional()
+}).strict();
+
+export const AccountsThirdLvlUncheckedUpdateWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateWithoutLoanSourceInput> = z.object({
+  accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  rootId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional(),
+  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const JournalEntriesCreateWithoutMemberLoansInputSchema: z.ZodType<Prisma.JournalEntriesCreateWithoutMemberLoansInput> = z.object({
@@ -6704,6 +7157,22 @@ export const MembersUncheckedCreateWithoutLoansInputSchema: z.ZodType<Prisma.Mem
 export const MembersCreateOrConnectWithoutLoansInputSchema: z.ZodType<Prisma.MembersCreateOrConnectWithoutLoansInput> = z.object({
   where: z.lazy(() => MembersWhereUniqueInputSchema),
   create: z.union([ z.lazy(() => MembersCreateWithoutLoansInputSchema),z.lazy(() => MembersUncheckedCreateWithoutLoansInputSchema) ]),
+}).strict();
+
+export const LoanSourceCreateWithoutLoansInputSchema: z.ZodType<Prisma.LoanSourceCreateWithoutLoansInput> = z.object({
+  sourceName: z.string(),
+  DefaultAccount: z.lazy(() => AccountsThirdLvlCreateNestedOneWithoutLoanSourceInputSchema)
+}).strict();
+
+export const LoanSourceUncheckedCreateWithoutLoansInputSchema: z.ZodType<Prisma.LoanSourceUncheckedCreateWithoutLoansInput> = z.object({
+  sourceId: z.number().int().optional(),
+  sourceName: z.string(),
+  defaultAccount: z.string()
+}).strict();
+
+export const LoanSourceCreateOrConnectWithoutLoansInputSchema: z.ZodType<Prisma.LoanSourceCreateOrConnectWithoutLoansInput> = z.object({
+  where: z.lazy(() => LoanSourceWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutLoansInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutLoansInputSchema) ]),
 }).strict();
 
 export const JournalEntriesUpsertWithoutMemberLoansInputSchema: z.ZodType<Prisma.JournalEntriesUpsertWithoutMemberLoansInput> = z.object({
@@ -6847,6 +7316,28 @@ export const MembersUncheckedUpdateWithoutLoansInputSchema: z.ZodType<Prisma.Mem
   Journals: z.lazy(() => JournalEntriesUncheckedUpdateManyWithoutMembersNestedInputSchema).optional()
 }).strict();
 
+export const LoanSourceUpsertWithoutLoansInputSchema: z.ZodType<Prisma.LoanSourceUpsertWithoutLoansInput> = z.object({
+  update: z.union([ z.lazy(() => LoanSourceUpdateWithoutLoansInputSchema),z.lazy(() => LoanSourceUncheckedUpdateWithoutLoansInputSchema) ]),
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutLoansInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutLoansInputSchema) ]),
+  where: z.lazy(() => LoanSourceWhereInputSchema).optional()
+}).strict();
+
+export const LoanSourceUpdateToOneWithWhereWithoutLoansInputSchema: z.ZodType<Prisma.LoanSourceUpdateToOneWithWhereWithoutLoansInput> = z.object({
+  where: z.lazy(() => LoanSourceWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => LoanSourceUpdateWithoutLoansInputSchema),z.lazy(() => LoanSourceUncheckedUpdateWithoutLoansInputSchema) ]),
+}).strict();
+
+export const LoanSourceUpdateWithoutLoansInputSchema: z.ZodType<Prisma.LoanSourceUpdateWithoutLoansInput> = z.object({
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  DefaultAccount: z.lazy(() => AccountsThirdLvlUpdateOneRequiredWithoutLoanSourceNestedInputSchema).optional()
+}).strict();
+
+export const LoanSourceUncheckedUpdateWithoutLoansInputSchema: z.ZodType<Prisma.LoanSourceUncheckedUpdateWithoutLoansInput> = z.object({
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  defaultAccount: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const JournalEntriesCreateWithoutLoanRepaymentsInputSchema: z.ZodType<Prisma.JournalEntriesCreateWithoutLoanRepaymentsInput> = z.object({
   entryId: z.bigint().optional(),
   entryDate: z.coerce.date(),
@@ -6893,13 +7384,15 @@ export const MemberLoansCreateWithoutRepaymentsInputSchema: z.ZodType<Prisma.Mem
   dueDate: z.coerce.date(),
   isExisting: z.boolean().optional(),
   JournalEntries: z.lazy(() => JournalEntriesCreateNestedOneWithoutMemberLoansInputSchema).optional(),
-  Member: z.lazy(() => MembersCreateNestedOneWithoutLoansInputSchema)
+  Member: z.lazy(() => MembersCreateNestedOneWithoutLoansInputSchema),
+  Source: z.lazy(() => LoanSourceCreateNestedOneWithoutLoansInputSchema)
 }).strict();
 
 export const MemberLoansUncheckedCreateWithoutRepaymentsInputSchema: z.ZodType<Prisma.MemberLoansUncheckedCreateWithoutRepaymentsInput> = z.object({
   loanId: z.bigint().optional(),
   memberId: z.string(),
   loanType: z.lazy(() => LoanTypeSchema),
+  sourceId: z.number().int(),
   amountLoaned: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   amountPayable: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   interestRate: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -6978,13 +7471,15 @@ export const MemberLoansUpdateWithoutRepaymentsInputSchema: z.ZodType<Prisma.Mem
   dueDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isExisting: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   JournalEntries: z.lazy(() => JournalEntriesUpdateOneWithoutMemberLoansNestedInputSchema).optional(),
-  Member: z.lazy(() => MembersUpdateOneRequiredWithoutLoansNestedInputSchema).optional()
+  Member: z.lazy(() => MembersUpdateOneRequiredWithoutLoansNestedInputSchema).optional(),
+  Source: z.lazy(() => LoanSourceUpdateOneRequiredWithoutLoansNestedInputSchema).optional()
 }).strict();
 
 export const MemberLoansUncheckedUpdateWithoutRepaymentsInputSchema: z.ZodType<Prisma.MemberLoansUncheckedUpdateWithoutRepaymentsInput> = z.object({
   loanId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   memberId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   loanType: z.union([ z.lazy(() => LoanTypeSchema),z.lazy(() => EnumLoanTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   amountLoaned: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   amountPayable: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestRate: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -7063,7 +7558,7 @@ export const FundTransactionsCreateWithoutMemberFundsInputSchema: z.ZodType<Pris
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
-  newBalance: z.number(),
+  newBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   JournalEntries: z.lazy(() => JournalEntriesCreateNestedOneWithoutMemberFundsTransactInputSchema).optional()
 }).strict();
 
@@ -7074,7 +7569,7 @@ export const FundTransactionsUncheckedCreateWithoutMemberFundsInputSchema: z.Zod
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
-  newBalance: z.number()
+  newBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const FundTransactionsCreateOrConnectWithoutMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsCreateOrConnectWithoutMemberFundsInput> = z.object({
@@ -7183,7 +7678,7 @@ export const FundTransactionsScalarWhereInputSchema: z.ZodType<Prisma.FundTransa
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   postedBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
-  newBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  newBalance: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
 }).strict();
 
 export const JournalEntriesCreateWithoutMemberFundsTransactInputSchema: z.ZodType<Prisma.JournalEntriesCreateWithoutMemberFundsTransactInput> = z.object({
@@ -7404,7 +7899,7 @@ export const InvoiceItemsCreateManyInvoiceInputEnvelopeSchema: z.ZodType<Prisma.
 export const InvoicePaymentsCreateWithoutInvoiceInputSchema: z.ZodType<Prisma.InvoicePaymentsCreateWithoutInvoiceInput> = z.object({
   paymentId: z.bigint().optional(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   paymentDate: z.coerce.date().optional(),
   JournalEntry: z.lazy(() => JournalEntriesCreateNestedOneWithoutInvoicePaymentsInputSchema)
 }).strict();
@@ -7412,7 +7907,7 @@ export const InvoicePaymentsCreateWithoutInvoiceInputSchema: z.ZodType<Prisma.In
 export const InvoicePaymentsUncheckedCreateWithoutInvoiceInputSchema: z.ZodType<Prisma.InvoicePaymentsUncheckedCreateWithoutInvoiceInput> = z.object({
   paymentId: z.bigint().optional(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   journalRef: z.bigint(),
   paymentDate: z.coerce.date().optional()
 }).strict();
@@ -7547,7 +8042,7 @@ export const InvoicePaymentsScalarWhereInputSchema: z.ZodType<Prisma.InvoicePaym
   paymentId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   invoiceId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   orNo: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  paymentReceived: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  paymentReceived: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   journalRef: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   paymentDate: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
@@ -7849,25 +8344,27 @@ export const InvoiceItemsUpdateManyWithWhereWithoutItemInputSchema: z.ZodType<Pr
 export const AccountsThirdLvlCreateWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateWithoutRootIDInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedCreateWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateWithoutRootIDInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlCreateOrConnectWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateOrConnectWithoutRootIDInput> = z.object({
@@ -7903,8 +8400,8 @@ export const AccountsThirdLvlScalarWhereInputSchema: z.ZodType<Prisma.AccountsTh
   accountId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   accountName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rootId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  openingBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
-  runningBalance: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  openingBalance: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  runningBalance: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   isActive: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
@@ -7976,6 +8473,27 @@ export const JournalItemsCreateManyAccountsInputEnvelopeSchema: z.ZodType<Prisma
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const LoanSourceCreateWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceCreateWithoutDefaultAccountInput> = z.object({
+  sourceName: z.string(),
+  Loans: z.lazy(() => MemberLoansCreateNestedManyWithoutSourceInputSchema).optional()
+}).strict();
+
+export const LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceUncheckedCreateWithoutDefaultAccountInput> = z.object({
+  sourceId: z.number().int().optional(),
+  sourceName: z.string(),
+  Loans: z.lazy(() => MemberLoansUncheckedCreateNestedManyWithoutSourceInputSchema).optional()
+}).strict();
+
+export const LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceCreateOrConnectWithoutDefaultAccountInput> = z.object({
+  where: z.lazy(() => LoanSourceWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema) ]),
+}).strict();
+
+export const LoanSourceCreateManyDefaultAccountInputEnvelopeSchema: z.ZodType<Prisma.LoanSourceCreateManyDefaultAccountInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => LoanSourceCreateManyDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateManyDefaultAccountInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const AccountsSecondLvlUpsertWithoutChildrenInputSchema: z.ZodType<Prisma.AccountsSecondLvlUpsertWithoutChildrenInput> = z.object({
   update: z.union([ z.lazy(() => AccountsSecondLvlUpdateWithoutChildrenInputSchema),z.lazy(() => AccountsSecondLvlUncheckedUpdateWithoutChildrenInputSchema) ]),
   create: z.union([ z.lazy(() => AccountsSecondLvlCreateWithoutChildrenInputSchema),z.lazy(() => AccountsSecondLvlUncheckedCreateWithoutChildrenInputSchema) ]),
@@ -8041,6 +8559,31 @@ export const JournalItemsScalarWhereInputSchema: z.ZodType<Prisma.JournalItemsSc
   accountId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   debit: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   credit: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+}).strict();
+
+export const LoanSourceUpsertWithWhereUniqueWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceUpsertWithWhereUniqueWithoutDefaultAccountInput> = z.object({
+  where: z.lazy(() => LoanSourceWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => LoanSourceUpdateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUncheckedUpdateWithoutDefaultAccountInputSchema) ]),
+  create: z.union([ z.lazy(() => LoanSourceCreateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUncheckedCreateWithoutDefaultAccountInputSchema) ]),
+}).strict();
+
+export const LoanSourceUpdateWithWhereUniqueWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceUpdateWithWhereUniqueWithoutDefaultAccountInput> = z.object({
+  where: z.lazy(() => LoanSourceWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => LoanSourceUpdateWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUncheckedUpdateWithoutDefaultAccountInputSchema) ]),
+}).strict();
+
+export const LoanSourceUpdateManyWithWhereWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceUpdateManyWithWhereWithoutDefaultAccountInput> = z.object({
+  where: z.lazy(() => LoanSourceScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => LoanSourceUpdateManyMutationInputSchema),z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountInputSchema) ]),
+}).strict();
+
+export const LoanSourceScalarWhereInputSchema: z.ZodType<Prisma.LoanSourceScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => LoanSourceScalarWhereInputSchema),z.lazy(() => LoanSourceScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => LoanSourceScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => LoanSourceScalarWhereInputSchema),z.lazy(() => LoanSourceScalarWhereInputSchema).array() ]).optional(),
+  sourceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  sourceName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  defaultAccount: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const MembersCreateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersCreateWithoutDividendsInput> = z.object({
@@ -8109,25 +8652,27 @@ export const MembersCreateOrConnectWithoutDividendsInputSchema: z.ZodType<Prisma
 export const AccountsThirdLvlCreateWithoutDividendsInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateWithoutDividendsInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   RootID: z.lazy(() => AccountsSecondLvlCreateNestedOneWithoutChildrenInputSchema),
-  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedCreateWithoutDividendsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateWithoutDividendsInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
   rootId: z.number().int(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
-  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlCreateOrConnectWithoutDividendsInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateOrConnectWithoutDividendsInput> = z.object({
@@ -8218,25 +8763,27 @@ export const AccountsThirdLvlUpdateToOneWithWhereWithoutDividendsInputSchema: z.
 export const AccountsThirdLvlUpdateWithoutDividendsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateWithoutDividendsInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   RootID: z.lazy(() => AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateWithoutDividendsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateWithoutDividendsInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rootId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
-  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
 }).strict();
 
 export const JournalItemsCreateWithoutJournalEntriesInputSchema: z.ZodType<Prisma.JournalItemsCreateWithoutJournalEntriesInput> = z.object({
@@ -8268,7 +8815,7 @@ export const FundTransactionsCreateWithoutJournalEntriesInputSchema: z.ZodType<P
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
-  newBalance: z.number(),
+  newBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   MemberFunds: z.lazy(() => MemberFundsCreateNestedOneWithoutTransactionsInputSchema)
 }).strict();
 
@@ -8279,7 +8826,7 @@ export const FundTransactionsUncheckedCreateWithoutJournalEntriesInputSchema: z.
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
-  newBalance: z.number()
+  newBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const FundTransactionsCreateOrConnectWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsCreateOrConnectWithoutJournalEntriesInput> = z.object({
@@ -8358,7 +8905,7 @@ export const MembersCreateOrConnectWithoutJournalsInputSchema: z.ZodType<Prisma.
 export const InvoicePaymentsCreateWithoutJournalEntryInputSchema: z.ZodType<Prisma.InvoicePaymentsCreateWithoutJournalEntryInput> = z.object({
   paymentId: z.bigint().optional(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   paymentDate: z.coerce.date().optional(),
   Invoice: z.lazy(() => InvoiceCreateNestedOneWithoutInvoicePaymentsInputSchema)
 }).strict();
@@ -8367,7 +8914,7 @@ export const InvoicePaymentsUncheckedCreateWithoutJournalEntryInputSchema: z.Zod
   paymentId: z.bigint().optional(),
   invoiceId: z.bigint(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   paymentDate: z.coerce.date().optional()
 }).strict();
 
@@ -8392,13 +8939,15 @@ export const MemberLoansCreateWithoutJournalEntriesInputSchema: z.ZodType<Prisma
   dueDate: z.coerce.date(),
   isExisting: z.boolean().optional(),
   Repayments: z.lazy(() => LoanRepaymentsCreateNestedManyWithoutLoanInputSchema).optional(),
-  Member: z.lazy(() => MembersCreateNestedOneWithoutLoansInputSchema)
+  Member: z.lazy(() => MembersCreateNestedOneWithoutLoansInputSchema),
+  Source: z.lazy(() => LoanSourceCreateNestedOneWithoutLoansInputSchema)
 }).strict();
 
 export const MemberLoansUncheckedCreateWithoutJournalEntriesInputSchema: z.ZodType<Prisma.MemberLoansUncheckedCreateWithoutJournalEntriesInput> = z.object({
   loanId: z.bigint().optional(),
   memberId: z.string(),
   loanType: z.lazy(() => LoanTypeSchema),
+  sourceId: z.number().int(),
   amountLoaned: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   amountPayable: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   interestRate: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -8585,13 +9134,15 @@ export const MemberLoansUpdateWithoutJournalEntriesInputSchema: z.ZodType<Prisma
   dueDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isExisting: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   Repayments: z.lazy(() => LoanRepaymentsUpdateManyWithoutLoanNestedInputSchema).optional(),
-  Member: z.lazy(() => MembersUpdateOneRequiredWithoutLoansNestedInputSchema).optional()
+  Member: z.lazy(() => MembersUpdateOneRequiredWithoutLoansNestedInputSchema).optional(),
+  Source: z.lazy(() => LoanSourceUpdateOneRequiredWithoutLoansNestedInputSchema).optional()
 }).strict();
 
 export const MemberLoansUncheckedUpdateWithoutJournalEntriesInputSchema: z.ZodType<Prisma.MemberLoansUncheckedUpdateWithoutJournalEntriesInput> = z.object({
   loanId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   memberId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   loanType: z.union([ z.lazy(() => LoanTypeSchema),z.lazy(() => EnumLoanTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   amountLoaned: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   amountPayable: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestRate: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8656,25 +9207,27 @@ export const JournalEntriesCreateOrConnectWithoutJournalItemsInputSchema: z.ZodT
 export const AccountsThirdLvlCreateWithoutJournalItemsInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateWithoutJournalItemsInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   RootID: z.lazy(() => AccountsSecondLvlCreateNestedOneWithoutChildrenInputSchema),
-  Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional()
+  Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedCreateWithoutJournalItemsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateWithoutJournalItemsInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
   rootId: z.number().int(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
-  Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional()
+  Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlCreateOrConnectWithoutJournalItemsInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateOrConnectWithoutJournalItemsInput> = z.object({
@@ -8737,25 +9290,27 @@ export const AccountsThirdLvlUpdateToOneWithWhereWithoutJournalItemsInputSchema:
 export const AccountsThirdLvlUpdateWithoutJournalItemsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateWithoutJournalItemsInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   RootID: z.lazy(() => AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema).optional(),
-  Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional()
+  Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateWithoutJournalItemsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateWithoutJournalItemsInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rootId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
-  Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional()
+  Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
 }).strict();
 
 export const DividendsCreateManyMembersInputSchema: z.ZodType<Prisma.DividendsCreateManyMembersInput> = z.object({
@@ -8768,6 +9323,7 @@ export const DividendsCreateManyMembersInputSchema: z.ZodType<Prisma.DividendsCr
 export const MemberLoansCreateManyMemberInputSchema: z.ZodType<Prisma.MemberLoansCreateManyMemberInput> = z.object({
   loanId: z.bigint().optional(),
   loanType: z.lazy(() => LoanTypeSchema),
+  sourceId: z.number().int(),
   amountLoaned: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   amountPayable: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   interestRate: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -8828,12 +9384,14 @@ export const MemberLoansUpdateWithoutMemberInputSchema: z.ZodType<Prisma.MemberL
   dueDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isExisting: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   JournalEntries: z.lazy(() => JournalEntriesUpdateOneWithoutMemberLoansNestedInputSchema).optional(),
-  Repayments: z.lazy(() => LoanRepaymentsUpdateManyWithoutLoanNestedInputSchema).optional()
+  Repayments: z.lazy(() => LoanRepaymentsUpdateManyWithoutLoanNestedInputSchema).optional(),
+  Source: z.lazy(() => LoanSourceUpdateOneRequiredWithoutLoansNestedInputSchema).optional()
 }).strict();
 
 export const MemberLoansUncheckedUpdateWithoutMemberInputSchema: z.ZodType<Prisma.MemberLoansUncheckedUpdateWithoutMemberInput> = z.object({
   loanId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   loanType: z.union([ z.lazy(() => LoanTypeSchema),z.lazy(() => EnumLoanTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   amountLoaned: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   amountPayable: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestRate: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8848,6 +9406,7 @@ export const MemberLoansUncheckedUpdateWithoutMemberInputSchema: z.ZodType<Prism
 export const MemberLoansUncheckedUpdateManyWithoutMemberInputSchema: z.ZodType<Prisma.MemberLoansUncheckedUpdateManyWithoutMemberInput> = z.object({
   loanId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   loanType: z.union([ z.lazy(() => LoanTypeSchema),z.lazy(() => EnumLoanTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   amountLoaned: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   amountPayable: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestRate: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8926,6 +9485,64 @@ export const JournalEntriesUncheckedUpdateManyWithoutMembersInputSchema: z.ZodTy
   journalType: z.union([ z.lazy(() => JournalTypeSchema),z.lazy(() => EnumJournalTypeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const MemberLoansCreateManySourceInputSchema: z.ZodType<Prisma.MemberLoansCreateManySourceInput> = z.object({
+  loanId: z.bigint().optional(),
+  memberId: z.string(),
+  loanType: z.lazy(() => LoanTypeSchema),
+  amountLoaned: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  amountPayable: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  interestRate: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  termInMonths: z.number().int(),
+  issueDate: z.coerce.date(),
+  dueDate: z.coerce.date(),
+  isExisting: z.boolean().optional(),
+  journalRef: z.bigint().optional().nullable()
+}).strict();
+
+export const MemberLoansUpdateWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansUpdateWithoutSourceInput> = z.object({
+  loanId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
+  loanType: z.union([ z.lazy(() => LoanTypeSchema),z.lazy(() => EnumLoanTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  amountLoaned: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  amountPayable: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  interestRate: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  termInMonths: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  issueDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  dueDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isExisting: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  JournalEntries: z.lazy(() => JournalEntriesUpdateOneWithoutMemberLoansNestedInputSchema).optional(),
+  Repayments: z.lazy(() => LoanRepaymentsUpdateManyWithoutLoanNestedInputSchema).optional(),
+  Member: z.lazy(() => MembersUpdateOneRequiredWithoutLoansNestedInputSchema).optional()
+}).strict();
+
+export const MemberLoansUncheckedUpdateWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansUncheckedUpdateWithoutSourceInput> = z.object({
+  loanId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
+  memberId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  loanType: z.union([ z.lazy(() => LoanTypeSchema),z.lazy(() => EnumLoanTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  amountLoaned: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  amountPayable: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  interestRate: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  termInMonths: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  issueDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  dueDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isExisting: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  journalRef: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  Repayments: z.lazy(() => LoanRepaymentsUncheckedUpdateManyWithoutLoanNestedInputSchema).optional()
+}).strict();
+
+export const MemberLoansUncheckedUpdateManyWithoutSourceInputSchema: z.ZodType<Prisma.MemberLoansUncheckedUpdateManyWithoutSourceInput> = z.object({
+  loanId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
+  memberId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  loanType: z.union([ z.lazy(() => LoanTypeSchema),z.lazy(() => EnumLoanTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  amountLoaned: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  amountPayable: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  interestRate: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  termInMonths: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  issueDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  dueDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isExisting: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  journalRef: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+}).strict();
+
 export const LoanRepaymentsCreateManyLoanInputSchema: z.ZodType<Prisma.LoanRepaymentsCreateManyLoanInput> = z.object({
   repaymentId: z.bigint().optional(),
   paymentSched: z.coerce.date(),
@@ -8977,7 +9594,7 @@ export const FundTransactionsCreateManyMemberFundsInputSchema: z.ZodType<Prisma.
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
-  newBalance: z.number()
+  newBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const FundTransactionsUpdateWithoutMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsUpdateWithoutMemberFundsInput> = z.object({
@@ -8985,7 +9602,7 @@ export const FundTransactionsUpdateWithoutMemberFundsInputSchema: z.ZodType<Pris
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   JournalEntries: z.lazy(() => JournalEntriesUpdateOneWithoutMemberFundsTransactNestedInputSchema).optional()
 }).strict();
 
@@ -8996,7 +9613,7 @@ export const FundTransactionsUncheckedUpdateWithoutMemberFundsInputSchema: z.Zod
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FundTransactionsUncheckedUpdateManyWithoutMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateManyWithoutMemberFundsInput> = z.object({
@@ -9006,7 +9623,7 @@ export const FundTransactionsUncheckedUpdateManyWithoutMemberFundsInputSchema: z
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InvoiceItemsCreateManyInvoiceInputSchema: z.ZodType<Prisma.InvoiceItemsCreateManyInvoiceInput> = z.object({
@@ -9020,7 +9637,7 @@ export const InvoiceItemsCreateManyInvoiceInputSchema: z.ZodType<Prisma.InvoiceI
 export const InvoicePaymentsCreateManyInvoiceInputSchema: z.ZodType<Prisma.InvoicePaymentsCreateManyInvoiceInput> = z.object({
   paymentId: z.bigint().optional(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   journalRef: z.bigint(),
   paymentDate: z.coerce.date().optional()
 }).strict();
@@ -9052,7 +9669,7 @@ export const InvoiceItemsUncheckedUpdateManyWithoutInvoiceInputSchema: z.ZodType
 export const InvoicePaymentsUpdateWithoutInvoiceInputSchema: z.ZodType<Prisma.InvoicePaymentsUpdateWithoutInvoiceInput> = z.object({
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   JournalEntry: z.lazy(() => JournalEntriesUpdateOneRequiredWithoutInvoicePaymentsNestedInputSchema).optional()
 }).strict();
@@ -9060,7 +9677,7 @@ export const InvoicePaymentsUpdateWithoutInvoiceInputSchema: z.ZodType<Prisma.In
 export const InvoicePaymentsUncheckedUpdateWithoutInvoiceInputSchema: z.ZodType<Prisma.InvoicePaymentsUncheckedUpdateWithoutInvoiceInput> = z.object({
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   journalRef: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -9068,7 +9685,7 @@ export const InvoicePaymentsUncheckedUpdateWithoutInvoiceInputSchema: z.ZodType<
 export const InvoicePaymentsUncheckedUpdateManyWithoutInvoiceInputSchema: z.ZodType<Prisma.InvoicePaymentsUncheckedUpdateManyWithoutInvoiceInput> = z.object({
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   journalRef: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -9108,8 +9725,8 @@ export const InvoiceItemsUncheckedUpdateManyWithoutItemInputSchema: z.ZodType<Pr
 export const AccountsThirdLvlCreateManyRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateManyRootIDInput> = z.object({
   accountId: z.string().cuid().optional(),
   accountName: z.string(),
-  openingBalance: z.number(),
-  runningBalance: z.number().optional(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional()
@@ -9118,32 +9735,34 @@ export const AccountsThirdLvlCreateManyRootIDInputSchema: z.ZodType<Prisma.Accou
 export const AccountsThirdLvlUpdateWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateWithoutRootIDInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateWithoutRootIDInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateManyWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateManyWithoutRootIDInput> = z.object({
   accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  openingBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  runningBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
@@ -9161,6 +9780,11 @@ export const JournalItemsCreateManyAccountsInputSchema: z.ZodType<Prisma.Journal
   entryId: z.bigint(),
   debit: z.number(),
   credit: z.number()
+}).strict();
+
+export const LoanSourceCreateManyDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceCreateManyDefaultAccountInput> = z.object({
+  sourceId: z.number().int().optional(),
+  sourceName: z.string()
 }).strict();
 
 export const DividendsUpdateWithoutAccountInputSchema: z.ZodType<Prisma.DividendsUpdateWithoutAccountInput> = z.object({
@@ -9205,6 +9829,22 @@ export const JournalItemsUncheckedUpdateManyWithoutAccountsInputSchema: z.ZodTyp
   credit: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const LoanSourceUpdateWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceUpdateWithoutDefaultAccountInput> = z.object({
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  Loans: z.lazy(() => MemberLoansUpdateManyWithoutSourceNestedInputSchema).optional()
+}).strict();
+
+export const LoanSourceUncheckedUpdateWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceUncheckedUpdateWithoutDefaultAccountInput> = z.object({
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  Loans: z.lazy(() => MemberLoansUncheckedUpdateManyWithoutSourceNestedInputSchema).optional()
+}).strict();
+
+export const LoanSourceUncheckedUpdateManyWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceUncheckedUpdateManyWithoutDefaultAccountInput> = z.object({
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const JournalItemsCreateManyJournalEntriesInputSchema: z.ZodType<Prisma.JournalItemsCreateManyJournalEntriesInput> = z.object({
   journalItemsId: z.bigint().optional(),
   accountId: z.string(),
@@ -9219,14 +9859,14 @@ export const FundTransactionsCreateManyJournalEntriesInputSchema: z.ZodType<Pris
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
   postedBalance: z.number(),
-  newBalance: z.number()
+  newBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const InvoicePaymentsCreateManyJournalEntryInputSchema: z.ZodType<Prisma.InvoicePaymentsCreateManyJournalEntryInput> = z.object({
   paymentId: z.bigint().optional(),
   invoiceId: z.bigint(),
   orNo: z.string(),
-  paymentReceived: z.number(),
+  paymentReceived: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   paymentDate: z.coerce.date().optional()
 }).strict();
 
@@ -9267,7 +9907,7 @@ export const FundTransactionsUpdateWithoutJournalEntriesInputSchema: z.ZodType<P
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   MemberFunds: z.lazy(() => MemberFundsUpdateOneRequiredWithoutTransactionsNestedInputSchema).optional()
 }).strict();
 
@@ -9278,7 +9918,7 @@ export const FundTransactionsUncheckedUpdateWithoutJournalEntriesInputSchema: z.
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FundTransactionsUncheckedUpdateManyWithoutJournalEntriesInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateManyWithoutJournalEntriesInput> = z.object({
@@ -9288,13 +9928,13 @@ export const FundTransactionsUncheckedUpdateManyWithoutJournalEntriesInputSchema
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   postedBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
-  newBalance: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  newBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InvoicePaymentsUpdateWithoutJournalEntryInputSchema: z.ZodType<Prisma.InvoicePaymentsUpdateWithoutJournalEntryInput> = z.object({
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   Invoice: z.lazy(() => InvoiceUpdateOneRequiredWithoutInvoicePaymentsNestedInputSchema).optional()
 }).strict();
@@ -9303,7 +9943,7 @@ export const InvoicePaymentsUncheckedUpdateWithoutJournalEntryInputSchema: z.Zod
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   invoiceId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -9311,7 +9951,7 @@ export const InvoicePaymentsUncheckedUpdateManyWithoutJournalEntryInputSchema: z
   paymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   invoiceId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   orNo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  paymentReceived: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paymentReceived: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   paymentDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -9469,6 +10109,68 @@ export const MembersFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.MembersFindUni
   select: MembersSelectSchema.optional(),
   include: MembersIncludeSchema.optional(),
   where: MembersWhereUniqueInputSchema,
+}).strict() ;
+
+export const LoanSourceFindFirstArgsSchema: z.ZodType<Prisma.LoanSourceFindFirstArgs> = z.object({
+  select: LoanSourceSelectSchema.optional(),
+  include: LoanSourceIncludeSchema.optional(),
+  where: LoanSourceWhereInputSchema.optional(),
+  orderBy: z.union([ LoanSourceOrderByWithRelationInputSchema.array(),LoanSourceOrderByWithRelationInputSchema ]).optional(),
+  cursor: LoanSourceWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ LoanSourceScalarFieldEnumSchema,LoanSourceScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const LoanSourceFindFirstOrThrowArgsSchema: z.ZodType<Prisma.LoanSourceFindFirstOrThrowArgs> = z.object({
+  select: LoanSourceSelectSchema.optional(),
+  include: LoanSourceIncludeSchema.optional(),
+  where: LoanSourceWhereInputSchema.optional(),
+  orderBy: z.union([ LoanSourceOrderByWithRelationInputSchema.array(),LoanSourceOrderByWithRelationInputSchema ]).optional(),
+  cursor: LoanSourceWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ LoanSourceScalarFieldEnumSchema,LoanSourceScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const LoanSourceFindManyArgsSchema: z.ZodType<Prisma.LoanSourceFindManyArgs> = z.object({
+  select: LoanSourceSelectSchema.optional(),
+  include: LoanSourceIncludeSchema.optional(),
+  where: LoanSourceWhereInputSchema.optional(),
+  orderBy: z.union([ LoanSourceOrderByWithRelationInputSchema.array(),LoanSourceOrderByWithRelationInputSchema ]).optional(),
+  cursor: LoanSourceWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ LoanSourceScalarFieldEnumSchema,LoanSourceScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const LoanSourceAggregateArgsSchema: z.ZodType<Prisma.LoanSourceAggregateArgs> = z.object({
+  where: LoanSourceWhereInputSchema.optional(),
+  orderBy: z.union([ LoanSourceOrderByWithRelationInputSchema.array(),LoanSourceOrderByWithRelationInputSchema ]).optional(),
+  cursor: LoanSourceWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const LoanSourceGroupByArgsSchema: z.ZodType<Prisma.LoanSourceGroupByArgs> = z.object({
+  where: LoanSourceWhereInputSchema.optional(),
+  orderBy: z.union([ LoanSourceOrderByWithAggregationInputSchema.array(),LoanSourceOrderByWithAggregationInputSchema ]).optional(),
+  by: LoanSourceScalarFieldEnumSchema.array(),
+  having: LoanSourceScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const LoanSourceFindUniqueArgsSchema: z.ZodType<Prisma.LoanSourceFindUniqueArgs> = z.object({
+  select: LoanSourceSelectSchema.optional(),
+  include: LoanSourceIncludeSchema.optional(),
+  where: LoanSourceWhereUniqueInputSchema,
+}).strict() ;
+
+export const LoanSourceFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.LoanSourceFindUniqueOrThrowArgs> = z.object({
+  select: LoanSourceSelectSchema.optional(),
+  include: LoanSourceIncludeSchema.optional(),
+  where: LoanSourceWhereUniqueInputSchema,
 }).strict() ;
 
 export const MemberLoansFindFirstArgsSchema: z.ZodType<Prisma.MemberLoansFindFirstArgs> = z.object({
@@ -10420,6 +11122,52 @@ export const MembersUpdateManyArgsSchema: z.ZodType<Prisma.MembersUpdateManyArgs
 
 export const MembersDeleteManyArgsSchema: z.ZodType<Prisma.MembersDeleteManyArgs> = z.object({
   where: MembersWhereInputSchema.optional(),
+}).strict() ;
+
+export const LoanSourceCreateArgsSchema: z.ZodType<Prisma.LoanSourceCreateArgs> = z.object({
+  select: LoanSourceSelectSchema.optional(),
+  include: LoanSourceIncludeSchema.optional(),
+  data: z.union([ LoanSourceCreateInputSchema,LoanSourceUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const LoanSourceUpsertArgsSchema: z.ZodType<Prisma.LoanSourceUpsertArgs> = z.object({
+  select: LoanSourceSelectSchema.optional(),
+  include: LoanSourceIncludeSchema.optional(),
+  where: LoanSourceWhereUniqueInputSchema,
+  create: z.union([ LoanSourceCreateInputSchema,LoanSourceUncheckedCreateInputSchema ]),
+  update: z.union([ LoanSourceUpdateInputSchema,LoanSourceUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const LoanSourceCreateManyArgsSchema: z.ZodType<Prisma.LoanSourceCreateManyArgs> = z.object({
+  data: z.union([ LoanSourceCreateManyInputSchema,LoanSourceCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const LoanSourceCreateManyAndReturnArgsSchema: z.ZodType<Prisma.LoanSourceCreateManyAndReturnArgs> = z.object({
+  data: z.union([ LoanSourceCreateManyInputSchema,LoanSourceCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const LoanSourceDeleteArgsSchema: z.ZodType<Prisma.LoanSourceDeleteArgs> = z.object({
+  select: LoanSourceSelectSchema.optional(),
+  include: LoanSourceIncludeSchema.optional(),
+  where: LoanSourceWhereUniqueInputSchema,
+}).strict() ;
+
+export const LoanSourceUpdateArgsSchema: z.ZodType<Prisma.LoanSourceUpdateArgs> = z.object({
+  select: LoanSourceSelectSchema.optional(),
+  include: LoanSourceIncludeSchema.optional(),
+  data: z.union([ LoanSourceUpdateInputSchema,LoanSourceUncheckedUpdateInputSchema ]),
+  where: LoanSourceWhereUniqueInputSchema,
+}).strict() ;
+
+export const LoanSourceUpdateManyArgsSchema: z.ZodType<Prisma.LoanSourceUpdateManyArgs> = z.object({
+  data: z.union([ LoanSourceUpdateManyMutationInputSchema,LoanSourceUncheckedUpdateManyInputSchema ]),
+  where: LoanSourceWhereInputSchema.optional(),
+}).strict() ;
+
+export const LoanSourceDeleteManyArgsSchema: z.ZodType<Prisma.LoanSourceDeleteManyArgs> = z.object({
+  where: LoanSourceWhereInputSchema.optional(),
 }).strict() ;
 
 export const MemberLoansCreateArgsSchema: z.ZodType<Prisma.MemberLoansCreateArgs> = z.object({

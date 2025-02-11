@@ -72,10 +72,10 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
   const { executeAsync, result, isExecuting } = useAction(createInvoice.bind(null, grandTotal));
 
   const handleAddLineItem = React.useCallback(() => {
-    const lineItems = watch('lineItems');
+    const _lineItems = watch('lineItems');
 
     setValue('lineItems', [
-      ...lineItems,
+      ..._lineItems,
       {
         lineId: uuidv4(),
         itemId: '',

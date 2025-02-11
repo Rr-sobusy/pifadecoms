@@ -23,7 +23,6 @@ import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 
 import FundTransactionPaginator from './fund-transcaction-table-paginator';
-import AdbCalculator from './adb-interest-card';
 
 interface SavingsCardProps {
   fund: MemberFundsType[0];
@@ -106,7 +105,7 @@ const columns = [
           New Balance
         </Typography>
         <Typography color="text.secondary" variant="caption">
-          {formatToCurrency(row.newBalance, 'Fil-ph', 'Php')}
+          {formatToCurrency(Number(row.newBalance), 'Fil-ph', 'Php')}
         </Typography>
       </Stack>
     ),

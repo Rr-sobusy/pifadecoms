@@ -103,6 +103,8 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
           ? prevSelected.filter((r) => r.repaymentId !== row.repaymentId)
           : [...prevSelected, row];
       });
+    } else {
+      alert('Payment already settled');
     }
   }
 
@@ -120,15 +122,11 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
     setSelectedRows(rows.filter((row) => !row.paymentDate)); // Select all unpaid
   }
 
-  function handleDeselectAll(_: React.ChangeEvent) {
+  function handleDeselectAll() {
     setSelectedRows([]);
   }
 
   const isSame = Object.is(stringify(rows), stringify(watchedRows));
-
-  useEffect(() => {
-    console.log(selectedRows);
-  }, [selectedRows]);
 
   function setDialogOpen(): void {
     setDialogStatus(true);
@@ -186,6 +184,7 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
         selectedRows={selectedRows}
         handleClose={setDialogClose}
         open={isDialogOpen}
+        handleRemoveSelectedRows={handleDeselectAll}
       />
     </>
   );

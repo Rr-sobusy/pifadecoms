@@ -29,7 +29,6 @@ import { z as zod } from 'zod';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { logger } from '@/lib/default-logger';
-import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
@@ -105,7 +104,7 @@ const defaultValues = {
   taxRate: 0,
 } satisfies Values;
 
-export function InvoiceCreateForm({ members }: { members?: MembersType }): React.JSX.Element {
+export function InvoiceCreateForm(): React.JSX.Element {
   const router = useRouter();
 
   const {

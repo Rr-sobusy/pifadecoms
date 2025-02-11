@@ -52,6 +52,7 @@
     "@tiptap/starter-kit": "2.8.0",
     "aws-amplify": "6.6.5",
     "dayjs": "1.11.13",
+    "decimal.js": "^10.5.0",
     "embla-carousel": "8.3.0",
     "embla-carousel-react": "8.3.0",
     "exceljs": "^4.4.0",

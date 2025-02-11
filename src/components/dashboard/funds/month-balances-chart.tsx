@@ -1,15 +1,11 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { formatToCurrency } from '@/lib/format-currency';
-import { MemberFundsType } from '@/actions/funds/types';
 import { NoSsr } from '@/components/core/no-ssr';
 
 type Props = {

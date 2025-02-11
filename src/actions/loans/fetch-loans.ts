@@ -66,6 +66,7 @@ export async function fetchLoanDetails(loanId: bigint) {
         }
       },
       JournalEntries: true,
+      Source : true
     },
   });
 

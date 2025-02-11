@@ -8,9 +8,8 @@ import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { fetchJournals } from './fetch-journal';
-
 export type JournalEntryType = Prisma.PromiseReturnType<typeof fetchJournals>;
-
+import Decimal from 'decimal.js'
 export const transactionalSchema = z.object({
   entryDate: z.date(),
   reference: z.string(),
@@ -39,16 +38,16 @@ export const transactionalSchema = z.object({
       z.object({
         journalLineItemId: z.string(),
         accountDetails: z.object({
-          accountId: z.string(),
-          accountName: z.string(),
-          createdAt: z.date().optional(),
-          rootId: z.number().optional(),
-          openingBalance: z.number().optional(),
-          runningBalance: z.number().optional(),
-          updatedAt: z.date().optional(),
-          isActive: z.boolean().optional(),
-          group: z.string(),
-          rootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']).optional(),
+          accountId: z.string().default(''),
+          accountName: z.string().default(''),
+          createdAt: z.date().optional().default(new Date()),
+          rootId: z.number().optional().default(1),
+          openingBalance: z.preprocess((val)=> new Decimal(val as number), z.instanceof(Decimal)),
+          runningBalance: z.preprocess((val)=> new Decimal(val as number), z.instanceof(Decimal)),
+          updatedAt:  z.date().optional().default(new Date()),
+          isActive: z.boolean().optional().default(false),
+          group: z.string().default(''),
+          rootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']).optional().default("Assets"),
         }),
         debit: z.number(),
         credit: z.number(),

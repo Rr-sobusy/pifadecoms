@@ -7,15 +7,14 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
-import { CurrencyRub as PayIcon } from '@phosphor-icons/react/dist/ssr/CurrencyRub';
-import { Printer as PrinterIcon } from '@phosphor-icons/react/dist/ssr/Printer';
+
 
 import { paths } from '@/paths';
 import { fetchLoanDetails } from '@/actions/loans/fetch-loans';
 import LoanAmortizationDetails from '@/components/dashboard/member-loans/loan-amortization-details-card';
 import LoanDetailsCard from '@/components/dashboard/member-loans/loan-details-card';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
-import type { AccounTreeType } from '@/actions/accounts/types';
+
 interface PageProps {
   params: { loanId: bigint };
 }

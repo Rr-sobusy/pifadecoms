@@ -5,7 +5,6 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
-import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 import { FileArchive as CompareIcon } from '@phosphor-icons/react/dist/ssr/FileArchive';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { getBalanceSheet } from '@/actions/reports/balance-sheet';

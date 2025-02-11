@@ -110,7 +110,7 @@ export const paths = {
     loans: {
       list: '/dashboard/memberLoans/list',
       create: '/dashboard/memberLoans/create/new',
-      view: (loanId: bigint) => `/dashboard/memberLoans/${loanId}`,
+      view: (loanId: bigint | 0) => `/dashboard/memberLoans/${loanId}`,
     },
     reports: {
       ledgerList: '/dashboard/reports/ledger',

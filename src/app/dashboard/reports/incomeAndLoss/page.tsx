@@ -8,7 +8,6 @@ import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FileArchive as CompareIcon } from '@phosphor-icons/react/dist/ssr/FileArchive';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { getBalanceSheet } from '@/actions/reports/balance-sheet';
-import BalanceTable from '@/components/dashboard/reports/balancesheet/balance-table';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import IncomeTable from '@/components/dashboard/reports/income-loss/income-table';
 

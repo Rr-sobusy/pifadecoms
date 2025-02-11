@@ -20,6 +20,7 @@ import Typography from '@mui/material/Typography';
 import { DatePicker, DatePickerFieldProps } from '@mui/x-date-pickers';
 import { Rows } from '@phosphor-icons/react';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
+import Decimal from 'decimal.js';
 import { stringify } from 'json-bigint';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
@@ -27,6 +28,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
+import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import { createAmortizationPayment } from '@/actions/loans/create-amortization-payment';
 import { ILoanType, IRepaymentAction, repaymentAction } from '@/actions/loans/types';
@@ -41,20 +43,30 @@ interface PageProps {
   accounts: AccounTreeType;
   memberId: string | undefined;
   loanId: bigint | undefined;
+  handleRemoveSelectedRows?: () => void;
 }
 
-function CreateAmortizationPayment({ open = true, handleClose, selectedRows, accounts, memberId, loanId }: PageProps) {
+function CreateAmortizationPayment({
+  open = true,
+  handleClose,
+  selectedRows,
+  handleRemoveSelectedRows,
+  accounts,
+  memberId,
+  loanId,
+}: PageProps) {
   const {
     control,
-    watch,
     getValues,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<IRepaymentAction>({
     defaultValues: {
       paymentSched: [],
       loanId: Number(loanId),
+      entryDate: new Date(),
       particulars: { firstName: '', lastName: '', memberId: memberId },
       journalType: 'cashReceipts',
       referenceType: 'LoanRepayments',
@@ -111,13 +123,14 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
   );
 
   function submitHandler(data: any) {
-    execute(data);
+   alert(loanId)
   }
 
   React.useEffect(() => {
     if (result.data?.success) {
       handleClose();
-      router.push(pathname);
+      handleRemoveSelectedRows?.();
+      router.push(paths.dashboard.loans.view(loanId || 0))
     }
   }, [result]);
 
@@ -126,13 +139,27 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
     return setValue('journalLineItems', [
       ...existingLines,
       {
-        accountDetails: { accountId: '', accountName: '', group: '' },
+        accountDetails: {
+          accountId: '',
+          accountName: '',
+          group: '',
+          createdAt: new Date(),
+          isActive: true,
+          openingBalance: new Decimal(0),
+          runningBalance: new Decimal(0),
+          rootId: 1,
+          rootType: 'Assets',
+          updatedAt: new Date(),
+        },
         debit: 0,
         credit: 0,
         journalLineItemId: uuidv4(),
       },
     ]);
   }, [getValues, setValue]);
+
+  const totalDebits = watch('journalLineItems').reduce((acc, curr) => acc + curr.debit, 0);
+  const totalCredits = watch('journalLineItems').reduce((acc, curr) => acc + curr.credit, 0);
   return (
     <Dialog
       sx={{
@@ -246,7 +273,7 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
           </Stack>
           <Divider />
           <Stack spacing={2} marginY={2}>
-          <Typography variant="h6">Journal Line</Typography>
+            <Typography variant="h6">Journal Line</Typography>
             {watchJournalLines.map((_, index) => (
               <Stack key={index} direction="row" spacing={1}>
                 <Controller
@@ -286,6 +313,17 @@ function CreateAmortizationPayment({ open = true, handleClose, selectedRows, acc
                 />
               </Stack>
             ))}
+            <Stack spacing={4} flexDirection="row">
+              <Stack sx={{ width: '50%' }} spacing={3}>
+                <Typography variant="subtitle2">Totals</Typography>
+              </Stack>
+              <Stack sx={{ width: '10%' }} spacing={3}>
+                <Typography variant="subtitle2">{formatToCurrency(totalDebits, 'Fil-ph', 'Php')}</Typography>
+              </Stack>
+              <Stack sx={{ width: '10%', marginLeft: '-7px' }} spacing={3}>
+                <Typography variant="subtitle2">{formatToCurrency(totalCredits, 'Fil-ph', 'Php')}</Typography>
+              </Stack>
+            </Stack>
             <div>
               <Button onClick={handleAddJournalLine} variant="outlined" color="secondary">
                 Add line

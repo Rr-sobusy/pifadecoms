@@ -172,7 +172,7 @@ export const CreateSavingsTransaction = ({
             <Stack>
               <Typography variant="h6"> New Transaction</Typography>
               <Typography color="" variant="caption">
-                Transact member's savings ({transactionType})
+                Transact member&apos;s savings ({transactionType})
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -320,7 +320,7 @@ export const CreateSavingsTransaction = ({
               )}
             />
             <Stack justifyContent="flex-end" gap={2} flexDirection="row" marginTop={1}>
-              <Button type="button" onClick={() => console.log(errors)} variant="outlined">
+              <Button type="button" variant="outlined">
                 Cancel
               </Button>
               <Button disabled={isExecuting} type="submit" variant="contained">

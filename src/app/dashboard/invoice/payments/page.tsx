@@ -1,10 +1,7 @@
 import React from 'react';
-import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { paths } from '@/paths'
 import { fetchReceivedPayments } from '@/actions/invoice-payments/fetch-payments';
 import PaymentsTable from '@/components/dashboard/payments/payments-table';
 

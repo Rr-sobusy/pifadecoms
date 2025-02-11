@@ -1,7 +1,7 @@
 import React from 'react';
 import TablePagination from '@mui/material/TablePagination';
 
-type PaginatorProps = {
+interface PaginatorProps  {
   count: number;
   handlePageChange: (event: React.MouseEvent<HTMLButtonElement> | null, currentPage: number) => void;
   currentPage: number;

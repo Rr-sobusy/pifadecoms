@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { AuthGuard } from '@/components/auth/auth-guard';
+// import { AuthGuard } from '@/components/auth/auth-guard';
 import { NextAuthGuard } from '@/components/auth/next-auth';
 import { DynamicLayout } from '@/components/dashboard/layout/dynamic-layout';
 

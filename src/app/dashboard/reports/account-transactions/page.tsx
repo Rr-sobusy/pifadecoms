@@ -13,7 +13,7 @@ import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
-import { redirect } from 'next/navigation';
+
 
 interface PageProps {
   searchParams: {
@@ -51,7 +51,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
             {Object.keys(searchParams).length > 0 && !searchParams.filterList && (
               <Button
                 LinkComponent={RouterLink}
-                href={`${paths.dashboard.reports.accountTransaction}`}
+                href={paths.dashboard.reports.accountTransaction}
                 startIcon={<CloseIcon />}
                 variant="text"
                 color="error"

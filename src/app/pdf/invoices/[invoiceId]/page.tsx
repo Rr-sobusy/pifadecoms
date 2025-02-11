@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { parse } from 'json-bigint';
 
 import { SingleInvoiceType } from '@/actions/invoices/types';
 import { InvoicePDFDoc } from '@/components/dashboard/invoice/_invoice-pdf-viewer';
@@ -23,8 +22,5 @@ export default function Page({params}:{params: {invoiceId: number}}) {
     fetchInvoiceData();
   }, []);
 
-  React.useEffect(() => {
-    console.log(state);
-  }, [state]);
   return <InvoicePDFDoc invoice={state} />
 }

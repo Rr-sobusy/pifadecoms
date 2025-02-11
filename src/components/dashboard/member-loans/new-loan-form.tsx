@@ -23,6 +23,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import type { LoanType } from '@prisma/client';
+import Decimal from 'decimal.js';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -33,7 +34,7 @@ import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import { createNewLoan } from '@/actions/loans/create-loan';
-import { loanSchemaExtended, type ILoanSchemaExtended } from '@/actions/loans/types';
+import { ILoanSources, loanSchemaExtended, type ILoanSchemaExtended } from '@/actions/loans/types';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
@@ -41,7 +42,7 @@ import { toast } from '@/components/core/toaster';
 import { FormInputFields } from './InputFields';
 import LoanTabs from './loan-tabs';
 
-type Props = { accounts: AccounTreeType };
+type Props = { accounts: AccounTreeType; loanSources: ILoanSources };
 
 const LoanTypeMap: Record<LoanType, string> = {
   Weekly: 'Weekly',
@@ -51,7 +52,7 @@ const LoanTypeMap: Record<LoanType, string> = {
   EndOfTerm: 'End of Term',
 };
 
-function CreateNewLoan({ accounts }: Props) {
+function CreateNewLoan({ accounts, loanSources }: Props) {
   const [member, setMemberData] = React.useState<MembersType[0][]>([]);
   const { execute, result, isExecuting } = useAction(createNewLoan);
   const {
@@ -146,6 +147,13 @@ function CreateNewLoan({ accounts }: Props) {
           accountId: '',
           accountName: '',
           group: '',
+          createdAt: new Date(),
+          isActive: true,
+          openingBalance: new Decimal(0),
+          runningBalance: new Decimal(0),
+          rootId: 1,
+          rootType: 'Assets',
+          updatedAt: new Date(),
         },
       },
     ]);
@@ -166,97 +174,119 @@ function CreateNewLoan({ accounts }: Props) {
   const totalDebits = lineItems.reduce((sum, item) => sum + item.debit, 0);
   const totalCredits = lineItems.reduce((sum, item) => sum + item.credit, 0);
 
-  const memoizedComputeAmortizationSched = React.useCallback(() => {
-    switch (watchLoanType) {
-      case 'Weekly':
-        {
-          const weeklyInterest = watchInterest / 100;
-          const weeklyPayment =
-            watchAmountLoaned * (weeklyInterest / (1 - Math.pow(1 + weeklyInterest, -watchTermsInMonths)));
-          if (isNaN(weeklyPayment)) return;
-          if (watchLoanType === 'Weekly') {
-            const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
-              const balance = watchAmountLoaned - weeklyPayment * index;
-              const interest = balance * weeklyInterest;
-              const principal = weeklyPayment - interest;
-              return {
-                balance,
-                interest,
-                principal,
-                paymentSched: dayjs(watchIssueDate)
-                  .add(index + 1, 'week')
-                  .toDate(),
-                amountPaid: weeklyPayment,
-                isExisitng: false,
-              };
-            });
-            setValue('paymentSched', amortization as any);
-          }
-        }
-        break;
-      case 'Monthly':
-        {
-          const monthlyInterest = watchInterest / 100;
-          const monthlyPayment =
-            watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
-          if (isNaN(monthlyPayment)) return;
-          if (watchLoanType === 'Monthly') {
-            const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
-              const balance = watchAmountLoaned - monthlyPayment * index;
-              const interest = balance * monthlyInterest;
-              const principal = monthlyPayment - interest;
-              return {
-                balance,
-                interest,
-                principal,
-                paymentSched: dayjs(watchIssueDate)
-                  .add(index + 1, 'month')
-                  .toDate(),
-                amountPaid: monthlyPayment,
-                isExisitng: false,
-              };
-            });
-            setValue('paymentSched', amortization as any);
-          }
-        }
-        break;
-      case 'Yearly':
-        break;
-      case 'Diminishing':
-        {
-          const monthlyInterest = watchInterest / 100;
-          const monthlyPayment =
-            watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
-          if (isNaN(monthlyPayment)) return;
-          if (watchLoanType === 'Diminishing') {
-            const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
-              const balance = watchAmountLoaned - monthlyPayment * index;
-              const interest = balance * monthlyInterest;
-              const principal = monthlyPayment - interest;
-              return {
-                balance,
-                interest,
-                principal,
-                paymentSched: dayjs(watchIssueDate)
-                  .add(index + 1, 'month')
-                  .toDate(),
-                amountPaid: monthlyPayment,
-                isExisitng: false,
-              };
-            });
-            console.log(amortization, monthlyInterest);
-            setValue('paymentSched', amortization as any);
-          }
-        }
-        break;
-      case 'EndOfTerm':
-        break;
-      default:
-        break;
-    }
-  }, [watchLoanType, watchInterest, watchAmountLoaned, watchTermsInMonths, watchIssueDate, setValue]);
+  // const memoizedComputeAmortizationSched = React.useCallback(() => {
+  //   // switch (watchLoanType) {
+  //   //   case 'Weekly':
+  //   //     {
+  //   //       const weeklyInterest = watchInterest / 100;
+  //   //       const weeklyPayment =
+  //   //         watchAmountLoaned * (weeklyInterest / (1 - Math.pow(1 + weeklyInterest, -watchTermsInMonths)));
+  //   //       if (isNaN(weeklyPayment)) return;
+  //   //       if (watchLoanType === 'Weekly') {
+  //   //         const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
+  //   //           const balance = watchAmountLoaned - weeklyPayment * index;
+  //   //           const interest = balance * weeklyInterest;
+  //   //           const principal = weeklyPayment - interest;
+  //   //           return {
+  //   //             balance,
+  //   //             interest,
+  //   //             principal,
+  //   //             paymentSched: dayjs(watchIssueDate)
+  //   //               .add(index + 1, 'week')
+  //   //               .toDate(),
+  //   //             amountPaid: weeklyPayment,
+  //   //             isExisitng: false,
+  //   //           };
+  //   //         });
+  //   //         setValue('paymentSched', amortization as any);
+  //   //       }
+  //   //     }
+  //   //     break;
+  //   //   case 'Monthly':
+  //   //     {
+  //   //       const monthlyInterest = watchInterest / 100;
+  //   //       const monthlyPayment =
+  //   //         watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
+  //   //       if (isNaN(monthlyPayment)) return;
+  //   //       if (watchLoanType === 'Monthly') {
+  //   //         const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
+  //   //           const balance = watchAmountLoaned - monthlyPayment * index;
+  //   //           const interest = balance * monthlyInterest;
+  //   //           const principal = monthlyPayment - interest;
+  //   //           return {
+  //   //             balance,
+  //   //             interest,
+  //   //             principal,
+  //   //             paymentSched: dayjs(watchIssueDate)
+  //   //               .add(index + 1, 'month')
+  //   //               .toDate(),
+  //   //             amountPaid: monthlyPayment,
+  //   //             isExisitng: false,
+  //   //           };
+  //   //         });
+  //   //         setValue('paymentSched', amortization as any);
+  //   //       }
+  //   //     }
+  //   //     break;
+  //   //   case 'Yearly':
+  //   //     break;
+  //   //   case 'Diminishing':
+  //   //     {
+  //   //       const monthlyInterest = watchInterest / 100;
+  //   //       const monthlyPayment =
+  //   //         watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
+  //   //       if (isNaN(monthlyPayment)) return;
+  //   //       if (watchLoanType === 'Diminishing') {
+  //   //         const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
+  //   //           const balance = watchAmountLoaned - monthlyPayment * index;
+  //   //           const interest = balance * monthlyInterest;
+  //   //           const principal = monthlyPayment - interest;
+  //   //           return {
+  //   //             balance,
+  //   //             interest,
+  //   //             principal,
+  //   //             paymentSched: dayjs(watchIssueDate)
+  //   //               .add(index + 1, 'month')
+  //   //               .toDate(),
+  //   //             amountPaid: monthlyPayment,
+  //   //             isExisitng: false,
+  //   //           };
+  //   //         });
+  //   //         console.log(amortization, monthlyInterest);
+  //   //         setValue('paymentSched', amortization as any);
+  //   //       }
+  //   //     }
+  //   //     break;
+  //   //   case 'EndOfTerm':
+  //   //     break;
+  //   //   default:
+  //   //     break;
+  //   // }
+  // }, [watchLoanType, watchInterest, watchAmountLoaned, watchTermsInMonths, watchIssueDate, setValue]);
 
-  // const memoizedComputeAmortizationSched = React.useCallback(() => {}, []);
+  const memoizedComputeAmortizationSched = (): void => {
+    const loanTypeMap: Record<string, dayjs.ManipulateType> = {
+      Weekly: 'week',
+      Monthly: 'month',
+      Diminishing: 'month',
+      Yearly: 'year',
+      EndOfTerm: 'month',
+    };
+
+    const interval = loanTypeMap[watchLoanType] || 'month';
+
+    setValue(
+      'paymentSched',
+      Array.from({ length: watchTermsInMonths }, (_, index) => ({
+        interest: 0,
+        isExisting: false,
+        principal: 0,
+        paymentSched: dayjs(watchIssueDate)
+          .add(index + 1, interval)
+          .toDate(),
+      }))
+    );
+  };
 
   return (
     <form onSubmit={handleSubmit((data) => execute(data))}>
@@ -336,6 +366,27 @@ function CreateNewLoan({ accounts }: Props) {
                             <Option key={key} value={key}>
                               {value}
                             </Option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="loanSource"
+                    render={({ field }) => (
+                      <FormControl fullWidth>
+                        <InputLabel required>Loan Source</InputLabel>
+                        <Select {...field}>
+                          {loanSources.map((source) => (
+                            <Option value={source.sourceId}>{source.sourceName}</Option>
                           ))}
                         </Select>
                       </FormControl>

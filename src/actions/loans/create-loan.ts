@@ -34,6 +34,7 @@ export const createNewLoan = actionClient.schema(loanSchemaExtended).action(asyn
             interestRate: Request.interest,
             termInMonths: Request.termsInMonths,
             issueDate: Request.entryDate,
+            sourceId: Request.loanSource,
             dueDate: Request.dueDate,
             isExisting: Request.isExisting,
             memberId: Request.particulars?.memberId ?? '',

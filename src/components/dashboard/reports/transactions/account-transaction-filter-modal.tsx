@@ -18,6 +18,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
+import Decimal from 'decimal.js';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
@@ -41,8 +42,8 @@ const filterSchema = zod.object({
       accountName: zod.string(),
       createdAt: zod.date().optional(),
       rootId: zod.number().optional(),
-      openingBalance: zod.number().optional(),
-      runningBalance: zod.number().optional(),
+      openingBalance: zod.preprocess((val) => new Decimal(val as number), zod.instanceof(Decimal)),
+      runningBalance: zod.preprocess((val) => new Decimal(val as number), zod.instanceof(Decimal)),
       updatedAt: zod.date().optional(),
       isActive: zod.boolean().optional(),
       group: zod.string(),
@@ -75,6 +76,18 @@ function FilterModal({ open, accounts }: FilterModalProps) {
     defaultValues: {
       startDate: new Date(),
       endDate: new Date(),
+      accountDetails: {
+        accountId: '',
+        accountName: '',
+        group: '',
+        createdAt: new Date(),
+        isActive: true,
+        openingBalance: new Decimal(0),
+        runningBalance: new Decimal(0),
+        rootId: 1,
+        rootType: 'Assets',
+        updatedAt: new Date(),
+      },
     },
   });
 

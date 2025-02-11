@@ -141,10 +141,20 @@ model Members {
 
 }
 
+model LoanSource {
+  sourceId        Int         @id @default(autoincrement())
+  sourceName      String
+  defaultAccount  String
+
+  Loans           MemberLoans[]
+  DefaultAccount  AccountsThirdLvl  @relation(references: [accountId], fields: [defaultAccount])
+}
+
 model MemberLoans {
   loanId          BigInt      @id @default(autoincrement())
   memberId        String      
-  loanType        LoanType    
+  loanType        LoanType   
+  sourceId        Int 
   amountLoaned    Decimal     @db.Decimal(10, 2)       
   amountPayable   Decimal     @db.Decimal(10, 2)
   interestRate    Decimal     @db.Decimal(10, 2)
@@ -153,9 +163,12 @@ model MemberLoans {
   dueDate         DateTime
   isExisting      Boolean     @default(false)
   journalRef        BigInt?     @unique
+
   JournalEntries  JournalEntries? @relation(fields: [journalRef], references: [entryId])
   Repayments      LoanRepayments[]
   Member          Members     @relation(references: [memberId], fields: [memberId])
+  Source          LoanSource  @relation(references: [sourceId], fields: [sourceId])
+  @@index([memberId])
 }
 
 model LoanRepayments {
@@ -198,7 +211,7 @@ model FundTransactions {
   transactionType   FundTransactionsType
   createdAt         DateTime        @default(now())
   postedBalance     Float  
-  newBalance        Float
+  newBalance        Decimal         @db.Decimal(10,2)
   JournalEntries    JournalEntries? @relation(fields: [ledgerId], references: [entryId])
   MemberFunds       MemberFunds     @relation(fields: [fundId], references: [fundId])
 
@@ -242,7 +255,7 @@ model InvoicePayments {
   paymentId       BigInt             @id  @default(autoincrement())
   invoiceId       BigInt
   orNo            String
-  paymentReceived Float 
+  paymentReceived Decimal           @db.Decimal(10 , 2) 
   journalRef      BigInt
   paymentDate     DateTime          @default(now())
 
@@ -284,8 +297,8 @@ model AccountsThirdLvl {
   accountId      String               @id @default(cuid())
   accountName    String
   rootId         Int
-  openingBalance Float
-  runningBalance Float                @default(0)
+  openingBalance Decimal              @db.Decimal(10 , 2) 
+  runningBalance Decimal              @default(0) @db.Decimal(10 , 2) 
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @default(now())
   isActive       Boolean              @default(true)
@@ -295,6 +308,7 @@ model AccountsThirdLvl {
 
   Dividends      Dividends[]
   JournalItems   JournalItems[]
+  LoanSource     LoanSource[]
 
 }
 

@@ -25,7 +25,7 @@ import { addMemberIntoFundsSchema, type IAddMemberIntoFunds } from '@/actions/fu
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-type AddFundsMemberProps = {
+interface AddFundsMemberProps  {
   open?: boolean;
   membersList: { memberId: string; lastName: string; firstName: string }[];
 };
@@ -38,7 +38,6 @@ function AddFundsMember({ open = true, membersList }: AddFundsMemberProps) {
 
   const {
     control,
-    getValues,
     reset,
     handleSubmit,
     formState: { errors },
@@ -179,7 +178,7 @@ function AddFundsMember({ open = true, membersList }: AddFundsMemberProps) {
             />
           </Stack>
           <Stack justifyContent="flex-end" gap={2} flexDirection="row" marginTop={1}>
-            <Button type="button" onClick={() => console.log(errors)}>
+            <Button type="button">
               Cancel
             </Button>
             <Button type="submit" variant="contained">

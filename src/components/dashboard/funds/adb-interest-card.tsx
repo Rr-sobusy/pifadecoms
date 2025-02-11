@@ -18,15 +18,10 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { DatePicker } from '@mui/x-date-pickers';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
-import { calculateADB } from '@/lib/api-utils/calculate-adb';
 import { computeMonthlyBalances } from '@/lib/api-utils/calculate-balance-every-14th';
-import { dayjs } from '@/lib/dayjs';
-import { formatToCurrency } from '@/lib/format-currency';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { Option } from '@/components/core/option';
 
@@ -57,7 +52,6 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
 
   const {
     getValues,
-    watch,
     control,
     handleSubmit,
     formState: { errors },
@@ -65,9 +59,9 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
     resolver: zodResolver(adbComponentsSchema),
   });
 
-  const fundTransaction = fund.Transactions.filter((transaction) =>
-    computeAdbType === 'Savings' ? transaction.fundType === 'Savings' : transaction.fundType === 'ShareCapital'
-  );
+  // const fundTransaction = fund.Transactions.filter((transaction) =>
+  //   computeAdbType === 'Savings' ? transaction.fundType === 'Savings' : transaction.fundType === 'ShareCapital'
+  // );
 
   const rex = computeMonthlyBalances(fund, getValues("year") ?? 0);
   console.log(rex);

@@ -79,6 +79,11 @@ module.exports = {
     'react/prop-types': 'off', // TypeScript is used for type checking
     '@next/next/no-img-element': 'off', // temporary disabled
     '@typescript-eslint/no-confusing-void-expression' : 'off',
-    ' @typescript-eslint/no-shadow' : 'off'
+    ' @typescript-eslint/no-shadow' : 'off',
+    'import/newline-after-import' : 'off',
+    ' import/named' : 'off',
+    '@typescript-eslint/no-unsafe-assignment' : 'off',
+    ' @typescript-eslint/no-shadow' : 'off',
+    '@typescript-eslint/naming-convention' : 'off'
   },
 };

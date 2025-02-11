@@ -58,8 +58,6 @@ export const createAmortizationPayment = actionClient
 
       serverResponse = { success: true, message: newJournalEntry };
     } catch (error) {
-      console.error('Error in createAmortizationPayment:', error);
-
       serverResponse = {
         success: false,
         message: `Error occurred in server! ${error instanceof Error ? error.message : 'Unknown error'}`,

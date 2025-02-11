@@ -121,7 +121,7 @@ function SharesCard({ fund }: SharesCardProps) {
 
   const currentShareCapTransactions = fund.Transactions.filter((ctx) => ctx.fundType === 'ShareCapital');
   const [currentPage, setCurrentPage] = React.useState<number>(0);
-  const paginatedTransaction = currentShareCapTransactions.slice(currentPage * 5, (currentPage + 1) * 5);
+  // const paginatedTransaction = currentShareCapTransactions.slice(currentPage * 5, (currentPage + 1) * 5);
 
   function addSavingsDeposit() {
     const urlSearchParams = toURLSearchParams({ transactionType: 'ShareCapDeposit' });

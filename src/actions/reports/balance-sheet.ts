@@ -1,4 +1,5 @@
 import type { AccountTypes } from '@prisma/client';
+import Decimal from 'decimal.js';
 
 import prisma from '@/lib/prisma';
 
@@ -46,7 +47,7 @@ export async function getBalanceSheet(): Promise<BalanceSheet> {
   accounts.forEach((account) => {
     const category = account.rootType as Exclude<AccountTypes, 'Expense' | 'Revenue'>;
 
-    const totalBalance = account.Children.reduce((sum, child) => sum + child.runningBalance, 0);
+    const totalBalance = account.Children.reduce((sum, child) => sum + Number(child.runningBalance), 0);
 
     if (totalBalance !== 0) {
       balanceSheet[category].push({
@@ -54,7 +55,7 @@ export async function getBalanceSheet(): Promise<BalanceSheet> {
         totalBalance,
         children: account.Children.map((child) => ({
           accountName: child.accountName,
-          balance: child.runningBalance,
+          balance: Number(child.runningBalance),
         })),
       });
     }
