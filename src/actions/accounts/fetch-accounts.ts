@@ -14,16 +14,12 @@ export async function fetchRootAccounts() {
   return rootAccounts;
 }
 
-export async function fetchAccountTree() {
+export async function fetchAccountTree(fetchAll: boolean = false) {
   const accountTree = await prisma.accountsSecondLvl.findMany({
     include: {
       Children: true,
     },
-    where: {
-      Children: {
-        some: {},
-      },
-    },
+    where: fetchAll ? {} : { Children: { some: {} } },
   });
 
   return accountTree;

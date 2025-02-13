@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
@@ -13,7 +12,6 @@ import { stringify } from 'json-bigint';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { dayjs } from '@/lib/dayjs';
-import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import { ILoanType } from '@/actions/loans/types';
 import type { ColumnDef } from '@/components/core/data-table';
@@ -157,7 +155,6 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
               const updatedRepayments = watchedRows.filter((row) => modifiedRows.has(row.repaymentId));
 
               if (updatedRepayments.length > 0) {
-                console.log('Saving only modified repayments:', updatedRepayments);
                 // API call to save repayments...
 
                 setInitialData(getValues('rows')); // ✅ Reset tracking with an array

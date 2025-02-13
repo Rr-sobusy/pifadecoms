@@ -1,3 +1,4 @@
+import React from 'react'
 import { FormControl } from '@mui/material';
 import type { SxProps } from '@mui/material';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -5,7 +6,7 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { Controller, FieldValues, Path, type Control, type FieldErrors } from 'react-hook-form';
 
-type FormInputFieldsProps<TFormValues extends FieldValues> = {
+interface FormInputFieldsProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>;
   name: Path<TFormValues>;
   errors?: FieldErrors<TFormValues> | undefined;

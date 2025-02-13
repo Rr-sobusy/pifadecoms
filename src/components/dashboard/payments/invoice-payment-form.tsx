@@ -23,7 +23,7 @@ import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-
+import Decimal from 'decimal.js';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
@@ -93,6 +93,13 @@ function InvoicePaymentForm({ invoiceDetails, accounts }: PageProps) {
           accountId: '',
           accountName: '',
           group: '',
+          createdAt: new Date(),
+          isActive: true,
+          openingBalance: new Decimal(0),
+          runningBalance: new Decimal(0),
+          rootId: 1,
+          rootType: 'Assets',
+          updatedAt: new Date(),
         },
       },
     ]);

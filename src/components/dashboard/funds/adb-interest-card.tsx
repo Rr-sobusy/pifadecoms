@@ -64,7 +64,6 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
   // );
 
   const rex = computeMonthlyBalances(fund, getValues("year") ?? 0);
-  console.log(rex);
 
   function handleClose() {
     router.push(pathName);

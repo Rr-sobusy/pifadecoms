@@ -35,7 +35,7 @@ export default async function Page(): Promise<React.JSX.Element> {
           try {
             await signIn('credentials', { username: 'rexrany', password: 'rexrandy' });
           } catch (error) {
-     
+            return;
           }
         }}
       >

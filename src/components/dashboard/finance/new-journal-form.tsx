@@ -142,7 +142,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
 
       setValue(
         'journalLineItems',
-        journalLines.filter((lineItems) => lineItems.journalLineItemId !== lineItemId)
+        journalLines.filter((lineItem) => lineItem.journalLineItemId !== lineItemId)
       );
     },
     [setValue, getValues]

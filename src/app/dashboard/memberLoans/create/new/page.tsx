@@ -7,9 +7,7 @@ import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/Arrow
 
 import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
-import { fetchItems } from '@/actions/items/fetch-items';
 import { fetchLoanSources } from '@/actions/loans/fetch-loan-source';
-import { fetchMembers } from '@/actions/members/fetch-members';
 import CreateNewLoan from '@/components/dashboard/member-loans/new-loan-form';
 
 const page = async () => {

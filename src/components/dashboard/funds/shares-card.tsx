@@ -130,8 +130,8 @@ function SharesCard({ fund }: SharesCardProps) {
     router.push(`${pathName}?${urlSearchParams.toString()}`);
   }
 
-  function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currentPage: number) {
-    setCurrentPage(currentPage);
+  function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currPage: number) {
+    setCurrentPage(currPage);
   }
 
   function computeAdb() {

@@ -22,7 +22,7 @@ const columns = [
     formatter: (row, index): React.JSX.Element => (
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
-          <Typography color="inherit" variant="subtitle2">
+          <Typography color="inherit" variant="body2">
             {index + 1}
           </Typography>
         </div>
@@ -75,7 +75,7 @@ const columns = [
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="body2">
-            {formatToCurrency(row.openingBalance, 'Fil-ph', 'Php')}
+            {formatToCurrency(Number(row.openingBalance), 'Fil-ph', 'Php')}
           </Typography>
         </div>
       </Stack>

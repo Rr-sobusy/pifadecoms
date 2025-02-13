@@ -21,7 +21,7 @@ import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import Decimal from 'decimal.js';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
+import { logger } from '@/lib/default-logger';
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
 import type { AccounTreeType } from '@/actions/accounts/types';
@@ -47,7 +47,7 @@ const filterSchema = zod.object({
       updatedAt: zod.date().optional(),
       isActive: zod.boolean().optional(),
       group: zod.string(),
-      rootType: zod.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']).optional(),
+      rootType: zod.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense', 'Contra_Assets']).optional(),
     })
     .optional(),
   member: zod
@@ -117,12 +117,19 @@ function FilterModal({ open, accounts }: FilterModalProps) {
 
     async function fetchMemberDataOnDebounce() {
       try {
-        const data: MembersType = await fetch('/dashboard/members/api', {
-          method: 'POST',
-          body: JSON.stringify({ memberName: debouncedValue }),
-        }).then((res) => res.json());
+        const response = await fetch('/dashboard/members/api', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ memberName: debouncedValue }),
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch member data');
+  
+        const data: MembersType = await response.json();
         setMemberData(data);
-      } catch (error) {}
+     } catch (error) {
+        logger.debug('Error fetching members:', error)
+     }
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);

@@ -14,11 +14,7 @@ export const computeMonthlyBalances = (
 
   const yearTransactions = transactionsList.filter((transaction) => {
     const transactionDate = dayjs(transaction.JournalEntries?.entryDate);
-    return (
-      transactionDate.isValid() &&
-      transactionDate.year() === year &&
-      transaction.fundType === 'Savings'
-    );
+    return transactionDate.isValid() && transactionDate.year() === year && transaction.fundType === 'Savings';
   });
 
   const latestTransactionsByMonth = yearTransactions.reduce(
@@ -27,21 +23,18 @@ export const computeMonthlyBalances = (
       const month = transactionDate.month() + 1;
 
       // Keep only the latest transaction for each month
-      if (
-        !acc[month] || 
-        transactionDate.isAfter(dayjs(acc[month].JournalEntries?.entryDate))
-      ) {
+      if (!acc[month] || transactionDate.isAfter(dayjs(acc[month].JournalEntries?.entryDate))) {
         acc[month] = transaction;
       }
 
       return acc;
     },
-    {} as Record<number, typeof yearTransactions[0]>
+    {} as Record<number, (typeof yearTransactions)[0]>
   );
 
   let lastBalance =
     yearTransactions.length > 0
-      ? yearTransactions[yearTransactions.length - 1].newBalance -
+      ? Number(yearTransactions[yearTransactions.length - 1].newBalance) -
         yearTransactions[yearTransactions.length - 1].postedBalance
       : transactions.savingsBal || 0;
 
@@ -53,7 +46,7 @@ export const computeMonthlyBalances = (
 
     // Update the last balance if there's a transaction for this month
     if (latestTransaction) {
-      lastBalance = latestTransaction.newBalance;
+      lastBalance = Number(latestTransaction.newBalance);
     }
 
     // Assign the balance for the current month
@@ -61,7 +54,9 @@ export const computeMonthlyBalances = (
   });
 
   return months.map(({ month, balance }) => ({
-    month: dayjs().month(month - 1).format('MMMM'),
+    month: dayjs()
+      .month(month - 1)
+      .format('MMMM'),
     balance,
   }));
 };

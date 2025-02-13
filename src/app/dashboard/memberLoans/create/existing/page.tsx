@@ -6,8 +6,6 @@ import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
 import { paths } from '@/paths';
-import { fetchItems } from '@/actions/items/fetch-items';
-import { fetchMembers } from '@/actions/members/fetch-members';
 import CreateExistingLoan from '@/components/dashboard/member-loans/existing-loan-form';
 
 const page = async () => {

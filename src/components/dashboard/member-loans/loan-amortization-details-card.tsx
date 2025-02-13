@@ -2,9 +2,7 @@
 
 import React from 'react';
 import { Typography } from '@mui/material';
-import Button from '@mui/material/Button';
 import Card, { CardProps } from '@mui/material/Card';
-import CardAction from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';

@@ -2,10 +2,11 @@
 
 import * as React from 'react';
 
+import { logger } from '@/lib/default-logger';
 import { SingleInvoiceType } from '@/actions/invoices/types';
 import { InvoicePDFDoc } from '@/components/dashboard/invoice/_invoice-pdf-viewer';
 
-export default function Page({params}:{params: {invoiceId: number}}) {
+export default function Page({ params }: { params: { invoiceId: number } }) {
   const [state, setState] = React.useState<SingleInvoiceType | undefined>();
 
   React.useEffect(() => {
@@ -16,11 +17,11 @@ export default function Page({params}:{params: {invoiceId: number}}) {
         }).then((res) => res.json());
         setState(invoiceData);
       } catch (error) {
-        console.error('Error fetching invoice data:', error);
+        logger.debug(error);
       }
     }
     fetchInvoiceData();
   }, []);
 
-  return <InvoicePDFDoc invoice={state} />
+  return <InvoicePDFDoc invoice={state} />;
 }

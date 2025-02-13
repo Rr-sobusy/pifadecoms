@@ -5,14 +5,14 @@ import { usePathname } from 'next/navigation';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import RouterLink from 'next/link';
-type Props = {};
+
 
 function determinePath(): string {
   const pathname = usePathname();
   return pathname.split('/dashboard/memberLoans/create/')[1] ?? 'new';
 }
 
-function LoanTabs({}: Props) {
+function LoanTabs() {
   const path = determinePath();
   return (
     <Tabs sx={{ borderBottom: '1px solid var(--mui-palette-divider)' }} value={path}>

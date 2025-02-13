@@ -8,7 +8,7 @@ import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recha
 import { formatToCurrency } from '@/lib/format-currency';
 import { NoSsr } from '@/components/core/no-ssr';
 
-type Props = {
+interface Props {
   data: { month: string; balance: number }[];
   interestRate: number;
 };

@@ -153,6 +153,11 @@ export const layoutConfig = {
                   title: 'Account List',
                   href: paths.dashboard.finance.list,
                 },
+                {
+                  key: 'types',
+                  title: 'Account Types',
+                  href: paths.dashboard.finance.types,
+                },
               ],
             },
             { key: 'finance:journal', title: 'Manual Journal', href: paths.dashboard.finance.journal },

@@ -1,5 +1,7 @@
 import React from 'react';
+import Link from 'next/link';
 import { Typography } from '@mui/material';
+import Button from '@mui/material/Button';
 import Card, { CardProps } from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
@@ -32,25 +34,37 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
               { title: 'Interest Rate', value: `${loanDetails?.interestRate ?? 0} %` },
               {
                 title: 'Received Amount (Principal)',
-                value: formatToCurrency(Number(loanDetails?.amountLoaned) ?? 0, 'Fil-ph', 'Php'),
+                value: formatToCurrency(Number(loanDetails?.amountLoaned ?? 0), 'Fil-ph', 'Php'),
               },
               {
                 title: 'Payable Amount',
-                value: formatToCurrency(Number(loanDetails?.amountPayable) ?? 0, 'Fil-ph', 'Php'),
+                value: formatToCurrency(Number(loanDetails?.amountPayable ?? 0), 'Fil-ph', 'Php'),
               },
               { title: 'Date Released', value: dayjs(loanDetails?.issueDate).format('MMM DD YYYY') },
-              { title: 'Due Date', value: dayjs(loanDetails?.Repayments[loanDetails?.Repayments.length - 1].paymentSched).format('MMM DD YYYY') },
-            ] satisfies { title: string; value: string | number }[]
-          ).map((item) => (
-            <Stack spacing={2}>
+              {
+                title: 'Due Date',
+                value: dayjs(loanDetails?.Repayments[loanDetails?.Repayments.length - 1].paymentSched).format(
+                  'MMM DD YYYY'
+                ),
+              },
+              { title: 'Journal Entry', value: Number(loanDetails?.JournalEntries?.entryId ?? 0), isLink: true },
+            ] satisfies { title: string; value: string | number; isLink?: boolean }[]
+          ).map((item, index) => (
+            <Stack key={index} spacing={2}>
               <Stack spacing={1}>
                 <Typography color="text.secondary" variant="body2">
                   {item.title}
                 </Typography>
                 <div>
-                  <Typography color="text.primary" variant="subtitle2">
-                    {item.value}
-                  </Typography>
+                  {!item.isLink ? (
+                    <Typography color="text.primary" variant="subtitle2">
+                      {item.value}
+                    </Typography>
+                  ) : (
+                    <Button LinkComponent={Link} variant="text">
+                      Journal Entry
+                    </Button>
+                  )}
                 </div>
               </Stack>
               <Divider />

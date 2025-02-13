@@ -1,7 +1,7 @@
 'use client';
 
-import React, { memo } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
@@ -10,7 +10,6 @@ import DialogAction from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
-import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -18,10 +17,8 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { DatePicker, DatePickerFieldProps } from '@mui/x-date-pickers';
-import { Rows } from '@phosphor-icons/react';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import Decimal from 'decimal.js';
-import { stringify } from 'json-bigint';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -88,7 +85,6 @@ function CreateAmortizationPayment({
 
   const { execute, result, isExecuting } = useAction(createAmortizationPayment);
 
-  const pathname = usePathname();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -104,7 +100,6 @@ function CreateAmortizationPayment({
           repaymentId: Number(rows.repaymentId),
         }))
       );
-      console.log(getValues('paymentSched'));
     }
   }, [selectedRows, setValue]);
 
@@ -123,14 +118,14 @@ function CreateAmortizationPayment({
   );
 
   function submitHandler(data: any) {
-   alert(loanId)
+    execute(data);
   }
 
   React.useEffect(() => {
     if (result.data?.success) {
       handleClose();
       handleRemoveSelectedRows?.();
-      router.push(paths.dashboard.loans.view(loanId || 0))
+      router.push(paths.dashboard.loans.view(loanId || 0));
     }
   }, [result]);
 
@@ -323,6 +318,17 @@ function CreateAmortizationPayment({
               <Stack sx={{ width: '10%', marginLeft: '-7px' }} spacing={3}>
                 <Typography variant="subtitle2">{formatToCurrency(totalCredits, 'Fil-ph', 'Php')}</Typography>
               </Stack>
+            </Stack>
+            <Stack>
+              {Object.keys(errors).length > 0 && (
+                <Stack>
+                  {Object.entries(errors).map(([field, error]) => (
+                    <Typography color="error" variant="subtitle2" key={field}>
+                      {error.root?.message}
+                    </Typography>
+                  ))}
+                </Stack>
+              )}
             </Stack>
             <div>
               <Button onClick={handleAddJournalLine} variant="outlined" color="secondary">

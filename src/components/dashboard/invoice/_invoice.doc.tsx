@@ -5,7 +5,6 @@ import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/render
 
 import { formatToPHP } from '@/lib/api-utils/format-to-php';
 import { dayjs } from '@/lib/dayjs';
-import { formatToCurrency } from '@/lib/format-currency';
 import type { SingleInvoiceType } from '@/actions/invoices/types';
 
 // Invoice data should be received as a prop.
@@ -19,10 +18,6 @@ export interface LineItem {
   unitAmount: number;
   totalAmount: number;
 }
-
-const lineItems = [
-  { id: 'LI-001', name: 'Pro Subscription', quantity: 1, currency: 'USD', unitAmount: 14.99, totalAmount: 14.99 },
-] satisfies LineItem[];
 
 const styles = StyleSheet.create({
   // Utils

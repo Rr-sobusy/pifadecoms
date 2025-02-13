@@ -158,8 +158,8 @@ function SavingsCard({ fund }: SavingsCardProps) {
     router.push(`${pathName}?computeAdb=Savings`)
   }
 
-  function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currentPage: number) {
-    setCurrentPage(currentPage);
+  function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currPage: number) {
+    setCurrentPage(currPage);
   }
 
   const currentSavings = fund.savingsBal;

@@ -183,7 +183,7 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                         options={accounts ?? []}
                         onChange={(_, value) => field.onChange(value)}
                         getOptionLabel={(account) => account.accountName}
-                        filterOptions={(options, { inputValue }) =>
+                        filterOptions={(options) =>
                           options.filter((ctx) => ctx.accountRootType === 'Expense' || ctx.accountRootType === 'Assets')
                         }
                         renderInput={(params) => (

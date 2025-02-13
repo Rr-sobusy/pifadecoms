@@ -28,7 +28,6 @@ export const createMemberIntoFunds = actionClient.schema(addMemberIntoFundsSchem
     queryResult = { sucess: true, message: newMember };
   } catch (error) {
     queryResult = { success: false, errorMessage: JSON.stringify(error) };
-    console.error(error)
   }
   revalidatePath(paths.dashboard.funds.list);
   return queryResult

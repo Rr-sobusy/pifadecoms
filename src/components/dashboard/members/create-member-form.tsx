@@ -22,7 +22,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 
-
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { logger } from '@/lib/default-logger';
@@ -31,7 +30,6 @@ import { memberSchema, type MemberSchema } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-
 export function CreateMemberForm(): React.JSX.Element {
   const router = useRouter();
 
@@ -39,23 +37,21 @@ export function CreateMemberForm(): React.JSX.Element {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
   } = useForm<MemberSchema>({ resolver: zodResolver(memberSchema) });
 
   const { execute, isExecuting, result } = useAction(createNewMember);
 
+  React.useEffect(() => {
+    if (result.data?.success) {
+      toast.success('Member created.');
+      router.push(paths.dashboard.members.list);
+    }
+  }, [result.data]);
 
   const onSubmit = (val: MemberSchema) => {
     try {
       //    execute the action by invoking this !!
-     const serverResponse = execute(val);
-
-      const { serverError } = result;
-      if (!serverError) {
-        toast.success('Member created.');
-        router.push(paths.dashboard.members.list);
-      }
+      execute(val);
     } catch (err) {
       logger.error(err);
       toast.error('Something went wrong!');

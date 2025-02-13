@@ -42,7 +42,7 @@ import { toast } from '@/components/core/toaster';
 import { FormInputFields } from './InputFields';
 import LoanTabs from './loan-tabs';
 
-type Props = { accounts: AccounTreeType; loanSources: ILoanSources };
+interface Props { accounts: AccounTreeType; loanSources: ILoanSources };
 
 const LoanTypeMap: Record<LoanType, string> = {
   Weekly: 'Weekly',
@@ -86,7 +86,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
   });
 
   const watchLoanType = watch('loanType');
-  const watchAmountLoaned = watch('amountLoaned');
+  // const watchAmountLoaned = watch('amountLoaned');
   const watchInterest = watch('interest');
   const watchTermsInMonths = watch('termsInMonths');
   const watchIssueDate = watch('entryDate');
@@ -165,7 +165,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
 
       setValue(
         'journalLineItems',
-        journalLines.filter((lineItems) => lineItems.journalLineItemId !== lineItemId)
+        journalLines.filter((lineItem) => lineItem.journalLineItemId !== lineItemId)
       );
     },
     [setValue, getValues]
@@ -304,7 +304,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                   }}
                 >
                   <FormControl disabled fullWidth>
-                    <InputLabel required>Loan ID</InputLabel>
+                    <InputLabel>Loan ID</InputLabel>
                     <OutlinedInput defaultValue="Loan No. - ***" type="text" />
                   </FormControl>
                 </Grid>
@@ -336,7 +336,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                         }
                         renderInput={(params) => (
                           <FormControl error={Boolean(errors.particulars?.message)} fullWidth>
-                            <FormLabel>Member Name</FormLabel>
+                            <FormLabel required>Member Name</FormLabel>
                             <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
                           </FormControl>
                         )}
@@ -360,7 +360,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     name="loanType"
                     render={({ field }) => (
                       <FormControl fullWidth>
-                        <InputLabel>Loan Type</InputLabel>
+                        <InputLabel required>Loan Type</InputLabel>
                         <Select {...field}>
                           {Object.entries(LoanTypeMap).map(([key, value]) => (
                             <Option key={key} value={key}>
@@ -386,7 +386,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                         <InputLabel required>Loan Source</InputLabel>
                         <Select {...field}>
                           {loanSources.map((source) => (
-                            <Option value={source.sourceId}>{source.sourceName}</Option>
+                            <Option key={source.sourceId} value={source.sourceId}>{source.sourceName}</Option>
                           ))}
                         </Select>
                       </FormControl>
@@ -403,6 +403,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     control={control}
                     name="reference"
                     inputLabel="Reference"
+                    isRequired
                     errors={errors}
                     variant="text"
                   />
@@ -447,7 +448,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                   <FormInputFields
                     control={control}
                     name="amountLoaned"
-                    inputLabel="Amount loaned"
+                    inputLabel="Amount loaned (Principal)"
                     errors={errors}
                     variant="number"
                     isRequired
@@ -614,7 +615,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                 <Stack sx={{ width: '10%' }} spacing={3}>
                   <Typography variant="subtitle2">{formatToCurrency(totalDebits, 'Fil-ph', 'Php')}</Typography>
                 </Stack>
-                <Stack sx={{ width: '10%', marginLeft: '-7px' }} spacing={3}>
+                <Stack sx={{ width: '10%', marginLeft: '95px' }} spacing={3}>
                   <Typography variant="subtitle2">{formatToCurrency(totalCredits, 'Fil-ph', 'Php')}</Typography>
                 </Stack>
               </Stack>

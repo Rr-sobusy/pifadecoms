@@ -9,7 +9,7 @@ import { UserFocus as User } from '@phosphor-icons/react/dist/ssr/UserFocus';
 
 import { paths } from '@/paths';
 
-type MemberPopoverProps = {
+interface MemberPopoverProps {
   anchorEl: HTMLButtonElement | null;
   onClose?: () => void;
   onMarkAllAsRead?: () => void;

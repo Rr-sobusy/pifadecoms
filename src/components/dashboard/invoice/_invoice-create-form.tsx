@@ -88,11 +88,11 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
 
   const handleRemoveLineItem = React.useCallback(
     (lineItemId: string) => {
-      const lineItems = getValues('lineItems');
+      const _lineItems = getValues('lineItems');
 
       setValue(
         'lineItems',
-        lineItems.filter((lineItem) => lineItem.lineId !== lineItemId)
+        _lineItems.filter((lineItem) => lineItem.lineId !== lineItemId)
       );
     },
     [getValues, setValue]

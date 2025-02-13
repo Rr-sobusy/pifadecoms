@@ -8,8 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
-import { DotsThreeVertical as Dots } from '@phosphor-icons/react/dist/ssr/DotsThreeVertical';
+import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';;
 import { Notepad as Info } from '@phosphor-icons/react/dist/ssr/Notepad';
 import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
 
@@ -127,7 +126,6 @@ const columns = [
   },
 ] as ColumnDef<ILoanType[0]>[];
 export function LoanTable({ rows }: { rows: ILoanType }) {
-  console.log(rows);
   return (
     <Card sx={{ overflowX: 'auto' }}>
       <DataTable columns={columns} rows={rows} />

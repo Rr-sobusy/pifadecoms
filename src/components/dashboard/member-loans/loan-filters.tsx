@@ -13,17 +13,11 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
-import { paths } from '@/paths';
 import useDebounce from '@/lib/api-utils/use-debounce';
-import { dayjs } from '@/lib/dayjs';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
-
-type Props = {};
 
 const filterSchema = zod.object({
   loanId: zod.number().optional(),
@@ -31,7 +25,7 @@ const filterSchema = zod.object({
   member: zod.object({ memberId: zod.string(), firstName: zod.string(), lastName: zod.string() }).optional(),
 });
 
-function LoanFilters({}: Props) {
+function LoanFilters() {
   const {
     control,
     watch,

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Divider } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
@@ -20,21 +21,21 @@ const columns = [
   },
   {
     formatter: (row) => (
-      <Typography variant="subtitle2">{formatToCurrency(row._sum.debit ?? 0, 'Fil-ph', 'Php')}</Typography>
+      <Typography variant="subtitle2">{formatToCurrency(Number(row._sum.debit ?? 0), 'Fil-ph', 'Php')}</Typography>
     ),
     name: 'Debit',
   },
   {
     formatter: (row) => (
-      <Typography variant="subtitle2">{formatToCurrency(row._sum.credit ?? 0, 'Fil-ph', 'Php')}</Typography>
+      <Typography variant="subtitle2">{formatToCurrency(Number(row._sum.credit ?? 0), 'Fil-ph', 'Php')}</Typography>
     ),
     name: 'Credit',
   },
   {
     formatter: (row) => {
       const balance = ['Assets', 'Expense'].includes(row.account?.RootID.rootType ?? '')
-        ? (row._sum.debit ?? 0) - (row._sum.credit ?? 0)
-        : (row._sum.credit ?? 0) - (row._sum.debit ?? 0);
+        ? (Number(row._sum.debit) ?? 0) - (Number(row._sum.credit) ?? 0)
+        : (Number(row._sum.credit) ?? 0) - (Number(row._sum.debit) ?? 0);
       return <Typography variant="subtitle2">{formatToCurrency(balance, 'Fil-ph', 'Php')}</Typography>;
     },
     name: 'Balance',
@@ -43,15 +44,53 @@ const columns = [
 ] satisfies ColumnDef<LedgerTypes[0]>[];
 
 function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
-  const totalDebit = rows.reduce((acc, ctx) => acc + (ctx._sum.debit ?? 0), 0);
-  const totalCredit = rows.reduce((acc, ctx) => acc + (ctx._sum.credit ?? 0), 0);
-  console.log(rows);
+  const totalDebit = rows.reduce((acc, ctx) => acc + (Number(ctx._sum.debit)), 0);
+  const totalCredit = rows.reduce((acc, ctx) => acc + (Number(ctx._sum.credit)), 0);
+  const totals = rows.reduce(
+    (acc, curr) => {
+      const type = curr.account?.RootID.rootType;
+      const value = ['Assets', 'Expense'].includes(type ?? '')
+        ? (Number(curr._sum.debit) || 0) - (Number(curr._sum.credit) || 0)
+        : (Number(curr._sum.credit) || 0) - (Number(curr._sum.debit) || 0);
+
+      if (type === 'Assets') {
+        acc.Assets += value;
+      }
+      if (type === 'Equity') {
+        acc.Equity += value;
+      }
+      if (type === 'Liability') {
+        acc.Liability += value;
+      }
+      if (type === 'Expense') {
+        acc.Expense += value;
+      }
+      if (type === 'Revenue') {
+        acc.Revenue += value;
+      }
+
+      return acc;
+    },
+    { Assets: 0, Equity: 0, Liability: 0, Expense: 0, Revenue: 0 }
+  );
+
+  const isNotBalanced = totals.Equity + totals.Liability + totals.Revenue - totals.Expense !== totals.Assets;
   return (
     <>
       <DataTable<LedgerTypes[0]> hover columns={columns} rows={rows} />
       <Stack marginTop={2} alignItems={'flex-end'}>
         <Typography variant="caption">Total Debit - {formatToCurrency(totalDebit, 'Fil-ph', 'Php')}</Typography>
         <Typography variant="caption">Total Credit - {formatToCurrency(totalCredit, 'Fil-ph', 'Php')} </Typography>
+      </Stack>
+      <Divider sx={{ marginY: 2 }} />
+      <Stack>
+        <Typography variant="subtitle2">Accounting Equation:</Typography>
+        <Typography variant="caption">{`Assets (${formatToCurrency(totals.Assets, 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(totals.Liability, 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(totals.Equity, 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(totals.Revenue - totals.Expense, 'Fil-ph', 'Php')})`}</Typography>
+        {isNotBalanced && (
+          <Typography variant="caption" color="error">
+            Warning: The accounting equation is not balanced. Please check for possible errors in entry.
+          </Typography>
+        )}
       </Stack>
     </>
   );

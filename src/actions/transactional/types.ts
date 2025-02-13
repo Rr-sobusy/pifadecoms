@@ -5,21 +5,25 @@
  */
 
 import { Prisma } from '@prisma/client';
+import Decimal from 'decimal.js';
 import { z } from 'zod';
 
 import { fetchJournals } from './fetch-journal';
+
 export type JournalEntryType = Prisma.PromiseReturnType<typeof fetchJournals>;
-import Decimal from 'decimal.js'
+
 export const transactionalSchema = z.object({
   entryDate: z.date(),
   reference: z.string(),
   journalType: z.enum(['cashReceipts', 'cashDisbursement', 'generalJournal']),
   notes: z.string().optional(),
-  particulars: z.object({
-    memberId: z.string(),
-    firstName: z.string(),
-    lastName: z.string(),
-  }).optional(),
+  particulars: z
+    .object({
+      memberId: z.string(),
+      firstName: z.string(),
+      lastName: z.string(),
+    })
+    .optional(),
   referenceType: z.enum([
     'MemberRegistration',
     'SalesPayments',
@@ -38,16 +42,34 @@ export const transactionalSchema = z.object({
       z.object({
         journalLineItemId: z.string(),
         accountDetails: z.object({
-          accountId: z.string().default(''),
+          accountId: z.string().min(1).default(''),
           accountName: z.string().default(''),
           createdAt: z.date().optional().default(new Date()),
           rootId: z.number().optional().default(1),
-          openingBalance: z.preprocess((val)=> new Decimal(val as number), z.instanceof(Decimal)),
-          runningBalance: z.preprocess((val)=> new Decimal(val as number), z.instanceof(Decimal)),
-          updatedAt:  z.date().optional().default(new Date()),
+          openingBalance: z.preprocess((val) => {
+            if (typeof val === 'number' || typeof val === 'string') {
+              try {
+                return new Decimal(val);
+              } catch (error) {
+                return new Decimal(0); 
+              }
+            }
+            return new Decimal(0); 
+          }, z.instanceof(Decimal)),
+          runningBalance: z.preprocess((val) => {
+            if (typeof val === 'number' || typeof val === 'string') {
+              try {
+                return new Decimal(val);
+              } catch (error) {
+                return new Decimal(0); 
+              }
+            }
+            return new Decimal(0);
+          }, z.instanceof(Decimal)),
+          updatedAt: z.date().optional().default(new Date()),
           isActive: z.boolean().optional().default(false),
           group: z.string().default(''),
-          rootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense']).optional().default("Assets"),
+          rootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense', 'Contra_Assets']).optional().default('Assets'),
         }),
         debit: z.number(),
         credit: z.number(),

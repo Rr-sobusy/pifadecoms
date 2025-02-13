@@ -51,7 +51,7 @@ const columns = [
   },
   {
     formatter(row) {
-      const totalAmountPosted = row.JournalItems.reduce((acc, ctx) => acc + ctx.debit, 0);
+      const totalAmountPosted = row.JournalItems.reduce((acc, ctx) => acc + Number(ctx.debit), 0);
       return <Stack>{formatToCurrency(totalAmountPosted, 'Fil-ph', 'Php')}</Stack>;
     },
     name: 'Amount Posted',

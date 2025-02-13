@@ -14,7 +14,7 @@ import type { AccountTransactionTypes } from '@/actions/reports/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
 
-type TransactionsTableProps = {
+interface TransactionsTableProps {
   accountTransactions: AccountTransactionTypes;
 };
 
@@ -129,13 +129,14 @@ const columns = [
   //   width: '100px',
   // },
   {
-    formatter(row, index) {
+    formatter(row) {
       return (
         <Stack>
           {row.JournalItems.map((ctx) => (
             <Typography
+              key={ctx.journalItemsId}
               sx={{
-                marginLeft: ctx.debit === 0 ? 3 : 0,
+                marginLeft: Number(ctx.debit) === 0 ? 3 : 0,
               }}
               variant="caption"
             >
@@ -154,7 +155,7 @@ const columns = [
         <Stack>
           {row.JournalItems.map((ctx, index) => (
             <Typography color="info" variant="subtitle2">
-              {ctx.debit !== 0 ? formatToCurrency(row.JournalItems[index].debit, 'Fil-ph', 'Php') : '-'}
+              {Number(ctx.debit) !== 0 ? formatToCurrency(Number(row.JournalItems[index].debit), 'Fil-ph', 'Php') : '-'}
             </Typography>
           ))}
         </Stack>
@@ -162,7 +163,7 @@ const columns = [
     },
     name: 'Debit (Php)',
     width: '100px',
-      align : "right"
+    align: 'right',
   },
   {
     formatter(row) {
@@ -170,7 +171,9 @@ const columns = [
         <Stack>
           {row.JournalItems.map((ctx, index) => (
             <Typography color="info" variant="subtitle2">
-              {ctx.credit !== 0 ? formatToCurrency(row.JournalItems[index].credit, 'Fil-ph', 'Php') : '-'}
+              {Number(ctx.credit) !== 0
+                ? formatToCurrency(Number(row.JournalItems[index].credit), 'Fil-ph', 'Php')
+                : '-'}
             </Typography>
           ))}
         </Stack>
@@ -178,7 +181,7 @@ const columns = [
     },
     name: 'Credit (Php)',
     width: '100px',
-    align : "right"
+    align: 'right',
   },
 ] satisfies ColumnDef<AccountTransactionTypes[0]>[];
 
