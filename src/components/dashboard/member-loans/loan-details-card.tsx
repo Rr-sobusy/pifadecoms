@@ -17,6 +17,10 @@ interface PageProps extends CardProps {
 }
 
 function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
+  const interest = (amount: number, rate: number, term: number): number => {
+    return amount * (rate / 100) * term;
+  };
+
   return (
     <Card {...props}>
       <CardContent>
@@ -35,6 +39,10 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
               {
                 title: 'Received Amount (Principal)',
                 value: formatToCurrency(Number(loanDetails?.amountLoaned ?? 0), 'Fil-ph', 'Php'),
+              },
+              {
+                title: 'Interest computed',
+                value: `${formatToCurrency(interest(Number(loanDetails?.amountLoaned), Number(loanDetails?.interestRate), loanDetails?.termInMonths ?? 0), 'Fil-ph', 'Php')} in ${loanDetails?.termInMonths} months`,
               },
               {
                 title: 'Payable Amount',

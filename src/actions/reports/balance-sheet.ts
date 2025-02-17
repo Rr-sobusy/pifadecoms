@@ -9,6 +9,7 @@ interface ChildAccount {
 
 interface ParentAccount {
   parentAccount: string;
+  isContra: boolean;
   totalBalance: number;
   children: ChildAccount[];
 }
@@ -23,7 +24,7 @@ export async function getBalanceSheet(): Promise<BalanceSheet> {
   };
   const accounts = await prisma.accountsSecondLvl.findMany({
     where: {
-      OR: [{ rootType: 'Assets' }, { rootType: 'Equity' }, { rootType: 'Liability' }],
+      OR: [{ rootType: 'Assets' }, { rootType: 'Equity' }, { rootType: 'Liability' }, { rootType: 'Contra_Assets' }],
     },
     include: {
       Children: {
@@ -43,20 +44,37 @@ export async function getBalanceSheet(): Promise<BalanceSheet> {
     },
   });
 
+  console.log(accounts);
+
   accounts.forEach((account) => {
-    const category = account.rootType as Exclude<AccountTypes, 'Expense' | 'Revenue' | 'Contra_Assets'>;
+    const category = account.rootType as Exclude<AccountTypes, 'Expense' | 'Revenue'>;
 
     const totalBalance = account.Children.reduce((sum, child) => sum + Number(child.runningBalance), 0);
 
     if (totalBalance !== 0) {
-      balanceSheet[category].push({
-        parentAccount: account.rootName,
-        totalBalance,
-        children: account.Children.map((child) => ({
-          accountName: child.accountName,
-          balance: Number(child.runningBalance),
-        })),
-      });
+      // Append 'Contra_Assets' children to 'Assets'
+      if (category === 'Contra_Assets') {
+        console.log('contra found');
+        balanceSheet.Assets.push({
+          parentAccount: account.rootName,
+          totalBalance,
+          isContra: true,
+          children: account.Children.map((child) => ({
+            accountName: child.accountName,
+            balance: Number(child.runningBalance),
+          })),
+        });
+      } else {
+        balanceSheet[category].push({
+          parentAccount: account.rootName,
+          totalBalance,
+          isContra: false,
+          children: account.Children.map((child) => ({
+            accountName: child.accountName,
+            balance: Number(child.runningBalance),
+          })),
+        });
+      }
     }
   });
 

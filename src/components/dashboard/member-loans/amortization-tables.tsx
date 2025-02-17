@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { CreditCard } from '@phosphor-icons/react/dist/ssr/CreditCard';
+import { X as Xicon } from '@phosphor-icons/react/dist/ssr/X';
 import { stringify } from 'json-bigint';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
@@ -51,17 +52,25 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
   const columns: ColumnDef<ILoanType[0]['Repayments'][0]>[] = [
     {
       name: 'Payment Schedule',
-      formatter: (row) => (
-        <Stack alignItems="center" spacing={1} direction="row">
-          <Typography sx={{ color: !row.paymentDate ? 'text.primary' : 'text.secondary' }} variant="subtitle2">
-            {dayjs(row.paymentSched).format('MMM DD YYYY')}
-          </Typography>
-          {row.paymentDate && (
-            <Chip label="Paid" color="success" variant="outlined" icon={<CheckCircleIcon />} size="small" />
-          )}
-        </Stack>
-      ),
+      formatter: ({ paymentSched, paymentDate }) => {
+        const isPastDue = dayjs(paymentSched).isBefore(dayjs()) && !paymentDate;
+
+        return (
+          <Stack alignItems="center" spacing={1} direction="row">
+            <Typography variant="subtitle2" sx={{ color: paymentDate ? 'text.secondary' : 'text.primary' }}>
+              {dayjs(paymentSched).format('MMM DD YYYY')}
+            </Typography>
+
+            {paymentDate ? (
+              <Chip label="Paid" color="success" variant="outlined" icon={<CheckCircleIcon />} size="small" />
+            ) : isPastDue ? (
+              <Chip label="Due" color="error" variant="outlined" icon={<Xicon />} size="small" />
+            ) : null}
+          </Stack>
+        );
+      },
     },
+
     {
       name: 'Date Paid',
       formatter: (row) => <div>{row.paymentDate && dayjs(row.paymentDate).format('MMM DD YYYY')}</div>,

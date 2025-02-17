@@ -10,9 +10,13 @@ import type { BalanceSheetTypes } from '@/actions/reports/types';
 
 interface Props {
   balances: BalanceSheetTypes;
-};
+}
 
 function BalanceTable({ balances }: Props) {
+  const totalContraryAssets = balances.Assets.filter((account) => account.isContra).reduce(
+    (acc, curr) => acc + curr.totalBalance,
+    0
+  );
   return (
     <Box padding={3}>
       {Object.entries(balances).map(([category, accounts]) => {
@@ -41,7 +45,9 @@ function BalanceTable({ balances }: Props) {
               ))}
             </Stack>
             <Typography variant="h6" sx={{ marginY: 2 }}>
-              Total {category} : {formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')}
+              {category === 'Assets'
+                ? `Total ${category} : ${formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')} - ${formatToCurrency(totalContraryAssets, 'Fil-ph', 'Php')}`
+                : `Total ${category} : ${formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')}`}
             </Typography>
           </>
         );
