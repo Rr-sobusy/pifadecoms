@@ -340,12 +340,6 @@ function CreateExistingLoan({}: Props) {
                 ))}
               </Grid>
             </Stack>
-            <Stack spacing={3}>
-              <Typography variant="h6">Journal Entries</Typography>
-              <Grid container spacing={3}>
-                <Stack direction="row" spacing={2}></Stack>
-              </Grid>
-            </Stack>
           </Stack>
         </CardContent>
       </Card>

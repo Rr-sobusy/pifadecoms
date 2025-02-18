@@ -42,7 +42,10 @@ import { toast } from '@/components/core/toaster';
 import { FormInputFields } from './InputFields';
 import LoanTabs from './loan-tabs';
 
-interface Props { accounts: AccounTreeType; loanSources: ILoanSources };
+interface Props {
+  accounts: AccounTreeType;
+  loanSources: ILoanSources;
+}
 
 const LoanTypeMap: Record<LoanType, string> = {
   Weekly: 'Weekly',
@@ -69,6 +72,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
       journalType: 'cashDisbursement',
       referenceType: 'LoanDisbursements',
       issueDate: new Date(),
+      entryDate: new Date(),
       paymentSched: [],
       journalLineItems: Array(2)
         .fill(null)
@@ -174,96 +178,6 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
   const totalDebits = lineItems.reduce((sum, item) => sum + item.debit, 0);
   const totalCredits = lineItems.reduce((sum, item) => sum + item.credit, 0);
 
-  // const memoizedComputeAmortizationSched = React.useCallback(() => {
-  //   // switch (watchLoanType) {
-  //   //   case 'Weekly':
-  //   //     {
-  //   //       const weeklyInterest = watchInterest / 100;
-  //   //       const weeklyPayment =
-  //   //         watchAmountLoaned * (weeklyInterest / (1 - Math.pow(1 + weeklyInterest, -watchTermsInMonths)));
-  //   //       if (isNaN(weeklyPayment)) return;
-  //   //       if (watchLoanType === 'Weekly') {
-  //   //         const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
-  //   //           const balance = watchAmountLoaned - weeklyPayment * index;
-  //   //           const interest = balance * weeklyInterest;
-  //   //           const principal = weeklyPayment - interest;
-  //   //           return {
-  //   //             balance,
-  //   //             interest,
-  //   //             principal,
-  //   //             paymentSched: dayjs(watchIssueDate)
-  //   //               .add(index + 1, 'week')
-  //   //               .toDate(),
-  //   //             amountPaid: weeklyPayment,
-  //   //             isExisitng: false,
-  //   //           };
-  //   //         });
-  //   //         setValue('paymentSched', amortization as any);
-  //   //       }
-  //   //     }
-  //   //     break;
-  //   //   case 'Monthly':
-  //   //     {
-  //   //       const monthlyInterest = watchInterest / 100;
-  //   //       const monthlyPayment =
-  //   //         watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
-  //   //       if (isNaN(monthlyPayment)) return;
-  //   //       if (watchLoanType === 'Monthly') {
-  //   //         const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
-  //   //           const balance = watchAmountLoaned - monthlyPayment * index;
-  //   //           const interest = balance * monthlyInterest;
-  //   //           const principal = monthlyPayment - interest;
-  //   //           return {
-  //   //             balance,
-  //   //             interest,
-  //   //             principal,
-  //   //             paymentSched: dayjs(watchIssueDate)
-  //   //               .add(index + 1, 'month')
-  //   //               .toDate(),
-  //   //             amountPaid: monthlyPayment,
-  //   //             isExisitng: false,
-  //   //           };
-  //   //         });
-  //   //         setValue('paymentSched', amortization as any);
-  //   //       }
-  //   //     }
-  //   //     break;
-  //   //   case 'Yearly':
-  //   //     break;
-  //   //   case 'Diminishing':
-  //   //     {
-  //   //       const monthlyInterest = watchInterest / 100;
-  //   //       const monthlyPayment =
-  //   //         watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
-  //   //       if (isNaN(monthlyPayment)) return;
-  //   //       if (watchLoanType === 'Diminishing') {
-  //   //         const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
-  //   //           const balance = watchAmountLoaned - monthlyPayment * index;
-  //   //           const interest = balance * monthlyInterest;
-  //   //           const principal = monthlyPayment - interest;
-  //   //           return {
-  //   //             balance,
-  //   //             interest,
-  //   //             principal,
-  //   //             paymentSched: dayjs(watchIssueDate)
-  //   //               .add(index + 1, 'month')
-  //   //               .toDate(),
-  //   //             amountPaid: monthlyPayment,
-  //   //             isExisitng: false,
-  //   //           };
-  //   //         });
-  //   //         console.log(amortization, monthlyInterest);
-  //   //         setValue('paymentSched', amortization as any);
-  //   //       }
-  //   //     }
-  //   //     break;
-  //   //   case 'EndOfTerm':
-  //   //     break;
-  //   //   default:
-  //   //     break;
-  //   // }
-  // }, [watchLoanType, watchInterest, watchAmountLoaned, watchTermsInMonths, watchIssueDate, setValue]);
-
   const memoizedComputeAmortizationSched = (): void => {
     const loanTypeMap: Record<string, dayjs.ManipulateType> = {
       Weekly: 'week',
@@ -288,8 +202,13 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
     );
   };
 
+  function submitHandler(data:ILoanSchemaExtended){
+      execute(data)
+  }
+
+
   return (
-    <form onSubmit={handleSubmit((data) => execute(data))}>
+    <form onSubmit={handleSubmit(submitHandler)}>
       <Card>
         <CardContent>
           <LoanTabs />
@@ -386,7 +305,9 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                         <InputLabel required>Loan Source</InputLabel>
                         <Select {...field}>
                           {loanSources.map((source) => (
-                            <Option key={source.sourceId} value={source.sourceId}>{source.sourceName}</Option>
+                            <Option key={source.sourceId} value={source.sourceId}>
+                              {source.sourceName}
+                            </Option>
                           ))}
                         </Select>
                       </FormControl>
@@ -460,21 +381,6 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     xs: 12,
                   }}
                 >
-                  <FormInputFields
-                    control={control}
-                    name="amountPayable"
-                    inputLabel="Amount Payables"
-                    errors={errors}
-                    variant="number"
-                    isRequired
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 6,
-                    xs: 12,
-                  }}
-                >
                   <Controller
                     control={control}
                     name="entryDate"
@@ -483,7 +389,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                         {...field}
                         onChange={(date) => {
                           field.onChange(date?.toDate());
-                          setValue('dueDate', dayjs(date?.toDate()).add(watchTermsInMonths, 'month').toDate());
+                          setValue('entryDate', date ? date.toDate() : new Date());
                         }}
                         defaultValue={dayjs()}
                         value={dayjs(field.value)}
@@ -498,7 +404,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     xs: 12,
                   }}
                 >
-                  <Stack direction="row" alignItems="center" spacing={2}>
+                  <Stack spacing={2}>
                     <Button onClick={memoizedComputeAmortizationSched} variant="outlined">
                       Compute amortization
                     </Button>

@@ -167,7 +167,6 @@ model MemberLoans {
   interestRate    Decimal     @db.Decimal(10, 2)
   termInMonths    Int
   issueDate       DateTime
-  dueDate         DateTime
   isExisting      Boolean     @default(false)
   journalRef      BigInt?     @unique
   parentLoan      BigInt?     @unique

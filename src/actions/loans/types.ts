@@ -12,13 +12,11 @@ export const addLoanSchema = zod.object({
     })
     .optional(),
   amountLoaned: zod.number(),
-  amountPayable: zod.number(),
   interest: zod.number(),
   termsInMonths: zod.number(),
   issueDate: zod.date().optional(),
   loanId: zod.number().optional(),
   loanSource: zod.number(),
-  dueDate: zod.date(),
   isExisting: zod.boolean().default(false),
   ledgerId: zod.bigint().optional(),
   paymentSched: zod

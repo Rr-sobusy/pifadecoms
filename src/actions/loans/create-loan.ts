@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 
 import { paths } from '@/paths';
+import { logger } from '@/lib/default-logger';
 import prisma from '@/lib/prisma';
 import { actionClient } from '@/lib/safe-action';
 
@@ -11,53 +12,52 @@ import { loanSchemaExtended } from './types';
 export const createNewLoan = actionClient.schema(loanSchemaExtended).action(async ({ parsedInput: Request }) => {
   let serverResponse;
   try {
-    const queryResult = await prisma.journalEntries.create({
-      data: {
-        entryDate: Request.entryDate,
-        journalType: Request.journalType,
-        referenceName: Request.reference,
-        referenceType: Request.referenceType,
-        memberId: Request.particulars?.memberId ?? '',
-        JournalItems: {
-          create: Request.journalLineItems.map((item) => ({
-            accountId: item.accountDetails.accountId,
-            debit: item.debit,
-            credit: item.credit,
-          })),
-        },
-
-        MemberLoans: {
-          create: {
-            loanType: Request.loanType,
-            amountLoaned: Request.amountLoaned,
-            amountPayable: Request.amountPayable,
-            interestRate: Request.interest,
-            termInMonths: Request.termsInMonths,
-            issueDate: Request.entryDate,
-            sourceId: Request.loanSource,
-            dueDate: Request.dueDate,
-            isExisting: Request.isExisting,
-            memberId: Request.particulars?.memberId ?? '',
-
-            Repayments: {
-              create: Request.paymentSched.map((payment) => ({
-                paymentDate: payment.datePaid,
-                principal: payment.principal,
-                interest: payment.interest,
-                paymentSched: payment.paymentSched,
-              })),
+    const result = await prisma.$transaction(async (tx) => {
+      // Insert Journal Entry
+      const journalEntry = await tx.journalEntries.create({
+        data: {
+          entryDate: Request.entryDate,
+          journalType: Request.journalType,
+          referenceName: Request.reference,
+          referenceType: Request.referenceType,
+          memberId: Request.particulars?.memberId ?? '',
+          JournalItems: {
+            create: Request.journalLineItems.map((item) => ({
+              accountId: item.accountDetails.accountId,
+              debit: item.debit,
+              credit: item.credit,
+            })),
+          },
+          MemberLoans: {
+            create: {
+              loanType: Request.loanType,
+              amountLoaned: Request.amountLoaned,
+              interestRate: Request.interest,
+              termInMonths: Request.termsInMonths,
+              issueDate: Request.entryDate,
+              sourceId: Request.loanSource,
+              isExisting: Request.isExisting,
+              memberId: Request.particulars?.memberId ?? '',
+              Repayments: {
+                create: Request.paymentSched.map((payment) => ({
+                  paymentDate: payment.datePaid,
+                  principal: payment.principal,
+                  interest: payment.interest,
+                  paymentSched: payment.paymentSched,
+                })),
+              },
             },
           },
         },
+      });
 
-        /**
-         * * Adjust account balances depends to their account "rootType".
-         */
-        ...Request.journalLineItems.map((lineItem) => {
+      // Update Balances
+      await Promise.all(
+        Request.journalLineItems.map((lineItem) => {
           const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.rootType ?? '');
           const amount = lineItem.debit - lineItem.credit;
-  
-          return prisma.accountsThirdLvl.update({
+
+          return tx.accountsThirdLvl.update({
             where: {
               accountId: lineItem.accountDetails.accountId,
             },
@@ -67,14 +67,16 @@ export const createNewLoan = actionClient.schema(loanSchemaExtended).action(asyn
               },
             },
           });
-        }),
-      },
+        })
+      );
+
+      return journalEntry;
     });
-    serverResponse = { success: true, message: queryResult };
+
+    serverResponse = { success: true, message: result };
   } catch (error) {
-    if (error instanceof Error) {
-      serverResponse = { success: false, message: error.message };
-    }
+    serverResponse = { success: false, message: error instanceof Error ? error.message : 'Error occured in server' };
+    logger.debug(error);
   }
   revalidatePath(paths.dashboard.loans.list);
   return serverResponse;
