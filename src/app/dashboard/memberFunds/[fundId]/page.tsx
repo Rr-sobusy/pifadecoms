@@ -1,9 +1,11 @@
 import React from 'react';
+import RouterLink from 'next/link';
 import { redirect } from 'next/navigation';
 import { Chip } from '@mui/material';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 import type { FundTransactionsType } from '@prisma/client';
 
 import { paths } from '@/paths';
@@ -41,13 +43,29 @@ async function page({ params, searchParams }: PageProps) {
       <Stack spacing={4}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Member Fund Dashboard</Typography>
-            <Chip
-              sx={{ marginTop: 1 }}
-              color="default"
-              variant="outlined"
-              label={`${fundTransactions.Member.lastName}, ${fundTransactions.Member.firstName}`}
-            />
+            <Stack spacing={3}>
+              <div>
+                <Typography
+                  component={RouterLink}
+                  href={paths.dashboard.funds.list}
+                  color="text.primary"
+                  sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
+                  variant="subtitle2"
+                >
+                  <ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />
+                  Back to Member funds
+                </Typography>
+              </div>
+              <div>
+                <Typography variant="h4">Member Fund Dashboard</Typography>
+                <Chip
+                  sx={{ marginTop: 1 }}
+                  color="default"
+                  variant="outlined"
+                  label={`${fundTransactions.Member.lastName}, ${fundTransactions.Member.firstName}`}
+                />
+              </div>
+            </Stack>
           </Box>
         </Stack>
         <SavingsCard fund={fundTransactions ?? []} />

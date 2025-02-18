@@ -49,6 +49,25 @@ export const createNewLoan = actionClient.schema(loanSchemaExtended).action(asyn
             },
           },
         },
+
+        /**
+         * * Adjust account balances depends to their account "rootType".
+         */
+        ...Request.journalLineItems.map((lineItem) => {
+          const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.rootType ?? '');
+          const amount = lineItem.debit - lineItem.credit;
+  
+          return prisma.accountsThirdLvl.update({
+            where: {
+              accountId: lineItem.accountDetails.accountId,
+            },
+            data: {
+              runningBalance: {
+                [isIncrement ? 'increment' : 'decrement']: amount,
+              },
+            },
+          });
+        }),
       },
     });
     serverResponse = { success: true, message: queryResult };

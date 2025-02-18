@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';;
+import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
 import { Notepad as Info } from '@phosphor-icons/react/dist/ssr/Notepad';
 import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
 
@@ -47,17 +47,17 @@ const columns = [
     name: 'Loan Status',
     sortable: true,
     formatter: (row): React.JSX.Element => {
+      const lastDateOfPayment = row.Repayments[row.Repayments.length - 1]?.paymentDate;
+
       const mapping = {
-        running: { label: 'Running', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
-        paid: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
-        overdue: { label: 'overdue', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
+        active: { label: 'Running', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
+        closed: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
+        renewed: { label: 'overdue', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
       } as const;
 
       function getMapping() {
-        if (dayjs().isAfter(dayjs(row.dueDate)) && row.totalPayment <= Number(row.amountPayable))
-          return mapping['overdue'];
-        if (row.totalPayment >= Number(row.amountPayable)) return mapping['paid'];
-        return mapping['running'];
+        
+        return mapping["active"];
       }
 
       const { label, icon } = getMapping();
@@ -101,10 +101,10 @@ const columns = [
     ),
   },
   {
-    name: 'Amount to pay',
+    name: 'Principal Loaned',
     formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2" color="text.primary">
-        {formatToCurrency(Number(row.amountPayable), 'Fil-ph', 'Php')}
+        {formatToCurrency(Number(row.amountLoaned), 'Fil-ph', 'Php')}
       </Typography>
     ),
   },

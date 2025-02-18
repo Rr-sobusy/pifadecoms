@@ -164,7 +164,6 @@ model MemberLoans {
   loanStatus      LoanStatus  @default(Active) 
   sourceId        Int 
   amountLoaned    Decimal     @db.Decimal(10, 2)       
-  amountPayable   Decimal     @db.Decimal(10, 2)
   interestRate    Decimal     @db.Decimal(10, 2)
   termInMonths    Int
   issueDate       DateTime

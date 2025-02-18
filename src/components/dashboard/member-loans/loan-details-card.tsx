@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { Info } from '@phosphor-icons/react/dist/ssr/Info';
+import { LoanType } from '@prisma/client';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -17,8 +18,8 @@ interface PageProps extends CardProps {
 }
 
 function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
-  const interest = (amount: number, rate: number, term: number): number => {
-    return amount * (rate / 100) * term;
+  const interest = (amount: number, rate: number, term: number, loanType: LoanType): number => {
+    return amount * (loanType === 'Weekly' ? rate / 100 / 4 : rate / 100) * term;
   };
 
   return (
@@ -42,11 +43,11 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
               },
               {
                 title: 'Interest computed',
-                value: `${formatToCurrency(interest(Number(loanDetails?.amountLoaned), Number(loanDetails?.interestRate), loanDetails?.termInMonths ?? 0), 'Fil-ph', 'Php')} in ${loanDetails?.termInMonths} months`,
+                value: `${formatToCurrency(interest(Number(loanDetails?.amountLoaned), Number(loanDetails?.interestRate), loanDetails?.termInMonths ?? 0, loanDetails?.loanType || 'EndOfTerm'), 'Fil-ph', 'Php')} in ${loanDetails?.termInMonths} payments`,
               },
               {
-                title: 'Payable Amount',
-                value: formatToCurrency(Number(loanDetails?.amountPayable ?? 0), 'Fil-ph', 'Php'),
+                title: 'Subject payment per amortization',
+                value: `${formatToCurrency((interest(Number(loanDetails?.amountLoaned), Number(loanDetails?.interestRate), loanDetails?.termInMonths ?? 0, loanDetails?.loanType || 'EndOfTerm') + Number(loanDetails?.amountLoaned)) / (loanDetails?.termInMonths ?? 0), 'Fil-ph', 'Php')}`,
               },
               { title: 'Date Released', value: dayjs(loanDetails?.issueDate).format('MMM DD YYYY') },
               {

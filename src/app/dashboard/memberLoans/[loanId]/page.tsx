@@ -63,7 +63,7 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
           </div>
           <Typography variant="h4">Loan-{params.loanId.toString().padStart(6, '0')}</Typography>
           <div>
-            <Chip label="Pending" />
+            <Chip color='success' label="Active" />
           </div>
         </Stack>
         <Grid container spacing={3}>

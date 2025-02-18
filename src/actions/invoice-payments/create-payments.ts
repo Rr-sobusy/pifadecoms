@@ -64,9 +64,7 @@ export const createPaymentPosting = actionClient
          */
         ...Request.journalLineItems.map((lineItem) => {
           const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.rootType ?? '');
-          const amount = isIncrement
-            ? lineItem.debit - lineItem.credit // For Assets and Expense Acct
-            : lineItem.credit - lineItem.debit; // For Equity, Revenue, and Liabilities acct
+          const amount = lineItem.debit - lineItem.credit // For Equity, Revenue, and Liabilities acct
 
           return prisma.accountsThirdLvl.update({
             where: {
