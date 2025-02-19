@@ -10,13 +10,13 @@ import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { getBalanceSheet } from '@/actions/reports/balance-sheet';
 import BalanceTable from '@/components/dashboard/reports/balancesheet/balance-table';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
-
+import {dayjs} from '@/lib/dayjs';
 interface PageProps {
   searchParams: { filterList: boolean };
 }
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const [accounts, balance] = await Promise.all([fetchAccountTree(), getBalanceSheet()]);
+  const [accounts, balance] = await Promise.all([fetchAccountTree(), getBalanceSheet(dayjs().toDate())]);
 
   return (
     <Box
