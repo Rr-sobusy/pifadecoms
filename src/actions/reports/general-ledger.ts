@@ -1,16 +1,21 @@
+import { JournalType } from '@prisma/client';
+
 import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
-interface LedgerType {
-  dateRange?: { startDate: string; endDate: string };
-};
+interface FilterProps {
+  dateRange: { startDate: string | Date; endDate: string | Date };
+  journalType: JournalType | 'All';
+}
 
-export async function fetchLedgers({ dateRange }: LedgerType) {
-
+export async function fetchLedgers({
+  dateRange = { endDate: dayjs().toDate(), startDate: dayjs().toDate() },
+  journalType = 'cashDisbursement',
+}: FilterProps) {
   /**
    * * Fetch the records for the previous 30 days when there is no given parameters in dateRange
-   */ 
-  
+   */
+
   const accountLedgers = await prisma.journalItems.groupBy({
     by: ['accountId'],
     _sum: { debit: true, credit: true },
@@ -18,15 +23,17 @@ export async function fetchLedgers({ dateRange }: LedgerType) {
       JournalEntries: {
         entryDate: {
           lte:
-          dateRange?.endDate === undefined
-          ? dayjs().endOf('day').toISOString()
-          : dayjs(dateRange?.endDate).endOf('day').toISOString(),
+            dateRange?.endDate === undefined
+              ? dayjs().endOf('day').toISOString()
+              : dayjs(dateRange?.endDate).endOf('day').toISOString(),
           gte:
             dateRange?.startDate === undefined
               ? dayjs().subtract(30, 'day').startOf('day').toISOString()
               : dayjs(dateRange?.startDate).startOf('day').toISOString(),
         },
+        journalType: journalType === 'All' ? undefined : journalType,
       },
+
     },
   });
 
@@ -41,11 +48,11 @@ export async function fetchLedgers({ dateRange }: LedgerType) {
     select: {
       accountName: true,
       accountId: true,
-      RootID : {
-        select : {
-          rootType : true
-        }
-      }
+      RootID: {
+        select: {
+          rootType: true,
+        },
+      },
     },
   });
 

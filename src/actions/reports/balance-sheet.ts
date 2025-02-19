@@ -1,4 +1,5 @@
 import type { AccountTypes } from '@prisma/client';
+
 import prisma from '@/lib/prisma';
 
 interface ChildAccount {
@@ -13,10 +14,7 @@ interface ParentAccount {
   children: ChildAccount[];
 }
 
-type BalanceSheet = Record<
-  Exclude<AccountTypes, 'Expense' | 'Revenue' | 'Contra_Assets'>,
-  ParentAccount[]
->;
+type BalanceSheet = Record<Exclude<AccountTypes, 'Expense' | 'Revenue' | 'Contra_Assets'>, ParentAccount[]>;
 
 export async function getBalanceSheet(asOf: Date = new Date()): Promise<BalanceSheet> {
   const balanceSheet: BalanceSheet = {
@@ -66,7 +64,13 @@ export async function getBalanceSheet(asOf: Date = new Date()): Promise<BalanceS
 
         // Subtract future transactions from the running balance
         const computedBalance =
-          Number(child.runningBalance) - ((Number(futureBalance._sum.debit) || 0) - (Number(futureBalance._sum.credit) || 0));
+          account.rootType === 'Assets' || account.rootType === 'Expense'
+            ? Number(child.runningBalance) -
+              (Number(futureBalance._sum.debit) || 0) -
+              (Number(futureBalance._sum.credit) || 0)
+            : Number(child.runningBalance) -
+              (Number(futureBalance._sum.credit) || 0) -
+              (Number(futureBalance._sum.debit) || 0);
 
         return computedBalance !== 0 ? { accountName: child.accountName, balance: computedBalance } : null;
       })

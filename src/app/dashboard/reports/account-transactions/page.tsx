@@ -8,12 +8,12 @@ import Typography from '@mui/material/Typography';
 import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 import { X as CloseIcon } from '@phosphor-icons/react/dist/ssr/X';
+
 import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
-
 
 interface PageProps {
   searchParams: {

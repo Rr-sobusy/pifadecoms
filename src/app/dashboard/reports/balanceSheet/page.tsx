@@ -6,17 +6,19 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FileArchive as CompareIcon } from '@phosphor-icons/react/dist/ssr/FileArchive';
+
+import { dayjs } from '@/lib/dayjs';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { getBalanceSheet } from '@/actions/reports/balance-sheet';
 import BalanceTable from '@/components/dashboard/reports/balancesheet/balance-table';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
-import {dayjs} from '@/lib/dayjs';
+
 interface PageProps {
   searchParams: { filterList: boolean };
 }
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const [accounts, balance] = await Promise.all([fetchAccountTree(), getBalanceSheet(dayjs().toDate())]);
+  const [accounts, balance] = await Promise.all([fetchAccountTree(), getBalanceSheet(dayjs('2025-03-01').toDate())]);
 
   return (
     <Box
@@ -50,7 +52,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
             Balance Sheet
           </Typography>
           <Typography color="textDisabled" variant="body2">
-            As of December 31 2024
+            {`As of ${dayjs().format('MMMM DD, YYYY')}`}
           </Typography>
         </Stack>
 

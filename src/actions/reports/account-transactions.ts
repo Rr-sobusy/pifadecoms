@@ -23,7 +23,9 @@ export async function fetchAccountTransactions(props: Filterers = { condition: '
   if (props.accountId) {
     conditions.push({
       JournalItems: {
-        accountId: props.accountId,
+        some: {
+          accountId: props.accountId,
+        },
       },
     });
   }
