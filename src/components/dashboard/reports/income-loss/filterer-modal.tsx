@@ -84,7 +84,7 @@ function IncomeAndLossFiltererModal({ open }: FiltererProps) {
             <Stack>
               <Typography variant="h6">Filter results</Typography>
               <Typography color="text.secondary" variant="caption">
-                Filter income and losses by date range. {JSON.stringify(errors)}
+                Filter income and losses by date range. 
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>

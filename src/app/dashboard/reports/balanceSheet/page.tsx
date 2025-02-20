@@ -4,21 +4,24 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { CalendarDots } from '@phosphor-icons/react/dist/ssr';
 import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
-import { FileArchive as CompareIcon } from '@phosphor-icons/react/dist/ssr/FileArchive';
 
 import { dayjs } from '@/lib/dayjs';
-import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
+import Link from 'next/link';
 import { getBalanceSheet } from '@/actions/reports/balance-sheet';
 import BalanceTable from '@/components/dashboard/reports/balancesheet/balance-table';
-import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
+import BalanceSheetFilterModal from '@/components/dashboard/reports/balancesheet/filter-modal';
+import { paths } from '@/paths';
 
 interface PageProps {
-  searchParams: { filterList: boolean };
+  searchParams: { filterList: boolean; asOf?: Date | string };
 }
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const [accounts, balance] = await Promise.all([fetchAccountTree(), getBalanceSheet(dayjs('2025-03-01').toDate())]);
+  const { filterList, asOf } = searchParams;
+
+  const balances = await getBalanceSheet(asOf ? dayjs(asOf).endOf('day').toDate() : undefined);
 
   return (
     <Box
@@ -34,10 +37,9 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
           <Box sx={{ flex: '1 1 auto' }}>
             <Typography variant="h4">Balance Sheet</Typography>
           </Box>
-
           <Stack spacing={1} flexDirection="row">
-            <Button startIcon={<CompareIcon />} variant="text">
-              Reconcile/Unrencile Records
+            <Button LinkComponent={Link} href={`${paths.dashboard.reports.balanceSheet}?filterList=true`} startIcon={<CalendarDots />} variant="text">
+              Select target date
             </Button>
             <Button startIcon={<ExportIcon />} variant="text">
               Export
@@ -52,17 +54,17 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
             Balance Sheet
           </Typography>
           <Typography color="textDisabled" variant="body2">
-            {`As of ${dayjs().format('MMMM DD, YYYY')}`}
+            {`${asOf ? `As of ${dayjs(asOf).format('MMMM DD, YYYY')}` : 'Please select a target date'}`}
           </Typography>
         </Stack>
 
         <Card sx={{ marginTop: 3 }}>
           <Box sx={{ overflowX: 'auto' }}>
-            <BalanceTable balances={balance} />
+            <BalanceTable balances={balances} />
           </Box>
         </Card>
       </Stack>
-      <FilterModal accounts={accounts} open={Boolean(searchParams.filterList)} />
+      <BalanceSheetFilterModal open={Boolean(filterList)} />
     </Box>
   );
 }

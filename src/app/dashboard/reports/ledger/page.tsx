@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 import { JournalType } from '@prisma/client';
-
+import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { fetchLedgers } from '@/actions/reports/general-ledger';
@@ -49,12 +49,21 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
           <Stack direction="row">
             <div>
               <Button
-                variant="outlined"
+                variant="text"
                 startIcon={<FilterIcon />}
                 LinkComponent={Link}
                 href={`${paths.dashboard.reports.ledgerList}?isFilterOpen=true`}
               >
-                Filters
+                Filter lists
+              </Button>
+            </div>
+            <div>
+              <Button
+                variant="text"
+                startIcon={<ExportIcon />}
+                LinkComponent={Link}
+              >
+                Export
               </Button>
             </div>
           </Stack>

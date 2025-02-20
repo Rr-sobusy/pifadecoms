@@ -17,7 +17,7 @@ interface ParentAccount {
 
 type BalanceSheet = Record<Exclude<AccountTypes, 'Expense' | 'Revenue' | 'Contra_Assets'>, ParentAccount[]>;
 
-export async function getBalanceSheet(asOf: Date = new Date()): Promise<BalanceSheet> {
+export async function getBalanceSheet(asOf?: Date): Promise<BalanceSheet> {
   const balanceSheet: BalanceSheet = {
     Assets: [],
     Liability: [],
@@ -102,5 +102,11 @@ export async function getBalanceSheet(asOf: Date = new Date()): Promise<BalanceS
     }
   }
 
-  return balanceSheet;
+  return asOf
+    ? balanceSheet
+    : {
+        Assets: [],
+        Liability: [],
+        Equity: [],
+      };
 }
