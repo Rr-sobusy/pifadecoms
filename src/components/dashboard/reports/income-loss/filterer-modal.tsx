@@ -3,7 +3,7 @@
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Divider } from '@mui/material';
+import { Button, Divider, Input } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import FormControl from '@mui/material/FormControl';
@@ -21,38 +21,22 @@ import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
 import { dayjs } from '@/lib/dayjs';
-import { Option } from '@/components/core/option';
 
-type FilterDialogProps = {
+const filterSchema = zod.object({
+  startDate: zod.date().optional(),
+  endDate: zod.date().optional(),
+});
+
+type FiltererProps = {
   open: boolean;
 };
 
-const journalMap: Record<JournalType | 'All', string> = {
-  All: 'All',
-  cashReceipts: 'Cash Receipts',
-  cashDisbursement: 'Cash Disbursement',
-  generalJournal: 'General Journal',
-};
-
-const filterSchema = zod.object({
-  journalType: zod.enum(['All', 'cashReceipts', 'cashDisbursement', 'generalJournal']).optional(),
-  dateRange: zod
-    .object({
-      startDate: zod.date(),
-      endDate: zod.date(),
-    })
-    .optional(),
-});
-
-function LedgerFilterModal({ open }: FilterDialogProps) {
-  const router = useRouter();
+function IncomeAndLossFiltererModal({ open }: FiltererProps) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const { control, handleSubmit } = useForm<zod.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
-    defaultValues: {
-      journalType: 'All',
-    },
   });
 
   function handleClose() {
@@ -62,22 +46,19 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
   function submitHandler(data: zod.infer<typeof filterSchema>) {
     const urlSearchParams = new URLSearchParams();
 
-    if (data.journalType) {
-      urlSearchParams.set('journalType', data.journalType);
-    }
-
-    if (data.dateRange?.startDate && data.dateRange?.endDate) {
-      urlSearchParams.set('startDate', dayjs(data.dateRange.startDate).format('YYYY-MM-DD'));
-      urlSearchParams.set('endDate', dayjs(data.dateRange.endDate).format('YYYY-MM-DD'));
+    if (data.startDate && data.endDate) {
+      urlSearchParams.append('startDate', data.startDate.toISOString());
+      urlSearchParams.append('endDate', data.endDate.toISOString());
     }
 
     router.push(`${pathname}?${urlSearchParams.toString()}`);
   }
+
   return (
     <Dialog
       sx={{
         '& .MuiDialog-container': { justifyContent: 'center' },
-        '& .MuiDialog-paper': { minHeight: '46%', width: '100%' },
+        '& .MuiDialog-paper': { minHeight: '40%', width: '100%' },
       }}
       open={open}
     >
@@ -90,7 +71,7 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
             <Stack>
               <Typography variant="h6">Filter results</Typography>
               <Typography color="text.secondary" variant="caption">
-                Filter the ledger list based on date range and journal type.
+                Filter income and losses by date range.
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -99,37 +80,19 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
           </Stack>
           <Divider />
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12 }}>
-              <Controller
-                name="journalType"
-                control={control}
-                render={({ field }) => (
-                  <FormControl fullWidth>
-                    <InputLabel>Journal Type</InputLabel>
-                    <Select {...field} fullWidth>
-                      {Object.entries(journalMap).map(([key, value]) => (
-                        <Option key={key} value={key}>
-                          {journalMap[key as JournalType & 'All']}
-                        </Option>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              />
-            </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Controller
                 control={control}
-                name="dateRange.startDate"
+                name="startDate"
                 render={({ field }) => (
                   <FormControl>
-                    <InputLabel>Start Date</InputLabel>
+                    <InputLabel htmlFor="startDate">Start Date</InputLabel>
                     <DatePicker
                       {...field}
+                      value={dayjs(field.value)}
                       onChange={(date) => {
                         field.onChange(date?.toDate());
                       }}
-                      value={dayjs(field.value)}
                     />
                   </FormControl>
                 )}
@@ -138,17 +101,16 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
             <Grid size={{ xs: 12, md: 6 }}>
               <Controller
                 control={control}
-                name="dateRange.endDate"
+                name="endDate"
                 render={({ field }) => (
                   <FormControl>
-                    <InputLabel>End Date</InputLabel>
+                    <InputLabel htmlFor="endDate">End Date</InputLabel>
                     <DatePicker
                       {...field}
-                      {...field}
+                      value={dayjs(field.value)}
                       onChange={(date) => {
                         field.onChange(date?.toDate());
                       }}
-                      value={dayjs(field.value)}
                     />
                   </FormControl>
                 )}
@@ -168,4 +130,4 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
   );
 }
 
-export default LedgerFilterModal;
+export default IncomeAndLossFiltererModal;

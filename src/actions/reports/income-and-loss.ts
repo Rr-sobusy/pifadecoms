@@ -1,82 +1,106 @@
 import { AccountTypes } from '@prisma/client';
 
+import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
-interface ChildProps {
-  accountName: string;
+interface ParentAccountProps {
+  parentAccount: string;
+  totalBalance: number;
+  children: ChildAccountProps[];
+}
+
+interface ChildAccountProps {
+  parentAccount: string;
   balance: number;
+  accountName: string;
 }
 
 type IncomeAndLossShape = Record<
   Exclude<AccountTypes, 'Assets' | 'Liability' | 'Contra_Assets' | 'Equity'>,
-  ChildProps[]
+  ParentAccountProps[]
 >;
 
-export async function fetchIncomeAndLossReport() {
+export async function fetchIncomeAndLossReport(): Promise<IncomeAndLossShape> {
   const incomeAndLossReport: IncomeAndLossShape = {
-    Expense: [],
     Revenue: [],
+    Expense: [],
   };
 
-  const transactions = await prisma.journalItems.groupBy({
-    by: ['accountId'],
-    _sum: { debit: true, credit: true },
+  const accounts = await prisma.accountsSecondLvl.findMany({
     where: {
-      JournalEntries: {
-        entryDate: {
-          gte: new Date('2024-01-01'),
-          lte: new Date('2024-12-31'),
-        },
-      },
-      Accounts: {
-        RootID: {
-          rootType: {
-            in: ['Expense', 'Revenue'],
-          },
-        },
-      },
+      OR: [{ rootType: 'Revenue' }, { rootType: 'Expense' }],
     },
-  });
-
-  const accountId = transactions.map((transaction) => transaction.accountId);
-
-  const chartOfAccounts = await prisma.accountsThirdLvl.findMany({
-    where: {
-      accountId: {
-        in: [...accountId],
-      },
-    },
-    select: {
-      accountId: true,
-      accountName: true,
-      runningBalance: true,
-
-      RootID: {
+    include: {
+      Children: {
+        where: {
+          isActive: true,
+        },
         select: {
-          rootType: true,
+          accountName: true,
+          accountId: true,
+          runningBalance: true, // Needed for journal lookup
+        },
+        orderBy: {
+          accountName: 'asc',
         },
       },
     },
   });
 
-  const accountMap = new Map(chartOfAccounts.map((acc) => [acc.accountId, acc]));
+  for (const account of accounts) {
+    const category = account.rootType as Exclude<AccountTypes, 'Assets' | 'Liability' | 'Contra_Assets' | 'Equity'>;
 
-  transactions.forEach((ledger) => {
-    const account = accountMap.get(ledger.accountId);
-    if (!account) return;
+    // Fetch sum of journal entries that occurred **after** `asOf`
+    const childBalances = await Promise.all(
+      account.Children.map(async (child) => {
+        const futureBalance = await prisma.journalItems.aggregate({
+          where: {
+            accountId: child.accountId,
+            JournalEntries: {
+              entryDate: {
+                gte: dayjs('2024-01-01').toDate(),
+                lte: dayjs('2024-12-31').toDate(),
+              },
+            },
+          },
+          _sum: {
+            debit: true,
+            credit: true,
+          },
+        });
 
-    const balance =
-      account.RootID.rootType === 'Revenue'
-        ? Number(ledger._sum.credit) - Number(ledger._sum.debit)
-        : Number(ledger._sum.debit) - Number(ledger._sum.credit);
+        // Subtract future transactions from the running balance
+        const computedBalance =
+          account.rootType === 'Expense'
+            ? (Number(futureBalance._sum.debit) || 0) - (Number(futureBalance._sum.credit) || 0)
+            : (Number(futureBalance._sum.credit) || 0) - (Number(futureBalance._sum.debit) || 0);
 
-    incomeAndLossReport[
-      account.RootID.rootType as Exclude<AccountTypes, 'Assets' | 'Liability' | 'Contra_Assets' | 'Equity'>
-    ].push({
-      accountName: account.accountName,
-      balance,
-    });
-  });
+        return computedBalance !== 0 ? { accountName: child.accountName, balance: computedBalance } : null;
+      })
+    );
+
+    // Filter out accounts with zero balances
+    const childrenWithBalances = childBalances.filter((child): child is ChildAccountProps => child !== null);
+
+    const totalBalance = childrenWithBalances.reduce((sum, child) => sum + child.balance, 0);
+
+    if (totalBalance !== 0) {
+      // Append 'Contra_Assets' to 'Assets'
+      if (category === 'Revenue') {
+        incomeAndLossReport.Revenue.push({
+          parentAccount: account.rootName,
+          totalBalance,
+          children: childrenWithBalances,
+        });
+      } else {
+        incomeAndLossReport[category].push({
+          parentAccount: account.rootName,
+          totalBalance,
+          children: childrenWithBalances,
+        });
+      }
+    }
+  }
 
   return incomeAndLossReport;
 }
