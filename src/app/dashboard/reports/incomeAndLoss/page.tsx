@@ -10,14 +10,14 @@ import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { getBalanceSheet } from '@/actions/reports/balance-sheet';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import IncomeTable from '@/components/dashboard/reports/income-loss/income-table';
-
+import { fetchIncomeAndLossReport } from '@/actions/reports/income-and-loss';
 interface PageProps {
   searchParams: { filterList: boolean };
 }
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const [accounts, balance] = await Promise.all([fetchAccountTree(), getBalanceSheet()]);
-
+  const [accounts, balance, income] = await Promise.all([fetchAccountTree(), getBalanceSheet(), fetchIncomeAndLossReport()]);
+  console.log(income)
   return (
     <Box
       sx={{
@@ -57,7 +57,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         <Card sx={{ marginTop: 3 }}>
           <Box sx={{ overflowX: 'auto' }}>
             {/* <BalanceTable balances={balance} /> */}
-            <IncomeTable balances={balance} />
+            <IncomeTable data={income} balances={balance} />
           </Box>
         </Card>
       </Stack>

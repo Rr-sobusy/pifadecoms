@@ -14,6 +14,7 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers';
+import { Funnel } from '@phosphor-icons/react/dist/ssr/Funnel';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { JournalType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
@@ -53,6 +54,9 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
     formState: { errors },
   } = useForm<zod.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
+    defaultValues: {
+      journalType: 'All',
+    },
   });
 
   function handleClose() {
@@ -77,7 +81,7 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
     <Dialog
       sx={{
         '& .MuiDialog-container': { justifyContent: 'center' },
-        '& .MuiDialog-paper': { minHeight: '50%', width: '100%' },
+        '& .MuiDialog-paper': { minHeight: '46%', width: '100%' },
       }}
       open={open}
     >
@@ -155,16 +159,14 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
               />
             </Grid>
           </Grid>
-          <div>
-            <Button type="submit" variant="contained">
-              Filter Result
-            </Button>
-          </div>
-          <div>
-            <Button onClick={() => console.log(errors)} variant="contained">
-              Debug
-            </Button>
-          </div>
+          <Stack paddingY={2} alignItems="flex-end">
+            {' '}
+            <div>
+              <Button startIcon={<Funnel />} type="submit" variant="contained">
+                Filter Result
+              </Button>
+            </div>
+          </Stack>
         </DialogContent>
       </form>
     </Dialog>

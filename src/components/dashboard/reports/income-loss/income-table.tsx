@@ -8,7 +8,8 @@ type Props = {
   balances: BalanceSheetTypes;
 };
 
-function IncomeTable({ balances }: Props) {
+function IncomeTable({ balances, data }: Props) {
+  console.log(data)
   return (
     <Box padding={3}>
      
