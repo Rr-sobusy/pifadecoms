@@ -3,29 +3,38 @@
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Divider, Input } from '@mui/material';
+import { Button, Divider } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Funnel } from '@phosphor-icons/react/dist/ssr/Funnel';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
-import { JournalType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
 import { dayjs } from '@/lib/dayjs';
 
-const filterSchema = zod.object({
-  startDate: zod.date().optional(),
-  endDate: zod.date().optional(),
-});
+const filterSchema = zod
+  .object({
+    startDate: zod.date().optional(),
+    endDate: zod.date().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.startDate && data.endDate && data.startDate > data.endDate) {
+      return ctx.addIssue({
+        message: 'Start date should be before end date',
+        code: zod.ZodIssueCode.custom,
+        path: ['startDate'],
+      });
+    }
+    return ctx;
+  });
 
 type FiltererProps = {
   open: boolean;
@@ -35,7 +44,11 @@ function IncomeAndLossFiltererModal({ open }: FiltererProps) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const { control, handleSubmit } = useForm<zod.infer<typeof filterSchema>>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<zod.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
   });
 
@@ -71,7 +84,7 @@ function IncomeAndLossFiltererModal({ open }: FiltererProps) {
             <Stack>
               <Typography variant="h6">Filter results</Typography>
               <Typography color="text.secondary" variant="caption">
-                Filter income and losses by date range.
+                Filter income and losses by date range. {JSON.stringify(errors)}
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -117,6 +130,11 @@ function IncomeAndLossFiltererModal({ open }: FiltererProps) {
               />
             </Grid>
           </Grid>
+          {errors.startDate && (
+            <Typography color="error" variant="caption">
+              {errors.startDate.message}
+            </Typography>
+          )}
           <Stack paddingY={2} alignItems="flex-end">
             <div>
               <Button startIcon={<Funnel />} type="submit" variant="contained">

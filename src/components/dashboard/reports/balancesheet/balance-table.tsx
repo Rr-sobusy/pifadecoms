@@ -24,9 +24,19 @@ function BalanceTable({ balances }: Props) {
         return (
           <>
             <Stack key={category}>
-              <Typography sx={{ backgroundColor: '#CCCED1' }} paddingLeft={4} paddingY={0.5} variant="h5">
-                {category}
-              </Typography>
+              <Stack
+                sx={{ backgroundColor: '#DBDBDD' }}
+                paddingY={1}
+                flexDirection="row"
+                justifyContent="space-between"
+              >
+                <Typography paddingLeft={4} paddingRight={2} fontWeight={600} variant="subtitle1">
+                  {category}
+                </Typography>
+                <Typography paddingLeft={4} paddingRight={2} variant="subtitle2">
+                  {formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')}
+                </Typography>
+              </Stack>
               {accounts.map((account, idx) => (
                 <Stack padding={2} key={idx}>
                   <Typography variant="h6">{account.parentAccount}</Typography>

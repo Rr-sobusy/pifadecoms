@@ -1,5 +1,6 @@
 import type { AccountTypes } from '@prisma/client';
 
+import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
 interface ChildAccount {
@@ -52,7 +53,7 @@ export async function getBalanceSheet(asOf: Date = new Date()): Promise<BalanceS
             accountId: child.accountId,
             JournalEntries: {
               entryDate: {
-                gt: asOf, // Only look at transactions after `asOf`
+                gt: dayjs(asOf).endOf('day').toISOString(), // Only look at transactions after `asOf`
               },
             },
           },
@@ -64,7 +65,7 @@ export async function getBalanceSheet(asOf: Date = new Date()): Promise<BalanceS
 
         // Subtract future transactions from the running balance
         const computedBalance =
-          account.rootType === 'Assets' || account.rootType === 'Expense'
+          account.rootType === 'Assets'
             ? Number(child.runningBalance) -
               (Number(futureBalance._sum.debit) || 0) -
               (Number(futureBalance._sum.credit) || 0)

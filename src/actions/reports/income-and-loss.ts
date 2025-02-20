@@ -20,7 +20,13 @@ type IncomeAndLossShape = Record<
   ParentAccountProps[]
 >;
 
-export async function fetchIncomeAndLossReport(): Promise<IncomeAndLossShape> {
+export async function fetchIncomeAndLossReport({
+  startDate,
+  endDate,
+}: {
+  startDate?: Date | string;
+  endDate?: Date | string;
+}): Promise<IncomeAndLossShape> {
   const incomeAndLossReport: IncomeAndLossShape = {
     Revenue: [],
     Expense: [],
@@ -38,7 +44,7 @@ export async function fetchIncomeAndLossReport(): Promise<IncomeAndLossShape> {
         select: {
           accountName: true,
           accountId: true,
-          runningBalance: true, // Needed for journal lookup
+          runningBalance: true,
         },
         orderBy: {
           accountName: 'asc',
@@ -58,8 +64,8 @@ export async function fetchIncomeAndLossReport(): Promise<IncomeAndLossShape> {
             accountId: child.accountId,
             JournalEntries: {
               entryDate: {
-                gte: dayjs('2024-01-01').toDate(),
-                lte: dayjs('2024-12-31').toDate(),
+                gte: dayjs(startDate).startOf('day').toISOString(),
+                lte: dayjs(endDate).startOf('day').toISOString(),
               },
             },
           },
