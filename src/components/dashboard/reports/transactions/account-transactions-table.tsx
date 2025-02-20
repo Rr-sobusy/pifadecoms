@@ -6,6 +6,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
+import { ReferenceType } from '@prisma/client';
 
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
@@ -16,6 +17,18 @@ import { DataTable } from '@/components/core/data-table';
 
 interface TransactionsTableProps {
   accountTransactions: AccountTransactionTypes;
+}
+
+const transactionTypeMap: Record<ReferenceType, string> = {
+  LoanDisbursements: 'Loan Disbursement',
+  LoanRepayments: 'Loan Repayment',
+  ManualJournals: 'Manual Journal',
+  MemberRegistration: 'Member Registration',
+  SalesPayments: 'Sales Payment',
+  SavingsDeposit: 'Savings Deposit',
+  SavingsWithdrawal: 'Savings Withdrawal',
+  ShareDeposit: 'Share Deposit',
+  ShareWithdrawal: 'Share Withdrawal',
 };
 
 const columns = [
@@ -34,7 +47,7 @@ const columns = [
     formatter(row) {
       return (
         <Stack>
-          <Typography variant="caption">{row.referenceType}</Typography>
+          <Typography variant="caption">{transactionTypeMap[row.referenceType]}</Typography>
         </Stack>
       );
     },
@@ -89,45 +102,6 @@ const columns = [
     name: 'Reference #',
     width: '120px',
   },
-  // {
-  //   formatter(row) {
-  //     return (
-  //       <Stack>
-  //         <Typography variant="subtitle2">
-  //           {row.debit !== 0 ? formatToCurrency(row.debit, 'Fil-ph', 'Php') : ''}
-  //         </Typography>
-  //       </Stack>
-  //     );
-  //   },
-  //   name: 'Debit',
-  //   width: '100px',
-  // },
-  // {
-  //   formatter(row, index) {
-  //     return (
-  //       <Stack>
-  //         <Typography variant="subtitle2">
-  //           {row.JournalItems[index].credit !== 0 ? formatToCurrency(row.JournalItems[index].credit, 'Fil-ph', 'Php') : ''}
-  //         </Typography>
-  //       </Stack>
-  //     );
-  //   },
-  //   name: 'Credit',
-  //   width: '100px',
-  // },
-  // {
-  //   formatter(row) {
-  //     return (
-  //       <Typography variant="subtitle2">
-  //         {row.credit !== 0
-  //           ? formatToCurrency(row.credit, 'Fil-ph', 'Php')
-  //           : formatToCurrency(row.debit, 'Fil-ph', 'Php')}
-  //       </Typography>
-  //     );
-  //   },
-  //   name: 'Amount',
-  //   width: '100px',
-  // },
   {
     formatter(row) {
       return (

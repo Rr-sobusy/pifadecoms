@@ -56,6 +56,7 @@ function BalanceSheetFilterModal({ open }: FiltererModalProps) {
             <XIcon />
           </IconButton>
         </Stack>
+        <Divider />
         <div>
           <FormControl>
             <InputLabel htmlFor="asOf">As of</InputLabel>
@@ -69,7 +70,6 @@ function BalanceSheetFilterModal({ open }: FiltererModalProps) {
             />
           </FormControl>
         </div>
-        <Divider />
         <Stack paddingY={1} alignItems="flex-end">
           <div>
             <Button startIcon={<Funnel />} onClick={selectHandler} variant="contained">

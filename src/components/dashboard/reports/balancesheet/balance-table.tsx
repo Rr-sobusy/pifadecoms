@@ -29,6 +29,7 @@ function BalanceTable({ balances }: Props) {
                 paddingY={1}
                 flexDirection="row"
                 justifyContent="space-between"
+                alignItems="center"
               >
                 <Typography paddingLeft={4} paddingRight={2} fontWeight={600} variant="subtitle1">
                   {category}

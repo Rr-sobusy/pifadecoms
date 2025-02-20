@@ -17,13 +17,15 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { FunnelSimple } from '@phosphor-icons/react/dist/ssr';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import Decimal from 'decimal.js';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-import { logger } from '@/lib/default-logger';
+
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
+import { logger } from '@/lib/default-logger';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
@@ -33,9 +35,32 @@ type FilterModalProps = {
   accounts: AccounTreeType;
 };
 
+const maximumDateInterval = 62;
+
 const filterSchema = zod.object({
-  startDate: zod.date().optional(),
-  endDate: zod.date().optional(),
+  dateRange: zod
+    .object({
+      startDate: zod.date().optional(),
+      endDate: zod.date().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (!data?.endDate || !data?.startDate) return;
+
+      if (data.startDate > data.endDate) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: 'Start date must preceeding end date! ',
+        });
+      }
+
+      if (dayjs(data?.endDate).diff(dayjs(data?.startDate), 'day') > maximumDateInterval) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: 'To minimize potential performance problems, date ranges must not more than 2 months! ',
+        });
+      }
+    })
+    .optional(),
   accountDetails: zod
     .object({
       accountId: zod.string(),
@@ -74,8 +99,10 @@ function FilterModal({ open, accounts }: FilterModalProps) {
   } = useForm<FilterSchema>({
     resolver: zodResolver(filterSchema),
     defaultValues: {
-      startDate: new Date(),
-      endDate: new Date(),
+      dateRange: {
+        startDate: new Date(),
+        endDate: new Date(),
+      },
       accountDetails: {
         accountId: '',
         accountName: '',
@@ -118,18 +145,18 @@ function FilterModal({ open, accounts }: FilterModalProps) {
     async function fetchMemberDataOnDebounce() {
       try {
         const response = await fetch('/dashboard/members/api', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ memberName: debouncedValue }),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ memberName: debouncedValue }),
         });
-        
+
         if (!response.ok) throw new Error('Failed to fetch member data');
-  
+
         const data: MembersType = await response.json();
         setMemberData(data);
-     } catch (error) {
-        logger.debug('Error fetching members:', error)
-     }
+      } catch (error) {
+        logger.debug('Error fetching members:', error);
+      }
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);
@@ -146,11 +173,11 @@ function FilterModal({ open, accounts }: FilterModalProps) {
     if (data.member) {
       searchParams.set('memberId', data.member.memberId);
     }
-    if (data.startDate) {
-      searchParams.set('startDate', String(data.startDate));
+    if (data.dateRange?.startDate) {
+      searchParams.set('startDate', String(data.dateRange?.startDate));
     }
-    if (data.endDate) {
-      searchParams.set('endDate', String(data.endDate));
+    if (data.dateRange?.endDate) {
+      searchParams.set('endDate', String(data.dateRange?.endDate));
     }
 
     router.push(`${pathname}?${searchParams.toString()}`);
@@ -173,7 +200,7 @@ function FilterModal({ open, accounts }: FilterModalProps) {
             <Stack>
               <Typography variant="h6">Filter results</Typography>
               <Typography color="text.secondary" variant="caption">
-                Filter the data table based on filter inputs.
+                Filter the data table based on filter inputs
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -191,7 +218,7 @@ function FilterModal({ open, accounts }: FilterModalProps) {
               >
                 <Controller
                   control={control}
-                  name="startDate"
+                  name="dateRange.startDate"
                   render={({ field }) => (
                     <DatePicker
                       {...field}
@@ -200,9 +227,8 @@ function FilterModal({ open, accounts }: FilterModalProps) {
                       }}
                       slotProps={{
                         textField: {
-                          error: Boolean(errors.startDate),
+                          error: Boolean(errors.dateRange?.startDate),
                           fullWidth: true,
-                          helperText: errors.startDate?.message,
                         },
                       }}
                       value={dayjs(field.value)}
@@ -220,7 +246,7 @@ function FilterModal({ open, accounts }: FilterModalProps) {
               >
                 <Controller
                   control={control}
-                  name="endDate"
+                  name="dateRange.endDate"
                   render={({ field }) => (
                     <DatePicker
                       {...field}
@@ -229,9 +255,8 @@ function FilterModal({ open, accounts }: FilterModalProps) {
                       }}
                       slotProps={{
                         textField: {
-                          error: Boolean(errors.endDate),
+                          error: Boolean(errors.dateRange?.endDate),
                           fullWidth: true,
-                          helperText: errors.endDate?.message,
                         },
                       }}
                       value={dayjs(field.value)}
@@ -302,9 +327,18 @@ function FilterModal({ open, accounts }: FilterModalProps) {
                 />
               )}
             />
-            <Button type="submit" sx={{ marginTop: 2 }} variant="contained">
-              Filter
-            </Button>
+            {errors.dateRange && (
+              <Typography variant="subtitle2" color="error">
+                {errors.dateRange && errors.dateRange.root?.message}
+              </Typography>
+            )}
+            <div>
+              <Stack flexDirection="row" justifyContent="end">
+                <Button startIcon={<FunnelSimple />} type="submit" sx={{ marginTop: 2 }} variant="contained">
+                  Filter
+                </Button>
+              </Stack>
+            </div>
           </Stack>
         </DialogContent>
       </form>

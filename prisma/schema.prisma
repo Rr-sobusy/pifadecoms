@@ -177,7 +177,9 @@ model MemberLoans {
   Repayments      LoanRepayments[]
   Member          Members     @relation(references: [memberId], fields: [memberId])
   Source          LoanSource  @relation(references: [sourceId], fields: [sourceId])
-  @@index([memberId])
+
+
+  @@index([memberId, loanStatus])
 }
 
 model LoanRepayments {
@@ -272,7 +274,7 @@ model InvoicePayments {
   Invoice         Invoice           @relation(references: [invoiceId], fields: [invoiceId])
 
   @@map("invoice_payments")
-  @@index([invoiceId])
+  @@index([invoiceId, paymentDate])
 }
 
 model Items {
@@ -348,7 +350,6 @@ model JournalEntries {
   referenceName       String       
   referenceType       ReferenceType
   notes               String?
-  createdAt           DateTime       @default(now())
   memberId            String?
   journalType         JournalType
   JournalItems        JournalItems[]
@@ -363,7 +364,7 @@ model JournalEntries {
 
 
   @@map("journal_entries")
-  @@index([entryDate, memberId])
+  @@index([entryDate, memberId,referenceName ])
 }
 
 model JournalItems {
