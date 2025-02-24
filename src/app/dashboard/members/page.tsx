@@ -6,16 +6,16 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-// import xl from 'exceljs';
+import xl from 'exceljs';
 
 // import { AccountType } from '@/lib/api-utils/account-tree';
 // import { dayjs } from '@/lib/dayjs';
-// import prisma from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 // import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
 import { fetchMembers } from '@/actions/members/fetch-members';
 import { MemberFilters } from '@/components/dashboard/members/members-filter';
 import { MembersTable } from '@/components/dashboard/members/members-table';
-import MembersPagination from '@/components/dashboard/members/members-table-pagination';
+import MembersPagination from '@/components/dashboard/members/members-table-pagination'
 
 // import { Rows } from '@phosphor-icons/react';
 
@@ -23,56 +23,55 @@ interface PageProps {
   searchParams: { memberName: string; offsetPage: number };
 };
 
-// async function populateMembers(){
-//   const workbook = new xl.Workbook();
-//   await workbook.xlsx.readFile("public/data/2021.xlsx")
-//   const worksheet = workbook.getWorksheet(1);
+async function populateMembers(){
+  const workbook = new xl.Workbook();
+  await workbook.xlsx.readFile("public/data/rex.xlsx")
+  const worksheet = workbook.getWorksheet(1);
 
-// if (!worksheet) {
-//   console.error("Worksheet not found. Make sure the sheet exists.");
-//   return;
-// }
+if (!worksheet) {
+  console.error("Worksheet not found. Make sure the sheet exists.");
+  return;
+}
 
-//   for(let i = 7; i <= 806 ; i++){
-//     const row = worksheet.getRow(i);
+  for(let i = 7; i <= 806 ; i++){
+    const row = worksheet.getRow(i);
 
-//     const formattedDateString = (row.getCell(13).value?.toString().replace("-"," ")+ " "+row.getCell(14).value )
-//      await prisma.members.create({
-//       data:{
-//           lastName : row.getCell(2).value,
-//           firstName: row.getCell(3).value + "," + " " + row.getCell(5).value,
-//           idNumber : Number(row.getCell(6).value),
-//           tin : row.getCell(7).value,
-//           arb: row.getCell(8).value,
-//           dateAccepted :  new Date(row.getCell(9).value),
-//           bodResNo: row.getCell(10).value,
-//           membershipType : "Regular",
-//           address : row.getCell(12).value,
-//           contactNo: " ",
-//           gender: row.getCell(16).value,
-//           birthDate : row.getCell(14).value === null ? null : new Date(row.getCell(13).value?.toString().replace("-"," ")+ " "+row.getCell(14).value),
-//           civilStatus : row.getCell(17).value,
-//           highestEdAttain: row.getCell(18).value,
-//           occupation : row.getCell(19).value,
-//           numOfDependents : Number(row.getCell(20).value),
-//           religion:  row.getCell(21).value,
-//           annualIncom : row.getCell(22).value,
-//       }
-//      })
-//     // console.log(row.getCell(14).value)
-//   }
-// }
+     await prisma.members.create({
+      data:{
+          lastName : row.getCell(2).value,
+          firstName: row.getCell(3).value,
+          middleName : row.getCell(5).value ?? null,
+          idNumber : Number(row.getCell(6).value),
+          tin : String(row.getCell(7).value ?? null),
+          arb: String(row.getCell(8).value),
+          bodResNo: row.getCell(9).value,
+          membershipType : row.getCell(10).value ,
+          address : row.getCell(11).value,
+          contactNo: String(row.getCell(8).value) ?? null,
+          gender: row.getCell(15).value,
+          birthDate : row.getCell(12).value === null ? null : new Date(row.getCell(12).value?.toString().replace("-"," ")+ " "+row.getCell(13).value),
+          civilStatus : row.getCell(16).value,
+          highestEdAttain: row.getCell(17).value,
+          occupation : row.getCell(18).value,
+          numOfDependents : Number(row.getCell(19).value),
+          religion:  row.getCell(20).value,
+          annualIncom : row.getCell(21).value,
+      }
+     })
+    // console.log(row.getCell(14).value)
+  }
+}
 
-// async function seed(arr: string[]) {
-//   arr.map(async (rex) => {
-//     await prisma.accountsSecondLvl.create({
-//       data: {
-//         rootType: 'Expense',
-//         rootName : rex,
-//       },
-//     });
-//   });
-// }
+async function seed(arr: string[]) {
+  arr.map(async (rex) => {
+    await prisma.accountsSecondLvl.create({
+      data: {
+        rootType: 'Expense',
+        rootName : rex,
+      },
+    });
+  });
+}
 
 const Page = async ({ searchParams }: PageProps): Promise<React.JSX.Element> => {
   // const rex = await seed(AccountType)

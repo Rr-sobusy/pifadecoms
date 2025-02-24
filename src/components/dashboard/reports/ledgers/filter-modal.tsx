@@ -52,6 +52,10 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
     resolver: zodResolver(filterSchema),
     defaultValues: {
       journalType: 'All',
+      dateRange: {
+        startDate: new Date(),
+        endDate: new Date(),
+      },
     },
   });
 

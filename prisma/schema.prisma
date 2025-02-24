@@ -21,12 +21,6 @@ enum AccountTypes {
     Expense
 }
 
-enum Gender {
-    Male
-    Female
-}
-
-
 enum AccountStatus {
   Active
   Inactive
@@ -116,7 +110,8 @@ model Members {
   accountStatus    AccountStatus @default(Active)
   lastName         String              
   firstName        String
-  gender           Gender
+  middleName       String?
+  gender           String?
   idNumber         Int?
   tin              String?
   dateAccepted     DateTime?
@@ -129,9 +124,9 @@ model Members {
   religion         String?
   annualIncom      Int?
   birthDate        DateTime?
-  address          String
+  address          String?
   occupation       String?
-  contactNo        String
+  contactNo        String?
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @default(now())
 

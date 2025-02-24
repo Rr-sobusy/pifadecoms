@@ -6,9 +6,10 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 import { JournalType } from '@prisma/client';
-import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
+
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { fetchLedgers } from '@/actions/reports/general-ledger';
@@ -58,11 +59,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
               </Button>
             </div>
             <div>
-              <Button
-                variant="text"
-                startIcon={<ExportIcon />}
-                LinkComponent={Link}
-              >
+              <Button variant="text" startIcon={<ExportIcon />} LinkComponent={Link}>
                 Export
               </Button>
             </div>
@@ -76,12 +73,9 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
             General Ledger of Accounts
           </Typography>
           <Typography color="textDisabled" variant="body2">
-            From{' '}
-            {searchParams.startDate
-              ? dayjs(searchParams.startDate).format('MMM DD YYYY')
-              : dayjs().subtract(30, 'day').format('MMM DD YYYY')}{' '}
-            to{' '}
-            {searchParams.endDate ? dayjs(searchParams.endDate).format('MMM DD YYYY') : dayjs().format('MMM DD YYYY')}
+            {startDate && endDate
+              ? `For the period ${dayjs(startDate).format('MMM DD YYYY')} to ${dayjs(endDate).format('MMM DD YYYY')}`
+              : 'Select a date range to view report'}
           </Typography>
 
           <Card sx={{ marginTop: 3 }}>
