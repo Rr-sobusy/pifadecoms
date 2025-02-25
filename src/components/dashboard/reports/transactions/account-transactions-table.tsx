@@ -20,7 +20,7 @@ interface TransactionsTableProps {
 }
 
 const transactionTypeMap: Record<ReferenceType, string> = {
-  LoanDisbursements: 'Loan Disbursement',
+  LoanDisbursements: 'Loan Release',
   LoanRepayments: 'Loan Repayment',
   ManualJournals: 'Manual Journal',
   MemberRegistration: 'Member Registration',
@@ -41,7 +41,7 @@ const columns = [
       );
     },
     name: '#',
-    width: '20px',
+    width: '40px',
   },
   {
     formatter(row) {

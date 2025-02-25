@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+
 import { paths } from '@/paths';
 import { logger } from '@/lib/default-logger';
 import prisma from '@/lib/prisma';
@@ -86,7 +87,7 @@ export const createExistingLoan = actionClient.schema(addLoanSchema).action(asyn
   try {
     const queryResult = await prisma.memberLoans.create({
       data: {
-        memberId: Request.member?.memberId || '',
+        memberId: Request.party?.memberId || '',
         amountLoaned: Request.amountLoaned,
         interestRate: Request.interest,
         issueDate: Request.issueDate || new Date(),
@@ -112,7 +113,9 @@ export const createExistingLoan = actionClient.schema(addLoanSchema).action(asyn
     };
   } catch (error) {
     serverResponse = { sucess: false, message: error instanceof Error ? error.message : 'Error occured in server!' };
+    logger.debug(error);
   }
 
+  revalidatePath(paths.dashboard.loans.list);
   return serverResponse;
 });

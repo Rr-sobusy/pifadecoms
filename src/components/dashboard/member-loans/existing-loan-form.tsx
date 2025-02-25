@@ -1,10 +1,13 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { FormLabel } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
@@ -15,18 +18,26 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import type { LoanType } from '@prisma/client';
+import { LoanType } from '@prisma/client';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 
+import { paths } from '@/paths';
+import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
+import { logger } from '@/lib/default-logger';
 import { createExistingLoan } from '@/actions/loans/create-loan';
-import { addLoanSchema, type IAddLoanSchema } from '@/actions/loans/types';
+import { addLoanSchema, ILoanSources, type IAddLoanSchema } from '@/actions/loans/types';
+import { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
+import { toast } from '@/components/core/toaster';
 
+import { FormInputFields } from './InputFields';
 import LoanTabs from './loan-tabs';
 
-type Props = {};
+type Props = {
+  loanSources: ILoanSources;
+};
 
 const LoanTypeMap: Record<LoanType, string> = {
   Weekly: 'Weekly',
@@ -36,52 +47,87 @@ const LoanTypeMap: Record<LoanType, string> = {
   EndOfTerm: 'End of Term',
 };
 
-// const RenderInputFields = ({ control, watch, setValue }) => (<FormControl fullWidth></FormControl>)
-
-function CreateExistingLoan({}: Props) {
-  const { control, watch, getValues, setValue, handleSubmit } = useForm<IAddLoanSchema>({
+function CreateExistingLoan({ loanSources }: Props) {
+  const {
+    control,
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IAddLoanSchema>({
     resolver: zodResolver(addLoanSchema),
     defaultValues: {
       paymentSched: [],
     },
   });
 
-  const { execute, isExecuting } = useAction(createExistingLoan);
+  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
 
-  const watchIsExisting = watch('isExisting');
+  const router = useRouter();
+
+  const { execute, isExecuting, result } = useAction(createExistingLoan);
+
   const watchLoanType = watch('loanType');
-  const watchAmountLoaned = watch('amountLoaned');
-  const watchInterest = watch('interest');
   const watchTermsInMonths = watch('termsInMonths');
   const watchIssueDate = watch('issueDate');
   const paymentSched = watch('paymentSched');
+  const memberData = watch('party');
 
-  const computeAmortizationSched = (): void => {
-    const monthlyInterest = watchInterest / 100;
-    const monthlyPayment =
-      watchAmountLoaned * (monthlyInterest / (1 - Math.pow(1 + monthlyInterest, -watchTermsInMonths)));
-    if (isNaN(monthlyPayment)) return;
-    if (watchLoanType !== 'Diminishing') {
-      const amortization = Array.from({ length: watchTermsInMonths }, (_, index) => {
-        const balance = watchAmountLoaned - monthlyPayment * index;
-        const interest = balance * monthlyInterest;
-        const principal = monthlyPayment - interest;
-        return {
-          balance,
-          interest,
-          principal,
-          paymentSched: dayjs(watchIssueDate)
-            .add(index + 1, 'month')
-            .toDate(),
-          amountPaid: monthlyPayment,
-          datePaid: null,
-          isExisitng: false,
-        };
-      });
-      console.log(amortization);
-      setValue('paymentSched', amortization as any);
-    }
+  const memoizedComputeAmortizationSched = (): void => {
+    const loanTypeMap: Record<string, dayjs.ManipulateType> = {
+      Weekly: 'week',
+      Monthly: 'month',
+      Diminishing: 'month',
+      Yearly: 'year',
+      EndOfTerm: 'month',
+    };
+
+    const interval = loanTypeMap[watchLoanType] || 'month';
+
+    setValue(
+      'paymentSched',
+      Array.from({ length: watchTermsInMonths }, (_, index) => ({
+        interest: 0,
+        isExisting: false,
+        principal: 0,
+        paymentSched: dayjs(watchIssueDate)
+          .add(index + 1, interval)
+          .toDate(),
+      }))
+    );
   };
+
+  React.useEffect(() => {
+    if (result.data) {
+      try {
+        router.push(paths.dashboard.loans.list);
+        toast.success('New loan added!');
+      } catch (error) {
+        logger.debug(`Error occured. Error message: ${error}`);
+        toast.error('Error occured in server!');
+      }
+    }
+  }, [result]);
+
+  const debouncedValue = useDebounce(memberData?.lastName ?? '', 300);
+
+  React.useEffect(() => {
+    if (!debouncedValue) {
+      setMemberData([]);
+      return;
+    }
+
+    async function fetchMemberDataOnDebounce() {
+      try {
+        const data: MembersType = await fetch('/dashboard/members/api', {
+          method: 'POST',
+          body: JSON.stringify({ memberName: debouncedValue }),
+        }).then((res) => res.json());
+        setMemberData(data);
+      } catch (error) {}
+    }
+    fetchMemberDataOnDebounce();
+  }, [debouncedValue]);
 
   function submitHandler(data: IAddLoanSchema) {
     execute(data);
@@ -94,16 +140,6 @@ function CreateExistingLoan({}: Props) {
           <Stack divider={<Divider />} spacing={4}>
             <Stack spacing={3}>
               <Typography variant="h6">Loan Information</Typography>
-              {/* <Controller
-                control={control}
-                name="isExisting"
-                render={({ field }) => (
-                  <FormControlText
-                    label="Existing Loan (Historical loans that already affect the current balances)"
-                    control={<Checkbox onChange={field.onChange} />}
-                  />
-                )}
-              /> */}
               <Grid container spacing={3}>
                 <Grid
                   size={{
@@ -118,23 +154,40 @@ function CreateExistingLoan({}: Props) {
                 </Grid>
                 <Grid
                   size={{
-                    md: 5,
+                    md: 3,
                     xs: 12,
                   }}
                 >
                   <Controller
                     control={control}
-                    name="member.memberId"
+                    name="party"
                     render={({ field }) => (
                       <Autocomplete
                         {...field}
-                        options={[]}
-                        getOptionLabel={(option) => option}
+                        onInputChange={(_, value) => {
+                          if (!value) {
+                            return setValue('party.lastName', '');
+                          }
+
+                          setValue('party.lastName', value); // Update form value when input changes
+                        }}
+                        onChange={(event, value) => {
+                          field.onChange(value); // Update form value on selection
+                        }}
+                        options={member}
+                        getOptionLabel={(option) =>
+                          option && option.lastName && option.firstName ? `${option.lastName} ${option.firstName}` : ''
+                        }
                         renderInput={(params) => (
-                          <FormControl fullWidth>
-                            <InputLabel required>Loaner Name</InputLabel>
+                          <FormControl error={Boolean(errors.party?.message)} fullWidth>
+                            <FormLabel required>Member Name</FormLabel>
                             <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
                           </FormControl>
+                        )}
+                        renderOption={(props, options) => (
+                          <Option {...props} key={options.memberId} value={options.memberId}>
+                            {`${options.lastName}, ${options.firstName}`}
+                          </Option>
                         )}
                       />
                     )}
@@ -142,7 +195,7 @@ function CreateExistingLoan({}: Props) {
                 </Grid>
                 <Grid
                   size={{
-                    md: 5,
+                    md: 3,
                     xs: 12,
                   }}
                 >
@@ -169,24 +222,19 @@ function CreateExistingLoan({}: Props) {
                     xs: 12,
                   }}
                 >
-                  <FormControl disabled={watchIsExisting} fullWidth>
-                    <InputLabel>Journal Reference</InputLabel>
-                    <OutlinedInput type="text" />
-                  </FormControl>
-                </Grid>
-                <Grid
-                  size={{
-                    md: 3,
-                    xs: 12,
-                  }}
-                >
                   <Controller
                     control={control}
-                    name="termsInMonths"
+                    name="loanSource"
                     render={({ field }) => (
                       <FormControl fullWidth>
-                        <InputLabel required>Term in months</InputLabel>
-                        <OutlinedInput {...field} type="number" />
+                        <InputLabel required>Loan Source</InputLabel>
+                        <Select {...field}>
+                          {loanSources.map((source) => (
+                            <Option key={source.sourceId} value={source.sourceId}>
+                              {source.sourceName}
+                            </Option>
+                          ))}
+                        </Select>
                       </FormControl>
                     )}
                   />
@@ -197,15 +245,19 @@ function CreateExistingLoan({}: Props) {
                     xs: 12,
                   }}
                 >
-                  <Controller
+                  <FormInputFields control={control} name="termsInMonths" variant="number" inputLabel="No. of terms" />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <FormInputFields
                     control={control}
                     name="interest"
-                    render={({ field }) => (
-                      <FormControl fullWidth>
-                        <InputLabel required>Monthly interest rate (%)</InputLabel>
-                        <OutlinedInput {...field} type="number" />
-                      </FormControl>
-                    )}
+                    variant="number"
+                    inputLabel="Monthly interest rate"
                   />
                 </Grid>
                 <Grid
@@ -214,27 +266,35 @@ function CreateExistingLoan({}: Props) {
                     xs: 12,
                   }}
                 >
-                  <Controller
+                  <FormInputFields
                     control={control}
                     name="amountLoaned"
-                    render={({ field }) => (
-                      <FormControl fullWidth>
-                        <InputLabel required>Amount released</InputLabel>
-                        <OutlinedInput {...field} type="number" />
-                      </FormControl>
-                    )}
+                    variant="number"
+                    inputLabel="Amount loaned (Principal)"
                   />
                 </Grid>
                 <Grid
                   size={{
-                    md: 6,
+                    md: 4,
                     xs: 12,
                   }}
                 >
-                  <FormControl fullWidth>
-                    <InputLabel required>Release date</InputLabel>
-                    <DatePicker />
-                  </FormControl>
+                  <Controller
+                    control={control}
+                    name="issueDate"
+                    render={({ field }) => (
+                      <FormControl>
+                        <InputLabel required>Release date</InputLabel>
+                        <DatePicker
+                          {...field}
+                          onChange={(date) => {
+                            field.onChange(date?.toDate());
+                          }}
+                          value={dayjs(field.value)}
+                        />
+                      </FormControl>
+                    )}
+                  />
                 </Grid>
                 <Grid
                   size={{
@@ -243,7 +303,7 @@ function CreateExistingLoan({}: Props) {
                   }}
                 >
                   <Stack direction="row" alignItems="center" spacing={2}>
-                    <Button onClick={computeAmortizationSched} variant="outlined">
+                    <Button onClick={memoizedComputeAmortizationSched} variant="outlined">
                       Compute amortization
                     </Button>
                   </Stack>
@@ -261,7 +321,7 @@ function CreateExistingLoan({}: Props) {
                     </Stack>
                     <Controller
                       control={control}
-                      name={`paymentSched.${index}.balance`}
+                      name={`paymentSched.${index}.paymentSched`}
                       render={({ field }) => (
                         <FormControl>
                           <InputLabel required>Payment Schedule</InputLabel>
@@ -274,82 +334,50 @@ function CreateExistingLoan({}: Props) {
                         </FormControl>
                       )}
                     />
+                    <Controller
+                      control={control}
+                      name={`paymentSched.${index}.datePaid`}
+                      render={({ field }) => (
+                        <DatePicker
+                          {...field}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(date) => {
+                            field.onChange(date?.toDate());
+                          }}
+                          label="Date paid"
+                        />
+                      )}
+                    />
 
-                    <Stack
-                      direction={{
-                        md: 'row',
-                        xs: 'column',
-                      }}
-                      spacing={2}
-                    >
-                      <DatePicker label="Date Paid" />
-                    </Stack>
-                    <Stack
-                      direction={{
-                        md: 'row',
-                        xs: 'column',
-                      }}
-                      spacing={2}
-                    >
-                      <FormControl fullWidth>
-                        <InputLabel>Amount paid</InputLabel>
-                        <OutlinedInput type="number" />
-                      </FormControl>
-                    </Stack>
-                    <Stack
-                      direction={{
-                        md: 'row',
-                        xs: 'column',
-                      }}
-                      spacing={2}
-                    >
-                      <FormControl fullWidth>
-                        <InputLabel>Payment O.R</InputLabel>
-                        <OutlinedInput type="text" />
-                      </FormControl>
-                    </Stack>
-                    <Stack
-                      direction={{
-                        md: 'row',
-                        xs: 'column',
-                      }}
-                      spacing={2}
-                    >
-                      <FormControl fullWidth>
-                        <InputLabel>Principal</InputLabel>
-                        <OutlinedInput type="number" />
-                      </FormControl>
-                    </Stack>
-                    <Stack
-                      direction={{
-                        md: 'row',
-                        xs: 'column',
-                      }}
-                      spacing={2}
-                    >
-                      <FormControl fullWidth>
-                        <InputLabel>Interest</InputLabel>
-                        <OutlinedInput type="number" />
-                      </FormControl>
-                    </Stack>
-                    <Stack
-                      direction={{
-                        md: 'row',
-                        xs: 'column',
-                      }}
-                      spacing={2}
-                    >
-                      <FormControl fullWidth>
-                        <InputLabel>Balance</InputLabel>
-                        <OutlinedInput type="number" />
-                      </FormControl>
-                    </Stack>
+                    <FormInputFields
+                      sx={{ width: 'auto' }}
+                      control={control}
+                      inputLabel="Principal"
+                      variant="number"
+                      name={`paymentSched.${index}.principal`}
+                    />
+
+                    <FormInputFields
+                      sx={{ width: 'auto' }}
+                      control={control}
+                      inputLabel="Interest"
+                      variant="number"
+                      name={`paymentSched.${index}.interest`}
+                    />
                   </Stack>
                 ))}
               </Grid>
             </Stack>
           </Stack>
         </CardContent>
+        <CardActions sx={{ justifyContent: 'flex-end' }}>
+          <Button onClick={() => console.log(errors)} variant="outlined">
+            Cancel
+          </Button>
+          <Button disabled={isExecuting} type="submit" variant="contained">
+            Submit
+          </Button>
+        </CardActions>
       </Card>
     </form>
   );

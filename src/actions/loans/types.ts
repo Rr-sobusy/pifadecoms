@@ -2,8 +2,9 @@ import { Prisma } from '@prisma/client';
 import { z as zod } from 'zod';
 
 import { transactionalSchema } from '../transactional/types';
-import { fetchLoanDetails, fetchLoans } from './fetch-loans';
 import { fetchLoanSources } from './fetch-loan-source';
+import { fetchLoanDetails, fetchLoans } from './fetch-loans';
+
 export const addLoanSchema = zod.object({
   loanType: zod.enum(['Weekly', 'Monthly', 'Yearly', 'Diminishing', 'EndOfTerm']),
   member: zod
@@ -15,6 +16,13 @@ export const addLoanSchema = zod.object({
   interest: zod.number(),
   termsInMonths: zod.number(),
   issueDate: zod.date().optional(),
+  party: zod
+    .object({
+      memberId: zod.string(),
+      firstName: zod.string(),
+      lastName: zod.string(),
+    })
+    .optional(),
   loanId: zod.number().optional(),
   loanSource: zod.number(),
   isExisting: zod.boolean().default(false),
@@ -74,4 +82,4 @@ export const repaymentAction = transactionalSchema
     }
   });
 export type IRepaymentAction = zod.infer<typeof repaymentAction>;
-export type ILoanSources = Prisma.PromiseReturnType<typeof fetchLoanSources>
+export type ILoanSources = Prisma.PromiseReturnType<typeof fetchLoanSources>;

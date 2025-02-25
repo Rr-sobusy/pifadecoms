@@ -202,10 +202,9 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
     );
   };
 
-  function submitHandler(data:ILoanSchemaExtended){
-      execute(data)
+  function submitHandler(data: ILoanSchemaExtended) {
+    execute(data);
   }
-
 
   return (
     <form onSubmit={handleSubmit(submitHandler)}>
@@ -246,7 +245,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
 
                           setValue('particulars.lastName', value); // Update form value when input changes
                         }}
-                        onChange={(event, value) => {
+                        onChange={(_, value) => {
                           field.onChange(value); // Update form value on selection
                         }}
                         options={member}

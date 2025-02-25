@@ -6,11 +6,13 @@ import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
 import { paths } from '@/paths';
+import { fetchLoanSources } from '@/actions/loans/fetch-loan-source';
 import CreateExistingLoan from '@/components/dashboard/member-loans/existing-loan-form';
 
 const page = async () => {
   // const members = await fetchMembers({ returnAll: true });
   // const items = await fetchItems();
+  const loanSources = await fetchLoanSources();
   return (
     <Box
       sx={{
@@ -25,7 +27,7 @@ const page = async () => {
           <div>
             <Typography
               component={RouterLink}
-              href={paths.dashboard.invoice.list}
+              href={paths.dashboard.finance.list}
               color="text.primary"
               sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
               variant="subtitle2"
@@ -35,10 +37,10 @@ const page = async () => {
             </Typography>
           </div>
           <div>
-            <Typography variant="h4">Create New Loan</Typography>
+            <Typography variant="h4">Create Existing Loan</Typography>
           </div>
         </Stack>
-        <CreateExistingLoan />
+        <CreateExistingLoan loanSources={loanSources} />
       </Stack>
     </Box>
   );
