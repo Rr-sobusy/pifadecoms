@@ -43,7 +43,7 @@ export const AddNewAccountTypeDialog = ({ open }: AddAccountTypeProps) => {
 
   const router = useRouter();
   const handleClose = () => {
-    router.push(paths.dashboard.finance.list);
+    router.push(paths.dashboard.finance.types);
   };
 
   //* Listen to server response

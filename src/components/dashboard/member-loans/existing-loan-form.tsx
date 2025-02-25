@@ -16,9 +16,11 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import type { LoanType } from '@prisma/client';
+import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 
 import { dayjs } from '@/lib/dayjs';
+import { createExistingLoan } from '@/actions/loans/create-loan';
 import { addLoanSchema, type IAddLoanSchema } from '@/actions/loans/types';
 import { Option } from '@/components/core/option';
 
@@ -37,12 +39,14 @@ const LoanTypeMap: Record<LoanType, string> = {
 // const RenderInputFields = ({ control, watch, setValue }) => (<FormControl fullWidth></FormControl>)
 
 function CreateExistingLoan({}: Props) {
-  const { control, watch, getValues, setValue } = useForm<IAddLoanSchema>({
+  const { control, watch, getValues, setValue, handleSubmit } = useForm<IAddLoanSchema>({
     resolver: zodResolver(addLoanSchema),
     defaultValues: {
       paymentSched: [],
     },
   });
+
+  const { execute, isExecuting } = useAction(createExistingLoan);
 
   const watchIsExisting = watch('isExisting');
   const watchLoanType = watch('loanType');
@@ -78,8 +82,12 @@ function CreateExistingLoan({}: Props) {
       setValue('paymentSched', amortization as any);
     }
   };
+
+  function submitHandler(data: IAddLoanSchema) {
+    execute(data);
+  }
   return (
-    <form>
+    <form onSubmit={handleSubmit(submitHandler)}>
       <Card>
         <CardContent>
           <LoanTabs />

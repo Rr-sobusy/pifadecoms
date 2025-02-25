@@ -251,7 +251,7 @@ model InvoiceItems {
   quantity        Int
   Item            Items      @relation(fields: [itemID] , references: [itemID])           
   Invoice         Invoice    @relation(fields: [invoiceId], references: [invoiceId], onDelete: Cascade)
-
+  
 
 
   @@map("invoice_items")

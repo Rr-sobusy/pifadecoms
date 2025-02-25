@@ -51,6 +51,14 @@ export async function fetchAccountTransactions(props: Filterers = { condition: '
       Members: true,
     },
     where: isEmpty ? undefined : { [conditionType]: conditions },
+    orderBy: [
+      {
+        entryId: 'desc',
+      },
+      {
+        referenceName: 'desc',
+      },
+    ],
   });
 
   const sortedJournalEntries = _journalEntries.map((entry) => {

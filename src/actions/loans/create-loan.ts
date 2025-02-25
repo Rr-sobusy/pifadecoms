@@ -1,19 +1,17 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-
 import { paths } from '@/paths';
 import { logger } from '@/lib/default-logger';
 import prisma from '@/lib/prisma';
 import { actionClient } from '@/lib/safe-action';
 
-import { loanSchemaExtended } from './types';
+import { addLoanSchema, loanSchemaExtended } from './types';
 
 export const createNewLoan = actionClient.schema(loanSchemaExtended).action(async ({ parsedInput: Request }) => {
   let serverResponse;
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // Insert Journal Entry
       const journalEntry = await tx.journalEntries.create({
         data: {
           entryDate: Request.entryDate,
@@ -79,5 +77,42 @@ export const createNewLoan = actionClient.schema(loanSchemaExtended).action(asyn
     logger.debug(error);
   }
   revalidatePath(paths.dashboard.loans.list);
+  return serverResponse;
+});
+
+export const createExistingLoan = actionClient.schema(addLoanSchema).action(async ({ parsedInput: Request }) => {
+  let serverResponse;
+
+  try {
+    const queryResult = await prisma.memberLoans.create({
+      data: {
+        memberId: Request.member?.memberId || '',
+        amountLoaned: Request.amountLoaned,
+        interestRate: Request.interest,
+        issueDate: Request.issueDate || new Date(),
+        loanType: Request.loanType,
+        sourceId: Request.loanSource,
+        termInMonths: Request.termsInMonths,
+
+        Repayments: {
+          create: Request.paymentSched.map((repayment) => ({
+            paymentSched: repayment.paymentSched,
+            principal: repayment.principal,
+            interest: repayment.interest,
+            isExisting: true,
+            paymentDate: repayment.datePaid,
+          })),
+        },
+      },
+    });
+
+    serverResponse = {
+      success: true,
+      message: queryResult,
+    };
+  } catch (error) {
+    serverResponse = { sucess: false, message: error instanceof Error ? error.message : 'Error occured in server!' };
+  }
+
   return serverResponse;
 });

@@ -36,6 +36,17 @@ const columns = [
     formatter(row) {
       return (
         <Stack>
+          <Typography variant="caption">{row.entryId.toString()}</Typography>
+        </Stack>
+      );
+    },
+    name: '#',
+    width: '20px',
+  },
+  {
+    formatter(row) {
+      return (
+        <Stack>
           <Typography variant="caption">{dayjs(row.entryDate).format('MMM DD YYYY')}</Typography>
         </Stack>
       );

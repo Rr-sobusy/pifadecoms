@@ -123,7 +123,7 @@ const columns = [
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="body2">
-            {row.contactNo}
+            {row.contactNo === null && "rex"}
           </Typography>
         </div>
       </Stack>
