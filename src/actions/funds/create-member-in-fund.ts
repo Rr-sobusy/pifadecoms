@@ -23,6 +23,7 @@ export const createMemberIntoFunds = actionClient.schema(addMemberIntoFundsSchem
         memberId: Request.member.memberId,
         shareCapBal: Request.initialShareCapBalance,
         savingsBal: Request.initialSavingsBalance,
+        updatedAt : Request.dateAdded
       },
     });
     queryResult = { sucess: true, message: newMember };

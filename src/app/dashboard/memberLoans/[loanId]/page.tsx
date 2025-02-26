@@ -1,6 +1,7 @@
 import * as React from 'react';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid2';
 import Link from '@mui/material/Link';
@@ -8,12 +9,11 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
-
 import { paths } from '@/paths';
+import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchLoanDetails } from '@/actions/loans/fetch-loans';
 import LoanAmortizationDetails from '@/components/dashboard/member-loans/loan-amortization-details-card';
 import LoanDetailsCard from '@/components/dashboard/member-loans/loan-details-card';
-import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 
 interface PageProps {
   params: { loanId: bigint };
@@ -48,22 +48,27 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
       }}
     >
       <Stack spacing={4}>
-        <Stack spacing={3}>
+        <Stack flexDirection="row" justifyContent="space-between">
+          <Stack spacing={3}>
+            <div>
+              <Link
+                component={RouterLink}
+                color="text.primary"
+                href={paths.dashboard.loans.list}
+                sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
+                variant="subtitle2"
+              >
+                <ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />
+                Loan Lists
+              </Link>
+            </div>
+            <Typography variant="h4">Loan-{params.loanId.toString().padStart(6, '0')}</Typography>
+            <div>
+              <Chip color="success" label="Active" />
+            </div>
+          </Stack>
           <div>
-            <Link
-              component={RouterLink}
-              color="text.primary"
-              href={paths.dashboard.loans.list}
-              sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
-              variant="subtitle2"
-            >
-              <ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />
-              Loan Lists
-            </Link>
-          </div>
-          <Typography variant="h4">Loan-{params.loanId.toString().padStart(6, '0')}</Typography>
-          <div>
-            <Chip color='success' label="Active" />
+            <Button variant='outlined'>Options</Button>
           </div>
         </Stack>
         <Grid container spacing={3}>
@@ -90,4 +95,3 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
 }
 
 export default page;
-

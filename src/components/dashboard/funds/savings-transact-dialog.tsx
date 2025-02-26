@@ -221,16 +221,16 @@ export const CreateSavingsTransaction = ({
                   onChange={(_, value) => {
                     field.onChange(value);
                   }}
-                  filterOptions={(options, { inputValue }) =>
-                    options.filter((option) =>
-                      transactionType === 'SavingsDeposit' || transactionType === 'ShareCapDeposit'
-                        ? option.rootType === 'Assets' &&
-                          (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
-                        : transactionType === 'ShareCapWithdrawal'
-                          ? option.rootType === 'Equity'
-                          : option.rootType === 'Liability'
-                    )
-                  }
+                  // filterOptions={(options, { inputValue }) =>
+                  //   options.filter((option) =>
+                  //     transactionType === 'SavingsDeposit' || transactionType === 'ShareCapDeposit'
+                  //       ? option.rootType === 'Assets' &&
+                  //         (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
+                  //       : transactionType === 'ShareCapWithdrawal'
+                  //         ? option.rootType === 'Equity'
+                  //         : option.rootType === 'Liability'
+                  //   )
+                  // }
                   options={flattenAccounts}
                   getOptionLabel={(option) => option.accountName}
                   groupBy={(option) => option.group}
@@ -258,16 +258,16 @@ export const CreateSavingsTransaction = ({
                   onChange={(_, value) => {
                     field.onChange(value);
                   }}
-                  filterOptions={(options, { inputValue }) =>
-                    options.filter((option) =>
-                      transactionType === 'SavingsDeposit'
-                        ? option.rootType === 'Liability'
-                        : transactionType === 'ShareCapDeposit'
-                          ? option.rootType === 'Equity' &&
-                            (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
-                          : option.rootType === 'Assets'
-                    )
-                  }
+                  // filterOptions={(options, { inputValue }) =>
+                  //   options.filter((option) =>
+                  //     transactionType === 'SavingsDeposit'
+                  //       ? option.rootType === 'Liability'
+                  //       : transactionType === 'ShareCapDeposit'
+                  //         ? option.rootType === 'Equity' &&
+                  //           (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
+                  //         : option.rootType === 'Assets'
+                  //   )
+                  // }
                   options={flattenAccounts}
                   getOptionLabel={(option) => option.accountName}
                   groupBy={(option) => option.group}

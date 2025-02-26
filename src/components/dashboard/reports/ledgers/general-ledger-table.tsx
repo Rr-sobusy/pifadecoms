@@ -44,8 +44,8 @@ const columns = [
 ] satisfies ColumnDef<LedgerTypes[0]>[];
 
 function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
-  const totalDebit = rows.reduce((acc, ctx) => acc + (Number(ctx._sum.debit)), 0);
-  const totalCredit = rows.reduce((acc, ctx) => acc + (Number(ctx._sum.credit)), 0);
+  const totalDebit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.debit), 0);
+  const totalCredit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.credit), 0);
   const totals = rows.reduce(
     (acc, curr) => {
       const type = curr.account?.RootID.rootType;
@@ -77,7 +77,13 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
   const isNotBalanced = totals.Equity + totals.Liability + totals.Revenue - totals.Expense !== totals.Assets;
   return (
     <>
-      <DataTable<LedgerTypes[0]> hover columns={columns} rows={rows} />
+      {rows.length ? (
+        <DataTable<LedgerTypes[0]> hover columns={columns} rows={rows} />
+      ) : (
+        <Stack minHeight={100} justifyContent="center" alignItems="center">
+          <Typography>No data found!</Typography>
+        </Stack>
+      )}
       <Stack marginTop={2} alignItems={'flex-end'}>
         <Typography variant="caption">Total Debit - {formatToCurrency(totalDebit, 'Fil-ph', 'Php')}</Typography>
         <Typography variant="caption">Total Credit - {formatToCurrency(totalCredit, 'Fil-ph', 'Php')} </Typography>

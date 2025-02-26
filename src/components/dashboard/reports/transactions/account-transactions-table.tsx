@@ -40,7 +40,7 @@ const columns = [
         </Stack>
       );
     },
-    name: '#',
+    name: 'Transact #',
     width: '40px',
   },
   {
