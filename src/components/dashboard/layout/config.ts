@@ -123,6 +123,7 @@ export const layoutConfig = {
           icon: 'receipt',
           items: [
             { key: 'invoices:list', title: 'List invoices', href: paths.dashboard.invoice.list },
+            { key: 'invoices:itemsPerMember', title: 'Invoice Item per member', href: paths.dashboard.invoice.itemsPerMember },
             { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoice.create },
             { key: 'invoices:payments', title: 'Sales payments', href: paths.dashboard.invoice.payments },
             // { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },

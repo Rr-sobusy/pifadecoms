@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid2';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { DotsThreeVertical as OptionIcon, Printer } from '@phosphor-icons/react/dist/ssr';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
 import { paths } from '@/paths';
@@ -14,6 +15,7 @@ import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchLoanDetails } from '@/actions/loans/fetch-loans';
 import LoanAmortizationDetails from '@/components/dashboard/member-loans/loan-amortization-details-card';
 import LoanDetailsCard from '@/components/dashboard/member-loans/loan-details-card';
+import OptionsPopoverButton from '@/components/dashboard/member-loans/option-popover-button';
 
 interface PageProps {
   params: { loanId: bigint };
@@ -68,7 +70,12 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
             </div>
           </Stack>
           <div>
-            <Button variant='outlined'>Options</Button>
+            <Stack gap={2} direction="row">
+             <OptionsPopoverButton />
+              <Button startIcon={<Printer />} variant="text">
+                Print Amortization
+              </Button>
+            </Stack>
           </div>
         </Stack>
         <Grid container spacing={3}>

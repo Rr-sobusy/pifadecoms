@@ -41,6 +41,8 @@ export async function fetchInvoices(props: Filterers = {}) {
       InvoiceItems: {
         include: {
           Item: true,
+
+          ItemPayment: true,
         },
       },
       Members: true,
@@ -67,6 +69,8 @@ export async function fetchSingleInvoice(invoiceId: bigint) {
       InvoiceItems: {
         include: {
           Item: true,
+
+          ItemPayment: true,
         },
       },
       Members: true,
@@ -74,4 +78,30 @@ export async function fetchSingleInvoice(invoiceId: bigint) {
   });
 
   return invoiceDetails;
+}
+
+export async function fetchInvoiceItemPerMember(memberId?: string) {
+  console.clear();
+  const invoiceItems = await prisma.invoiceItems.findMany({
+    where: {
+      Invoice: {
+        memberId: memberId,
+      },
+    },
+    include: {
+      ItemPayment: {
+        include: {
+          JournalEntry: true,
+        },
+      },
+      Invoice: true,
+      Item: {
+        include: {
+          ItemSource: true,
+        },
+      },
+    },
+  });
+
+  return memberId ? invoiceItems : [];
 }

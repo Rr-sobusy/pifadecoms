@@ -46,8 +46,8 @@ const defaultValues = {
   invDate: new Date(),
 };
 
-function calculateGrandTotal(lineItems: { lineId: string; itemId: string; quantity: number; rate: number }[]): number {
-  return lineItems.reduce((curr, acc) => curr + acc.quantity * acc.rate, 0);
+function calculateGrandTotal(lineItems: { lineId: string; itemId: string; quantity: number; rate: number, trade: number }[]): number {
+  return lineItems.reduce((curr, acc) => curr + acc.quantity * (acc.rate + acc.trade), 0);
 }
 
 const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {

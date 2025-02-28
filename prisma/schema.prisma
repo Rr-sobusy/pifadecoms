@@ -229,47 +229,50 @@ model Invoice {
    invoiceId      BigInt           @id @default(autoincrement())
    memberId       String
    dateOfInvoice  DateTime         @default(now())
-   baseGrandTotal Float         
-   outStandingAmt Float   
-   journalId      BigInt?
    Members        Members          @relation(fields: [memberId], references: [memberId])
 
    InvoiceItems   InvoiceItems[]  
-   InvoicePayments InvoicePayments[]
-
 
   @@map("invoices")
-  @@index([dateOfInvoice, memberId, outStandingAmt])
+  @@index([dateOfInvoice, memberId ])
 }
 
 model InvoiceItems {
   invoiceItemId   BigInt      @id @default(autoincrement())
   invoiceId       BigInt
   itemID          String
-  rate            Int
-  trade           Int?
+  principalPrice  Int
+  trade           Int        @default(0)
   quantity        Int
+  isTotallyPaid   Boolean    @default(false)
   Item            Items      @relation(fields: [itemID] , references: [itemID])           
   Invoice         Invoice    @relation(fields: [invoiceId], references: [invoiceId], onDelete: Cascade)
+  ItemPayment     InvoiceItemsPayments[]
   
 
-
+  @@index([isTotallyPaid, invoiceId])
   @@map("invoice_items")
 }
 
-model InvoicePayments {
-  paymentId       BigInt             @id  @default(autoincrement())
-  invoiceId       BigInt
-  orNo            String
-  paymentReceived Decimal           @db.Decimal(10 , 2) 
+
+
+model InvoiceItemsPayments {
+  itemsPaymentId  BigInt            @id @default(autoincrement())
+  invoiceItemId   BigInt  
+  principalPaid   Decimal           @db.Decimal(10,2)
   journalRef      BigInt
-  paymentDate     DateTime          @default(now())
+  interestPaid    Decimal           @db.Decimal(10,2)
 
-  JournalEntry    JournalEntries    @relation(references: [entryId], fields: [journalRef])
-  Invoice         Invoice           @relation(references: [invoiceId], fields: [invoiceId])
+  InvoiceItem     InvoiceItems      @relation(fields: [invoiceItemId], references: [invoiceItemId])
+  JournalEntry    JournalEntries    @relation(fields: [journalRef], references: [entryId])
+}
 
-  @@map("invoice_payments")
-  @@index([invoiceId, paymentDate])
+model ItemSource {
+  sourceId       Int          @id @default(autoincrement())
+  sourceName     String
+  defaultAccount String
+  Items          Items[]
+  
 }
 
 model Items {
@@ -278,12 +281,14 @@ model Items {
   itemDescription String?
   itemType        ItemType
   sellingPrice    Int
-  costPrice       Int?
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @default(now())
   stocks          Int?         @default(0)
+  sourceId      Int
 
   InvoiceItems    InvoiceItems[]
+  ItemSource      ItemSource  @relation(fields: [sourceId], references: [sourceId])
+
 
 
 }
@@ -352,7 +357,7 @@ model JournalEntries {
 
   //* To be the particulars
   Members             Members?        @relation(fields: [memberId], references: [memberId])
-  InvoicePayments     InvoicePayments[]
+  InvoiceItemPayments InvoiceItemsPayments[]
 
   MemberLoans         MemberLoans?
   LoanRepayments      LoanRepayments[]

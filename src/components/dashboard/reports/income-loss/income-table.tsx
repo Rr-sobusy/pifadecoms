@@ -16,6 +16,8 @@ interface Props {
 function IncomeAndLossTable({ balances }: Props) {
   const totalRevenue = balances.Revenue.reduce((acc, curr) => acc + curr.totalBalance, 0);
   const totalExpense = balances.Expense.reduce((acc, curr) => acc + curr.totalBalance, 0);
+
+  console.log(balances)
   return (
     <Box padding={3}>
       {Object.entries(balances).map(([category, accounts]) => {

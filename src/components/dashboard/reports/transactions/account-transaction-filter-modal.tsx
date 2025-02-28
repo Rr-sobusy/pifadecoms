@@ -99,10 +99,6 @@ function FilterModal({ open, accounts }: FilterModalProps) {
   } = useForm<FilterSchema>({
     resolver: zodResolver(filterSchema),
     defaultValues: {
-      dateRange: {
-        startDate: new Date(),
-        endDate: new Date(),
-      },
       accountDetails: {
         accountId: '',
         accountName: '',

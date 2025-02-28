@@ -22,7 +22,7 @@ import { DataTable } from '@/components/core/data-table';
 
 interface InvoiceTableProps {
   rows: InvoiceType;
-};
+}
 
 const dueMonth = 1;
 
@@ -45,9 +45,14 @@ const columns = [
         due: { label: 'due', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
       } as const;
 
+      const totalBalanceDue = row.InvoiceItems.reduce(
+        (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
+        0
+      );
+
       function getMapping() {
-        if (row.outStandingAmt !== 0 && isPastDue(row.dateOfInvoice)) return mapping['due'];
-        if (row.outStandingAmt === 0) return mapping['paid'];
+        if (totalBalanceDue !== 0 && isPastDue(row.dateOfInvoice)) return mapping['due'];
+        if (totalBalanceDue === 0) return mapping['paid'];
         return mapping['pending'];
       }
 
@@ -79,40 +84,60 @@ const columns = [
     width: '100px',
   },
   {
-    formatter: (row): React.JSX.Element => (
-      <div>
-        <Typography variant="subtitle2">Base Total</Typography>
-        <Typography color="text.secondary" variant="body2">
-          {formatToCurrency(row.baseGrandTotal, 'Fil-ph', 'Php')}
-        </Typography>
-      </div>
-    ),
+    formatter: (row): React.JSX.Element => {
+      const totalBalanceDue = row.InvoiceItems.reduce(
+        (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
+        0
+      );
+      return (
+        <div>
+          <Typography variant="subtitle2">Base Total</Typography>
+          <Typography color="text.secondary" variant="body2">
+            {formatToCurrency(totalBalanceDue, 'Fil-ph', 'Php')}
+          </Typography>
+        </div>
+      );
+    },
     name: 'Grand Total',
     width: '100px',
   },
   {
-    formatter: (row): React.JSX.Element => (
-      <div>
-        <Typography variant="subtitle2">Balance Due</Typography>
-        <Typography color="text.secondary" variant="body2">
-          {formatToCurrency(row.outStandingAmt, 'Fil-ph', 'Php')}
-        </Typography>
-      </div>
-    ),
+    formatter: (row, index): React.JSX.Element => {
+      const totalBalanceDue = row.InvoiceItems.reduce(
+        (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
+        0
+      );
+      const totalPaid = row.InvoiceItems.map((invoiceItems)=> ({...invoiceItems, payment: invoiceItems.ItemPayment.reduce((acc,curr)=> acc +(Number(curr.principalPaid)), 0)}))
+      return (
+        <div>
+          <Typography variant="subtitle2">Balance Due</Typography>
+          <Typography color="text.secondary" variant="body2">
+            {formatToCurrency(totalBalanceDue - totalPaid[index]?.payment || 0, 'Fil-ph', 'Php')}
+          </Typography>
+        </div>
+      );
+    },
     name: 'Total balance',
     width: '100px',
   },
   {
-    formatter: (row): React.JSX.Element => (
-      <div>
-        <Typography variant="subtitle2">Intr. accrued(2%)</Typography>
-        <Typography color="text.secondary" variant="body2">
-          {isPastDue(row.dateOfInvoice) && row.outStandingAmt !== 0
-            ? formatToCurrency(computeInterest(row.dateOfInvoice, row.baseGrandTotal, 2), 'Fil-ph', 'Php')
-            : formatToCurrency(0, 'Fil-ph', 'Php')}
-        </Typography>
-      </div>
-    ),
+    formatter: (row, index): React.JSX.Element => {
+      const totalBalanceDue = row.InvoiceItems.reduce(
+        (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
+        0
+      );
+      const totalPaid = row.InvoiceItems.map((invoiceItems)=> ({...invoiceItems, payment: invoiceItems.ItemPayment.reduce((acc,curr)=> acc +(Number(curr.principalPaid)), 0)}))
+      return (
+        <div>
+          <Typography variant="subtitle2">Intr. accrued(2%)</Typography>
+          <Typography color="text.secondary" variant="body2">
+            {isPastDue(row.dateOfInvoice) && totalPaid[index].payment !== 0
+              ? formatToCurrency(computeInterest(row.dateOfInvoice, totalBalanceDue, 2), 'Fil-ph', 'Php')
+              : formatToCurrency(0, 'Fil-ph', 'Php')}
+          </Typography>
+        </div>
+      );
+    },
     name: 'Interest Accrued',
     width: '150px',
   },
@@ -214,6 +239,7 @@ const columns = [
 // };
 
 const InvoiceTable = ({ rows }: InvoiceTableProps) => {
+  console.log(rows)
   return (
     <Card sx={{ overflowX: 'auto' }}>
       <DataTable<InvoiceType[0]> hover columns={columns} hideHead rows={rows} />

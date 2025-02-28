@@ -134,15 +134,15 @@ export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Elem
                 <View style={styles.itemDescription}>
                   <Text>{lineItem.Item.itemName}</Text>
                 </View>
-                <View style={styles.itemUnitAmount}>
+                {/* <View style={styles.itemUnitAmount}>
                   <Text>{formatToPHP(lineItem.rate)}</Text>
-                </View>
+                </View> */}
                 <View style={styles.itemQty}>
                   <Text>{lineItem.quantity}</Text>
                 </View>
-                <View style={styles.itemTotalAmount}>
+                {/* <View style={styles.itemTotalAmount}>
                   <Text style={styles.textRight}>{formatToPHP(lineItem.quantity * lineItem.rate)}</Text>
-                </View>
+                </View> */}
               </View>
             ))}
           </View>
