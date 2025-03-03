@@ -23,13 +23,13 @@ const columns = [
     formatter: (row) => (
       <Typography variant="subtitle2">{formatToCurrency(Number(row._sum.debit ?? 0), 'Fil-ph', 'Php')}</Typography>
     ),
-    name: 'Debit',
+    name: 'Debit (Php)',
   },
   {
     formatter: (row) => (
       <Typography variant="subtitle2">{formatToCurrency(Number(row._sum.credit ?? 0), 'Fil-ph', 'Php')}</Typography>
     ),
-    name: 'Credit',
+    name: 'Credit (Php)',
   },
   {
     formatter: (row) => {
@@ -38,7 +38,7 @@ const columns = [
         : (Number(row._sum.credit) ?? 0) - (Number(row._sum.debit) ?? 0);
       return <Typography variant="subtitle2">{formatToCurrency(balance, 'Fil-ph', 'Php')}</Typography>;
     },
-    name: 'Balance',
+    name: 'Ending Balance',
     width: '150px',
   },
 ] satisfies ColumnDef<LedgerTypes[0]>[];

@@ -94,7 +94,18 @@ export async function fetchInvoiceItemPerMember(memberId?: string) {
           JournalEntry: true,
         },
       },
-      Invoice: true,
+      Invoice: {
+        include: {
+          Members: {
+            select: {
+              memberId: true,
+              lastName: true,
+              firstName: true,
+              middleName: true,
+            },
+          },
+        },
+      },
       Item: {
         include: {
           ItemSource: true,

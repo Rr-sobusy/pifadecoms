@@ -1,18 +1,15 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogContent } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogAction from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -23,50 +20,36 @@ import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
-import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
-import type { AccounTreeType } from '@/actions/accounts/types';
-import { createAmortizationPayment } from '@/actions/loans/create-amortization-payment';
-import { ILoanType, IRepaymentAction, repaymentAction } from '@/actions/loans/types';
+import { AccounTreeType } from '@/actions/accounts/types';
+import { invoiceItemPaymentAction } from '@/actions/invoice-payments/create-invoice-item-payment';
+import type { InvoiceItemPerMemberTypes } from '@/actions/invoices/types';
+import { invoiceItemsPaymentschema, type InvoiceItemsPaymentType } from '@/actions/invoices/types';
 import { Option } from '@/components/core/option';
 
-import { FormInputFields } from './InputFields';
+import { FormInputFields } from '../member-loans/InputFields';
 
-interface PageProps {
+type PageProps = {
   open: boolean;
   handleClose: () => void;
-  selectedRows: ILoanType[0]['Repayments'][0][];
+  selectedRows: InvoiceItemPerMemberTypes;
   accounts: AccounTreeType;
-  memberId: string | undefined;
-  loanId: bigint | undefined;
-  handleRemoveSelectedRows?: () => void;
-}
+  memberId: string;
+};
 
-function CreateAmortizationPayment({
-  open = true,
-  handleClose,
-  selectedRows,
-  handleRemoveSelectedRows,
-  accounts,
-  memberId,
-  loanId,
-}: PageProps) {
+function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, accounts, memberId }: PageProps) {
   const {
     control,
-    getValues,
-    handleSubmit,
-    setValue,
     watch,
+    setValue,
+    getValues,
     formState: { errors },
-  } = useForm<IRepaymentAction>({
+    handleSubmit,
+    reset,
+  } = useForm<InvoiceItemsPaymentType>({
+    resolver: zodResolver(invoiceItemsPaymentschema),
     defaultValues: {
-      paymentSched: [],
-      loanId: Number(loanId),
-      entryDate: new Date(),
-      particulars: { firstName: '', lastName: '', memberId: memberId },
-      journalType: 'cashReceipts',
-      referenceType: 'LoanRepayments',
       journalLineItems: Array(2)
         .fill(null)
         .map(() => ({
@@ -79,31 +62,34 @@ function CreateAmortizationPayment({
             group: '',
           },
         })),
+      particulars: { firstName: '', lastName: '', memberId: memberId },
+      journalType: 'cashReceipts',
+      referenceType: 'SalesPayments',
     },
-    resolver: zodResolver(repaymentAction),
   });
-
-  const { execute, result, isExecuting } = useAction(createAmortizationPayment);
-
   const router = useRouter();
+  const pathname = usePathname();
 
+  const { execute, result } = useAction(invoiceItemPaymentAction);
   React.useEffect(() => {
-    if (selectedRows.length > 0) {
-      setValue(
-        'paymentSched',
-        selectedRows.map((rows) => ({
-          ...rows,
-          isExisting: true,
-          principal: Number(rows.principal),
-          interest: Number(rows.interest),
-          paymentSched: rows.paymentSched,
-          repaymentId: Number(rows.repaymentId),
-        }))
-      );
-    }
-  }, [selectedRows, setValue]);
+    if (!selectedRows || selectedRows.length === 0) return;
+    selectedRows.forEach((row, index) => {
+      setValue(`paymentLine.${index}.invoiceItemId`, Number(row.invoiceItemId));
+      setValue(`paymentLine.${index}.itemName`, row.Item.itemName);
+      setValue(`paymentLine.${index}.quantityPurchased`, row.quantity);
+      setValue(`paymentLine.${index}.principal`, row.principalPrice);
+      setValue(`paymentLine.${index}.trade`, row.trade);
+      setValue(`paymentLine.${index}.principal`, row.principalPrice);
+      setValue(`paymentLine.${index}.principalPaying`, 0);
+      setValue(`paymentLine.${index}.interestPaying`, 0);
+    });
+  }, [selectedRows]);
 
-  const watchJournalLines = watch('journalLineItems');
+  // React.useEffect(() => {
+  //   if (!result.data) return;
+  //   router.push(pathname);
+
+  // }, [result]);
 
   const flattenedAccounts = React.useMemo(
     () =>
@@ -116,18 +102,6 @@ function CreateAmortizationPayment({
       ),
     [accounts]
   );
-
-  function submitHandler(data: any) {
-    execute(data);
-  }
-
-  React.useEffect(() => {
-    if (result.data?.success) {
-      handleClose();
-      handleRemoveSelectedRows?.();
-      router.push(paths.dashboard.loans.view(loanId || 0));
-    }
-  }, [result]);
 
   const handleAddJournalLine = React.useCallback(() => {
     const existingLines = getValues('journalLineItems');
@@ -153,27 +127,33 @@ function CreateAmortizationPayment({
     ]);
   }, [getValues, setValue]);
 
-  const totalDebits = watch('journalLineItems').reduce((acc, curr) => acc + curr.debit, 0);
-  const totalCredits = watch('journalLineItems').reduce((acc, curr) => acc + curr.credit, 0);
+  const watchPaymentLine = watch('paymentLine') || [];
+  const watchJournalLines = watch('journalLineItems');
+  const totalDebits = watch('journalLineItems').reduce((acc, curr) => acc + curr.debit || 0, 0);
+  const totalCredits = watch('journalLineItems').reduce((acc, curr) => acc + curr.credit || 0, 0);
   return (
     <Dialog
       sx={{
         '& .MuiDialog-container': { justifyContent: 'center' },
-        '& .MuiDialog-paper': { minHeight: '90%', width: '100%' },
+        '& .MuiDialog-paper': { minHeight: '98%', width: '100%' },
       }}
-      maxWidth="lg"
+      maxWidth="xl"
       open={open}
     >
-      <form onSubmit={handleSubmit(submitHandler)}>
+      <form
+        onSubmit={handleSubmit((data) => {
+          execute(data);
+        })}
+      >
         <DialogContent>
           <Stack
             direction="row"
             sx={{ alignItems: 'center', flex: '0 0 auto', justifyContent: 'space-between', marginTop: 1 }}
           >
             <Stack>
-              <Typography variant="h6">Create Loan Repayments</Typography>
+              <Typography variant="h6">Create Invoice Item payments</Typography>
               <Typography color="" variant="caption">
-                Create Payment for running and due loans
+                Pay items included in member invoice
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -181,7 +161,7 @@ function CreateAmortizationPayment({
             </IconButton>
           </Stack>
           <Divider />
-          <Stack spacing={1} marginY={2}>
+          <Stack marginY={2} spacing={1}>
             <div>
               <Controller
                 control={control}
@@ -202,75 +182,44 @@ function CreateAmortizationPayment({
               <FormInputFields
                 sx={{ width: 'auto' }}
                 control={control}
+                variant="text"
                 inputLabel="Payment O.R"
                 name="reference"
-                variant="text"
               />
             </div>
           </Stack>
           <Divider />
-          <Stack spacing={2} marginY={2}>
+          <Stack marginY={2} spacing={1}>
             <Typography variant="h6">Payment Line</Typography>
-            {selectedRows.map((row, index) => (
-              <Stack key={index} alignItems="center" spacing={2} direction="row">
-                <Controller
+            {watchPaymentLine.map((_, index) => (
+              <Stack direction="row" spacing={2}>
+                <FormInputFields
+                  isDisabled={true}
                   control={control}
-                  name={`paymentSched.${index}.paymentSched`}
-                  render={({ field }) => (
-                    <FormControl>
-                      <InputLabel>Payment schedule</InputLabel>
-                      <OutlinedInput {...field} value={dayjs(field.value).format('MMM DD YYYY')} disabled type="text" />
-                    </FormControl>
-                  )}
+                  name={`paymentLine.${index}.itemName`}
+                  variant="text"
+                  inputLabel="Item Name"
                 />
-                <Controller
-                  name={`paymentSched.${index}.principal`}
+                <FormInputFields
                   control={control}
-                  render={({ field }) => (
-                    <FormControl>
-                      <InputLabel>Principal</InputLabel>
-                      <OutlinedInput
-                        {...field}
-                        onChange={(event) => {
-                          const parsedInput = Number(event.target.value);
-                          if (!isNaN(parsedInput)) {
-                            field.onChange(parsedInput);
-                          }
-                        }}
-                        defaultValue={field.value}
-                        type="number"
-                      />
-                    </FormControl>
-                  )}
+                  name={`paymentLine.${index}.principalPaying`}
+                  variant="number"
+                  inputLabel="Total principal"
                 />
-                <Controller
-                  name={`paymentSched.${index}.interest`}
+                <FormInputFields
                   control={control}
-                  render={({ field }) => (
-                    <FormControl>
-                      <InputLabel>Interest</InputLabel>
-                      <OutlinedInput
-                        {...field}
-                        onChange={(event) => {
-                          const parsedInput = Number(event.target.value);
-                          if (!isNaN(parsedInput)) {
-                            field.onChange(parsedInput);
-                          }
-                        }}
-                        defaultValue={field.value}
-                        type="number"
-                      />
-                    </FormControl>
-                  )}
+                  name={`paymentLine.${index}.interestPaying`}
+                  variant="number"
+                  inputLabel="Total interest"
                 />
               </Stack>
             ))}
           </Stack>
           <Divider />
-          <Stack spacing={2} marginY={2}>
-            <Typography variant="h6">Journal Line</Typography>
+          <Stack marginY={2} spacing={1}>
+            <Typography variant="h6">Journal line</Typography>
             {watchJournalLines.map((_, index) => (
-              <Stack key={index} direction="row" spacing={1}>
+              <Stack spacing={2} direction="row">
                 <Controller
                   control={control}
                   name={`journalLineItems.${index}.accountDetails`}
@@ -295,27 +244,26 @@ function CreateAmortizationPayment({
                   )}
                 />
                 <FormInputFields
-                  variant="number"
                   control={control}
+                  variant="number"
                   inputLabel="Debit"
                   name={`journalLineItems.${index}.debit`}
                 />
                 <FormInputFields
-                  variant="number"
                   control={control}
+                  variant="number"
                   inputLabel="Credit"
                   name={`journalLineItems.${index}.credit`}
                 />
               </Stack>
             ))}
-            <Stack spacing={4} flexDirection="row">
-              <Stack sx={{ width: '50%' }} spacing={3}>
-                <Typography variant="subtitle2">Totals</Typography>
-              </Stack>
-              <Stack sx={{ width: '10%' }} spacing={3}>
+            <Stack>
+              <Stack direction="row">
+                <Typography variant="subtitle2">Total Debits:</Typography>
                 <Typography variant="subtitle2">{formatToCurrency(totalDebits, 'Fil-ph', 'Php')}</Typography>
               </Stack>
-              <Stack sx={{ width: '10%', marginLeft: '-7px' }} spacing={3}>
+              <Stack direction="row">
+                <Typography variant="subtitle2">Total Credits:</Typography>
                 <Typography variant="subtitle2">{formatToCurrency(totalCredits, 'Fil-ph', 'Php')}</Typography>
               </Stack>
             </Stack>
@@ -335,19 +283,19 @@ function CreateAmortizationPayment({
                 Add line
               </Button>
             </div>
-            <DialogAction sx={{ justifyContent: 'flex-end' }}>
-              <Button onClick={() => console.log(errors)} variant="contained">
-                details
-              </Button>
-              <Button disabled={isExecuting} type="submit" variant="contained">
-                Post Payment
-              </Button>
-            </DialogAction>
           </Stack>
         </DialogContent>
+        <DialogAction sx={{ justifyContent: 'flex-end' }}>
+          <Button variant="contained" type="submit">
+            Post Payment
+          </Button>
+          <Button type="button" onClick={() => console.log(errors)}>
+            Check error
+          </Button>
+        </DialogAction>
       </form>
     </Dialog>
   );
 }
 
-export default React.memo(CreateAmortizationPayment);
+export default React.memo(InvoiceItemPaymentDialog);

@@ -12,6 +12,7 @@ import { fetchMembers } from '@/actions/members/fetch-members';
 import { MembersType } from '@/actions/members/types';
 import InvoiceItemTable from '@/components/dashboard/invoice/_invoice-item-per-member';
 import MemberDropDown from '@/components/dashboard/invoice/member-dropdown';
+import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 
 interface PageProps {
   searchParams: { memberId: string };
@@ -20,6 +21,7 @@ interface PageProps {
 async function page({ searchParams }: PageProps) {
   const rex = await fetchInvoiceItemPerMember(searchParams.memberId);
   const members = await fetchMembers({ returnAll: true });
+  const accounts = await fetchAccountTree()
   return (
     <Box
       sx={{
@@ -44,7 +46,7 @@ async function page({ searchParams }: PageProps) {
         <Stack direction="column" spacing={4} sx={{ alignItems: 'flex-start' }}>
           <MemberDropDown members={members as MembersType} />
 
-          <InvoiceItemTable data={rex} />
+          <InvoiceItemTable accounts={accounts} data={rex} />
         </Stack>
       </Stack>
     </Box>
