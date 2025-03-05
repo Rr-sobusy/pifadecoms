@@ -281,10 +281,11 @@ model Items {
   itemDescription String?
   itemType        ItemType
   sellingPrice    Int
+  trade           Int         @default(0)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @default(now())
   stocks          Int?         @default(0)
-  sourceId      Int
+  sourceId        Int
 
   InvoiceItems    InvoiceItems[]
   ItemSource      ItemSource  @relation(fields: [sourceId], references: [sourceId])

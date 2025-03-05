@@ -4,28 +4,38 @@ import React from 'react';
 import { CardContent, Divider, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
+import { AccounTreeType } from '@/actions/accounts/types';
 import type { InvoiceItemPerMemberTypes } from '@/actions/invoices/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
 
 import InvoiceItemPaymentDialog from './_invoice-item-payment-dialog';
-import { AccounTreeType } from '@/actions/accounts/types';
 
 type PageProps = {
   data: InvoiceItemPerMemberTypes;
-  accounts: AccounTreeType
+  accounts: AccounTreeType;
 };
 
 const columns = [
   {
     name: 'Invoice Id',
     formatter: (row) => {
-      return <Typography variant="subtitle2">{row.invoiceId.toString()}</Typography>;
+      return (
+        <Stack>
+          <Typography variant="subtitle2">{`INV-${row.invoiceId.toString().padStart(6, '0')}`}</Typography>
+          {row.isTotallyPaid && (
+            <Chip label="Paid" color="success" variant="outlined" icon={<CheckCircleIcon />} size="small" />
+          )}
+        </Stack>
+      );
     },
+    width: '100px',
   },
   {
     name: 'Date of invoice',
@@ -48,7 +58,11 @@ const columns = [
   {
     name: 'Qty. Purchased',
     formatter: (row) => {
-      return <Typography variant="subtitle2">{row.quantity.toString()}</Typography>;
+      return (
+        <Stack direction="row">
+          <Typography variant="subtitle2">{row.quantity.toString()}</Typography>
+        </Stack>
+      );
     },
   },
   {
@@ -73,28 +87,15 @@ const columns = [
   {
     name: 'Principal Paid',
     formatter: (row, index) => {
-      const totalPaid = row.ItemPayment.map((items) => {
-        const totalPrincipal = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.principalPaid), 0);
-        return { totalPrincipal };
-      });
-      return (
-        <Typography color="error">
-          {formatToCurrency(totalPaid[index]?.totalPrincipal || 0, 'Fil-ph', 'Php')}
-        </Typography>
-      );
+      const totalPrincipalPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.principalPaid), 0);
+      return <Typography color="error">{formatToCurrency(totalPrincipalPaid, 'Fil-ph', 'Php')}</Typography>;
     },
   },
   {
     name: 'Interest Paid',
     formatter: (row, index) => {
-      const totalPaid = row.ItemPayment.map((items) => {
-        const totalInterest = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.interestPaid), 0);
-
-        return { totalInterest };
-      });
-      return (
-        <Typography color="error">{formatToCurrency(totalPaid[index]?.totalInterest || 0, 'Fil-ph', 'Php')}</Typography>
-      );
+      const totalInterestPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.interestPaid), 0);
+      return <Typography color="error">{formatToCurrency(totalInterestPaid, 'Fil-ph', 'Php')}</Typography>;
     },
   },
   {
@@ -107,7 +108,7 @@ const columns = [
   },
 ] satisfies ColumnDef<InvoiceItemPerMemberTypes[0]>[];
 
-function InvoiceItemTable({ data , accounts}: PageProps) {
+function InvoiceItemTable({ data, accounts }: PageProps) {
   const [selectedRows, setSelectedRows] = React.useState<InvoiceItemPerMemberTypes[0][]>([]);
   const [isPaymentDialogOpen, setPaymentDialogOpen] = React.useState<boolean>(false);
 
@@ -126,8 +127,7 @@ function InvoiceItemTable({ data , accounts}: PageProps) {
   }
 
   const computedData = React.useMemo(() => data, [data]);
- 
-  const memberId = data?.[0]?.Invoice.Members.memberId || "";
+
   return (
     <>
       <Card>
@@ -152,7 +152,6 @@ function InvoiceItemTable({ data , accounts}: PageProps) {
         selectedRows={selectedRows}
         handleClose={togglePaymentDialog}
         open={isPaymentDialogOpen}
-        memberId={memberId}
       />
     </>
   );

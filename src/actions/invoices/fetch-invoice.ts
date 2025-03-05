@@ -81,11 +81,16 @@ export async function fetchSingleInvoice(invoiceId: bigint) {
 }
 
 export async function fetchInvoiceItemPerMember(memberId?: string) {
-  console.clear();
+
   const invoiceItems = await prisma.invoiceItems.findMany({
     where: {
       Invoice: {
         memberId: memberId,
+      },
+    },
+    orderBy: {
+      Invoice: {
+        dateOfInvoice: 'desc',
       },
     },
     include: {

@@ -38,12 +38,20 @@ function computeInterest(inputtedDate: Date, principalAmout: number, rate: numbe
 
 const columns = [
   {
-    formatter: (row): React.JSX.Element => {
+    formatter: (row, index): React.JSX.Element => {
       const mapping = {
         pending: { label: 'Pending', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
         paid: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
         due: { label: 'due', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
       } as const;
+
+      const totalPaid = row.InvoiceItems.map((invoiceItem) => {
+        let totalPayment = 0;
+        for (const payment of invoiceItem.ItemPayment) {
+          totalPayment += Number(payment.principalPaid);
+        }
+        return { ...invoiceItem, payment: totalPayment };
+      }).reduce((acc, curr) => acc + curr.payment, 0);
 
       const totalBalanceDue = row.InvoiceItems.reduce(
         (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
@@ -51,8 +59,7 @@ const columns = [
       );
 
       function getMapping() {
-        if (totalBalanceDue !== 0 && isPastDue(row.dateOfInvoice)) return mapping['due'];
-        if (totalBalanceDue === 0) return mapping['paid'];
+        if (totalBalanceDue <= totalPaid) return mapping['paid'];
         return mapping['pending'];
       }
 
@@ -107,12 +114,18 @@ const columns = [
         (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
         0
       );
-      const totalPaid = row.InvoiceItems.map((invoiceItems)=> ({...invoiceItems, payment: invoiceItems.ItemPayment.reduce((acc,curr)=> acc +(Number(curr.principalPaid)), 0)}))
+      const totalPaid = row.InvoiceItems.map((invoiceItem) => {
+        let totalPayment = 0;
+        for (const payment of invoiceItem.ItemPayment) {
+          totalPayment += Number(payment.principalPaid);
+        }
+        return { ...invoiceItem, payment: totalPayment };
+      }).reduce((acc, curr) => acc + curr.payment, 0);
       return (
         <div>
           <Typography variant="subtitle2">Balance Due</Typography>
           <Typography color="text.secondary" variant="body2">
-            {formatToCurrency(totalBalanceDue - totalPaid[index]?.payment || 0, 'Fil-ph', 'Php')}
+            {formatToCurrency(totalBalanceDue - totalPaid || 0, 'Fil-ph', 'Php')}
           </Typography>
         </div>
       );
@@ -126,7 +139,10 @@ const columns = [
         (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
         0
       );
-      const totalPaid = row.InvoiceItems.map((invoiceItems)=> ({...invoiceItems, payment: invoiceItems.ItemPayment.reduce((acc,curr)=> acc +(Number(curr.principalPaid)), 0)}))
+      const totalPaid = row.InvoiceItems.map((invoiceItems) => ({
+        ...invoiceItems,
+        payment: invoiceItems.ItemPayment.reduce((acc, curr) => acc + Number(curr.principalPaid), 0),
+      }));
       return (
         <div>
           <Typography variant="subtitle2">Intr. accrued(2%)</Typography>
@@ -167,19 +183,11 @@ const columns = [
   },
   {
     formatter: (): React.JSX.Element => {
-      // const popover = usePopover<HTMLButtonElement>();
       return (
         <>
           <IconButton>
             <Dots />
           </IconButton>
-          {/* <OptionPopOver
-            isPaid={row.outStandingAmt === 0}
-            invoiceId={row.invoiceId}
-            anchorEl={popover.anchorRef.current}
-            onClose={popover.handleClose}
-            open={popover.open}
-          /> */}
         </>
       );
     },
@@ -189,57 +197,7 @@ const columns = [
   },
 ] satisfies ColumnDef<InvoiceType[0]>[];
 
-// const OptionPopOver = ({
-//   anchorEl,
-//   onClose,
-//   onMarkAllAsRead,
-//   onRemoveOne,
-//   open = false,
-//   invoiceId,
-//   isPaid,
-// }: {
-//   anchorEl: null | Element;
-//   onClose?: () => void;
-//   onMarkAllAsRead?: () => void;
-//   onRemoveOne?: (id: string) => void;
-//   open?: boolean;
-//   invoiceId: bigint;
-//   isPaid: boolean;
-// }): React.JSX.Element => {
-//   return (
-//     <Popover
-//       anchorEl={anchorEl}
-//       anchorOrigin={{ horizontal: 'right', vertical: 'center' }}
-//       onClose={onClose}
-//       open={open}
-//       slotProps={{ paper: { sx: { width: '170px' } } }}
-//       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-//     >
-//       <Stack spacing={1} padding={1}>
-//         <Button
-//           startIcon={<Pay />}
-//           disabled={isPaid}
-//           size="small"
-//           component={RouterLink}
-//           href={paths.dashboard.invoice.createPayment(invoiceId)}
-//         >
-//           Post Payment
-//         </Button>
-//         <Button
-//           LinkComponent={RouterLink}
-//           href={paths.dashboard.invoice.details(invoiceId)}
-//           startIcon={<Details />}
-//           size="small"
-//         >
-//           Invoice Details
-//         </Button>
-//       </Stack>
-//     </Popover>
-//   );
-// };
-
 const InvoiceTable = ({ rows }: InvoiceTableProps) => {
-  console.log(rows)
   return (
     <Card sx={{ overflowX: 'auto' }}>
       <DataTable<InvoiceType[0]> hover columns={columns} hideHead rows={rows} />

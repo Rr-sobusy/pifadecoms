@@ -37,7 +37,7 @@ import { toast } from '@/components/core/toaster';
 
 interface InvoiceCreateProps {
   members: { memberId: string; lastName: string; firstName: string }[];
-  items: { itemId: string; itemName: string; itemType: 'product' | 'services'; rate: number }[];
+  items: { itemId: string; itemName: string; itemType: 'product' | 'services'; rate: number; trade: number }[];
 }
 
 const defaultValues = {
@@ -46,8 +46,10 @@ const defaultValues = {
   invDate: new Date(),
 };
 
-function calculateGrandTotal(lineItems: { lineId: string; itemId: string; quantity: number; rate: number, trade: number }[]): number {
-  return lineItems.reduce((curr, acc) => curr + acc.quantity * (acc.rate + acc.trade), 0);
+function calculateGrandTotal(
+  lineItems: { lineId: string; itemId: string; quantity: number; rate: number; trade: number }[]
+): number {
+  return lineItems.reduce((curr, acc) => curr + (acc.quantity * (Number(acc.rate) + Number(acc.trade))), 0);
 }
 
 const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
@@ -62,6 +64,8 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
     resolver: zodResolver(invoiceSchema),
     defaultValues,
   });
+
+  console.log(items)
 
   const router = useRouter();
 
@@ -231,6 +235,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                               setValue(`lineItems.${index}`, {
                                 ...getValues(`lineItems.${index}`),
                                 rate: value.rate,
+                                trade: value.trade,
                               });
                             }
                           }}

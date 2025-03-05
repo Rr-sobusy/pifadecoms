@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogContent } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -14,6 +14,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers';
+import { Trash as DeleteIcon } from '@phosphor-icons/react/dist/ssr';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import Decimal from 'decimal.js';
 import { useAction } from 'next-safe-action/hooks';
@@ -27,6 +28,7 @@ import { invoiceItemPaymentAction } from '@/actions/invoice-payments/create-invo
 import type { InvoiceItemPerMemberTypes } from '@/actions/invoices/types';
 import { invoiceItemsPaymentschema, type InvoiceItemsPaymentType } from '@/actions/invoices/types';
 import { Option } from '@/components/core/option';
+import { toast } from '@/components/core/toaster';
 
 import { FormInputFields } from '../member-loans/InputFields';
 
@@ -35,10 +37,9 @@ type PageProps = {
   handleClose: () => void;
   selectedRows: InvoiceItemPerMemberTypes;
   accounts: AccounTreeType;
-  memberId: string;
 };
 
-function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, accounts, memberId }: PageProps) {
+function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, accounts }: PageProps) {
   const {
     control,
     watch,
@@ -50,6 +51,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
   } = useForm<InvoiceItemsPaymentType>({
     resolver: zodResolver(invoiceItemsPaymentschema),
     defaultValues: {
+      entryDate: new Date(),
       journalLineItems: Array(2)
         .fill(null)
         .map(() => ({
@@ -62,34 +64,47 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
             group: '',
           },
         })),
-      particulars: { firstName: '', lastName: '', memberId: memberId },
+      particulars: { firstName: '', lastName: '', memberId: '' },
       journalType: 'cashReceipts',
       referenceType: 'SalesPayments',
     },
   });
-  const router = useRouter();
-  const pathname = usePathname();
 
-  const { execute, result } = useAction(invoiceItemPaymentAction);
+  const searchParams = useSearchParams();
+
+  const { execute, result, isExecuting } = useAction(invoiceItemPaymentAction);
+
+
+  /**
+   * * Map to paymentLine based on what values selected in data table
+   */
   React.useEffect(() => {
     if (!selectedRows || selectedRows.length === 0) return;
-    selectedRows.forEach((row, index) => {
-      setValue(`paymentLine.${index}.invoiceItemId`, Number(row.invoiceItemId));
-      setValue(`paymentLine.${index}.itemName`, row.Item.itemName);
-      setValue(`paymentLine.${index}.quantityPurchased`, row.quantity);
-      setValue(`paymentLine.${index}.principal`, row.principalPrice);
-      setValue(`paymentLine.${index}.trade`, row.trade);
-      setValue(`paymentLine.${index}.principal`, row.principalPrice);
-      setValue(`paymentLine.${index}.principalPaying`, 0);
-      setValue(`paymentLine.${index}.interestPaying`, 0);
-    });
-  }, [selectedRows]);
+    setValue(
+      'paymentLine',
+      selectedRows.map((row) => ({
+        invoiceItemId: Number(row.invoiceItemId),
+        itemName: row.Item.itemName,
+        quantityPurchased: row.quantity,
+        principal: row.principalPrice,
+        trade: row.trade,
+        principalPaying: 0,
+        interestPaying: 0,
+      }))
+    );
+  }, [selectedRows, setValue]);
 
-  // React.useEffect(() => {
-  //   if (!result.data) return;
-  //   router.push(pathname);
+  React.useEffect(() => {
+    if (result.data?.success) {
+      handleClose();
+      reset();
+      toast.success('Payment posted.');
+    }
+  }, [result]);
 
-  // }, [result]);
+  React.useEffect(() => {
+    setValue('particulars.memberId', searchParams.get('memberId') || '');
+  }, [searchParams.get('memberId')]);
 
   const flattenedAccounts = React.useMemo(
     () =>
@@ -172,6 +187,12 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                     onChange={(date) => {
                       field.onChange(date?.toDate());
                     }}
+                    slotProps={{
+                      textField: {
+                        error: Boolean(errors.entryDate),
+                        helperText: errors.entryDate?.message,
+                      },
+                    }}
                     value={dayjs(field.value)}
                     label="Payment Date"
                   />
@@ -192,21 +213,24 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
           <Stack marginY={2} spacing={1}>
             <Typography variant="h6">Payment Line</Typography>
             {watchPaymentLine.map((_, index) => (
-              <Stack direction="row" spacing={2}>
+              <Stack key={index} direction="row" spacing={2}>
                 <FormInputFields
-                  isDisabled={true}
+                  isDisabled
+                  errors={errors.paymentLine?.[index]?.itemName}
                   control={control}
                   name={`paymentLine.${index}.itemName`}
                   variant="text"
                   inputLabel="Item Name"
                 />
                 <FormInputFields
+                  errors={errors.paymentLine?.[index]?.principalPaying}
                   control={control}
                   name={`paymentLine.${index}.principalPaying`}
                   variant="number"
                   inputLabel="Total principal"
                 />
                 <FormInputFields
+                  errors={errors.paymentLine?.[index]?.interestPaying}
                   control={control}
                   name={`paymentLine.${index}.interestPaying`}
                   variant="number"
@@ -219,7 +243,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
           <Stack marginY={2} spacing={1}>
             <Typography variant="h6">Journal line</Typography>
             {watchJournalLines.map((_, index) => (
-              <Stack spacing={2} direction="row">
+              <Stack alignItems="center" key={index} spacing={2} direction="row">
                 <Controller
                   control={control}
                   name={`journalLineItems.${index}.accountDetails`}
@@ -244,17 +268,27 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                   )}
                 />
                 <FormInputFields
+                  errors={errors.journalLineItems?.[index]?.debit}
                   control={control}
                   variant="number"
                   inputLabel="Debit"
                   name={`journalLineItems.${index}.debit`}
                 />
                 <FormInputFields
+                  errors={errors.journalLineItems?.[index]?.credit}
                   control={control}
                   variant="number"
                   inputLabel="Credit"
                   name={`journalLineItems.${index}.credit`}
                 />
+                <IconButton
+                  // onClick={() => removeJournalLineItemHandler(items.journalLineItemId)}
+                  disabled={index === 0 || index === 1}
+                  color="error"
+                  sx={{ alignSelf: 'flex-end' }}
+                >
+                  <DeleteIcon />
+                </IconButton>
               </Stack>
             ))}
             <Stack>
@@ -286,12 +320,15 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
           </Stack>
         </DialogContent>
         <DialogAction sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained" type="submit">
-            Post Payment
+          <Button disabled={isExecuting} variant="contained" type="submit">
+            {isExecuting ? 'Posting' : 'Post Payment'}
           </Button>
-          <Button type="button" onClick={() => console.log(errors)}>
+          {/* <Button type="button" onClick={() => console.log(errors)}>
             Check error
           </Button>
+          <Button type="button" onClick={() => console.log(searchParams.get('memberId'))}>
+            log values
+          </Button> */}
         </DialogAction>
       </form>
     </Dialog>

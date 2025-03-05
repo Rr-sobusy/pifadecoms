@@ -47,6 +47,7 @@ const page = async () => {
               itemName: item.itemName,
               itemType: item.itemType,
               rate: item.sellingPrice,
+              trade: item.trade,
             };
           })}
           members={members}
