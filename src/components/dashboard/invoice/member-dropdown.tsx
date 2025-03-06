@@ -33,11 +33,11 @@ function MemberDropDown({ members }: Props) {
           <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
         </FormControl>
       )}
-      renderOption={(props, options) => (
-        <Option {...props} key={options.memberId} value={options.memberId}>
-          {options.lastName + ' ' + options.firstName}
-        </Option>
-      )}
+      // renderOption={(props, options) => (
+      //   <Option {...props} key={options.memberId} value={options.memberId}>
+      //     {options.lastName + ' ' + options.firstName}
+      //   </Option>
+      // )}
     />
   );
 }
