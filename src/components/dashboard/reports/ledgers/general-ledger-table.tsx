@@ -95,7 +95,7 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
         <Typography variant="caption">{`Assets (${formatToCurrency(totals.Assets, 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(totals.Liability, 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(totals.Equity, 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(totals.Revenue - totals.Expense, 'Fil-ph', 'Php')})`}</Typography>
         {isNotBalanced && (
           <Typography variant="caption" color="error">
-            Warning: The accounting equation is not balanced. Please check for possible errors in entry. {value}
+            Warning: The accounting equation is not balanced. Please check for possible errors in entry. {value} {totals.Assets}
           </Typography>
         )}
       </Stack>
