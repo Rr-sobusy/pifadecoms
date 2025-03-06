@@ -6,7 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
-
+import { Option } from '@/components/core/option';
 import { MembersType } from '@/actions/members/types';
 
 type Props = { members: MembersType };
@@ -18,7 +18,7 @@ function MemberDropDown({ members }: Props) {
   return (
     <Autocomplete
       options={members}
-      getOptionLabel={(member) => member.lastName + ', ' + member.firstName}
+      getOptionLabel={(member) => member.lastName + ' ' + member.firstName}
       filterOptions={(options, { inputValue }) =>
         options.filter(
           (option) =>
@@ -32,6 +32,11 @@ function MemberDropDown({ members }: Props) {
           <InputLabel required>Member Name</InputLabel>
           <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
         </FormControl>
+      )}
+      renderOption={(props, options) => (
+        <Option {...props} key={options.memberId} value={options.memberId}>
+          {options.lastName + ' ' + options.firstName}
+        </Option>
       )}
     />
   );
