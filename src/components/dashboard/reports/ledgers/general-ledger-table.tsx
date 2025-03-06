@@ -74,7 +74,8 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
     { Assets: 0, Equity: 0, Liability: 0, Expense: 0, Revenue: 0 }
   );
 
-  const isNotBalanced = totals.Equity + totals.Liability + totals.Revenue - totals.Expense !== totals.Assets;
+  const isNotBalanced = totals.Equity + totals.Liability + (totals.Revenue - totals.Expense) !== totals.Assets;
+  const value = totals.Equity + totals.Liability + (totals.Revenue - totals.Expense)
   return (
     <>
       {rows.length ? (
@@ -94,7 +95,7 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
         <Typography variant="caption">{`Assets (${formatToCurrency(totals.Assets, 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(totals.Liability, 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(totals.Equity, 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(totals.Revenue - totals.Expense, 'Fil-ph', 'Php')})`}</Typography>
         {isNotBalanced && (
           <Typography variant="caption" color="error">
-            Warning: The accounting equation is not balanced. Please check for possible errors in entry.
+            Warning: The accounting equation is not balanced. Please check for possible errors in entry. {value}
           </Typography>
         )}
       </Stack>
