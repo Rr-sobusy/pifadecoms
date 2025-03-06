@@ -15,15 +15,16 @@ export const createNewItems = actionClient.schema(itemSchema).action(async ({ pa
       data: {
         itemName: Request.itemName,
         itemDescription: Request.itemDescription,
-        costPrice: Request.costPrice,
-        sellingPrice: Request.sellingPrice,
+        sellingPrice: Request.principalPrice,
+        trade: Request.trade,
+        sourceId: Request.sourceId,
         itemType: Request.itemType,
       },
     });
 
     queryResponse = { success: true, message: newItem };
   } catch (error) {
-    queryResponse = { success: false, errorMessage: JSON.stringify(error) };
+    queryResponse = { success: false, errorMessage: error instanceof Error ? error.stack : 'Error occured in server!' };
   }
   revalidatePath(paths.dashboard.items.list);
   return queryResponse;

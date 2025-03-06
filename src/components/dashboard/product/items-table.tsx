@@ -35,8 +35,8 @@ const columns = [
         <div>
           <Link
             color="text.primary"
-            component={RouterLink}
-            href={paths.dashboard.products.preview('1')}
+            // component={RouterLink}
+            // href={paths.dashboard.products.preview('1')}
             sx={{ whiteSpace: 'nowrap' }}
             variant="subtitle2"
           >

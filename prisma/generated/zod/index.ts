@@ -756,6 +756,7 @@ export const InvoiceItemsPaymentsSelectSchema: z.ZodType<Prisma.InvoiceItemsPaym
 
 export const ItemSourceIncludeSchema: z.ZodType<Prisma.ItemSourceInclude> = z.object({
   Items: z.union([z.boolean(),z.lazy(() => ItemsFindManyArgsSchema)]).optional(),
+  Accounts: z.union([z.boolean(),z.lazy(() => AccountsThirdLvlArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => ItemSourceCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -777,6 +778,7 @@ export const ItemSourceSelectSchema: z.ZodType<Prisma.ItemSourceSelect> = z.obje
   sourceName: z.boolean().optional(),
   defaultAccount: z.boolean().optional(),
   Items: z.union([z.boolean(),z.lazy(() => ItemsFindManyArgsSchema)]).optional(),
+  Accounts: z.union([z.boolean(),z.lazy(() => AccountsThirdLvlArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => ItemSourceCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -856,6 +858,7 @@ export const AccountsThirdLvlIncludeSchema: z.ZodType<Prisma.AccountsThirdLvlInc
   Dividends: z.union([z.boolean(),z.lazy(() => DividendsFindManyArgsSchema)]).optional(),
   JournalItems: z.union([z.boolean(),z.lazy(() => JournalItemsFindManyArgsSchema)]).optional(),
   LoanSource: z.union([z.boolean(),z.lazy(() => LoanSourceFindManyArgsSchema)]).optional(),
+  ItemSource: z.union([z.boolean(),z.lazy(() => ItemSourceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AccountsThirdLvlCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -872,6 +875,7 @@ export const AccountsThirdLvlCountOutputTypeSelectSchema: z.ZodType<Prisma.Accou
   Dividends: z.boolean().optional(),
   JournalItems: z.boolean().optional(),
   LoanSource: z.boolean().optional(),
+  ItemSource: z.boolean().optional(),
 }).strict();
 
 export const AccountsThirdLvlSelectSchema: z.ZodType<Prisma.AccountsThirdLvlSelect> = z.object({
@@ -887,6 +891,7 @@ export const AccountsThirdLvlSelectSchema: z.ZodType<Prisma.AccountsThirdLvlSele
   Dividends: z.union([z.boolean(),z.lazy(() => DividendsFindManyArgsSchema)]).optional(),
   JournalItems: z.union([z.boolean(),z.lazy(() => JournalItemsFindManyArgsSchema)]).optional(),
   LoanSource: z.union([z.boolean(),z.lazy(() => LoanSourceFindManyArgsSchema)]).optional(),
+  ItemSource: z.union([z.boolean(),z.lazy(() => ItemSourceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AccountsThirdLvlCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -1833,14 +1838,16 @@ export const ItemSourceWhereInputSchema: z.ZodType<Prisma.ItemSourceWhereInput> 
   sourceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   sourceName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   defaultAccount: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  Items: z.lazy(() => ItemsListRelationFilterSchema).optional()
+  Items: z.lazy(() => ItemsListRelationFilterSchema).optional(),
+  Accounts: z.union([ z.lazy(() => AccountsThirdLvlRelationFilterSchema),z.lazy(() => AccountsThirdLvlWhereInputSchema) ]).optional(),
 }).strict();
 
 export const ItemSourceOrderByWithRelationInputSchema: z.ZodType<Prisma.ItemSourceOrderByWithRelationInput> = z.object({
   sourceId: z.lazy(() => SortOrderSchema).optional(),
   sourceName: z.lazy(() => SortOrderSchema).optional(),
   defaultAccount: z.lazy(() => SortOrderSchema).optional(),
-  Items: z.lazy(() => ItemsOrderByRelationAggregateInputSchema).optional()
+  Items: z.lazy(() => ItemsOrderByRelationAggregateInputSchema).optional(),
+  Accounts: z.lazy(() => AccountsThirdLvlOrderByWithRelationInputSchema).optional()
 }).strict();
 
 export const ItemSourceWhereUniqueInputSchema: z.ZodType<Prisma.ItemSourceWhereUniqueInput> = z.object({
@@ -1853,7 +1860,8 @@ export const ItemSourceWhereUniqueInputSchema: z.ZodType<Prisma.ItemSourceWhereU
   NOT: z.union([ z.lazy(() => ItemSourceWhereInputSchema),z.lazy(() => ItemSourceWhereInputSchema).array() ]).optional(),
   sourceName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   defaultAccount: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  Items: z.lazy(() => ItemsListRelationFilterSchema).optional()
+  Items: z.lazy(() => ItemsListRelationFilterSchema).optional(),
+  Accounts: z.union([ z.lazy(() => AccountsThirdLvlRelationFilterSchema),z.lazy(() => AccountsThirdLvlWhereInputSchema) ]).optional(),
 }).strict());
 
 export const ItemSourceOrderByWithAggregationInputSchema: z.ZodType<Prisma.ItemSourceOrderByWithAggregationInput> = z.object({
@@ -2034,7 +2042,8 @@ export const AccountsThirdLvlWhereInputSchema: z.ZodType<Prisma.AccountsThirdLvl
   RootID: z.union([ z.lazy(() => AccountsSecondLvlRelationFilterSchema),z.lazy(() => AccountsSecondLvlWhereInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsListRelationFilterSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsListRelationFilterSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceListRelationFilterSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceListRelationFilterSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceListRelationFilterSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlOrderByWithRelationInputSchema: z.ZodType<Prisma.AccountsThirdLvlOrderByWithRelationInput> = z.object({
@@ -2049,7 +2058,8 @@ export const AccountsThirdLvlOrderByWithRelationInputSchema: z.ZodType<Prisma.Ac
   RootID: z.lazy(() => AccountsSecondLvlOrderByWithRelationInputSchema).optional(),
   Dividends: z.lazy(() => DividendsOrderByRelationAggregateInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsOrderByRelationAggregateInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceOrderByRelationAggregateInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceOrderByRelationAggregateInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlWhereUniqueInputSchema: z.ZodType<Prisma.AccountsThirdLvlWhereUniqueInput> = z.object({
@@ -2070,7 +2080,8 @@ export const AccountsThirdLvlWhereUniqueInputSchema: z.ZodType<Prisma.AccountsTh
   RootID: z.union([ z.lazy(() => AccountsSecondLvlRelationFilterSchema),z.lazy(() => AccountsSecondLvlWhereInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsListRelationFilterSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsListRelationFilterSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceListRelationFilterSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceListRelationFilterSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceListRelationFilterSchema).optional()
 }).strict());
 
 export const AccountsThirdLvlOrderByWithAggregationInputSchema: z.ZodType<Prisma.AccountsThirdLvlOrderByWithAggregationInput> = z.object({
@@ -3153,8 +3164,8 @@ export const InvoiceItemsPaymentsUncheckedUpdateManyInputSchema: z.ZodType<Prism
 
 export const ItemSourceCreateInputSchema: z.ZodType<Prisma.ItemSourceCreateInput> = z.object({
   sourceName: z.string(),
-  defaultAccount: z.string(),
-  Items: z.lazy(() => ItemsCreateNestedManyWithoutItemSourceInputSchema).optional()
+  Items: z.lazy(() => ItemsCreateNestedManyWithoutItemSourceInputSchema).optional(),
+  Accounts: z.lazy(() => AccountsThirdLvlCreateNestedOneWithoutItemSourceInputSchema)
 }).strict();
 
 export const ItemSourceUncheckedCreateInputSchema: z.ZodType<Prisma.ItemSourceUncheckedCreateInput> = z.object({
@@ -3166,8 +3177,8 @@ export const ItemSourceUncheckedCreateInputSchema: z.ZodType<Prisma.ItemSourceUn
 
 export const ItemSourceUpdateInputSchema: z.ZodType<Prisma.ItemSourceUpdateInput> = z.object({
   sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  defaultAccount: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  Items: z.lazy(() => ItemsUpdateManyWithoutItemSourceNestedInputSchema).optional()
+  Items: z.lazy(() => ItemsUpdateManyWithoutItemSourceNestedInputSchema).optional(),
+  Accounts: z.lazy(() => AccountsThirdLvlUpdateOneRequiredWithoutItemSourceNestedInputSchema).optional()
 }).strict();
 
 export const ItemSourceUncheckedUpdateInputSchema: z.ZodType<Prisma.ItemSourceUncheckedUpdateInput> = z.object({
@@ -3185,7 +3196,6 @@ export const ItemSourceCreateManyInputSchema: z.ZodType<Prisma.ItemSourceCreateM
 
 export const ItemSourceUpdateManyMutationInputSchema: z.ZodType<Prisma.ItemSourceUpdateManyMutationInput> = z.object({
   sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  defaultAccount: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ItemSourceUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ItemSourceUncheckedUpdateManyInput> = z.object({
@@ -3349,7 +3359,8 @@ export const AccountsThirdLvlCreateInputSchema: z.ZodType<Prisma.AccountsThirdLv
   RootID: z.lazy(() => AccountsSecondLvlCreateNestedOneWithoutChildrenInputSchema),
   Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedCreateInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateInput> = z.object({
@@ -3363,7 +3374,8 @@ export const AccountsThirdLvlUncheckedCreateInputSchema: z.ZodType<Prisma.Accoun
   isActive: z.boolean().optional(),
   Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUpdateInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateInput> = z.object({
@@ -3377,7 +3389,8 @@ export const AccountsThirdLvlUpdateInputSchema: z.ZodType<Prisma.AccountsThirdLv
   RootID: z.lazy(() => AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema).optional(),
   Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateInput> = z.object({
@@ -3391,7 +3404,8 @@ export const AccountsThirdLvlUncheckedUpdateInputSchema: z.ZodType<Prisma.Accoun
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlCreateManyInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateManyInput> = z.object({
@@ -4841,11 +4855,21 @@ export const LoanSourceListRelationFilterSchema: z.ZodType<Prisma.LoanSourceList
   none: z.lazy(() => LoanSourceWhereInputSchema).optional()
 }).strict();
 
+export const ItemSourceListRelationFilterSchema: z.ZodType<Prisma.ItemSourceListRelationFilter> = z.object({
+  every: z.lazy(() => ItemSourceWhereInputSchema).optional(),
+  some: z.lazy(() => ItemSourceWhereInputSchema).optional(),
+  none: z.lazy(() => ItemSourceWhereInputSchema).optional()
+}).strict();
+
 export const JournalItemsOrderByRelationAggregateInputSchema: z.ZodType<Prisma.JournalItemsOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LoanSourceOrderByRelationAggregateInputSchema: z.ZodType<Prisma.LoanSourceOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ItemSourceOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ItemSourceOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -5855,6 +5879,12 @@ export const ItemsCreateNestedManyWithoutItemSourceInputSchema: z.ZodType<Prisma
   connect: z.union([ z.lazy(() => ItemsWhereUniqueInputSchema),z.lazy(() => ItemsWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const AccountsThirdLvlCreateNestedOneWithoutItemSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateNestedOneWithoutItemSourceInput> = z.object({
+  create: z.union([ z.lazy(() => AccountsThirdLvlCreateWithoutItemSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedCreateWithoutItemSourceInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AccountsThirdLvlCreateOrConnectWithoutItemSourceInputSchema).optional(),
+  connect: z.lazy(() => AccountsThirdLvlWhereUniqueInputSchema).optional()
+}).strict();
+
 export const ItemsUncheckedCreateNestedManyWithoutItemSourceInputSchema: z.ZodType<Prisma.ItemsUncheckedCreateNestedManyWithoutItemSourceInput> = z.object({
   create: z.union([ z.lazy(() => ItemsCreateWithoutItemSourceInputSchema),z.lazy(() => ItemsCreateWithoutItemSourceInputSchema).array(),z.lazy(() => ItemsUncheckedCreateWithoutItemSourceInputSchema),z.lazy(() => ItemsUncheckedCreateWithoutItemSourceInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => ItemsCreateOrConnectWithoutItemSourceInputSchema),z.lazy(() => ItemsCreateOrConnectWithoutItemSourceInputSchema).array() ]).optional(),
@@ -5874,6 +5904,14 @@ export const ItemsUpdateManyWithoutItemSourceNestedInputSchema: z.ZodType<Prisma
   update: z.union([ z.lazy(() => ItemsUpdateWithWhereUniqueWithoutItemSourceInputSchema),z.lazy(() => ItemsUpdateWithWhereUniqueWithoutItemSourceInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => ItemsUpdateManyWithWhereWithoutItemSourceInputSchema),z.lazy(() => ItemsUpdateManyWithWhereWithoutItemSourceInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => ItemsScalarWhereInputSchema),z.lazy(() => ItemsScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const AccountsThirdLvlUpdateOneRequiredWithoutItemSourceNestedInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateOneRequiredWithoutItemSourceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => AccountsThirdLvlCreateWithoutItemSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedCreateWithoutItemSourceInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AccountsThirdLvlCreateOrConnectWithoutItemSourceInputSchema).optional(),
+  upsert: z.lazy(() => AccountsThirdLvlUpsertWithoutItemSourceInputSchema).optional(),
+  connect: z.lazy(() => AccountsThirdLvlWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => AccountsThirdLvlUpdateToOneWithWhereWithoutItemSourceInputSchema),z.lazy(() => AccountsThirdLvlUpdateWithoutItemSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedUpdateWithoutItemSourceInputSchema) ]).optional(),
 }).strict();
 
 export const ItemsUncheckedUpdateManyWithoutItemSourceNestedInputSchema: z.ZodType<Prisma.ItemsUncheckedUpdateManyWithoutItemSourceNestedInput> = z.object({
@@ -6023,6 +6061,13 @@ export const LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema: z.ZodTy
   connect: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const ItemSourceCreateNestedManyWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceCreateNestedManyWithoutAccountsInput> = z.object({
+  create: z.union([ z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema).array(),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ItemSourceCreateOrConnectWithoutAccountsInputSchema),z.lazy(() => ItemSourceCreateOrConnectWithoutAccountsInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ItemSourceCreateManyAccountsInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const DividendsUncheckedCreateNestedManyWithoutAccountInputSchema: z.ZodType<Prisma.DividendsUncheckedCreateNestedManyWithoutAccountInput> = z.object({
   create: z.union([ z.lazy(() => DividendsCreateWithoutAccountInputSchema),z.lazy(() => DividendsCreateWithoutAccountInputSchema).array(),z.lazy(() => DividendsUncheckedCreateWithoutAccountInputSchema),z.lazy(() => DividendsUncheckedCreateWithoutAccountInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => DividendsCreateOrConnectWithoutAccountInputSchema),z.lazy(() => DividendsCreateOrConnectWithoutAccountInputSchema).array() ]).optional(),
@@ -6042,6 +6087,13 @@ export const LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema
   connectOrCreate: z.union([ z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceCreateOrConnectWithoutDefaultAccountInputSchema).array() ]).optional(),
   createMany: z.lazy(() => LoanSourceCreateManyDefaultAccountInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => LoanSourceWhereUniqueInputSchema),z.lazy(() => LoanSourceWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ItemSourceUncheckedCreateNestedManyWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceUncheckedCreateNestedManyWithoutAccountsInput> = z.object({
+  create: z.union([ z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema).array(),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ItemSourceCreateOrConnectWithoutAccountsInputSchema),z.lazy(() => ItemSourceCreateOrConnectWithoutAccountsInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ItemSourceCreateManyAccountsInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema: z.ZodType<Prisma.AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInput> = z.object({
@@ -6094,6 +6146,20 @@ export const LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema: z.ZodTy
   deleteMany: z.union([ z.lazy(() => LoanSourceScalarWhereInputSchema),z.lazy(() => LoanSourceScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const ItemSourceUpdateManyWithoutAccountsNestedInputSchema: z.ZodType<Prisma.ItemSourceUpdateManyWithoutAccountsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema).array(),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ItemSourceCreateOrConnectWithoutAccountsInputSchema),z.lazy(() => ItemSourceCreateOrConnectWithoutAccountsInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ItemSourceUpsertWithWhereUniqueWithoutAccountsInputSchema),z.lazy(() => ItemSourceUpsertWithWhereUniqueWithoutAccountsInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ItemSourceCreateManyAccountsInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ItemSourceUpdateWithWhereUniqueWithoutAccountsInputSchema),z.lazy(() => ItemSourceUpdateWithWhereUniqueWithoutAccountsInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ItemSourceUpdateManyWithWhereWithoutAccountsInputSchema),z.lazy(() => ItemSourceUpdateManyWithWhereWithoutAccountsInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ItemSourceScalarWhereInputSchema),z.lazy(() => ItemSourceScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema: z.ZodType<Prisma.DividendsUncheckedUpdateManyWithoutAccountNestedInput> = z.object({
   create: z.union([ z.lazy(() => DividendsCreateWithoutAccountInputSchema),z.lazy(() => DividendsCreateWithoutAccountInputSchema).array(),z.lazy(() => DividendsUncheckedCreateWithoutAccountInputSchema),z.lazy(() => DividendsUncheckedCreateWithoutAccountInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => DividendsCreateOrConnectWithoutAccountInputSchema),z.lazy(() => DividendsCreateOrConnectWithoutAccountInputSchema).array() ]).optional(),
@@ -6134,6 +6200,20 @@ export const LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema
   update: z.union([ z.lazy(() => LoanSourceUpdateWithWhereUniqueWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUpdateWithWhereUniqueWithoutDefaultAccountInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => LoanSourceUpdateManyWithWhereWithoutDefaultAccountInputSchema),z.lazy(() => LoanSourceUpdateManyWithWhereWithoutDefaultAccountInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => LoanSourceScalarWhereInputSchema),z.lazy(() => LoanSourceScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ItemSourceUncheckedUpdateManyWithoutAccountsNestedInputSchema: z.ZodType<Prisma.ItemSourceUncheckedUpdateManyWithoutAccountsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema).array(),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ItemSourceCreateOrConnectWithoutAccountsInputSchema),z.lazy(() => ItemSourceCreateOrConnectWithoutAccountsInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ItemSourceUpsertWithWhereUniqueWithoutAccountsInputSchema),z.lazy(() => ItemSourceUpsertWithWhereUniqueWithoutAccountsInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ItemSourceCreateManyAccountsInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ItemSourceWhereUniqueInputSchema),z.lazy(() => ItemSourceWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ItemSourceUpdateWithWhereUniqueWithoutAccountsInputSchema),z.lazy(() => ItemSourceUpdateWithWhereUniqueWithoutAccountsInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ItemSourceUpdateManyWithWhereWithoutAccountsInputSchema),z.lazy(() => ItemSourceUpdateManyWithWhereWithoutAccountsInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ItemSourceScalarWhereInputSchema),z.lazy(() => ItemSourceScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const MembersCreateNestedOneWithoutDividendsInputSchema: z.ZodType<Prisma.MembersCreateNestedOneWithoutDividendsInput> = z.object({
@@ -7248,7 +7328,8 @@ export const AccountsThirdLvlCreateWithoutLoanSourceInputSchema: z.ZodType<Prism
   isActive: z.boolean().optional(),
   RootID: z.lazy(() => AccountsSecondLvlCreateNestedOneWithoutChildrenInputSchema),
   Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedCreateWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateWithoutLoanSourceInput> = z.object({
@@ -7261,7 +7342,8 @@ export const AccountsThirdLvlUncheckedCreateWithoutLoanSourceInputSchema: z.ZodT
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlCreateOrConnectWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateOrConnectWithoutLoanSourceInput> = z.object({
@@ -7306,7 +7388,8 @@ export const AccountsThirdLvlUpdateWithoutLoanSourceInputSchema: z.ZodType<Prism
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   RootID: z.lazy(() => AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema).optional(),
   Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateWithoutLoanSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateWithoutLoanSourceInput> = z.object({
@@ -7319,7 +7402,8 @@ export const AccountsThirdLvlUncheckedUpdateWithoutLoanSourceInputSchema: z.ZodT
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional(),
-  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
+  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const MemberLoansCreateWithoutParentInputSchema: z.ZodType<Prisma.MemberLoansCreateWithoutParentInput> = z.object({
@@ -8756,6 +8840,39 @@ export const ItemsCreateManyItemSourceInputEnvelopeSchema: z.ZodType<Prisma.Item
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const AccountsThirdLvlCreateWithoutItemSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateWithoutItemSourceInput> = z.object({
+  accountId: z.string().cuid().optional(),
+  accountName: z.string(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  isActive: z.boolean().optional(),
+  RootID: z.lazy(() => AccountsSecondLvlCreateNestedOneWithoutChildrenInputSchema),
+  Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional(),
+  JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+}).strict();
+
+export const AccountsThirdLvlUncheckedCreateWithoutItemSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateWithoutItemSourceInput> = z.object({
+  accountId: z.string().cuid().optional(),
+  accountName: z.string(),
+  rootId: z.number().int(),
+  openingBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  runningBalance: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  isActive: z.boolean().optional(),
+  Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional(),
+  JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+}).strict();
+
+export const AccountsThirdLvlCreateOrConnectWithoutItemSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateOrConnectWithoutItemSourceInput> = z.object({
+  where: z.lazy(() => AccountsThirdLvlWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => AccountsThirdLvlCreateWithoutItemSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedCreateWithoutItemSourceInputSchema) ]),
+}).strict();
+
 export const ItemsUpsertWithWhereUniqueWithoutItemSourceInputSchema: z.ZodType<Prisma.ItemsUpsertWithWhereUniqueWithoutItemSourceInput> = z.object({
   where: z.lazy(() => ItemsWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => ItemsUpdateWithoutItemSourceInputSchema),z.lazy(() => ItemsUncheckedUpdateWithoutItemSourceInputSchema) ]),
@@ -8786,6 +8903,45 @@ export const ItemsScalarWhereInputSchema: z.ZodType<Prisma.ItemsScalarWhereInput
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   stocks: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
   sourceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+}).strict();
+
+export const AccountsThirdLvlUpsertWithoutItemSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpsertWithoutItemSourceInput> = z.object({
+  update: z.union([ z.lazy(() => AccountsThirdLvlUpdateWithoutItemSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedUpdateWithoutItemSourceInputSchema) ]),
+  create: z.union([ z.lazy(() => AccountsThirdLvlCreateWithoutItemSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedCreateWithoutItemSourceInputSchema) ]),
+  where: z.lazy(() => AccountsThirdLvlWhereInputSchema).optional()
+}).strict();
+
+export const AccountsThirdLvlUpdateToOneWithWhereWithoutItemSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateToOneWithWhereWithoutItemSourceInput> = z.object({
+  where: z.lazy(() => AccountsThirdLvlWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => AccountsThirdLvlUpdateWithoutItemSourceInputSchema),z.lazy(() => AccountsThirdLvlUncheckedUpdateWithoutItemSourceInputSchema) ]),
+}).strict();
+
+export const AccountsThirdLvlUpdateWithoutItemSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUpdateWithoutItemSourceInput> = z.object({
+  accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  RootID: z.lazy(() => AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema).optional(),
+  Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional(),
+  JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
+}).strict();
+
+export const AccountsThirdLvlUncheckedUpdateWithoutItemSourceInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateWithoutItemSourceInput> = z.object({
+  accountId: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  accountName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  rootId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  openingBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  runningBalance: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional(),
+  JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional(),
+  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
 }).strict();
 
 export const InvoiceItemsCreateWithoutItemInputSchema: z.ZodType<Prisma.InvoiceItemsCreateWithoutItemInput> = z.object({
@@ -8820,7 +8976,7 @@ export const InvoiceItemsCreateManyItemInputEnvelopeSchema: z.ZodType<Prisma.Inv
 
 export const ItemSourceCreateWithoutItemsInputSchema: z.ZodType<Prisma.ItemSourceCreateWithoutItemsInput> = z.object({
   sourceName: z.string(),
-  defaultAccount: z.string()
+  Accounts: z.lazy(() => AccountsThirdLvlCreateNestedOneWithoutItemSourceInputSchema)
 }).strict();
 
 export const ItemSourceUncheckedCreateWithoutItemsInputSchema: z.ZodType<Prisma.ItemSourceUncheckedCreateWithoutItemsInput> = z.object({
@@ -8863,7 +9019,7 @@ export const ItemSourceUpdateToOneWithWhereWithoutItemsInputSchema: z.ZodType<Pr
 
 export const ItemSourceUpdateWithoutItemsInputSchema: z.ZodType<Prisma.ItemSourceUpdateWithoutItemsInput> = z.object({
   sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  defaultAccount: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  Accounts: z.lazy(() => AccountsThirdLvlUpdateOneRequiredWithoutItemSourceNestedInputSchema).optional()
 }).strict();
 
 export const ItemSourceUncheckedUpdateWithoutItemsInputSchema: z.ZodType<Prisma.ItemSourceUncheckedUpdateWithoutItemsInput> = z.object({
@@ -8882,7 +9038,8 @@ export const AccountsThirdLvlCreateWithoutRootIDInputSchema: z.ZodType<Prisma.Ac
   isActive: z.boolean().optional(),
   Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedCreateWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateWithoutRootIDInput> = z.object({
@@ -8895,7 +9052,8 @@ export const AccountsThirdLvlUncheckedCreateWithoutRootIDInputSchema: z.ZodType<
   isActive: z.boolean().optional(),
   Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlCreateOrConnectWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateOrConnectWithoutRootIDInput> = z.object({
@@ -9025,6 +9183,27 @@ export const LoanSourceCreateManyDefaultAccountInputEnvelopeSchema: z.ZodType<Pr
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const ItemSourceCreateWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceCreateWithoutAccountsInput> = z.object({
+  sourceName: z.string(),
+  Items: z.lazy(() => ItemsCreateNestedManyWithoutItemSourceInputSchema).optional()
+}).strict();
+
+export const ItemSourceUncheckedCreateWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceUncheckedCreateWithoutAccountsInput> = z.object({
+  sourceId: z.number().int().optional(),
+  sourceName: z.string(),
+  Items: z.lazy(() => ItemsUncheckedCreateNestedManyWithoutItemSourceInputSchema).optional()
+}).strict();
+
+export const ItemSourceCreateOrConnectWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceCreateOrConnectWithoutAccountsInput> = z.object({
+  where: z.lazy(() => ItemSourceWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema) ]),
+}).strict();
+
+export const ItemSourceCreateManyAccountsInputEnvelopeSchema: z.ZodType<Prisma.ItemSourceCreateManyAccountsInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => ItemSourceCreateManyAccountsInputSchema),z.lazy(() => ItemSourceCreateManyAccountsInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const AccountsSecondLvlUpsertWithoutChildrenInputSchema: z.ZodType<Prisma.AccountsSecondLvlUpsertWithoutChildrenInput> = z.object({
   update: z.union([ z.lazy(() => AccountsSecondLvlUpdateWithoutChildrenInputSchema),z.lazy(() => AccountsSecondLvlUncheckedUpdateWithoutChildrenInputSchema) ]),
   create: z.union([ z.lazy(() => AccountsSecondLvlCreateWithoutChildrenInputSchema),z.lazy(() => AccountsSecondLvlUncheckedCreateWithoutChildrenInputSchema) ]),
@@ -9117,6 +9296,31 @@ export const LoanSourceScalarWhereInputSchema: z.ZodType<Prisma.LoanSourceScalar
   defaultAccount: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
+export const ItemSourceUpsertWithWhereUniqueWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceUpsertWithWhereUniqueWithoutAccountsInput> = z.object({
+  where: z.lazy(() => ItemSourceWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => ItemSourceUpdateWithoutAccountsInputSchema),z.lazy(() => ItemSourceUncheckedUpdateWithoutAccountsInputSchema) ]),
+  create: z.union([ z.lazy(() => ItemSourceCreateWithoutAccountsInputSchema),z.lazy(() => ItemSourceUncheckedCreateWithoutAccountsInputSchema) ]),
+}).strict();
+
+export const ItemSourceUpdateWithWhereUniqueWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceUpdateWithWhereUniqueWithoutAccountsInput> = z.object({
+  where: z.lazy(() => ItemSourceWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => ItemSourceUpdateWithoutAccountsInputSchema),z.lazy(() => ItemSourceUncheckedUpdateWithoutAccountsInputSchema) ]),
+}).strict();
+
+export const ItemSourceUpdateManyWithWhereWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceUpdateManyWithWhereWithoutAccountsInput> = z.object({
+  where: z.lazy(() => ItemSourceScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => ItemSourceUpdateManyMutationInputSchema),z.lazy(() => ItemSourceUncheckedUpdateManyWithoutAccountsInputSchema) ]),
+}).strict();
+
+export const ItemSourceScalarWhereInputSchema: z.ZodType<Prisma.ItemSourceScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => ItemSourceScalarWhereInputSchema),z.lazy(() => ItemSourceScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ItemSourceScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ItemSourceScalarWhereInputSchema),z.lazy(() => ItemSourceScalarWhereInputSchema).array() ]).optional(),
+  sourceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  sourceName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  defaultAccount: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict();
+
 export const MembersCreateWithoutDividendsInputSchema: z.ZodType<Prisma.MembersCreateWithoutDividendsInput> = z.object({
   memberId: z.string().cuid().optional(),
   accountStatus: z.lazy(() => AccountStatusSchema).optional(),
@@ -9192,7 +9396,8 @@ export const AccountsThirdLvlCreateWithoutDividendsInputSchema: z.ZodType<Prisma
   isActive: z.boolean().optional(),
   RootID: z.lazy(() => AccountsSecondLvlCreateNestedOneWithoutChildrenInputSchema),
   JournalItems: z.lazy(() => JournalItemsCreateNestedManyWithoutAccountsInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedCreateWithoutDividendsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateWithoutDividendsInput> = z.object({
@@ -9205,7 +9410,8 @@ export const AccountsThirdLvlUncheckedCreateWithoutDividendsInputSchema: z.ZodTy
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   JournalItems: z.lazy(() => JournalItemsUncheckedCreateNestedManyWithoutAccountsInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlCreateOrConnectWithoutDividendsInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateOrConnectWithoutDividendsInput> = z.object({
@@ -9305,7 +9511,8 @@ export const AccountsThirdLvlUpdateWithoutDividendsInputSchema: z.ZodType<Prisma
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   RootID: z.lazy(() => AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateWithoutDividendsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateWithoutDividendsInput> = z.object({
@@ -9318,7 +9525,8 @@ export const AccountsThirdLvlUncheckedUpdateWithoutDividendsInputSchema: z.ZodTy
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const JournalItemsCreateWithoutJournalEntriesInputSchema: z.ZodType<Prisma.JournalItemsCreateWithoutJournalEntriesInput> = z.object({
@@ -9753,7 +9961,8 @@ export const AccountsThirdLvlCreateWithoutJournalItemsInputSchema: z.ZodType<Pri
   isActive: z.boolean().optional(),
   RootID: z.lazy(() => AccountsSecondLvlCreateNestedOneWithoutChildrenInputSchema),
   Dividends: z.lazy(() => DividendsCreateNestedManyWithoutAccountInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceCreateNestedManyWithoutDefaultAccountInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedCreateWithoutJournalItemsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedCreateWithoutJournalItemsInput> = z.object({
@@ -9766,7 +9975,8 @@ export const AccountsThirdLvlUncheckedCreateWithoutJournalItemsInputSchema: z.Zo
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   Dividends: z.lazy(() => DividendsUncheckedCreateNestedManyWithoutAccountInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUncheckedCreateNestedManyWithoutDefaultAccountInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedCreateNestedManyWithoutAccountsInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlCreateOrConnectWithoutJournalItemsInputSchema: z.ZodType<Prisma.AccountsThirdLvlCreateOrConnectWithoutJournalItemsInput> = z.object({
@@ -9834,7 +10044,8 @@ export const AccountsThirdLvlUpdateWithoutJournalItemsInputSchema: z.ZodType<Pri
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   RootID: z.lazy(() => AccountsSecondLvlUpdateOneRequiredWithoutChildrenNestedInputSchema).optional(),
   Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateWithoutJournalItemsInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateWithoutJournalItemsInput> = z.object({
@@ -9847,7 +10058,8 @@ export const AccountsThirdLvlUncheckedUpdateWithoutJournalItemsInputSchema: z.Zo
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const DividendsCreateManyMembersInputSchema: z.ZodType<Prisma.DividendsCreateManyMembersInput> = z.object({
@@ -10383,7 +10595,8 @@ export const AccountsThirdLvlUpdateWithoutRootIDInputSchema: z.ZodType<Prisma.Ac
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsUpdateManyWithoutAccountNestedInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsUpdateManyWithoutAccountsNestedInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUpdateManyWithoutDefaultAccountNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateWithoutRootIDInput> = z.object({
@@ -10396,7 +10609,8 @@ export const AccountsThirdLvlUncheckedUpdateWithoutRootIDInputSchema: z.ZodType<
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   Dividends: z.lazy(() => DividendsUncheckedUpdateManyWithoutAccountNestedInputSchema).optional(),
   JournalItems: z.lazy(() => JournalItemsUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional(),
-  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional()
+  LoanSource: z.lazy(() => LoanSourceUncheckedUpdateManyWithoutDefaultAccountNestedInputSchema).optional(),
+  ItemSource: z.lazy(() => ItemSourceUncheckedUpdateManyWithoutAccountsNestedInputSchema).optional()
 }).strict();
 
 export const AccountsThirdLvlUncheckedUpdateManyWithoutRootIDInputSchema: z.ZodType<Prisma.AccountsThirdLvlUncheckedUpdateManyWithoutRootIDInput> = z.object({
@@ -10424,6 +10638,11 @@ export const JournalItemsCreateManyAccountsInputSchema: z.ZodType<Prisma.Journal
 }).strict();
 
 export const LoanSourceCreateManyDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceCreateManyDefaultAccountInput> = z.object({
+  sourceId: z.number().int().optional(),
+  sourceName: z.string()
+}).strict();
+
+export const ItemSourceCreateManyAccountsInputSchema: z.ZodType<Prisma.ItemSourceCreateManyAccountsInput> = z.object({
   sourceId: z.number().int().optional(),
   sourceName: z.string()
 }).strict();
@@ -10482,6 +10701,22 @@ export const LoanSourceUncheckedUpdateWithoutDefaultAccountInputSchema: z.ZodTyp
 }).strict();
 
 export const LoanSourceUncheckedUpdateManyWithoutDefaultAccountInputSchema: z.ZodType<Prisma.LoanSourceUncheckedUpdateManyWithoutDefaultAccountInput> = z.object({
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ItemSourceUpdateWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceUpdateWithoutAccountsInput> = z.object({
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  Items: z.lazy(() => ItemsUpdateManyWithoutItemSourceNestedInputSchema).optional()
+}).strict();
+
+export const ItemSourceUncheckedUpdateWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceUncheckedUpdateWithoutAccountsInput> = z.object({
+  sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  Items: z.lazy(() => ItemsUncheckedUpdateManyWithoutItemSourceNestedInputSchema).optional()
+}).strict();
+
+export const ItemSourceUncheckedUpdateManyWithoutAccountsInputSchema: z.ZodType<Prisma.ItemSourceUncheckedUpdateManyWithoutAccountsInput> = z.object({
   sourceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   sourceName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();

@@ -104,6 +104,8 @@ export const layoutConfig = {
           items: [
             { key: 'items', title: 'List items', href: paths.dashboard.items.list },
             { key: 'items:create', title: 'Create item', href: paths.dashboard.items.create },
+            { key: 'items:source', title: 'Item source', href: paths.dashboard.items.source },
+            
             // { key: 'product:details', title: 'Product details', href: paths.dashboard.products.details('1') },
           ],
         },

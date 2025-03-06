@@ -93,6 +93,7 @@ export const paths = {
     items: {
       list: '/dashboard/items',
       create: '/dashboard/items/create',
+      source: '/dashboard/items/source'
     },
     finance: {
       list: '/dashboard/finance/accounts',

@@ -1,5 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
+
+import { fetchItemSources } from './fetch-item-sources';
 import { fetchItems } from './fetch-items';
 
 export type ItemTypes = Prisma.PromiseReturnType<typeof fetchItems>;
@@ -8,24 +10,24 @@ export const itemSchema = z.object({
   itemName: z.string(),
   itemDescription: z.string().optional(),
   itemType: z.enum(['product', 'services']),
-  sellingPrice: z.number().gt(0, { message: 'Selling price must greather than 0.' }),
-  costPrice: z.number(),
+  principalPrice: z.number(),
+  trade: z.number(),
   createdAt: z.date().optional(),
+  sourceId: z.number(),
   updatedAt: z.date().optional(),
-  expenseAcct: z
-    .object({
-      accountId: z.string(),
-      accountName: z.string(),
-      accountRootType: z.string(),
-    })
-    .optional(),
-  incomeAcct: z
-    .object({
-      accountId: z.string(),
-      accountName: z.string(),
-      accountRootType: z.string(),
-    })
-    .optional(),
+});
+
+export const itemSourceSchema = z.object({
+  sourceName: z.string(),
+
+  //default account
+  accountDetails: z.object({
+    accountId: z.string(),
+    accountName: z.string(),
+    group: z.string()
+  }),
 });
 
 export type ItemsSchemaType = z.infer<typeof itemSchema>;
+export type ItemSourcesType = Prisma.PromiseReturnType<typeof fetchItemSources>;
+export type ItemSourceSchemaType = z.infer<typeof itemSourceSchema>

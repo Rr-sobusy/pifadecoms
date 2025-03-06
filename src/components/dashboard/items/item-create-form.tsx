@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import RouterLink from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -24,26 +24,32 @@ import { paths } from '@/paths';
 import type { AccountType } from '@/actions/accounts/types';
 import { createNewItems } from '@/actions/items/create-new-item';
 // schema and types
-import { itemSchema, ItemsSchemaType } from '@/actions/items/types';
+import { itemSchema, ItemSourcesType, ItemsSchemaType } from '@/actions/items/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
+import { FormInputFields } from '../member-loans/InputFields';
+
 interface ItemCreateFormProps {
   accounts?: { accountId: string; accountName: string; accountRootType: AccountType[0]['RootID']['rootType'] }[];
+  itemSources: ItemSourcesType;
 }
 
-function ItemCreateForm({ accounts }: ItemCreateFormProps) {
+function ItemCreateForm({ itemSources = [] }: ItemCreateFormProps) {
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<ItemsSchemaType>({ resolver: zodResolver(itemSchema), defaultValues: {} });
 
+  const router = useRouter();
+
   const { execute, result } = useAction(createNewItems);
 
   React.useEffect(() => {
     if (result.data) {
       toast.success('New Item Created.');
+      router.push(paths.dashboard.items.list);
     }
   }, [result]);
 
@@ -78,7 +84,7 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                 </Grid>
                 <Grid
                   size={{
-                    md: 6,
+                    md: 3,
                     xs: 12,
                   }}
                 >
@@ -99,7 +105,29 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                 </Grid>
                 <Grid
                   size={{
-                    md: 6,
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="sourceId"
+                    render={({ field }) => (
+                      <FormControl error={Boolean(errors.itemType)} fullWidth>
+                        <InputLabel required>Item Source</InputLabel>
+                        <Select {...field}>
+                          {itemSources.map((source) => (
+                            <Option value={source.sourceId}>{source.sourceName}</Option>
+                          ))}
+                        </Select>
+                        {errors.itemType ? <FormHelperText error>{errors.itemType.message}</FormHelperText> : null}
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
                     xs: 12,
                   }}
                 >
@@ -119,25 +147,24 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                 </Grid>
                 <Grid
                   size={{
-                    md: 3,
+                    md: 2,
                     xs: 6,
                   }}
                 >
-                  <Controller
+                  <FormInputFields
                     control={control}
-                    name="costPrice"
-                    render={({ field }) => (
-                      <FormControl error={Boolean(errors.costPrice)} fullWidth>
-                        <InputLabel>Item Cost</InputLabel>
-                        <OutlinedInput
-                          {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
-                          type="number"
-                        />
-                        {errors.costPrice ? <FormHelperText error>{errors.costPrice.message}</FormHelperText> : null}
-                      </FormControl>
-                    )}
+                    name="principalPrice"
+                    variant="number"
+                    inputLabel="Principal price"
                   />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 2,
+                    xs: 6,
+                  }}
+                >
+                  <FormInputFields control={control} name="trade" variant="number" inputLabel="Trade" />
                 </Grid>
                 <Grid
                   size={{
@@ -145,7 +172,7 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                     xs: 6,
                   }}
                 >
-                  <Controller
+                  {/* <Controller
                     control={control}
                     name="sellingPrice"
                     render={({ field }) => (
@@ -161,80 +188,7 @@ function ItemCreateForm({ accounts }: ItemCreateFormProps) {
                         ) : null}
                       </FormControl>
                     )}
-                  />
-                </Grid>
-              </Grid>
-            </Stack>
-            <Stack spacing={3} divider={<Divider />}>
-              <Typography variant="h6">Accounting Entries</Typography>
-              <Grid container spacing={3}>
-                <Grid
-                  size={{
-                    md: 4,
-                    sm: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="expenseAcct"
-                    render={({ field }) => (
-                      <Autocomplete
-                        {...field}
-                        options={accounts ?? []}
-                        onChange={(_, value) => field.onChange(value)}
-                        getOptionLabel={(account) => account.accountName}
-                        filterOptions={(options) =>
-                          options.filter((ctx) => ctx.accountRootType === 'Expense' || ctx.accountRootType === 'Assets')
-                        }
-                        renderInput={(params) => (
-                          <FormControl error={Boolean(errors.expenseAcct)} fullWidth>
-                            <InputLabel>Expense Account (Expense)</InputLabel>
-                            <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.expenseAcct ? <FormHelperText>{errors.expenseAcct.message}</FormHelperText> : null}
-                          </FormControl>
-                        )}
-                        renderOption={(props, options) => (
-                          <Option {...props} key={options.accountId} value={options.accountId}>
-                            {options.accountName}
-                          </Option>
-                        )}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 4,
-                    sm: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="incomeAcct"
-                    render={({ field }) => (
-                      <Autocomplete
-                        {...field}
-                        options={accounts ?? []}
-                        onChange={(_, value) => field.onChange(value)}
-                        getOptionLabel={(account) => account.accountName}
-                        filterOptions={(options, { inputValue }) =>
-                          options.filter((ctx) => ctx.accountRootType === 'Revenue' || ctx.accountRootType === 'Assets')
-                        }
-                        renderInput={(params) => (
-                          <FormControl error={Boolean(errors.expenseAcct)} fullWidth>
-                            <InputLabel>Income Account (Revenue)</InputLabel>
-                            <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
-                            {errors.expenseAcct ? <FormHelperText>{errors.expenseAcct.message}</FormHelperText> : null}
-                          </FormControl>
-                        )}
-                        renderOption={(props, options) => (
-                          <Option {...props} key={options.accountId} value={options.accountId}>
-                            {options.accountName}
-                          </Option>
-                        )}
-                      />
-                    )}
-                  />
+                  /> */}
                 </Grid>
               </Grid>
             </Stack>

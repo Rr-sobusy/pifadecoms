@@ -115,7 +115,7 @@ export default async function Page({ searchParams }: PageProps): Promise<React.J
         <Stack spacing={4}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
             <Box sx={{ flex: '1 1 auto' }}>
-              <Typography variant="h4">Products</Typography>
+              <Typography variant="h4">Items</Typography>
             </Box>
             <div>
               <Button
@@ -129,17 +129,17 @@ export default async function Page({ searchParams }: PageProps): Promise<React.J
             </div>
           </Stack>
           <Card>
-            <ProductsFilters filters={{ category, sku, status }} sortDir={sortDir} />
+            {/* <ProductsFilters filters={{ category, sku, status }} sortDir={sortDir} /> */}
             <Divider />
             <Box sx={{ overflowX: 'auto' }}>
               <ItemsTable rows={items} />
             </Box>
             <Divider />
-            <ProductsPagination count={filteredProducts.length} page={0} />
+            {/* <ProductsPagination count={filteredProducts.length} page={0} /> */}
           </Card>
         </Stack>
       </Box>
-      <ProductModal open={Boolean(previewId)} />
+      {/* <ProductModal open={Boolean(previewId)} /> */}
     </React.Fragment>
   );
 }

@@ -7,11 +7,12 @@ import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
 import { paths } from '@/paths';
-import ItemCreateForm from '@/components/dashboard/items/item-create-form';
 import { fetchChartofAccounts } from '@/actions/accounts/fetch-accounts';
+import { fetchItemSources } from '@/actions/items/fetch-item-sources';
+import ItemCreateForm from '@/components/dashboard/items/item-create-form';
 
 async function page(): Promise<React.JSX.Element> {
-  const chartOfAccounts = await fetchChartofAccounts()
+  const [chartOfAccounts, itemSources] = await Promise.all([fetchChartofAccounts(), fetchItemSources()]);
   return (
     <Box
       sx={{
@@ -39,13 +40,16 @@ async function page(): Promise<React.JSX.Element> {
             <Typography variant="h4">Create Item</Typography>
           </div>
         </Stack>
-        <ItemCreateForm accounts={chartOfAccounts.map((account)=>{
+        <ItemCreateForm
+          itemSources={itemSources}
+          accounts={chartOfAccounts.map((account) => {
             return {
-                accountId: account.accountId,
-                accountName: account.accountName,
-                accountRootType: account.RootID.rootType
-            }
-        })} />
+              accountId: account.accountId,
+              accountName: account.accountName,
+              accountRootType: account.RootID.rootType,
+            };
+          })}
+        />
       </Stack>
     </Box>
   );

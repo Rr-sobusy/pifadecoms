@@ -271,7 +271,10 @@ model ItemSource {
   sourceId       Int          @id @default(autoincrement())
   sourceName     String
   defaultAccount String
+
   Items          Items[]
+  Accounts       AccountsThirdLvl @relation(references: [accountId], fields: [defaultAccount])
+
   
 }
 
@@ -321,6 +324,7 @@ model AccountsThirdLvl {
   Dividends      Dividends[]
   JournalItems   JournalItems[]
   LoanSource     LoanSource[]
+  ItemSource     ItemSource[]
 
 }
 
