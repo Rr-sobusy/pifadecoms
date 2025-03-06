@@ -50,8 +50,8 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
     (acc, curr) => {
       const type = curr.account?.RootID.rootType;
       const value = ['Assets', 'Expense'].includes(type ?? '')
-        ? (Number(curr._sum.debit) || 0) - (Number(curr._sum.credit) || 0)
-        : (Number(curr._sum.credit) || 0) - (Number(curr._sum.debit) || 0);
+        ? (Number(curr._sum.debit?.toFixed(2)) || 0) - (Number(curr._sum.credit?.toFixed(2)) || 0)
+        : (Number(curr._sum.credit?.toFixed(2)) || 0) - (Number(curr._sum.debit?.toFixed(2)) || 0);
 
       if (type === 'Assets') {
         acc.Assets += value;
