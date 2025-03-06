@@ -74,6 +74,8 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
     { Assets: 0, Equity: 0, Liability: 0, Expense: 0, Revenue: 0 }
   );
 
+  console.log(totals)
+
   const isNotBalanced = totals.Equity + totals.Liability + (totals.Revenue - totals.Expense) !== totals.Assets;
   const value = totals.Equity + totals.Liability + (totals.Revenue - totals.Expense)
   return (
