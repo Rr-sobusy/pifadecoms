@@ -103,7 +103,7 @@ const columns = [
   {
     name: 'Int. accrued (2%)',
     formatter: (row) => {
-      const totalAmountDue = row.Item.sellingPrice + row.Item.trade;
+      const totalAmountDue = row.quantity * (row.Item.sellingPrice + row.Item.trade);
       return (
         <Typography variant="subtitle2">
           {isPastDue(row.Invoice.dateOfInvoice) && !row.isTotallyPaid
