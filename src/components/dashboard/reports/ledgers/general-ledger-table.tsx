@@ -46,12 +46,13 @@ const columns = [
 function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
   const totalDebit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.debit), 0);
   const totalCredit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.credit), 0);
+  const fixedDecimal = (num: number): number => Number(num.toFixed(2))
   const totals = rows.reduce(
     (acc, curr) => {
       const type = curr.account?.RootID.rootType;
       const value = ['Assets', 'Expense'].includes(type ?? '')
-        ? (Number(curr._sum.debit?.toFixed(2)) || 0) - (Number(curr._sum.credit?.toFixed(2)) || 0)
-        : (Number(curr._sum.credit?.toFixed(2)) || 0) - (Number(curr._sum.debit?.toFixed(2)) || 0);
+        ? (fixedDecimal(Number(curr._sum.debit)) || 0) - (fixedDecimal(Number(curr._sum.credit)) || 0)
+        : (fixedDecimal(Number(curr._sum.credit)) || 0) - (fixedDecimal(Number(curr._sum.debit)) || 0)
 
       if (type === 'Assets') {
         acc.Assets += value;
