@@ -9,7 +9,6 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 
 import { MembersType } from '@/actions/members/types';
 
-
 type Props = { members: MembersType };
 
 function MemberDropDown({ members }: Props) {
@@ -20,6 +19,7 @@ function MemberDropDown({ members }: Props) {
     <Autocomplete
       options={members}
       getOptionLabel={(member) => member.lastName + ', ' + member.firstName}
+      filterOptions={(options, { inputValue }) => options.filter((option) => option.lastName || option.firstName)}
       onChange={(_, value) => router.push(`${pathname}?memberId=${value?.memberId}`)}
       renderInput={(params) => (
         <FormControl fullWidth>
