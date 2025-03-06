@@ -147,9 +147,9 @@ const columns = [
         <div>
           <Typography variant="subtitle2">Intr. accrued(2%)</Typography>
           <Typography color="text.secondary" variant="body2">
-            {isPastDue(row.dateOfInvoice) && totalPaid[index].payment !== 0
+            {isPastDue(row.dateOfInvoice) && totalPaid[index]?.payment !== 0
               ? formatToCurrency(computeInterest(row.dateOfInvoice, totalBalanceDue, 2), 'Fil-ph', 'Php')
-              : formatToCurrency(0, 'Fil-ph', 'Php')}
+              : formatToCurrency(0, 'Fil-ph', 'Php')} 
           </Typography>
         </div>
       );

@@ -17,6 +17,18 @@ import { DataTable } from '@/components/core/data-table';
 
 import InvoiceItemPaymentDialog from './_invoice-item-payment-dialog';
 
+const dueMonth = 1;
+
+function isPastDue(inputtedDate: Date): boolean {
+  return !dayjs(inputtedDate).add(dueMonth, 'M').isSameOrAfter(dayjs(), 'D');
+}
+
+function computeInterest(inputtedDate: Date, principalAmout: number, rate: number): number {
+  const numberOfMonthsPast = dayjs(inputtedDate).add(dueMonth, 'M').diff(dayjs(), 'M');
+
+  return (rate / 100) * principalAmout * (numberOfMonthsPast - 1) * -1;
+}
+
 type PageProps = {
   data: InvoiceItemPerMemberTypes;
   accounts: AccounTreeType;
@@ -81,7 +93,25 @@ const columns = [
     name: 'Total amount',
     formatter: (row) => {
       const totalAmountPayable = row.quantity * (row.trade + row.principalPrice);
-      return <Typography variant="subtitle2">{formatToCurrency(totalAmountPayable, 'Fil-ph', 'Php')}</Typography>;
+      return (
+        <Typography color="error" variant="subtitle2">
+          {formatToCurrency(totalAmountPayable, 'Fil-ph', 'Php')}
+        </Typography>
+      );
+    },
+  },
+  {
+    name: 'Int. accrued (2%)',
+    formatter: (row) => {
+      const totalAmountDue = row.Item.sellingPrice + row.Item.trade;
+      return (
+        <Typography variant="subtitle2">
+          {isPastDue(row.Invoice.dateOfInvoice) && !row.isTotallyPaid
+            ? `${formatToCurrency(computeInterest(row.Invoice.dateOfInvoice, totalAmountDue, 2), 'Fil-ph', 'Php')} due for ${dayjs(row.Invoice.dateOfInvoice).diff(dayjs(), 'M') * -1} months`
+            : formatToCurrency(0, 'Fil-ph', 'Php')}
+        
+        </Typography>
+      );
     },
   },
   {
