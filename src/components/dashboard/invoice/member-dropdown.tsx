@@ -19,7 +19,13 @@ function MemberDropDown({ members }: Props) {
     <Autocomplete
       options={members}
       getOptionLabel={(member) => member.lastName + ', ' + member.firstName}
-      filterOptions={(options, { inputValue }) => options.filter((option) => option.lastName || option.firstName)}
+      filterOptions={(options, { inputValue }) =>
+        options.filter(
+          (option) =>
+            option.lastName.toLowerCase().includes(inputValue.toLowerCase()) ||
+            option.firstName.toLowerCase().includes(inputValue.toLowerCase())
+        )
+      }
       onChange={(_, value) => router.push(`${pathname}?memberId=${value?.memberId}`)}
       renderInput={(params) => (
         <FormControl fullWidth>
