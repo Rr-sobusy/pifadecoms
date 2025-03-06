@@ -46,17 +46,12 @@ const columns = [
 function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
   const totalDebit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.debit), 0);
   const totalCredit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.credit), 0);
-
-  const fixedDecimal = (num: string | number): number => {
-    return Math.round((Number(num) + Number.EPSILON) * 100) / 100;
-  };
-
   const totals = rows.reduce(
     (acc, curr) => {
       const type = curr.account?.RootID.rootType;
       const value = ['Assets', 'Expense'].includes(type ?? '')
-        ? (fixedDecimal(Number(curr._sum.debit)) || 0) - (fixedDecimal(Number(curr._sum.credit)) || 0)
-        : (fixedDecimal(Number(curr._sum.credit)) || 0) - (fixedDecimal(Number(curr._sum.debit)) || 0)
+        ? (Number(curr._sum.debit) || 0) - (Number(curr._sum.credit) || 0)
+        : (Number(curr._sum.credit) || 0) - (Number(curr._sum.debit) || 0);
 
       if (type === 'Assets') {
         acc.Assets += value;
@@ -79,11 +74,9 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
     { Assets: 0, Equity: 0, Liability: 0, Expense: 0, Revenue: 0 }
   );
 
-  console.log(totals)
-  console.log(rows)
+  const isNotBalanced =
+    (totals.Equity + totals.Liability + (totals.Revenue - totals.Expense)).toFixed(2) !== totals.Assets.toFixed(2);
 
-  const isNotBalanced = totals.Equity + totals.Liability + (totals.Revenue - totals.Expense) !== totals.Assets;
-  const value = totals.Equity + totals.Liability + (totals.Revenue - totals.Expense)
   return (
     <>
       {rows.length ? (
@@ -103,7 +96,7 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
         <Typography variant="caption">{`Assets (${formatToCurrency(totals.Assets, 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(totals.Liability, 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(totals.Equity, 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(totals.Revenue - totals.Expense, 'Fil-ph', 'Php')})`}</Typography>
         {isNotBalanced && (
           <Typography variant="caption" color="error">
-            Warning: The accounting equation is not balanced. Please check for possible errors in entry. {value} {totals.Assets}
+            Warning: The accounting equation is not balanced. Please check for possible errors in entry.
           </Typography>
         )}
       </Stack>
