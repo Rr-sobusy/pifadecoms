@@ -46,7 +46,9 @@ const columns = [
 function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
   const totalDebit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.debit), 0);
   const totalCredit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.credit), 0);
-  const fixedDecimal = (num: number): number => Number(num.toFixed(2))
+
+  const fixedDecimal = (num: number): number => Math.round((num + Number.EPSILON) * 100) / 100;
+  
   const totals = rows.reduce(
     (acc, curr) => {
       const type = curr.account?.RootID.rootType;
