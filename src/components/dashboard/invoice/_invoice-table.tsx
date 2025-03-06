@@ -134,30 +134,6 @@ const columns = [
     width: '100px',
   },
   {
-    formatter: (row, index): React.JSX.Element => {
-      const totalBalanceDue = row.InvoiceItems.reduce(
-        (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
-        0
-      );
-      const totalPaid = row.InvoiceItems.map((invoiceItems) => ({
-        ...invoiceItems,
-        payment: invoiceItems.ItemPayment.reduce((acc, curr) => acc + Number(curr.principalPaid), 0),
-      }));
-      return (
-        <div>
-          <Typography variant="subtitle2">Intr. accrued(2%)</Typography>
-          <Typography color="text.secondary" variant="body2">
-            {isPastDue(row.dateOfInvoice) && totalPaid[index]?.payment !== 0
-              ? formatToCurrency(computeInterest(row.dateOfInvoice, totalBalanceDue, 2), 'Fil-ph', 'Php')
-              : formatToCurrency(0, 'Fil-ph', 'Php')} 
-          </Typography>
-        </div>
-      );
-    },
-    name: 'Interest Accrued',
-    width: '150px',
-  },
-  {
     formatter: (row): React.JSX.Element => (
       <div>
         <Typography variant="subtitle2">Issued</Typography>

@@ -47,7 +47,6 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
     getValues,
     formState: { errors },
     handleSubmit,
-    reset,
   } = useForm<InvoiceItemsPaymentType>({
     resolver: zodResolver(invoiceItemsPaymentschema),
     defaultValues: {
@@ -97,7 +96,6 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
   React.useEffect(() => {
     if (result.data?.success) {
       handleClose();
-      reset();
       toast.success('Payment posted.');
     }
   }, [result]);
@@ -325,10 +323,10 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
           </Button>
           {/* <Button type="button" onClick={() => console.log(errors)}>
             Check error
-          </Button>
-          <Button type="button" onClick={() => console.log(searchParams.get('memberId'))}>
-            log values
           </Button> */}
+          <Button type="button" onClick={() => console.log(getValues('paymentLine'))}>
+            log values
+          </Button>
         </DialogAction>
       </form>
     </Dialog>

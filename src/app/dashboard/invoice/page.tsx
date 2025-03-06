@@ -51,7 +51,7 @@ const page = async ({ searchParams }: PageProps) => {
             </Button>
           </Box>
         </Stack>
-        <InvoicesStats />
+        {/* <InvoicesStats /> */}
         <Stack direction="row" spacing={4} sx={{ alignItems: 'flex-start' }}>
           <InvoicesFiltersCard filters={filters} />
           <Stack spacing={4} sx={{ flex: '1 1 auto', minWidth: 0 }}>

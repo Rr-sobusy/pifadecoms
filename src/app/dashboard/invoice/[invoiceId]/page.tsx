@@ -34,7 +34,10 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
 
   const invDueDate = dayjs(dayjs(invoiceDetails?.dateOfInvoice).add(1, 'M')).format('MMM DD,YYYY');
 
- 
+  const totalAmountDue = invoiceDetails?.InvoiceItems.reduce(
+    (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
+    0
+  );
 
   return (
     <Box
@@ -77,11 +80,11 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
               </Button> */}
               <Button
                 LinkComponent={RouterLink}
-                href={paths.dashboard.invoice.createPayment(params.invoiceId)}
+                href={`${paths.dashboard.invoice.itemsPerMember}?memberId=${invoiceDetails?.Members.memberId}`}
                 variant="text"
                 startIcon={<PayIcon />}
               >
-                Post Payment
+                Create payment
               </Button>
               <Button
                 target="_blank"
@@ -176,7 +179,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
             </Grid>
             <div>
               <Typography variant="h5">
-                {`${formatToCurrency(invoiceDetails?.baseGrandTotal === undefined ? 0 : invoiceDetails?.baseGrandTotal, 'Fil-ph', 'Php')} due on ${invDueDate}`}
+                {`${formatToCurrency(Number(totalAmountDue), 'Fil-ph', 'Php')} due on ${invDueDate}`}
               </Typography>
             </div>
             <Stack spacing={2}>
@@ -189,13 +192,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                     <Typography>Subtotal</Typography>
                   </Box>
                   <Box sx={{ flex: '0 1 100px', textAlign: 'right' }}>
-                    <Typography>
-                      {formatToCurrency(
-                        invoiceDetails?.baseGrandTotal === undefined ? 0 : invoiceDetails?.baseGrandTotal,
-                        'Fil-ph',
-                        'Php'
-                      )}
-                    </Typography>
+                    <Typography>{formatToCurrency(Number(totalAmountDue), 'Fil-ph', 'Php')}</Typography>
                   </Box>
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -211,13 +208,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                     <Typography variant="h6">Total</Typography>
                   </Box>
                   <Box sx={{ flex: '0 1 100px', textAlign: 'right' }}>
-                    <Typography variant="h6">
-                      {formatToCurrency(
-                        invoiceDetails?.baseGrandTotal === undefined ? 0 : invoiceDetails?.baseGrandTotal,
-                        'Fil-ph',
-                        'Php'
-                      )}
-                    </Typography>
+                    <Typography variant="h6">{formatToCurrency(Number(totalAmountDue), 'Fil-ph', 'Php')}</Typography>
                   </Box>
                 </Stack>
               </Stack>

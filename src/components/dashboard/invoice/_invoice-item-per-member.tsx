@@ -38,12 +38,40 @@ const columns = [
   {
     name: 'Invoice Id',
     formatter: (row) => {
+      const mapping = {
+        partially: {
+          label: 'Partially',
+          icon: <CheckCircleIcon />,
+          color: 'warning',
+        },
+        paid: {
+          label: 'Paid',
+          icon: <CheckCircleIcon />,
+          color: 'success',
+        },
+        pending: {
+          label: 'Pending',
+          icon: <CheckCircleIcon />,
+          color: 'error',
+        },
+      } as const;
+
+      function getMapping() {
+        if (row.isTotallyPaid) {
+          return mapping['paid'];
+        }
+        if (row.ItemPayment.length > 0) {
+          return mapping['partially'];
+        }
+        return mapping['pending'];
+      }
+
+      const { label, icon, color } = getMapping();
+
       return (
         <Stack>
           <Typography variant="subtitle2">{`INV-${row.invoiceId.toString().padStart(6, '0')}`}</Typography>
-          {row.isTotallyPaid && (
-            <Chip label="Paid" color="success" variant="outlined" icon={<CheckCircleIcon />} size="small" />
-          )}
+          <Chip label={label} variant="outlined" color={color} icon={icon} size="small" />
         </Stack>
       );
     },
@@ -109,7 +137,6 @@ const columns = [
           {isPastDue(row.Invoice.dateOfInvoice) && !row.isTotallyPaid
             ? `${formatToCurrency(computeInterest(row.Invoice.dateOfInvoice, totalAmountDue, 2), 'Fil-ph', 'Php')} due for ${dayjs(row.Invoice.dateOfInvoice).diff(dayjs(), 'M') * -1} months`
             : formatToCurrency(0, 'Fil-ph', 'Php')}
-        
         </Typography>
       );
     },
@@ -147,7 +174,7 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
       const isAlreadySelected = prevSelected.some((ctx) => ctx.invoiceItemId === row.invoiceItemId);
 
       return isAlreadySelected
-        ? prevSelected.filter((ctx) => ctx.invoiceItemId !== row.invoiceId)
+        ? prevSelected.filter((ctx) => ctx.invoiceItemId !== row.invoiceItemId)
         : [...prevSelected, row];
     });
   }

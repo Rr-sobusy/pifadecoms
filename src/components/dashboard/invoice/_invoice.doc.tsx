@@ -59,6 +59,10 @@ export interface InvoicePDFDocumentProps {
 
 export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Element {
   const invDueDate = dayjs(dayjs(invoice?.dateOfInvoice).add(1, 'M')).format('MMM DD,YYYY');
+  const totalAmountDue = invoice?.InvoiceItems.reduce(
+    (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
+    0
+  );
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -105,7 +109,7 @@ export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Elem
           </View>
         </View>
         <View>
-          <Text>{`${formatToPHP(invoice?.outStandingAmt ?? 0)} due on ${invDueDate}`}</Text>
+          <Text>{`${formatToPHP(Number(totalAmountDue))} due on ${invDueDate}`}</Text>
         </View>
         <View>
           <View style={styles.items}>
@@ -134,15 +138,17 @@ export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Elem
                 <View style={styles.itemDescription}>
                   <Text>{lineItem.Item.itemName}</Text>
                 </View>
-                {/* <View style={styles.itemUnitAmount}>
-                  <Text>{formatToPHP(lineItem.rate)}</Text>
-                </View> */}
+                <View style={styles.itemUnitAmount}>
+                  <Text>{formatToPHP(lineItem.principalPrice + lineItem.trade)}</Text>
+                </View>
                 <View style={styles.itemQty}>
                   <Text>{lineItem.quantity}</Text>
                 </View>
-                {/* <View style={styles.itemTotalAmount}>
-                  <Text style={styles.textRight}>{formatToPHP(lineItem.quantity * lineItem.rate)}</Text>
-                </View> */}
+                <View style={styles.itemTotalAmount}>
+                  <Text style={styles.textRight}>
+                    {formatToPHP(lineItem.quantity * (lineItem.trade + lineItem.principalPrice))}
+                  </Text>
+                </View>
               </View>
             ))}
           </View>
@@ -153,7 +159,7 @@ export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Elem
                 <Text>Subtotal</Text>
               </View>
               <View style={styles.summaryValue}>
-                <Text style={styles.textRight}>{formatToPHP(invoice?.outStandingAmt ?? 0)}</Text>
+                <Text style={styles.textRight}>{formatToPHP(totalAmountDue || 0)}</Text>
               </View>
             </View>
             <View style={styles.summaryRow}>
@@ -171,7 +177,7 @@ export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Elem
                 <Text>Total</Text>
               </View>
               <View style={styles.summaryValue}>
-                <Text style={[styles.textRight, styles.textLg]}>{formatToPHP(invoice?.outStandingAmt ?? 0)}</Text>
+                <Text style={[styles.textRight, styles.textLg]}>{formatToPHP(totalAmountDue || 0)}</Text>
               </View>
             </View>
           </View>
@@ -179,8 +185,8 @@ export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Elem
         <View>
           <Text style={[styles.textLg, styles.fontSemibold, styles.gutterBottom]}>Notes</Text>
           <Text>
-          This is a system generated invoice. Please make sure that all the data stated above are accurate before
-          proceed for payment.
+            This is a system generated invoice. Please make sure that all the data stated above are accurate before
+            proceed for payment.
           </Text>
         </View>
       </Page>
