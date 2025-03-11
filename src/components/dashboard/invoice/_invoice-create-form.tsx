@@ -49,7 +49,7 @@ const defaultValues = {
 function calculateGrandTotal(
   lineItems: { lineId: string; itemId: string; quantity: number; rate: number; trade: number }[]
 ): number {
-  return lineItems.reduce((curr, acc) => curr + (acc.quantity * (Number(acc.rate) + Number(acc.trade))), 0);
+  return lineItems.reduce((curr, acc) => curr + acc.quantity * (Number(acc.rate) + Number(acc.trade)), 0);
 }
 
 const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
@@ -65,7 +65,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
     defaultValues,
   });
 
-  console.log(items)
+  console.log(items);
 
   const router = useRouter();
 
@@ -83,7 +83,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
       {
         lineId: uuidv4(),
         itemId: '',
-        quantity: 0,
+        quantity: 1,
         trade: 0,
         rate: 0,
       },
@@ -286,7 +286,36 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                         </FormControl>
                       )}
                     />
+                  
                     <Controller
+                      control={control}
+                      name={`lineItems.${index}.rate`}
+                      render={({ field }) => (
+                        <FormControl error={Boolean(errors.lineItems?.[index])} sx={{ width: '140px' }}>
+                          <InputLabel>Unit price</InputLabel>
+                          <OutlinedInput
+                            {...field}
+                            inputProps={{ step: 0.01 }}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                              const value = event.target.valueAsNumber;
+
+                              if (isNaN(value)) {
+                                field.onChange('');
+                                return;
+                              }
+
+                              field.onChange(parseFloat(value.toFixed(2)));
+                            }}
+                            startAdornment={<InputAdornment position="start">Php</InputAdornment>}
+                            type="number"
+                          />
+                          {/* {errors.lineItems?.[index]?.unitPrice ? (
+                            <FormHelperText>{errors.lineItems[index].unitPrice.message}</FormHelperText>
+                          ) : null} */}
+                        </FormControl>
+                      )}
+                    />
+                      <Controller
                       control={control}
                       name={`lineItems.${index}.trade`}
                       render={({ field }) => (
@@ -317,30 +346,26 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                     <Controller
                       control={control}
                       name={`lineItems.${index}.rate`}
-                      render={({ field }) => (
-                        <FormControl error={Boolean(errors.lineItems?.[index])} sx={{ width: '140px' }}>
-                          <InputLabel>Unit price</InputLabel>
-                          <OutlinedInput
-                            {...field}
-                            inputProps={{ step: 0.01 }}
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                              const value = event.target.valueAsNumber;
-
-                              if (isNaN(value)) {
-                                field.onChange('');
-                                return;
+                      render={({ field }) => {
+                        return (
+                          <FormControl disabled error={Boolean(errors.lineItems?.[index])} sx={{ width: '140px' }}>
+                            <InputLabel>Total Amount</InputLabel>
+                            <OutlinedInput
+                              {...field}
+                              value={
+                                getValues(`lineItems.${index}.quantity`) *
+                                (getValues(`lineItems.${index}.rate`) + getValues(`lineItems.${index}.trade`))
                               }
-
-                              field.onChange(parseFloat(value.toFixed(2)));
-                            }}
-                            startAdornment={<InputAdornment position="start">Php</InputAdornment>}
-                            type="number"
-                          />
-                          {/* {errors.lineItems?.[index]?.unitPrice ? (
-                            <FormHelperText>{errors.lineItems[index].unitPrice.message}</FormHelperText>
-                          ) : null} */}
-                        </FormControl>
-                      )}
+                              inputProps={{ step: 0.01 }}
+                              startAdornment={<InputAdornment position="start">Php</InputAdornment>}
+                              type="number"
+                            />
+                            {/* {errors.lineItems?.[index]?.unitPrice ? (
+                          <FormHelperText>{errors.lineItems[index].unitPrice.message}</FormHelperText>
+                        ) : null} */}
+                          </FormControl>
+                        );
+                      }}
                     />
                     <IconButton
                       onClick={() => {

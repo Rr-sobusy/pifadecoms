@@ -11,7 +11,7 @@ interface MemberFilters {
   memberName?: string | undefined;
   offsetPage?: number | undefined;
   returnAll?: boolean;
-};
+}
 
 export async function fetchMembers({ memberName, offsetPage = 1, returnAll = false }: MemberFilters) {
   const members = await prisma.members.findMany({
@@ -53,9 +53,11 @@ export async function fetchMemberData(memberId: string) {
     },
     include: {
       invoice: {
-        where: {
-          outStandingAmt: {
-            gt: 0,
+        include: {
+          InvoiceItems: {
+            where: {
+              isTotallyPaid: false,
+            },
           },
         },
       },

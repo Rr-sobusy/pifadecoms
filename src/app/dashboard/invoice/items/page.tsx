@@ -19,7 +19,7 @@ interface PageProps {
 }
 
 async function page({ searchParams }: PageProps) {
-  const rex = await fetchInvoiceItemPerMember(searchParams.memberId);
+  const invoiceItems = await fetchInvoiceItemPerMember(searchParams.memberId);
   const members = await fetchMembers({ returnAll: true });
   const accounts = await fetchAccountTree()
   return (
@@ -46,7 +46,7 @@ async function page({ searchParams }: PageProps) {
         <Stack direction="column" spacing={4} sx={{ alignItems: 'flex-start' }}>
           <MemberDropDown members={members as MembersType} />
 
-          <InvoiceItemTable accounts={accounts} data={rex} />
+          <InvoiceItemTable accounts={accounts} data={invoiceItems} />
         </Stack>
       </Stack>
     </Box>

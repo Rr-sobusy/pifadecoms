@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
@@ -19,7 +20,7 @@ interface TransactionsTableProps {
   accountTransactions: AccountTransactionTypes;
 }
 
-const transactionTypeMap: Record<ReferenceType, string> = {
+export const transactionTypeMap: Record<ReferenceType, string> = {
   LoanDisbursements: 'Loan Release',
   LoanRepayments: 'Loan Repayment',
   ManualJournals: 'Manual Journal',
@@ -77,17 +78,6 @@ const columns = [
     },
     name: 'Journal',
     width: '140px',
-  },
-  {
-    formatter(row) {
-      return (
-        <Stack>
-          <Typography variant="caption">{row.notes}</Typography>
-        </Stack>
-      );
-    },
-    name: 'Notes',
-    width: '150px',
   },
   {
     formatter(row) {
@@ -171,8 +161,11 @@ const columns = [
 ] satisfies ColumnDef<AccountTransactionTypes[0]>[];
 
 function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
-  const [rowsPerPage, setRowsPerPage] = React.useState<number>(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(100);
   const [currentPage, setCurrentPage] = React.useState<number>(0);
+
+  const pathname = usePathname();
+  const router = useRouter();
 
   function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, pageNumber: number) {
     setCurrentPage(pageNumber);
@@ -182,7 +175,12 @@ function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
 
   return (
     <React.Fragment>
-      <DataTable onClick={(_, row) => console.log(row)} hover columns={columns} rows={paginatedTransactions} />
+      <DataTable
+        onClick={(_, row) => router.push(`${pathname}?entryId=${row.entryId}`)}
+        hover
+        columns={columns}
+        rows={paginatedTransactions}
+      />
       {!accountTransactions.length ? (
         <Box sx={{ p: 3 }}>
           <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="overline">
@@ -222,7 +220,7 @@ function Paginator({
     <TablePagination
       component="div"
       page={page}
-      rowsPerPageOptions={[10, 25, 50, 100]}
+      rowsPerPageOptions={[100,200]}
       rowsPerPage={rowsPerPage}
       count={count}
       onRowsPerPageChange={onRowsPerPageChange}

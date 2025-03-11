@@ -1,3 +1,4 @@
+import { Children } from 'react';
 import type { AccountTypes } from '@prisma/client';
 
 import { dayjs } from '@/lib/dayjs';
@@ -67,11 +68,9 @@ export async function getBalanceSheet(asOf?: Date): Promise<BalanceSheet> {
         const computedBalance =
           account.rootType === 'Assets'
             ? Number(child.runningBalance) -
-              (Number(futureBalance._sum.debit) || 0) -
-              (Number(futureBalance._sum.credit) || 0)
+              ((Number(futureBalance._sum.debit) ?? 0) - (Number(futureBalance._sum.credit) ?? 0))
             : Number(child.runningBalance) -
-              (Number(futureBalance._sum.credit) || 0) -
-              (Number(futureBalance._sum.debit) || 0);
+              ((Number(futureBalance._sum.credit) ?? 0) - (Number(futureBalance._sum.debit) ?? 0));
 
         return computedBalance !== 0 ? { accountName: child.accountName, balance: computedBalance } : null;
       })
@@ -92,6 +91,7 @@ export async function getBalanceSheet(asOf?: Date): Promise<BalanceSheet> {
           children: childrenWithBalances,
         });
       } else {
+        console.log(Children);
         balanceSheet[category].push({
           parentAccount: account.rootName,
           totalBalance,

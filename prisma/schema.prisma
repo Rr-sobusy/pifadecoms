@@ -216,7 +216,7 @@ model FundTransactions {
   fundType          FundType
   transactionType   FundTransactionsType
   createdAt         DateTime        @default(now())
-  postedBalance     Float  
+  postedBalance     Decimal         @db.Decimal(10,2)  
   newBalance        Decimal         @db.Decimal(10,2)
   JournalEntries    JournalEntries? @relation(fields: [ledgerId], references: [entryId])
   MemberFunds       MemberFunds     @relation(fields: [fundId], references: [fundId])
@@ -255,7 +255,6 @@ model InvoiceItems {
 }
 
 
-
 model InvoiceItemsPayments {
   itemsPaymentId  BigInt            @id @default(autoincrement())
   invoiceItemId   BigInt  
@@ -266,6 +265,7 @@ model InvoiceItemsPayments {
   InvoiceItem     InvoiceItems      @relation(fields: [invoiceItemId], references: [invoiceItemId])
   JournalEntry    JournalEntries    @relation(fields: [journalRef], references: [entryId])
 }
+
 
 model ItemSource {
   sourceId       Int          @id @default(autoincrement())
@@ -341,12 +341,6 @@ model Dividends {
 
   @@map("dividends")
   @@index([memberId, accountId, datePosted])
-}
-
-model SavingsTransact {
-  transactionId       BigInt          @id @default(autoincrement())
-  savingsId           String
-  transactionType     SavingsTransactionType
 }
 
 model JournalEntries {

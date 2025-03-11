@@ -7,7 +7,7 @@ import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
-
+import { ProhibitInset } from '@phosphor-icons/react/dist/ssr';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { AccounTreeType } from '@/actions/accounts/types';
@@ -50,8 +50,8 @@ const columns = [
           color: 'success',
         },
         pending: {
-          label: 'Pending',
-          icon: <CheckCircleIcon />,
+          label: 'Not paid',
+          icon: <ProhibitInset />,
           color: 'error',
         },
       } as const;
@@ -170,6 +170,11 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
   const [isPaymentDialogOpen, setPaymentDialogOpen] = React.useState<boolean>(false);
 
   function handleSelectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes[0]) {
+
+    if(row.isTotallyPaid){
+      alert("Payment already settled!")
+    }
+
     setSelectedRows((prevSelected) => {
       const isAlreadySelected = prevSelected.some((ctx) => ctx.invoiceItemId === row.invoiceItemId);
 
@@ -189,7 +194,7 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
     <>
       <Card>
         <CardContent>
-          <Stack paddingY={3} alignItems="flex-end">
+          <Stack  paddingY={3} alignItems="flex-end">
             <Button onClick={togglePaymentDialog} disabled={selectedRows.length < 1} variant="contained">
               Create payment
             </Button>

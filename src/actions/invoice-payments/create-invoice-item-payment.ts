@@ -34,6 +34,10 @@ export const invoiceItemPaymentAction = actionClient
               })),
             },
 
+            /**
+             * * Create entry in invoiceItemPayment referencing to journalEntryId
+             */
+
             InvoiceItemPayments: {
               create: Request.paymentLine.map((paymentLine) => ({
                 interestPaid: paymentLine.interestPaying,
@@ -69,6 +73,27 @@ export const invoiceItemPaymentAction = actionClient
             }
           }
         }
+
+        /**
+         * * Third batch of query. Adjust account balances depends to their account "rootType".
+         * * Increase balance of assets and expense account on debit and decrease in credit.
+         * * Increase balance of income, equity and liability on credit and decrease in debit.
+         */
+        const balanceUpdates = Request.journalLineItems.map((lineItem) => {
+          const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.rootType ?? '');
+          const amount = lineItem.debit - lineItem.credit;
+
+          return tx.accountsThirdLvl.update({
+            where: { accountId: lineItem.accountDetails.accountId },
+            data: {
+              runningBalance: {
+                [isIncrement ? 'increment' : 'decrement']: amount,
+              },
+            },
+          });
+        });
+
+        await Promise.all(balanceUpdates);
         return queryResult;
       });
       serverResponse = { success: true, message: newJournalEntry };

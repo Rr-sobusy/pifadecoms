@@ -8,11 +8,13 @@ import Typography from '@mui/material/Typography';
 import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 import { X as CloseIcon } from '@phosphor-icons/react/dist/ssr/X';
+
 import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
-import { fetchAccountTransactions } from '@/actions/reports/account-transactions';
+import { fetchAccountTransactions } from '@/actions/reports/account-transactions/account-transactions';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
+import TransactionDialog from '@/components/dashboard/reports/transactions/transaction-dialog';
 
 interface PageProps {
   searchParams: {
@@ -22,14 +24,20 @@ interface PageProps {
     accountId: string;
     startDate: Date;
     endDate: Date;
+    entryId: bigint;
   };
 }
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const { memberId, accountId, startDate, endDate } = searchParams;
+  const { memberId, accountId, startDate, endDate, entryId } = searchParams;
   const filters = { memberId, accountId, startDate, endDate };
   const [accountTransactions, accounts] = await Promise.all([fetchAccountTransactions(filters), fetchAccountTree()]);
 
-  // redirect(`${paths.dashboard.reports.accountTransaction}`)
+  /**
+   * * Filter single transaction in application level by creating a map first to avoid linear search
+   * * performance problems for large datasets
+   */
+  const dataMap = new Map(accountTransactions.map((trx) => [trx.entryId, trx]));
+  const filteredDataMap = dataMap.get(BigInt(entryId || 0));
 
   return (
     <Box
@@ -95,6 +103,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         </Card>
       </Stack>
       <FilterModal accounts={accounts} open={Boolean(searchParams.filterList)} />
+      <TransactionDialog accountTransactions={filteredDataMap} isOpen={Boolean(entryId)} />
     </Box>
   );
 }

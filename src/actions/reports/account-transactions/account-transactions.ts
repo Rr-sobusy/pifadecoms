@@ -53,7 +53,7 @@ export async function fetchAccountTransactions(props: Filterers = { condition: '
     where: isEmpty ? undefined : { [conditionType]: conditions },
     orderBy: [
       {
-        entryId: 'desc',
+        entryDate : "desc"
       },
       {
         referenceName: 'desc',

@@ -62,6 +62,11 @@ const columns = [
     width: '100px',
   },
   {
+    formatter: (row) => formatToCurrency(row.trade, 'Fil-ph', 'Php'),
+    name: 'Trade',
+    width: '100px',
+  },
+  {
     formatter: (row) => dayjs(row.updatedAt).format("MMM DD YYYY"),
     name: 'Last Updated',
     width: '100px',
