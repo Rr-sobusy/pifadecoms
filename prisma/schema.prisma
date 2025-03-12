@@ -212,7 +212,7 @@ model MemberFunds {
 model FundTransactions {
   fundTransactId    Int             @id @default(autoincrement())
   fundId            Int             
-  ledgerId          BigInt?
+  ledgerId          BigInt
   fundType          FundType
   transactionType   FundTransactionsType
   createdAt         DateTime        @default(now())
@@ -264,6 +264,7 @@ model InvoiceItemsPayments {
 
   InvoiceItem     InvoiceItems      @relation(fields: [invoiceItemId], references: [invoiceItemId])
   JournalEntry    JournalEntries    @relation(fields: [journalRef], references: [entryId])
+
 }
 
 
@@ -292,7 +293,6 @@ model Items {
 
   InvoiceItems    InvoiceItems[]
   ItemSource      ItemSource  @relation(fields: [sourceId], references: [sourceId])
-
 
 
 }

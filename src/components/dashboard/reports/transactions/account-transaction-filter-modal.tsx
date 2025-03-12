@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
@@ -88,13 +88,25 @@ type FilterSchema = zod.infer<typeof filterSchema>;
 
 function FilterModal({ open, accounts }: FilterModalProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
+
+  const isOpenFromParams = searchParams.get('filterList') === 'true';
+
+  const [isDialogOpen, setDialogOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    if (isDialogOpen !== isOpenFromParams) {
+      setDialogOpen(isOpenFromParams);
+    }
+  }, [isOpenFromParams]);
 
   const {
     handleSubmit,
     control,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<FilterSchema>({
     resolver: zodResolver(filterSchema),
@@ -163,7 +175,7 @@ function FilterModal({ open, accounts }: FilterModalProps) {
 
   function submitHandler(data: FilterSchema) {
     const searchParams = new URLSearchParams();
-    if (data.accountDetails) {
+    if (data.accountDetails?.accountId.length) {
       searchParams.set('accountId', data.accountDetails.accountId);
     }
     if (data.member) {
@@ -177,11 +189,13 @@ function FilterModal({ open, accounts }: FilterModalProps) {
     }
 
     router.push(`${pathname}?${searchParams.toString()}`);
+    reset()
+
   }
   return (
     <Dialog
       maxWidth="md"
-      open={open}
+      open={isDialogOpen}
       sx={{
         '& .MuiDialog-container': { justifyContent: 'center' },
         '& .MuiDialog-paper': { minHeight: '60%', width: '100%' },

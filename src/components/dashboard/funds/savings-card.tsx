@@ -13,12 +13,14 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowBendRightDown as WithdrawIcon } from '@phosphor-icons/react/dist/ssr/ArrowBendRightDown';
 import { Bank } from '@phosphor-icons/react/dist/ssr/Bank';
+import { Calculator as CalcuIcon } from '@phosphor-icons/react/dist/ssr/Calculator';
 import { CashRegister as TransactIcon } from '@phosphor-icons/react/dist/ssr/CashRegister';
 import { PiggyBank } from '@phosphor-icons/react/dist/ssr/PiggyBank';
-import { Calculator as CalcuIcon } from '@phosphor-icons/react/dist/ssr/Calculator';
 import { FundTransactionsType } from '@prisma/client';
+
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
+import { deleteFundTransaction } from '@/actions/funds/delete-fund-transaction';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 
@@ -30,16 +32,6 @@ interface SavingsCardProps {
 
 interface SearchParams {
   transactionType: FundTransactionsType;
-}
-
-
-
-function toURLSearchParams(params: Partial<SearchParams>): URLSearchParams {
-  const searchParams = new URLSearchParams();
-  for (const [key, value] of Object.entries(params)) {
-    if (value) searchParams.append(key, value);
-  }
-  return searchParams;
 }
 
 const FundTransactionMap: Record<FundTransactionsType, string> = {
@@ -116,8 +108,8 @@ const columns = [
       const textColor = row.transactionType === 'SavingsDeposit' ? 'success' : 'error';
       const transactionBalance =
         row.transactionType === 'SavingsDeposit'
-          ? `+${formatToCurrency(row.postedBalance, 'Fil-ph', 'Php')}`
-          : `-${formatToCurrency(row.postedBalance, 'Fil-ph', 'Php')}`;
+          ? `+${formatToCurrency(Number(row.postedBalance), 'Fil-ph', 'Php')}`
+          : `-${formatToCurrency(Number(row.postedBalance), 'Fil-ph', 'Php')}`;
       return (
         <Stack>
           <Typography color={textColor} fontWeight={600} variant="subtitle1">
@@ -125,6 +117,12 @@ const columns = [
           </Typography>
         </Stack>
       );
+    },
+  },
+  {
+    name: 'Delete',
+    formatter: (row) => {
+      return <Button onClick={() => alert(row.fundTransactId)}>Delete</Button>;
     },
   },
 ] satisfies ColumnDef<MemberFundsType[0]['Transactions'][0]>[];
@@ -140,22 +138,14 @@ function SavingsCard({ fund }: SavingsCardProps) {
   const [currentPage, setCurrentPage] = React.useState<number>(0);
   const paginatedData = currentSavingsTransactions.slice(currentPage * 5, (currentPage + 1) * 5);
 
-  function addSavingsDeposit() {
-    const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsDeposit' });
+  /**
+   * * States for selected rows for deleting transaction
+   */
+  const [selectedRow, setSelectedRow] = React.useState<MemberFundsType[0]['Transactions'][0][]>([]);
 
-    //* Trigger open of the modal
-    router.push(`${pathName}?${urlSearchParams.toString()}`);
-  }
-
-  function addSavingsWithdrawal() {
-    const urlSearchParams = toURLSearchParams({ transactionType: 'SavingsWithdrawal' });
-
-    //* Trigger open of the modal
-    router.push(`${pathName}?${urlSearchParams.toString()}`);
-  }
-
-  function computeAdb(){
-    router.push(`${pathName}?computeAdb=Savings`)
+  function navigateWithQuery(transactionType: FundTransactionsType) {
+    const searchParams = new URLSearchParams({ transactionType });
+    router.push(`${pathName}?${searchParams.toString()}`);
   }
 
   function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currPage: number) {
@@ -163,6 +153,32 @@ function SavingsCard({ fund }: SavingsCardProps) {
   }
 
   const currentSavings = fund.savingsBal;
+
+  function handleSelectOne(_: React.ChangeEvent, row: MemberFundsType[0]['Transactions'][0]) {
+    if (selectedRow.length === 0) {
+      setSelectedRow((prev) => {
+        const isAlreadySelected = prev.some((ctx) => ctx.fundTransactId === row.fundTransactId);
+
+        return isAlreadySelected ? prev.filter((ctx) => ctx.fundTransactId !== row.fundTransactId) : [...prev, row];
+      });
+    }
+  }
+
+  function handleDeselecteOne(_: React.ChangeEvent, row: MemberFundsType[0]['Transactions'][0]) {
+    if (selectedRow.length === 1) {
+      setSelectedRow((prev) => {
+        const isAlreadySelected = prev.some((ctx) => ctx.fundTransactId === row.fundTransactId);
+
+        return isAlreadySelected ? prev.filter((ctx) => ctx.fundTransactId !== row.fundTransactId) : [...prev, row];
+      });
+    }
+  }
+
+  async function deleteTransactionHandler() {
+    if (selectedRow.length) {
+      await deleteFundTransaction(selectedRow[0].fundTransactId);
+    }
+  }
 
   return (
     <Card>
@@ -237,13 +253,25 @@ function SavingsCard({ fund }: SavingsCardProps) {
                     </Avatar>
                   </Stack>
                   <Stack flexDirection="row" gap={2}>
-                    <Button onClick={addSavingsDeposit} startIcon={<PiggyBank />} variant="contained">
+                    <Button
+                      onClick={() => navigateWithQuery('SavingsDeposit')}
+                      startIcon={<PiggyBank />}
+                      variant="contained"
+                    >
                       Deposit
                     </Button>
-                    <Button onClick={addSavingsWithdrawal} startIcon={<WithdrawIcon />} variant="outlined">
+                    <Button
+                      onClick={() => navigateWithQuery('SavingsWithdrawal')}
+                      startIcon={<WithdrawIcon />}
+                      variant="outlined"
+                    >
                       Withdraw
                     </Button>
-                    <Button onClick={computeAdb} variant='text' startIcon={<CalcuIcon />}>
+                    <Button
+                      onClick={() => router.push(`${pathName}?computeAdb=Savings`)}
+                      variant="text"
+                      startIcon={<CalcuIcon />}
+                    >
                       Compute ADB & Interest
                     </Button>
                   </Stack>
@@ -261,8 +289,25 @@ function SavingsCard({ fund }: SavingsCardProps) {
                   Member previous transactions up-to date
                 </Typography>
               </Stack>
+              <Stack alignItems="flex-end">
+                <div>
+                  <Button
+                    onClick={deleteTransactionHandler}
+                    disabled={selectedRow.length !== 1}
+                    variant="contained"
+                    color="error"
+                  >
+                    Delete selected row
+                  </Button>
+                </div>
+              </Stack>
               <>
                 <DataTable<MemberFundsType[0]['Transactions'][0]>
+                  onSelectOne={handleSelectOne}
+                  onDeselectOne={handleDeselecteOne}
+                  selected={new Set(selectedRow.map((r) => r.fundTransactId))}
+                  uniqueRowId={(row) => Number(row.fundTransactId)}
+                  selectable
                   sx={{ marginTop: 3 }}
                   hideHead
                   columns={columns}

@@ -250,7 +250,7 @@ export const FundTransactionsSchema = z.object({
   transactionType: FundTransactionsTypeSchema,
   fundTransactId: z.number().int(),
   fundId: z.number().int(),
-  ledgerId: z.bigint().nullable(),
+  ledgerId: z.bigint(),
   createdAt: z.coerce.date(),
   postedBalance: z.instanceof(Prisma.Decimal, { message: "Field 'postedBalance' must be a Decimal. Location: ['Models', 'FundTransactions']"}),
   newBalance: z.instanceof(Prisma.Decimal, { message: "Field 'newBalance' must be a Decimal. Location: ['Models', 'FundTransactions']"}),
@@ -1544,7 +1544,7 @@ export const FundTransactionsWhereInputSchema: z.ZodType<Prisma.FundTransactions
   NOT: z.union([ z.lazy(() => FundTransactionsWhereInputSchema),z.lazy(() => FundTransactionsWhereInputSchema).array() ]).optional(),
   fundTransactId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   fundId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  ledgerId: z.union([ z.lazy(() => BigIntNullableFilterSchema),z.bigint() ]).optional().nullable(),
+  ledgerId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   fundType: z.union([ z.lazy(() => EnumFundTypeFilterSchema),z.lazy(() => FundTypeSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -1557,7 +1557,7 @@ export const FundTransactionsWhereInputSchema: z.ZodType<Prisma.FundTransactions
 export const FundTransactionsOrderByWithRelationInputSchema: z.ZodType<Prisma.FundTransactionsOrderByWithRelationInput> = z.object({
   fundTransactId: z.lazy(() => SortOrderSchema).optional(),
   fundId: z.lazy(() => SortOrderSchema).optional(),
-  ledgerId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  ledgerId: z.lazy(() => SortOrderSchema).optional(),
   fundType: z.lazy(() => SortOrderSchema).optional(),
   transactionType: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -1576,7 +1576,7 @@ export const FundTransactionsWhereUniqueInputSchema: z.ZodType<Prisma.FundTransa
   OR: z.lazy(() => FundTransactionsWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FundTransactionsWhereInputSchema),z.lazy(() => FundTransactionsWhereInputSchema).array() ]).optional(),
   fundId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
-  ledgerId: z.union([ z.lazy(() => BigIntNullableFilterSchema),z.bigint() ]).optional().nullable(),
+  ledgerId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   fundType: z.union([ z.lazy(() => EnumFundTypeFilterSchema),z.lazy(() => FundTypeSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -1589,7 +1589,7 @@ export const FundTransactionsWhereUniqueInputSchema: z.ZodType<Prisma.FundTransa
 export const FundTransactionsOrderByWithAggregationInputSchema: z.ZodType<Prisma.FundTransactionsOrderByWithAggregationInput> = z.object({
   fundTransactId: z.lazy(() => SortOrderSchema).optional(),
   fundId: z.lazy(() => SortOrderSchema).optional(),
-  ledgerId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  ledgerId: z.lazy(() => SortOrderSchema).optional(),
   fundType: z.lazy(() => SortOrderSchema).optional(),
   transactionType: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -1608,7 +1608,7 @@ export const FundTransactionsScalarWhereWithAggregatesInputSchema: z.ZodType<Pri
   NOT: z.union([ z.lazy(() => FundTransactionsScalarWhereWithAggregatesInputSchema),z.lazy(() => FundTransactionsScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   fundTransactId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   fundId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  ledgerId: z.union([ z.lazy(() => BigIntNullableWithAggregatesFilterSchema),z.bigint() ]).optional().nullable(),
+  ledgerId: z.union([ z.lazy(() => BigIntWithAggregatesFilterSchema),z.bigint() ]).optional(),
   fundType: z.union([ z.lazy(() => EnumFundTypeWithAggregatesFilterSchema),z.lazy(() => FundTypeSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeWithAggregatesFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
@@ -2862,7 +2862,7 @@ export const FundTransactionsCreateInputSchema: z.ZodType<Prisma.FundTransaction
 export const FundTransactionsUncheckedCreateInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedCreateInput> = z.object({
   fundTransactId: z.number().int().optional(),
   fundId: z.number().int(),
-  ledgerId: z.bigint().optional().nullable(),
+  ledgerId: z.bigint(),
   fundType: z.lazy(() => FundTypeSchema),
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
@@ -2883,7 +2883,7 @@ export const FundTransactionsUpdateInputSchema: z.ZodType<Prisma.FundTransaction
 export const FundTransactionsUncheckedUpdateInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateInput> = z.object({
   fundTransactId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   fundId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  ledgerId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  ledgerId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -2894,7 +2894,7 @@ export const FundTransactionsUncheckedUpdateInputSchema: z.ZodType<Prisma.FundTr
 export const FundTransactionsCreateManyInputSchema: z.ZodType<Prisma.FundTransactionsCreateManyInput> = z.object({
   fundTransactId: z.number().int().optional(),
   fundId: z.number().int(),
-  ledgerId: z.bigint().optional().nullable(),
+  ledgerId: z.bigint(),
   fundType: z.lazy(() => FundTypeSchema),
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
@@ -2913,7 +2913,7 @@ export const FundTransactionsUpdateManyMutationInputSchema: z.ZodType<Prisma.Fun
 export const FundTransactionsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateManyInput> = z.object({
   fundTransactId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   fundId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  ledgerId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  ledgerId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -7905,7 +7905,7 @@ export const FundTransactionsCreateWithoutMemberFundsInputSchema: z.ZodType<Pris
 
 export const FundTransactionsUncheckedCreateWithoutMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedCreateWithoutMemberFundsInput> = z.object({
   fundTransactId: z.number().int().optional(),
-  ledgerId: z.bigint().optional().nullable(),
+  ledgerId: z.bigint(),
   fundType: z.lazy(() => FundTypeSchema),
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
@@ -8016,7 +8016,7 @@ export const FundTransactionsScalarWhereInputSchema: z.ZodType<Prisma.FundTransa
   NOT: z.union([ z.lazy(() => FundTransactionsScalarWhereInputSchema),z.lazy(() => FundTransactionsScalarWhereInputSchema).array() ]).optional(),
   fundTransactId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   fundId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  ledgerId: z.union([ z.lazy(() => BigIntNullableFilterSchema),z.bigint() ]).optional().nullable(),
+  ledgerId: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   fundType: z.union([ z.lazy(() => EnumFundTypeFilterSchema),z.lazy(() => FundTypeSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => EnumFundTransactionsTypeFilterSchema),z.lazy(() => FundTransactionsTypeSchema) ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -10208,7 +10208,7 @@ export const LoanRepaymentsUncheckedUpdateManyWithoutLoanInputSchema: z.ZodType<
 
 export const FundTransactionsCreateManyMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsCreateManyMemberFundsInput> = z.object({
   fundTransactId: z.number().int().optional(),
-  ledgerId: z.bigint().optional().nullable(),
+  ledgerId: z.bigint(),
   fundType: z.lazy(() => FundTypeSchema),
   transactionType: z.lazy(() => FundTransactionsTypeSchema),
   createdAt: z.coerce.date().optional(),
@@ -10227,7 +10227,7 @@ export const FundTransactionsUpdateWithoutMemberFundsInputSchema: z.ZodType<Pris
 
 export const FundTransactionsUncheckedUpdateWithoutMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateWithoutMemberFundsInput> = z.object({
   fundTransactId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  ledgerId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  ledgerId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10237,7 +10237,7 @@ export const FundTransactionsUncheckedUpdateWithoutMemberFundsInputSchema: z.Zod
 
 export const FundTransactionsUncheckedUpdateManyWithoutMemberFundsInputSchema: z.ZodType<Prisma.FundTransactionsUncheckedUpdateManyWithoutMemberFundsInput> = z.object({
   fundTransactId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  ledgerId: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  ledgerId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   fundType: z.union([ z.lazy(() => FundTypeSchema),z.lazy(() => EnumFundTypeFieldUpdateOperationsInputSchema) ]).optional(),
   transactionType: z.union([ z.lazy(() => FundTransactionsTypeSchema),z.lazy(() => EnumFundTransactionsTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
