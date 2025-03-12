@@ -363,7 +363,7 @@ model JournalEntries {
 
 
   @@map("journal_entries")
-  @@index([entryDate, memberId,referenceName ])
+  @@index([entryDate, memberId,referenceName])
 }
 
 model JournalItems {

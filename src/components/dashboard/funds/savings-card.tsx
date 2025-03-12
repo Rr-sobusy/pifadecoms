@@ -23,15 +23,12 @@ import { formatToCurrency } from '@/lib/format-currency';
 import { deleteFundTransaction } from '@/actions/funds/delete-fund-transaction';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
+import { toast } from '@/components/core/toaster';
 
 import FundTransactionPaginator from './fund-transcaction-table-paginator';
 
 interface SavingsCardProps {
   fund: MemberFundsType[0];
-}
-
-interface SearchParams {
-  transactionType: FundTransactionsType;
 }
 
 const FundTransactionMap: Record<FundTransactionsType, string> = {
@@ -119,12 +116,6 @@ const columns = [
       );
     },
   },
-  {
-    name: 'Delete',
-    formatter: (row) => {
-      return <Button onClick={() => alert(row.fundTransactId)}>Delete</Button>;
-    },
-  },
 ] satisfies ColumnDef<MemberFundsType[0]['Transactions'][0]>[];
 
 function SavingsCard({ fund }: SavingsCardProps) {
@@ -176,7 +167,13 @@ function SavingsCard({ fund }: SavingsCardProps) {
 
   async function deleteTransactionHandler() {
     if (selectedRow.length) {
-      await deleteFundTransaction(selectedRow[0].fundTransactId);
+      const result = await deleteFundTransaction(selectedRow[0].fundTransactId);
+
+      if (result?.data?.success) {
+        toast.success(
+          'Fund transaction deleted and negated. You can now delete it from acct transactions to negate financial statement.'
+        );
+      }
     }
   }
 
