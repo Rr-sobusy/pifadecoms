@@ -106,10 +106,10 @@ function TransactionDialog({ isOpen, accountTransactions }: TransactionDialogPro
 
   async function deleteHandler() {
     const result = await deleteTransactionAction({ transactionId: Number(accountTransactions?.entryId) });
-    handleClose();
 
     if (result?.data?.success) {
-      return toast.success('Transaction Deleted');
+      handleClose();
+      return toast.success('Account transaction deleted. Account balances rev');
     }
 
     return toast.error('Cannot delete transaction. Currently referenced by other modules.');

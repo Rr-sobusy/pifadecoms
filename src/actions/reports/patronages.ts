@@ -4,14 +4,12 @@ import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
 interface FilterProps {
-  dateRange: { startDate: string | Date; endDate: string | Date };
-  journalType: JournalType | 'All';
+  month: string;
+  journalType?: JournalType | 'All';
+  memberId: string;
 }
 
-export async function fetchLedgers({
-  dateRange = { endDate: dayjs().toDate(), startDate: dayjs().toDate() },
-  journalType = 'cashDisbursement',
-}: FilterProps) {
+export async function fetchMemberPatronages({ month, journalType = 'cashDisbursement', memberId }: FilterProps) {
   /**
    * * Fetch the records for the previous 30 days when there is no given parameters in dateRange
    */
@@ -22,20 +20,17 @@ export async function fetchLedgers({
     where: {
       JournalEntries: {
         entryDate: {
-          lte:
-            dateRange?.endDate === undefined
-              ? dayjs().endOf('day').toISOString()
-              : dayjs(dateRange?.endDate).endOf('day').toISOString(),
-          gte:
-            dateRange?.startDate === undefined
-              ? dayjs().subtract(30, 'day').startOf('day').toISOString()
-              : dayjs(dateRange?.startDate).startOf('day').toISOString(),
+          gte: dayjs(`${month}-01-2025`).startOf('month').toDate(),
+          lt: dayjs(`${month}-31-2025`).endOf('month').toDate(),
         },
-        journalType: journalType === 'All' ? undefined : journalType,
-        
+        journalType: 'cashReceipts',
+        memberId: memberId,
       },
-
-      
+      Accounts: {
+        RootID: {
+          OR: [{ rootType: 'Assets' }, { rootType: 'Revenue' }],
+        },
+      },
     },
   });
 

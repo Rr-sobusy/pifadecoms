@@ -16,6 +16,7 @@ import { fetchMembers } from '@/actions/members/fetch-members';
 import { MemberFilters } from '@/components/dashboard/members/members-filter';
 import { MembersTable } from '@/components/dashboard/members/members-table';
 import MembersPagination from '@/components/dashboard/members/members-table-pagination';
+import { paths } from '@/paths';
 
 // import { Rows } from '@phosphor-icons/react';
 
@@ -109,7 +110,7 @@ const Page = async ({ searchParams }: PageProps): Promise<React.JSX.Element> => 
           </Box>
         </Stack>
         <Card>
-          <MemberFilters filters={{ memberName }} />
+          <MemberFilters basePath={paths.dashboard.members.list} filters={{ memberName }} />
           <Divider />
           <Box sx={{ overflowX: 'auto' }}>
             <MembersTable rows={members} />

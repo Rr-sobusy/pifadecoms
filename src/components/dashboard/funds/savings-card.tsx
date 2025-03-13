@@ -171,7 +171,7 @@ function SavingsCard({ fund }: SavingsCardProps) {
 
       if (result?.data?.success) {
         toast.success(
-          'Fund transaction deleted and negated. You can now delete it from acct transactions to negate financial statement.'
+          'Fund transaction deleted and negated. You can delete it into acct transactions to reverse the balances update.'
         );
       }
     }

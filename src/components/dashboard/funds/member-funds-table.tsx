@@ -30,15 +30,16 @@ const columns = [
     width: '100px',
   },
   {
-    formatter: (row) => <div>{formatToCurrency(row.shareCapBal, 'Fil-ph', 'Php')}</div>,
-    name: 'Share Capital (CBU)',
-    width: '150px',
-  },
-  {
     formatter: (row) => <div>{formatToCurrency(row.savingsBal, 'Fil-ph', 'Php')}</div>,
     name: 'Member Savings',
     width: '150px',
   },
+  {
+    formatter: (row) => <div>{formatToCurrency(row.shareCapBal, 'Fil-ph', 'Php')}</div>,
+    name: 'Share Capital (CBU)',
+    width: '150px',
+  },
+
   {
     formatter: (row) => <div>{dayjs(row.updatedAt).format('MMM DD YYYY')}</div>,
     name: 'Last Transaction',

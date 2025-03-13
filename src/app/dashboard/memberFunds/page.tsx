@@ -3,6 +3,7 @@ import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
@@ -14,13 +15,16 @@ import { membersStillNotRegistered } from '@/actions/funds/fetch-members-nofund'
 import AddFundsMember from '@/components/dashboard/funds/add-member';
 import FundsStats from '@/components/dashboard/funds/fund-stats';
 import { MemberFundsTable } from '@/components/dashboard/funds/member-funds-table';
+import { MemberFilters } from '@/components/dashboard/members/members-filter';
 
 interface PageProps {
-  searchParams: { addNewFund: boolean };
+  searchParams: { addNewFund: boolean; memberName: string };
 }
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
+  const { memberName } = searchParams;
+
   const [memberFunds, membersList, aggregatedFunds] = await Promise.all([
-    fetchMemberFunds(),
+    fetchMemberFunds(memberName),
     membersStillNotRegistered(),
     fetchAggregatedFunds(),
   ]);
@@ -52,6 +56,8 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         </Stack>
         <FundsStats aggregatedFunds={aggregatedFunds} />
         <Card>
+          <MemberFilters basePath={paths.dashboard.funds.list} filters={{ memberName }} />
+          <Divider />
           <Box sx={{ overflowX: 'auto' }}>
             <MemberFundsTable rows={memberFunds} />
           </Box>

@@ -8,10 +8,8 @@ import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 
-
 import { paths } from '@/paths';
 import { FilterButton, FilterPopover, useFilterContext } from '@/components/core/filter-button';
-
 
 export interface Filters {
   memberName?: string;
@@ -22,9 +20,10 @@ export type SortDir = 'asc' | 'desc';
 
 export interface MemberFilterProps {
   filters?: Filters;
+  basePath?: string;
 }
 
-export function MemberFilters({ filters = {} }: MemberFilterProps): React.JSX.Element {
+export function MemberFilters({ filters = {}, basePath }: MemberFilterProps): React.JSX.Element {
   const { memberName } = filters;
 
   const router = useRouter();
@@ -36,13 +35,13 @@ export function MemberFilters({ filters = {} }: MemberFilterProps): React.JSX.El
       if (newFilters.memberName) {
         searchParams.set('memberName', newFilters.memberName);
       }
-      router.push(`${paths.dashboard.members.list}?${searchParams.toString()}`);
+      router.push(`${basePath}?${searchParams.toString()}`);
     },
     [router]
   );
 
   const handleClearFilters = React.useCallback(() => {
-    router.push(`${paths.dashboard.members.list}`);
+    router.push(basePath || '');
   }, [updateSearchParams]);
 
   const handleLastNameChange = React.useCallback(

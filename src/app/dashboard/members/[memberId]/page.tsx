@@ -18,10 +18,7 @@ import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/Arrow
 import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { CreditCard as CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard';
-import { House as HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
 import { PencilSimple as PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple';
-import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import { ShieldWarning as ShieldWarningIcon } from '@phosphor-icons/react/dist/ssr/ShieldWarning';
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 
 import { config } from '@/config';
@@ -29,24 +26,30 @@ import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { fetchMemberData } from '@/actions/members/fetch-members';
+import { fetchMemberPatronages } from '@/actions/reports/patronages';
 import { PropertyItem } from '@/components/core/property-item';
 import { PropertyList } from '@/components/core/property-list';
 import { Notifications } from '@/components/dashboard/customer/notifications';
 import type { Address } from '@/components/dashboard/customer/shipping-address';
 import { ShippingAddress } from '@/components/dashboard/customer/shipping-address';
 import NotfoundToaster from '@/components/dashboard/members/member-not-found';
-import { Balances, NonNullableInvoice } from '@/components/dashboard/members/profile-balances';
+import { MemberPatronagesTab } from '@/components/dashboard/members/member-patronage-tab';
+import PatronageTable from '@/components/dashboard/members/patronage-table';
 
 export const metadata = { title: `Details | Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
   params: { memberId: string };
+  searchParams: { monthFilter: string };
 }
 
-export default async function Page({ params }: PageProps): Promise<React.JSX.Element> {
+export default async function Page({ params, searchParams }: PageProps): Promise<React.JSX.Element> {
   const { memberId } = params;
 
   const memberData = await fetchMemberData(memberId);
+  const patronages = await fetchMemberPatronages({ memberId, month: '3' });
+
+  console.log(patronages);
 
   if (!memberData) {
     return <NotfoundToaster errorMessage="Member Not Found redirecting..." routeLink={paths.dashboard.members.list} />;
@@ -72,7 +75,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
               variant="subtitle2"
             >
               <ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />
-              Members
+              Members {searchParams.monthFilter}
             </Link>
           </div>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
@@ -150,7 +153,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                   )}
                 </PropertyList>
               </Card>
-              <Card>
+              {/* <Card>
                 <CardHeader
                   avatar={
                     <Avatar>
@@ -171,7 +174,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                     </Typography>
                   </Stack>
                 </CardContent>
-              </Card>
+              </Card> */}
             </Stack>
           </Grid>
           <Grid
@@ -181,44 +184,41 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
             }}
           >
             <Stack spacing={4}>
-              <Balances invoiceBalance={memberData?.invoice as NonNullableInvoice[]} />
+              {/* <Balances invoiceBalance={memberData?.invoice as NonNullableInvoice[]} /> */}
 
               <Card>
                 <CardHeader
-                  action={
-                    <Button color="secondary" startIcon={<PencilSimpleIcon />}>
-                      Edit
-                    </Button>
-                  }
                   avatar={
                     <Avatar>
                       <CreditCardIcon fontSize="var(--Icon-fontSize)" />
                     </Avatar>
                   }
-                  title="Billing details"
+                  title="Member Patronages"
                 />
                 <CardContent>
                   <Card sx={{ borderRadius: 1 }} variant="outlined">
-                    <PropertyList divider={<Divider />} sx={{ '--PropertyItem-padding': '16px' }}>
-                      {(
-                        [
-                          { key: 'Credit card', value: '**** 4142' },
-                          { key: 'Country', value: 'United States' },
-                          { key: 'State', value: 'Michigan' },
-                          { key: 'City', value: 'Southfield' },
-                          { key: 'Address', value: '1721 Bartlett Avenue, 48034' },
-                          { key: 'Tax ID', value: 'EU87956621' },
-                        ] satisfies { key: string; value: React.ReactNode }[]
-                      ).map(
-                        (item): React.JSX.Element => (
-                          <PropertyItem key={item.key} name={item.key} value={item.value} />
-                        )
-                      )}
-                    </PropertyList>
+                    <PatronageTable
+                      rows={patronages}
+                      content={[
+                        { month: 'All', value: 0 },
+                        { month: 'Jan', value: 1 },
+                        { month: 'Feb', value: 2 },
+                        { month: 'Mar', value: 3 },
+                        { month: 'Apr', value: 4 },
+                        { month: 'May', value: 5 },
+                        { month: 'Jun', value: 6 },
+                        { month: 'Jul', value: 7 },
+                        { month: 'Aug', value: 8 },
+                        { month: 'Sep', value: 9 },
+                        { month: 'Oct', value: 10 },
+                        { month: 'Nov', value: 11 },
+                        { month: 'Dec', value: 12 },
+                      ]}
+                    />
                   </Card>
                 </CardContent>
               </Card>
-              <Card>
+              {/* <Card>
                 <CardHeader
                   action={
                     <Button color="secondary" startIcon={<PlusIcon />}>
@@ -267,8 +267,8 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                     ))}
                   </Grid>
                 </CardContent>
-              </Card>
-              <Notifications
+              </Card> */}
+              {/* <Notifications
                 notifications={[
                   {
                     id: 'EV-002',
@@ -283,7 +283,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                     createdAt: dayjs().subtract(49, 'minute').subtract(11, 'hour').subtract(4, 'day').toDate(),
                   },
                 ]}
-              />
+              /> */}
             </Stack>
           </Grid>
         </Grid>
