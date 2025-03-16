@@ -6,8 +6,9 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { ProhibitInset } from '@phosphor-icons/react/dist/ssr';
+import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
+
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { AccounTreeType } from '@/actions/accounts/types';
@@ -23,10 +24,15 @@ function isPastDue(inputtedDate: Date): boolean {
   return !dayjs(inputtedDate).add(dueMonth, 'M').isSameOrAfter(dayjs(), 'D');
 }
 
-function computeInterest(inputtedDate: Date, principalAmout: number, rate: number): number {
+function computeRemainingInterest(
+  inputtedDate: Date,
+  principalAmount: number,
+  paidPrincipal: number,
+  rate: number
+): number {
   const numberOfMonthsPast = dayjs(inputtedDate).add(dueMonth, 'M').diff(dayjs(), 'M');
 
-  return (rate / 100) * principalAmout * (numberOfMonthsPast - 1) * -1;
+  return (rate / 100) * (principalAmount - paidPrincipal) * (numberOfMonthsPast - 1) * -1;
 }
 
 type PageProps = {
@@ -132,10 +138,11 @@ const columns = [
     name: 'Int. accrued (2%)',
     formatter: (row) => {
       const totalAmountDue = row.quantity * (row.Item.sellingPrice + row.Item.trade);
+      const totalPrincipalPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.principalPaid), 0);
       return (
         <Typography variant="subtitle2">
           {isPastDue(row.Invoice.dateOfInvoice) && !row.isTotallyPaid
-            ? `${formatToCurrency(computeInterest(row.Invoice.dateOfInvoice, totalAmountDue, 2), 'Fil-ph', 'Php')} due for ${dayjs(row.Invoice.dateOfInvoice).diff(dayjs(), 'M') * -1} months`
+            ? `${formatToCurrency(computeRemainingInterest(row.Invoice.dateOfInvoice, totalAmountDue, totalPrincipalPaid, 2), 'Fil-ph', 'Php')} due for ${dayjs(row.Invoice.dateOfInvoice).diff(dayjs(), 'M') * -1} months`
             : formatToCurrency(0, 'Fil-ph', 'Php')}
         </Typography>
       );
@@ -170,9 +177,8 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
   const [isPaymentDialogOpen, setPaymentDialogOpen] = React.useState<boolean>(false);
 
   function handleSelectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes[0]) {
-
-    if(row.isTotallyPaid){
-      alert("Payment already settled!")
+    if (row.isTotallyPaid) {
+      alert('Payment already settled!');
     }
 
     setSelectedRows((prevSelected) => {
@@ -194,7 +200,7 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
     <>
       <Card>
         <CardContent>
-          <Stack  paddingY={3} alignItems="flex-end">
+          <Stack paddingY={3} alignItems="flex-end">
             <Button onClick={togglePaymentDialog} disabled={selectedRows.length < 1} variant="contained">
               Create payment
             </Button>

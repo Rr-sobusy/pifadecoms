@@ -14,15 +14,15 @@ export async function fetchMemberPatronages({ month, journalType = 'cashDisburse
    * * Fetch the records for the previous 30 days when there is no given parameters in dateRange
    */
 
+  const startDate = dayjs('3', 'YYYY-MM').startOf('month').toDate();
+  const endDate = dayjs('3', 'YYYY-MM').endOf('month').toDate();
+
   const accountLedgers = await prisma.journalItems.groupBy({
     by: ['accountId'],
     _sum: { debit: true, credit: true },
     where: {
       JournalEntries: {
-        entryDate: {
-          gte: dayjs(`${month}-01-2025`).startOf('month').toDate(),
-          lt: dayjs(`${month}-31-2025`).endOf('month').toDate(),
-        },
+        entryDate: { gte: startDate, lt: endDate },
         journalType: 'cashReceipts',
         memberId: memberId,
       },

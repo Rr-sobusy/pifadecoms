@@ -47,7 +47,7 @@ export default async function Page({ params, searchParams }: PageProps): Promise
   const { memberId } = params;
 
   const memberData = await fetchMemberData(memberId);
-  const patronages = await fetchMemberPatronages({ memberId, month: '3' });
+  const patronages = await fetchMemberPatronages({ memberId, month: searchParams.monthFilter });
 
   console.log(patronages);
 
