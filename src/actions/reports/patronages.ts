@@ -7,15 +7,27 @@ interface FilterProps {
   month: string;
   journalType?: JournalType | 'All';
   memberId: string;
+  year: string;
 }
 
-export async function fetchMemberPatronages({ month, journalType = 'cashDisbursement', memberId }: FilterProps) {
+export async function fetchMemberPatronages({ month, memberId, year = dayjs().year().toString() }: FilterProps) {
   /**
    * * Fetch the records for the previous 30 days when there is no given parameters in dateRange
    */
 
-  const startDate = dayjs('3', 'YYYY-MM').startOf('month').toDate();
-  const endDate = dayjs('3', 'YYYY-MM').endOf('month').toDate();
+  let startDate: Date;
+  let endDate: Date;
+
+  if (month === undefined || month === 'All') {
+    // If 'All' is selected, fetch for the whole year
+    startDate = dayjs(`${year}-01`, 'YYYY-MM').startOf('year').toDate();
+    endDate = dayjs(`${year}-12`, 'YYYY-MM').endOf('year').toDate();
+  } else {
+    // Convert month value to string with leading zero if necessary
+    const monthStr = String(month).padStart(2, '0');
+    startDate = dayjs(`${year}-${monthStr}`, 'YYYY-MM').startOf('month').toDate();
+    endDate = dayjs(`${year}-${monthStr}`, 'YYYY-MM').endOf('month').toDate();
+  }
 
   const accountLedgers = await prisma.journalItems.groupBy({
     by: ['accountId'],

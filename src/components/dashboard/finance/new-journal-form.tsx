@@ -21,13 +21,15 @@ import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
+import Decimal from 'decimal.js';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import Decimal from 'decimal.js';
+
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
+import { logger } from '@/lib/default-logger';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import type { MembersType } from '@/actions/members/types';
@@ -95,7 +97,9 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
           body: JSON.stringify({ memberName: debouncedValue }),
         }).then((res) => res.json());
         setMemberData(data);
-      } catch (error) {}
+      } catch (error) {
+        logger.debug(error);
+      }
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);
@@ -244,7 +248,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
 
                       setValue('particulars.lastName', value); // Update form value when input changes
                     }}
-                    onChange={(event, value) => {
+                    onChange={(_, value) => {
                       field.onChange(value); // Update form value on selection
                     }}
                     options={member}

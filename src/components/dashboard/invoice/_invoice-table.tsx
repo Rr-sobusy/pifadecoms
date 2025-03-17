@@ -26,19 +26,9 @@ interface InvoiceTableProps {
 
 const dueMonth = 1;
 
-function isPastDue(inputtedDate: Date): boolean {
-  return !dayjs(inputtedDate).add(dueMonth, 'M').isSameOrAfter(dayjs(), 'D');
-}
-
-function computeInterest(inputtedDate: Date, principalAmout: number, rate: number): number {
-  const numberOfMonthsPast = dayjs(inputtedDate).add(dueMonth, 'M').diff(dayjs(), 'M');
-
-  return (rate / 100) * principalAmout * (numberOfMonthsPast - 1) * -1;
-}
-
 const columns = [
   {
-    formatter: (row, index): React.JSX.Element => {
+    formatter: (row): React.JSX.Element => {
       const mapping = {
         pending: { label: 'Pending', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
         paid: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
@@ -109,7 +99,7 @@ const columns = [
     width: '100px',
   },
   {
-    formatter: (row, index): React.JSX.Element => {
+    formatter: (row): React.JSX.Element => {
       const totalBalanceDue = row.InvoiceItems.reduce(
         (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
         0

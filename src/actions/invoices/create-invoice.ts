@@ -18,7 +18,7 @@ import { invoiceSchema } from './types';
 export const createInvoice = actionClient
   .schema(invoiceSchema)
   .bindArgsSchemas<[grandTotal: z.ZodNumber]>([z.number()])
-  .action(async ({ parsedInput: Request, bindArgsParsedInputs: Args }) => {
+  .action(async ({ parsedInput: Request }) => {
     try {
       const queryResponse = await prisma.invoice.create({
         data: {

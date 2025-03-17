@@ -124,7 +124,10 @@ function CreateExistingLoan({ loanSources }: Props) {
           body: JSON.stringify({ memberName: debouncedValue }),
         }).then((res) => res.json());
         setMemberData(data);
-      } catch (error) {}
+      } catch (error) {
+        logger.debug(`Error occured. Error message: ${error}`);
+        toast.error('Error occured in server!');
+      }
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);

@@ -9,7 +9,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import { Option } from '@/components/core/option';
 import { MembersType } from '@/actions/members/types';
 
-type Props = { members: MembersType };
+interface Props { members: MembersType };
 
 function MemberDropDown({ members }: Props) {
   const pathname = usePathname();

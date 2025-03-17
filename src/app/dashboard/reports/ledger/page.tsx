@@ -29,9 +29,6 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const { startDate, endDate, isFilterOpen, journalType } = searchParams;
   const generalLedgers = await fetchLedgers({ dateRange: { startDate, endDate }, journalType });
 
-  function closeHandler() {
-    console.log('Close Handler');
-  }
   return (
     <Box
       sx={{

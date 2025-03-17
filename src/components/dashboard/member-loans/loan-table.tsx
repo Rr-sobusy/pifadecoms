@@ -47,7 +47,6 @@ const columns = [
     name: 'Loan Status',
     sortable: true,
     formatter: (row): React.JSX.Element => {
-      const lastDateOfPayment = row.Repayments[row.Repayments.length - 1]?.paymentDate;
 
       const mapping = {
         active: { label: 'Running', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },

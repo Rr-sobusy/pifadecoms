@@ -10,7 +10,7 @@ import { paths } from '@/paths';
 import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
 import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
 import { InvoicesFiltersCard } from '@/components/dashboard/invoice/invoices-filters-card';
-import { InvoicesStats } from '@/components/dashboard/invoice/invoices-stats';
+
 
 interface PageProps {
   searchParams: {

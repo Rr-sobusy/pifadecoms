@@ -7,10 +7,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { paths } from '@/paths';
-import { fetchAccountTree, fetchChartofAccounts, fetchRootAccounts } from '@/actions/accounts/fetch-accounts';
+import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import AccountTypesTable from '@/components/dashboard/finance/account-types-table';
-import { AccountsTable } from '@/components/dashboard/finance/accounts-table';
-import { AddNewAccountDiaglog } from '@/components/dashboard/finance/add-account-dialog';
 import { AddNewAccountTypeDialog } from '@/components/dashboard/finance/add-account-type-dialog';
 
 interface AccountListProps {
@@ -36,7 +34,11 @@ const page = async ({ searchParams }: AccountListProps) => {
             <Typography variant="h4">Account Types</Typography>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button LinkComponent={RouterLink} href={`${paths.dashboard.finance.types}?create=true`} variant="contained">
+            <Button
+              LinkComponent={RouterLink}
+              href={`${paths.dashboard.finance.types}?create=true`}
+              variant="contained"
+            >
               Add account
             </Button>
           </Box>

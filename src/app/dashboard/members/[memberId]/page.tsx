@@ -29,25 +29,29 @@ import { fetchMemberData } from '@/actions/members/fetch-members';
 import { fetchMemberPatronages } from '@/actions/reports/patronages';
 import { PropertyItem } from '@/components/core/property-item';
 import { PropertyList } from '@/components/core/property-list';
-import { Notifications } from '@/components/dashboard/customer/notifications';
-import type { Address } from '@/components/dashboard/customer/shipping-address';
-import { ShippingAddress } from '@/components/dashboard/customer/shipping-address';
+// import { Notifications } from '@/components/dashboard/customer/notifications';
+// import type { Address } from '@/components/dashboard/customer/shipping-address';
+// import { ShippingAddress } from '@/components/dashboard/customer/shipping-address';
 import NotfoundToaster from '@/components/dashboard/members/member-not-found';
-import { MemberPatronagesTab } from '@/components/dashboard/members/member-patronage-tab';
 import PatronageTable from '@/components/dashboard/members/patronage-table';
+import PatronageYearPicker from '@/components/dashboard/members/patronage-year-picker';
 
 export const metadata = { title: `Details | Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 interface PageProps {
   params: { memberId: string };
-  searchParams: { monthFilter: string };
+  searchParams: { monthFilter: string; filterYear: string };
 }
 
 export default async function Page({ params, searchParams }: PageProps): Promise<React.JSX.Element> {
   const { memberId } = params;
 
   const memberData = await fetchMemberData(memberId);
-  const patronages = await fetchMemberPatronages({ memberId, month: searchParams.monthFilter });
+  const patronages = await fetchMemberPatronages({
+    memberId,
+    month: searchParams.monthFilter,
+    year: searchParams.filterYear,
+  });
 
   console.log(patronages);
 
@@ -75,7 +79,7 @@ export default async function Page({ params, searchParams }: PageProps): Promise
               variant="subtitle2"
             >
               <ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />
-              Members {searchParams.monthFilter}
+              Members
             </Link>
           </div>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
@@ -196,26 +200,25 @@ export default async function Page({ params, searchParams }: PageProps): Promise
                   title="Member Patronages"
                 />
                 <CardContent>
-                  <Card sx={{ borderRadius: 1 }} variant="outlined">
-                    <PatronageTable
-                      rows={patronages}
-                      content={[
-                        { month: 'All', value: 0 },
-                        { month: 'Jan', value: 1 },
-                        { month: 'Feb', value: 2 },
-                        { month: 'Mar', value: 3 },
-                        { month: 'Apr', value: 4 },
-                        { month: 'May', value: 5 },
-                        { month: 'Jun', value: 6 },
-                        { month: 'Jul', value: 7 },
-                        { month: 'Aug', value: 8 },
-                        { month: 'Sep', value: 9 },
-                        { month: 'Oct', value: 10 },
-                        { month: 'Nov', value: 11 },
-                        { month: 'Dec', value: 12 },
-                      ]}
-                    />
-                  </Card>
+                  <PatronageYearPicker />
+                  <PatronageTable
+                    rows={patronages}
+                    content={[
+                      { month: 'All', value: 0 },
+                      { month: 'Jan', value: 1 },
+                      { month: 'Feb', value: 2 },
+                      { month: 'Mar', value: 3 },
+                      { month: 'Apr', value: 4 },
+                      { month: 'May', value: 5 },
+                      { month: 'Jun', value: 6 },
+                      { month: 'Jul', value: 7 },
+                      { month: 'Aug', value: 8 },
+                      { month: 'Sep', value: 9 },
+                      { month: 'Oct', value: 10 },
+                      { month: 'Nov', value: 11 },
+                      { month: 'Dec', value: 12 },
+                    ]}
+                  />
                 </CardContent>
               </Card>
               {/* <Card>

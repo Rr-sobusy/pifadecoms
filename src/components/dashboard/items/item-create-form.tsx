@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import RouterLink from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -117,7 +117,7 @@ function ItemCreateForm({ itemSources = [] }: ItemCreateFormProps) {
                         <InputLabel required>Item Source</InputLabel>
                         <Select {...field}>
                           {itemSources.map((source) => (
-                            <Option value={source.sourceId}>{source.sourceName}</Option>
+                            <Option key={source.sourceId} value={source.sourceId}>{source.sourceName}</Option>
                           ))}
                         </Select>
                         {errors.itemType ? <FormHelperText error>{errors.itemType.message}</FormHelperText> : null}

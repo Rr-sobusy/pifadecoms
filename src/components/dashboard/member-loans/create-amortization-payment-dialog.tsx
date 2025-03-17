@@ -336,7 +336,7 @@ function CreateAmortizationPayment({
               </Button>
             </div>
             <DialogAction sx={{ justifyContent: 'flex-end' }}>
-              <Button onClick={() => console.log(errors)} variant="contained">
+              <Button variant="contained">
                 details
               </Button>
               <Button disabled={isExecuting} type="submit" variant="contained">

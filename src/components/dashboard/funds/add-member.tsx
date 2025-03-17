@@ -40,7 +40,6 @@ function AddFundsMember({ open = true, membersList }: AddFundsMemberProps) {
     control,
     reset,
     handleSubmit,
-    formState: { errors },
   } = useForm<IAddMemberIntoFunds>({
     resolver: zodResolver(addMemberIntoFundsSchema),
     defaultValues: {

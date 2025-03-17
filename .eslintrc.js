@@ -88,6 +88,12 @@ module.exports = {
     '@typescript-eslint/no-floating-promises' : 'off',
     '@typescript-eslint/restrict-template-expressions' : 'off',
     'react/no-unescaped-entities' : 'off',
-    '@typescript-eslint/restrict-plus-operands' : 'off'
+    '@typescript-eslint/restrict-plus-operands' : 'off',
+    ' @typescript-eslint/no-inferrable-types' : 'off',
+    'no-constant-binary-expression' : 'off',
+    ' @typescript-eslint/prefer-optional-chain' : 'off',
+    'no-console' : 'off',
+    ' @typescript-eslint/consistent-type-definitions' : 'off',
+    ' @typescript-eslint/no-unnecessary-template-expression' : 'off',
   },
 };

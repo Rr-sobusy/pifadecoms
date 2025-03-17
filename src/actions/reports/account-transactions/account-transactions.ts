@@ -45,7 +45,14 @@ export async function fetchAccountTransactions(props: Filterers ) {
           Accounts: true,
         },
       },
-      Members: true,
+      Members: {
+        select : {
+          memberId : true,
+          lastName : true,
+          firstName : true,
+          middleName : true,
+        }
+      },
     },
     where: isEmpty ? undefined : { ["AND"]: conditions },
     orderBy: [

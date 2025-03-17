@@ -7,13 +7,13 @@ import Tabs from '@mui/material/Tabs';
 import RouterLink from 'next/link';
 
 
-function determinePath(): string {
+function useDeterminePath(): string {
   const pathname = usePathname();
   return pathname.split('/dashboard/memberLoans/create/')[1] ?? 'new';
 }
 
 function LoanTabs() {
-  const path = determinePath();
+  const path = useDeterminePath();
   return (
     <Tabs sx={{ borderBottom: '1px solid var(--mui-palette-divider)' }} value={path}>
       <Tab LinkComponent={RouterLink} href='/dashboard/memberLoans/create/new' label="New Loan" tabIndex={0} value="new" />

@@ -27,7 +27,7 @@ import { Option } from '@/components/core/option';
 
 import MonthBalancesChart from './month-balances-chart';
 
-type Props = {
+interface Props {
   fund: MemberFundsType[0];
   open: boolean;
   computeAdbType: 'Savings' | 'Share';

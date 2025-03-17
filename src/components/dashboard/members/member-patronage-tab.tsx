@@ -1,11 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import RouterLink from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Typography } from '@mui/material';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
+import { Tab, Tabs } from '@mui/material';
 
 interface TabTypes {
   content: { month: string; value: number }[];
@@ -17,23 +15,38 @@ export function MemberPatronagesTab({ content, children }: TabTypes) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // reroute to filter=Jan query params in every mount
-  React.useEffect(() => {
-    router.push(`${pathname}?monthFilter=All`);
+  // Convert searchParams to a mutable object
+  const params = new URLSearchParams(searchParams.toString());
+
+  // Ensure 'monthFilter' is set on mount
+  useEffect(() => {
+    if (!searchParams.get('monthFilter')) {
+      params.set('monthFilter', 'All');
+      router.replace(`${pathname}?${params.toString()}`);
+    }
   }, []);
+
   return (
     <>
-      <Tabs sx={{ borderBottom: '1px solid var(--mui-palette-divider)' }} value={searchParams.get('monthFilter')}>
-        {content.map((ctx, index) => (
-          <Tab
-            key={index}
-            LinkComponent={RouterLink}
-            href={`${pathname}?monthFilter=${ctx.month}`}
-            label={ctx.month}
-            tabIndex={index}
-            value={ctx.month}
-          />
-        ))}
+      <Tabs
+        sx={{ borderBottom: '1px solid var(--mui-palette-divider)' }}
+        value={searchParams.get('monthFilter') || 'All'}
+      >
+        {content.map((ctx, index) => {
+          const newParams = new URLSearchParams(params.toString()); // Preserve existing params
+          newParams.set('monthFilter', ctx.month); // Update only monthFilter
+
+          return (
+            <Tab
+              key={index}
+              LinkComponent={RouterLink}
+              href={`?${newParams.toString()}`}
+              label={ctx.month}
+              tabIndex={index}
+              value={ctx.month}
+            />
+          );
+        })}
       </Tabs>
       {children}
     </>

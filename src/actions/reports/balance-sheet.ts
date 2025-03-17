@@ -91,7 +91,6 @@ export async function getBalanceSheet(asOf?: Date): Promise<BalanceSheet> {
           children: childrenWithBalances,
         });
       } else {
-        console.log(Children);
         balanceSheet[category].push({
           parentAccount: account.rootName,
           totalBalance,

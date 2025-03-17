@@ -8,7 +8,7 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { ProhibitInset } from '@phosphor-icons/react/dist/ssr';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
-
+import {toast} from '@/components/core/toaster';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { AccounTreeType } from '@/actions/accounts/types';
@@ -150,14 +150,14 @@ const columns = [
   },
   {
     name: 'Principal Paid',
-    formatter: (row, index) => {
+    formatter: (row) => {
       const totalPrincipalPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.principalPaid), 0);
       return <Typography color="error">{formatToCurrency(totalPrincipalPaid, 'Fil-ph', 'Php')}</Typography>;
     },
   },
   {
     name: 'Interest Paid',
-    formatter: (row, index) => {
+    formatter: (row) => {
       const totalInterestPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.interestPaid), 0);
       return <Typography color="error">{formatToCurrency(totalInterestPaid, 'Fil-ph', 'Php')}</Typography>;
     },
@@ -178,7 +178,8 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
 
   function handleSelectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes[0]) {
     if (row.isTotallyPaid) {
-      alert('Payment already settled!');
+      toast.error("Payment already settled for this invoice item.");
+      return;
     }
 
     setSelectedRows((prevSelected) => {

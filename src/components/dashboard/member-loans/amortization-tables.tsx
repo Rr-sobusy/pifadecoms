@@ -31,7 +31,7 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
   const { control, getValues } = useForm<{ rows: ILoanType[0]['Repayments'][0][] }>({ defaultValues: { rows: rows } });
   const [isDialogOpen, setDialogStatus] = useState<boolean>(false);
   const watchedRows = useWatch({ control, name: 'rows' });
-  const [initialData, setInitialData] = useState<ILoanType[0]['Repayments'][0][]>(rows);
+  const [_, setInitialData] = useState<ILoanType[0]['Repayments'][0][]>(rows);
   const [modifiedRows, setModifiedRows] = useState<Set<bigint>>(new Set());
   // Detect changes and store only modified rows
   useEffect(() => {
