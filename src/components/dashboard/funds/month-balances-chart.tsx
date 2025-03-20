@@ -14,10 +14,10 @@ interface Props {
 };
 
 const bars = [
-  //   { name: 'month', dataKey: 'v1', color: 'var(--mui-palette-primary-400)' },
   { name: 'month', dataKey: 'balance', color: 'var(--mui-palette-primary-500)' },
 ] satisfies { name: string; dataKey: string; color: string }[];
 function MonthBalancesChart({ data, interestRate }: Props) {
+  console.log(data)
   return (
     <NoSsr fallback={<Box sx={{ height: `${300}px` }} />}>
       <ResponsiveContainer height={300}>

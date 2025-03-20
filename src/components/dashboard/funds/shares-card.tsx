@@ -97,17 +97,28 @@ const columns = [
     ),
   },
   {
+    name: 'New Balance',
+    formatter: (row) => {
+      return (
+        <Stack>
+          <Typography fontWeight={600} variant="subtitle2">
+            New Balance
+          </Typography>
+          <Typography color="text.secondary" variant="caption">
+            {formatToCurrency(Number(row.newBalance), 'Fil-ph', 'Php')}
+          </Typography>
+        </Stack>
+      );
+    },
+  },
+  {
     name: 'Posted Amount',
     formatter: (row) => {
       const textColor = row.transactionType === 'ShareCapDeposit' ? 'success' : 'error';
-      const transactionBalance =
-        row.transactionType === 'ShareCapDeposit'
-          ? `+${formatToCurrency(row.postedBalance, 'Fil-ph', 'Php')}`
-          : `-${formatToCurrency(row.postedBalance, 'Fil-ph', 'Php')}`;
       return (
         <Stack>
           <Typography color={textColor} fontWeight={600} variant="subtitle1">
-            {transactionBalance}
+            {`${row.transactionType === 'ShareCapDeposit' ? '+' : '-'}${formatToCurrency(Number(row.postedBalance), 'Fil-ph', 'Php')}`}
           </Typography>
         </Stack>
       );
@@ -135,7 +146,7 @@ function SharesCard({ fund }: SharesCardProps) {
   }
 
   function computeAdb() {
-    router.push(`${pathName}?computeAdb=Share`);
+    router.push(`${pathName}?computeAdb=ShareCapital`);
   }
 
   const currentShare = fund.shareCapBal;

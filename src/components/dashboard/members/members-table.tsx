@@ -53,7 +53,7 @@ const columns = [
     formatter: (row): React.JSX.Element => {
       const mapping = {
         active: { icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" />, title: 'active' },
-        inactive: { icon: <MinusIcon color="var(--mui-palette-error-main)" />, title: 'active' },
+        inactive: { icon: <MinusIcon color="var(--mui-palette-error-main)" />, title: 'inactive' },
       };
 
       const { title, icon } = row.accountStatus === 'Active' ? mapping['active'] : mapping['inactive'];

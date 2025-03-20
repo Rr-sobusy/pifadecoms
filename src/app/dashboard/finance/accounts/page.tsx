@@ -3,23 +3,32 @@ import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { paths } from '@/paths';
 import { fetchChartofAccounts, fetchRootAccounts } from '@/actions/accounts/fetch-accounts';
+import { AccountNameFilterrs } from '@/components/dashboard/finance/account-name-filterer';
 import { AccountsTable } from '@/components/dashboard/finance/accounts-table';
 import { AddNewAccountDiaglog } from '@/components/dashboard/finance/add-account-dialog';
 
 interface AccountListProps {
-  searchParams: { create: boolean };
-};
+  searchParams: { create: boolean; accountName: string };
+}
 
 const page = async ({ searchParams }: AccountListProps) => {
-  const { create } = searchParams;
+  const { create, accountName } = searchParams;
 
   const chartOfAccounts = await fetchChartofAccounts();
   const rootAccounts = await fetchRootAccounts();
+
+  //* Filter accounts if accountName is provided
+  
+  const filteredAccounts = accountName
+    ? chartOfAccounts.filter((account) => account.accountName.toLowerCase().includes(accountName.toLowerCase()))
+    : chartOfAccounts;
+
   return (
     <Box
       sx={{
@@ -41,8 +50,10 @@ const page = async ({ searchParams }: AccountListProps) => {
           </Box>
         </Stack>
         <Card>
+          <AccountNameFilterrs filters={{ accountName }} basePath={paths.dashboard.finance.list} />
+          <Divider />
           <Box sx={{ overflowX: 'auto' }}>
-            <AccountsTable rows={chartOfAccounts} />
+            <AccountsTable rows={filteredAccounts} />
           </Box>
         </Card>
         <AddNewAccountDiaglog
@@ -50,7 +61,7 @@ const page = async ({ searchParams }: AccountListProps) => {
             return {
               rootId: accounts.rootId,
               rootName: accounts.rootName,
-              rootType: accounts.rootType
+              rootType: accounts.rootType,
             };
           })}
           open={create}

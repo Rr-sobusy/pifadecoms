@@ -5,6 +5,16 @@ export async function fetchChartofAccounts() {
     include: {
       RootID: true,
     },
+    orderBy: [
+      {
+        RootID: {
+          rootType: 'asc',
+        },
+      },
+      {
+        accountName: 'asc',
+      },
+    ],
   });
   return accounts;
 }

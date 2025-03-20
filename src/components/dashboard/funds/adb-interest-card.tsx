@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -21,6 +21,7 @@ import Typography from '@mui/material/Typography';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
+
 import { computeMonthlyBalances } from '@/lib/api-utils/calculate-balance-every-14th';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { Option } from '@/components/core/option';
@@ -30,13 +31,13 @@ import MonthBalancesChart from './month-balances-chart';
 interface Props {
   fund: MemberFundsType[0];
   open: boolean;
-  computeAdbType: 'Savings' | 'Share';
-};
+  computeAdbType: 'Savings' | 'ShareCapital';
+}
 
- enum YearsEnum {
+enum YearsEnum {
   one = 2024,
   two = 2025,
-  three = 2026
+  three = 2026,
 }
 
 const adbComponentsSchema = zod.object({
@@ -63,8 +64,10 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
   //   computeAdbType === 'Savings' ? transaction.fundType === 'Savings' : transaction.fundType === 'ShareCapital'
   // );
 
-  const rex = computeMonthlyBalances(fund, getValues("year") ?? 0);
+  const searchParams = useSearchParams();
+  const payload = searchParams.get('computeAdb') || 'ShareCapital';
 
+  const rex = computeMonthlyBalances(fund, getValues('year') ?? 0, payload as 'Savings' | 'ShareCapital');
   function handleClose() {
     router.push(pathName);
   }
@@ -175,7 +178,7 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
                     </Typography>
                   </Stack>
                 </Stack> */}
-                <MonthBalancesChart interestRate={getValues("interestRate")} data={rex} />
+                <MonthBalancesChart interestRate={getValues('interestRate')} data={rex} />
               </CardContent>
             </Card>
           </Stack>

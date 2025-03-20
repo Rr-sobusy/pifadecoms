@@ -39,14 +39,14 @@ const columns = [
     formatter(row) {
       return <Stack>{row.notes}</Stack>;
     },
-    name: 'Notes?',
+    name: 'Notes',
     width: '250px',
   },
   {
     formatter(row) {
       return <Stack>{row.Members ? `${row.Members.lastName}, ${row.Members.firstName}` : 'N/A'}</Stack>;
     },
-    name: 'Particulars?',
+    name: 'Particulars',
     width: '100px',
   },
   {

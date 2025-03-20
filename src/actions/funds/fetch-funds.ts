@@ -8,7 +8,7 @@ export async function fetchMemberFunds(memberName?: string) {
           Member: {
             lastName: {
               contains: memberName,
-              mode : "insensitive"
+              mode: 'insensitive',
             },
           },
         },
@@ -16,11 +16,16 @@ export async function fetchMemberFunds(memberName?: string) {
           Member: {
             firstName: {
               contains: memberName,
-                mode : "insensitive"
+              mode: 'insensitive',
             },
           },
         },
       ],
+    },
+    orderBy: {
+      Member: {
+        lastName: 'asc',
+      },
     },
     include: {
       Member: true,

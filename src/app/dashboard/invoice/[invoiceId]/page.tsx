@@ -22,6 +22,7 @@ import type { InvoiceItemsWithItem } from '@/actions/invoices/types';
 import { DynamicLogo } from '@/components/core/logo';
 // import { InvoicePDFLink } from '@/components/dashboard/invoice/invoice-pdf-link';
 import { LineItemsTable } from '@/components/dashboard/invoice/line-items-table';
+import InvoiceDeleteButton from '@/components/dashboard/invoice/invoice-delete-button';
 
 export const metadata = { title: `Details | Invoices | Dashboard | ${config.site.name}` } satisfies Metadata;
 
@@ -31,6 +32,10 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps): Promise<React.JSX.Element> {
   const invoiceDetails = await fetchSingleInvoice(params.invoiceId);
+
+  if(!invoiceDetails){
+    return <div>Invoice not found!</div>
+  }
 
   const invDueDate = dayjs(dayjs(invoiceDetails?.dateOfInvoice).add(1, 'M')).format('MMM DD,YYYY');
 
@@ -95,6 +100,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
               >
                 Print
               </Button>
+              <InvoiceDeleteButton invoiceId={invoiceDetails?.invoiceId ?? BigInt(0)} />
             </Stack>
           </Stack>
         </Stack>

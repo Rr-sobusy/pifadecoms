@@ -14,6 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { ShieldWarning as ShieldWarningIcon } from '@phosphor-icons/react/dist/ssr';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
@@ -33,6 +34,7 @@ import { PropertyList } from '@/components/core/property-list';
 // import type { Address } from '@/components/dashboard/customer/shipping-address';
 // import { ShippingAddress } from '@/components/dashboard/customer/shipping-address';
 import NotfoundToaster from '@/components/dashboard/members/member-not-found';
+import MemberStatusToggler from '@/components/dashboard/members/member-status-toggler';
 import PatronageTable from '@/components/dashboard/members/patronage-table';
 import PatronageYearPicker from '@/components/dashboard/members/patronage-year-picker';
 
@@ -53,7 +55,7 @@ export default async function Page({ params, searchParams }: PageProps): Promise
     year: searchParams.filterYear,
   });
 
-  console.log(patronages);
+  const isActive = memberData?.accountStatus === 'Active';
 
   if (!memberData) {
     return <NotfoundToaster errorMessage="Member Not Found redirecting..." routeLink={paths.dashboard.members.list} />;
@@ -157,7 +159,7 @@ export default async function Page({ params, searchParams }: PageProps): Promise
                   )}
                 </PropertyList>
               </Card>
-              {/* <Card>
+              <Card>
                 <CardHeader
                   avatar={
                     <Avatar>
@@ -168,17 +170,18 @@ export default async function Page({ params, searchParams }: PageProps): Promise
                 />
                 <CardContent>
                   <Stack spacing={1}>
-                    <div>
+                    {/* <div>
                       <Button color="error" variant="contained">
                         Delete account
                       </Button>
-                    </div>
+                    </div> */}
+                    <MemberStatusToggler memberId={memberData?.memberId} isActive={isActive} />
                     <Typography color="text.secondary" variant="body2">
-                      A deleted customer cannot be restored. All data will be permanently removed.
+                      Toggle membership status whether he/she is active or inactive.
                     </Typography>
                   </Stack>
                 </CardContent>
-              </Card> */}
+              </Card>
             </Stack>
           </Grid>
           <Grid

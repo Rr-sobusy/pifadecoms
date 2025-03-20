@@ -17,6 +17,8 @@ function BalanceTable({ balances }: Props) {
     (acc, curr) => acc + curr.totalBalance,
     0
   );
+  const totalEquity = balances.Equity.reduce((acc, curr) => acc + curr.totalBalance, 0);
+  const totalLiabilities = balances.Liability.reduce((acc, curr) => acc + curr.totalBalance, 0);
   return (
     <Box padding={3}>
       {Object.entries(balances).map(([category, accounts]) => {
@@ -35,7 +37,9 @@ function BalanceTable({ balances }: Props) {
                   {category}
                 </Typography>
                 <Typography paddingLeft={4} paddingRight={2} variant="subtitle2">
-                  {formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')}
+                  {category === 'Assets'
+                    ? formatToCurrency(totalsPerCategory - totalContraryAssets, 'Fil-ph', 'Php')
+                    : formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')}
                 </Typography>
               </Stack>
               {accounts.map((account, idx) => (
@@ -63,6 +67,20 @@ function BalanceTable({ balances }: Props) {
           </>
         );
       })}
+      <Stack
+        sx={{ backgroundColor: '#DBDBDD' }}
+        paddingY={1}
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Typography paddingLeft={4} paddingRight={2} fontWeight={600} variant="subtitle1">
+          Liability + Equity
+        </Typography>
+        <Typography paddingLeft={4} paddingRight={2} fontWeight={600} variant="subtitle2">
+          {formatToCurrency(totalLiabilities + totalEquity, 'Fil-ph', 'Php')}
+        </Typography>
+      </Stack>
     </Box>
   );
 }

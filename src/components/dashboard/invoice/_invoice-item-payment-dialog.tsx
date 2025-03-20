@@ -73,7 +73,6 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
 
   const { execute, result, isExecuting } = useAction(invoiceItemPaymentAction);
 
-
   /**
    * * Map to paymentLine based on what values selected in data table
    */
@@ -138,6 +137,12 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
         journalLineItemId: uuidv4(),
       },
     ]);
+  }, [getValues, setValue]);
+
+  const handleDeleteJournalLine = React.useCallback((itemId: string) => {
+    const existingLines = getValues('journalLineItems');
+    const filteredLines = existingLines.filter((line) => line.journalLineItemId !== itemId);
+    setValue('journalLineItems', filteredLines);
   }, [getValues, setValue]);
 
   const watchPaymentLine = watch('paymentLine') || [];
@@ -240,7 +245,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
           <Divider />
           <Stack marginY={2} spacing={1}>
             <Typography variant="h6">Journal line</Typography>
-            {watchJournalLines.map((_, index) => (
+            {watchJournalLines.map((item, index) => (
               <Stack alignItems="center" key={index} spacing={2} direction="row">
                 <Controller
                   control={control}
@@ -280,7 +285,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                   name={`journalLineItems.${index}.credit`}
                 />
                 <IconButton
-                  // onClick={() => removeJournalLineItemHandler(items.journalLineItemId)}
+                  onClick={() => handleDeleteJournalLine(item.journalLineItemId)}
                   disabled={index === 0 || index === 1}
                   color="error"
                   sx={{ alignSelf: 'flex-end' }}
