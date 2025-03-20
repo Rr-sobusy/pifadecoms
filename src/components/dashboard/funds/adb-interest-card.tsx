@@ -65,7 +65,7 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
   // );
 
   const searchParams = useSearchParams();
-  const payload = searchParams.get('computeAdb') || 'ShareCapital';
+  const payload = searchParams.get('computeAdb') || 'Savings';
 
   const rex = computeMonthlyBalances(fund, getValues('year') ?? 0, payload as 'Savings' | 'ShareCapital');
   function handleClose() {
