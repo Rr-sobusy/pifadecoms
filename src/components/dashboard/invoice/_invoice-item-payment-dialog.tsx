@@ -9,7 +9,10 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogAction from '@mui/material/DialogActions';
 import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -32,12 +35,24 @@ import { toast } from '@/components/core/toaster';
 
 import { FormInputFields } from '../member-loans/InputFields';
 
+const dueMonth = 1;
+
 type PageProps = {
   open: boolean;
   handleClose: () => void;
   selectedRows: InvoiceItemPerMemberTypes;
   accounts: AccounTreeType;
 };
+
+function isPastDue(inputtedDate: Date): boolean {
+  return !dayjs(inputtedDate).add(dueMonth, 'M').isSameOrAfter(dayjs(), 'D');
+}
+
+function computeRemainingInterest(inputtedDate: Date, toPay: number, rate: number): number {
+  const numberOfMonthsPast = dayjs(inputtedDate).add(dueMonth, 'M').diff(dayjs(), 'M');
+
+  return (rate / 100) * toPay * (numberOfMonthsPast - 1) * -1;
+}
 
 function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, accounts }: PageProps) {
   const {
@@ -47,6 +62,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
     getValues,
     formState: { errors },
     handleSubmit,
+    reset
   } = useForm<InvoiceItemsPaymentType>({
     resolver: zodResolver(invoiceItemsPaymentschema),
     defaultValues: {
@@ -96,6 +112,8 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
     if (result.data?.success) {
       handleClose();
       toast.success('Payment posted.');
+      reset()
+      selectedRows = []
     }
   }, [result]);
 
@@ -139,11 +157,16 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
     ]);
   }, [getValues, setValue]);
 
-  const handleDeleteJournalLine = React.useCallback((itemId: string) => {
-    const existingLines = getValues('journalLineItems');
-    const filteredLines = existingLines.filter((line) => line.journalLineItemId !== itemId);
-    setValue('journalLineItems', filteredLines);
-  }, [getValues, setValue]);
+  const handleDeleteJournalLine = React.useCallback(
+    (itemId: string) => {
+      const existingLines = getValues('journalLineItems');
+      const filteredLines = existingLines.filter((line) => line.journalLineItemId !== itemId);
+      setValue('journalLineItems', filteredLines);
+    },
+    [getValues, setValue]
+  );
+
+  const paymentTotal = watch('paymentLine')?.reduce((acc, curr) => acc + curr.principalPaying + curr.interestPaying, 0)
 
   const watchPaymentLine = watch('paymentLine') || [];
   const watchJournalLines = watch('journalLineItems');
@@ -225,6 +248,30 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                   variant="text"
                   inputLabel="Item Name"
                 />
+                <FormControl>
+                  <InputLabel>To pay quantity</InputLabel>
+                  <OutlinedInput
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      const parsedValue = Number(value);
+                      const currentRow = selectedRows[index];
+                      const totalAmountPerItem = watchPaymentLine[index].trade + watchPaymentLine[index].principal;
+                      setValue(
+                        `paymentLine.${index}.principalPaying`,
+                        Number(value) * (watchPaymentLine[index].principal + watchPaymentLine[index].trade)
+                      );
+
+                      if (isPastDue(currentRow.Invoice.dateOfInvoice) && !currentRow.isTotallyPaid) {
+                        setValue(
+                          `paymentLine.${index}.interestPaying`,
+                          computeRemainingInterest(selectedRows[index].Invoice.dateOfInvoice, totalAmountPerItem, 2) *
+                            parsedValue
+                        );
+                      }
+                    }}
+                    type="number"
+                  />
+                </FormControl>
                 <FormInputFields
                   errors={errors.paymentLine?.[index]?.principalPaying}
                   control={control}
@@ -241,6 +288,9 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                 />
               </Stack>
             ))}
+            <Typography sx={{ textDecoration: 'underline', marginTop: 2 }} variant="subtitle2">
+              Payment-line total : {formatToCurrency(paymentTotal, 'Fil-ph', 'Php')}
+            </Typography>
           </Stack>
           <Divider />
           <Stack marginY={2} spacing={1}>

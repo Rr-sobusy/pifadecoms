@@ -8,13 +8,14 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { ProhibitInset } from '@phosphor-icons/react/dist/ssr';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import {toast} from '@/components/core/toaster';
+
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { AccounTreeType } from '@/actions/accounts/types';
 import type { InvoiceItemPerMemberTypes } from '@/actions/invoices/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
+import { toast } from '@/components/core/toaster';
 
 import InvoiceItemPaymentDialog from './_invoice-item-payment-dialog';
 
@@ -33,6 +34,10 @@ function computeRemainingInterest(
   const numberOfMonthsPast = dayjs(inputtedDate).add(dueMonth, 'M').diff(dayjs(), 'M');
 
   return (rate / 100) * (principalAmount - paidPrincipal) * (numberOfMonthsPast - 1) * -1;
+}
+
+function formatToTwoDecimalPlaces(num: number): string {
+  return num % 1 === 0 || num.toString().split('.')[1]?.length <= 2 ? num.toString() : num.toFixed(2);
 }
 
 type PageProps = {
@@ -149,17 +154,30 @@ const columns = [
     },
   },
   {
+    name: 'Outstanding Qty',
+    formatter: (row) => {
+      const totalPrincipalPaid = row.ItemPayment?.reduce((acc, curr) => acc + Number(curr.principalPaid), 0);
+      const totalAmountDue = row.quantity * (row.trade + row.principalPrice);
+      const amountPerQty = row.trade + row.principalPrice
+      return (
+        <Typography variant='subtitle2' color="error">
+          {formatToTwoDecimalPlaces((totalAmountDue - totalPrincipalPaid) / amountPerQty)}
+        </Typography>
+      );
+    },
+  },
+  {
     name: 'Principal Paid',
     formatter: (row) => {
       const totalPrincipalPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.principalPaid), 0);
-      return <Typography color="error">{formatToCurrency(totalPrincipalPaid, 'Fil-ph', 'Php')}</Typography>;
+      return <Typography variant='subtitle2' color="error">{formatToCurrency(totalPrincipalPaid, 'Fil-ph', 'Php')}</Typography>;
     },
   },
   {
     name: 'Interest Paid',
     formatter: (row) => {
       const totalInterestPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.interestPaid), 0);
-      return <Typography color="error">{formatToCurrency(totalInterestPaid, 'Fil-ph', 'Php')}</Typography>;
+      return <Typography variant='subtitle2' color="error">{formatToCurrency(totalInterestPaid, 'Fil-ph', 'Php')}</Typography>;
     },
   },
   {
@@ -178,7 +196,7 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
 
   function handleSelectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes[0]) {
     if (row.isTotallyPaid) {
-      toast.error("Payment already settled for this invoice item.");
+      toast.error('Payment already settled for this invoice item.');
       return;
     }
 
