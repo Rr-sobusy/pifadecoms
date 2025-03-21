@@ -12,13 +12,18 @@ import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchFundTransactions } from '@/actions/funds/fetch-fund-transaction';
 import AdbCalculator from '@/components/dashboard/funds/adb-interest-card';
+import FundTransactionNonPosting from '@/components/dashboard/funds/fund-transact-already-posted';
+import { FundTransactionWithPosting } from '@/components/dashboard/funds/fund-transaction-with-posting';
 import SavingsCard from '@/components/dashboard/funds/savings-card';
-import { CreateSavingsTransaction } from '@/components/dashboard/funds/savings-transact-dialog';
 import SharesCard from '@/components/dashboard/funds/shares-card';
 
 interface PageProps {
   params: { fundId: number };
-  searchParams: { transactionType: FundTransactionsType; computeAdb: 'Savings' | 'ShareCapital' };
+  searchParams: {
+    transactionType: FundTransactionsType;
+    computeAdb: 'Savings' | 'ShareCapital';
+    postingType: 'non-posting' | 'with-posting';
+  };
 }
 
 async function page({ params, searchParams }: PageProps) {
@@ -71,7 +76,7 @@ async function page({ params, searchParams }: PageProps) {
         <SavingsCard fund={fundTransactions} />
         <SharesCard fund={fundTransactions} />
       </Stack>
-      <CreateSavingsTransaction
+      <FundTransactionWithPosting
         transactionType={searchParams.transactionType}
         fundId={params.fundId}
         accounts={accounts}
@@ -79,7 +84,16 @@ async function page({ params, searchParams }: PageProps) {
         open={Boolean(
           ['SavingsDeposit', 'SavingsWithdrawal', 'ShareCapDeposit', 'ShareCapWithdrawal'].includes(
             searchParams.transactionType
-          )
+          ) && searchParams.postingType === 'with-posting'
+        )}
+      />
+      <FundTransactionNonPosting
+        transactionType={searchParams.transactionType}
+        fundId={params.fundId}
+        fundTransactions={fundTransactions}
+        open={Boolean(
+          ['SavingsDeposit', 'ShareCapDeposit'].includes(searchParams.transactionType) &&
+            searchParams.postingType === 'non-posting'
         )}
       />
       <AdbCalculator

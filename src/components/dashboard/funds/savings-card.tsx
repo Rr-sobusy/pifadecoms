@@ -25,6 +25,7 @@ import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 import { toast } from '@/components/core/toaster';
 
+import DepositButton from './deposit-button';
 import FundTransactionPaginator from './fund-transcaction-table-paginator';
 
 interface SavingsCardProps {
@@ -134,9 +135,9 @@ function SavingsCard({ fund }: SavingsCardProps) {
    */
   const [selectedRow, setSelectedRow] = React.useState<MemberFundsType[0]['Transactions'][0][]>([]);
 
-  function navigateWithQuery(transactionType: FundTransactionsType) {
-    const searchParams = new URLSearchParams({ transactionType });
-    router.push(`${pathName}?${searchParams.toString()}`);
+  function navigateWithQuery(transactionType: FundTransactionsType, postingType: 'non-posting' | 'with-posting') {
+    const searchParams = new URLSearchParams({ transactionType, postingType });
+    router.push(`${pathName}?${searchParams.toString()}`, { scroll: false });
   }
 
   function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currPage: number) {
@@ -250,15 +251,14 @@ function SavingsCard({ fund }: SavingsCardProps) {
                     </Avatar>
                   </Stack>
                   <Stack flexDirection="row" gap={2}>
+                    <DepositButton
+                      withPostingHandler={() => navigateWithQuery('SavingsDeposit', 'with-posting')}
+                      nonPostingHandler={() => {
+                        navigateWithQuery('SavingsDeposit', 'non-posting');
+                      }}
+                    />
                     <Button
-                      onClick={() => navigateWithQuery('SavingsDeposit')}
-                      startIcon={<PiggyBank />}
-                      variant="contained"
-                    >
-                      Deposit
-                    </Button>
-                    <Button
-                      onClick={() => navigateWithQuery('SavingsWithdrawal')}
+                      onClick={() => navigateWithQuery('SavingsWithdrawal', 'with-posting')}
                       startIcon={<WithdrawIcon />}
                       variant="outlined"
                     >

@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import RouterLink from 'next/link';
+import { redirect } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -9,8 +10,8 @@ import Typography from '@mui/material/Typography';
 import { paths } from '@/paths';
 import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
 import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
+import InfiniteScroll from '@/components/dashboard/invoice/infinite-scroll';
 import { InvoicesFiltersCard } from '@/components/dashboard/invoice/invoices-filters-card';
-
 
 interface PageProps {
   searchParams: {
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
 
 const page = async ({ searchParams }: PageProps) => {
   const { memberId, endDate, invoiceId, startDate, status } = searchParams;
-  const filters = { memberId, endDate, invoiceId, startDate, status } 
+  const filters = { memberId, endDate, invoiceId, startDate, status };
   const invoices = await fetchInvoices(filters);
 
   return (
@@ -56,6 +57,7 @@ const page = async ({ searchParams }: PageProps) => {
           <InvoicesFiltersCard filters={filters} />
           <Stack spacing={4} sx={{ flex: '1 1 auto', minWidth: 0 }}>
             <InvoiceTable rows={invoices} />
+            <InfiniteScroll />
           </Stack>
         </Stack>
       </Stack>

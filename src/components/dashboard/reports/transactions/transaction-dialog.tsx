@@ -109,7 +109,7 @@ function TransactionDialog({ isOpen, accountTransactions }: TransactionDialogPro
 
     if (result?.data?.success) {
       handleClose();
-      return toast.success('Account transaction deleted. Account balances rev');
+      return toast.success('Account transaction deleted. Account balances reversed.');
     }
 
     return toast.error('Cannot delete transaction. Currently referenced by other modules.');

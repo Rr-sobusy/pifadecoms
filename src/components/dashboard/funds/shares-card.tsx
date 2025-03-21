@@ -23,22 +23,11 @@ import { formatToCurrency } from '@/lib/format-currency';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 
+import DepositButton from './deposit-button';
 import FundTransactionPaginator from './fund-transcaction-table-paginator';
 
 interface SharesCardProps {
   fund: MemberFundsType[0];
-}
-
-interface SearchParams {
-  transactionType: FundTransactionsType;
-}
-
-function toURLSearchParams(params: Partial<SearchParams>): URLSearchParams {
-  const searchParams = new URLSearchParams();
-  for (const [key, value] of Object.entries(params)) {
-    if (value) searchParams.append(key, value);
-  }
-  return searchParams;
 }
 
 const FundTransactionMap: Record<FundTransactionsType, string> = {
@@ -134,11 +123,9 @@ function SharesCard({ fund }: SharesCardProps) {
   const [currentPage, setCurrentPage] = React.useState<number>(0);
   // const paginatedTransaction = currentShareCapTransactions.slice(currentPage * 5, (currentPage + 1) * 5);
 
-  function addSavingsDeposit() {
-    const urlSearchParams = toURLSearchParams({ transactionType: 'ShareCapDeposit' });
-
-    //* Trigger open of the modal
-    router.push(`${pathName}?${urlSearchParams.toString()}`);
+  function navigateWithQuery(transactionType: FundTransactionsType, postingType: 'non-posting' | 'with-posting') {
+    const searchParams = new URLSearchParams({ transactionType, postingType });
+    router.push(`${pathName}?${searchParams.toString()}`, { scroll: false });
   }
 
   function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, currPage: number) {
@@ -223,9 +210,10 @@ function SharesCard({ fund }: SharesCardProps) {
                     </Avatar>
                   </Stack>
                   <Stack flexDirection="row" gap={2}>
-                    <Button onClick={addSavingsDeposit} startIcon={<PiggyBank />} variant="contained">
-                      Deposit
-                    </Button>
+                    <DepositButton
+                      nonPostingHandler={() => navigateWithQuery('ShareCapDeposit', 'non-posting')}
+                      withPostingHandler={() => navigateWithQuery('ShareCapDeposit', 'with-posting')}
+                    />
                     <Button onClick={computeAdb} startIcon={<CalcuIcon />} variant="text">
                       Compute ADB & Interest
                     </Button>

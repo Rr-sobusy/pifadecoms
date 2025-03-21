@@ -30,7 +30,9 @@ import { IAddMemberSchema, memberFundsSchema } from '@/actions/funds/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-interface CreateSavingsTransactionProps {
+import { FormInputFields } from '../member-loans/InputFields';
+
+interface FundTransactionWithPostingProps {
   open: boolean;
   fundTransactions: FundTransactions;
   accounts: AccounTreeType;
@@ -45,13 +47,13 @@ const referenceTypeMap: Record<FundTransactionsType, ReferenceType> = {
   ShareCapWithdrawal: 'ShareWithdrawal',
 };
 
-export const CreateSavingsTransaction = ({
+export const FundTransactionWithPosting = ({
   open,
   fundTransactions,
   accounts,
   fundId,
   transactionType,
-}: CreateSavingsTransactionProps) => {
+}: FundTransactionWithPostingProps) => {
   const router = useRouter();
   const pathName = usePathname();
 
@@ -60,7 +62,6 @@ export const CreateSavingsTransaction = ({
   const {
     handleSubmit,
     control,
-    getValues,
     setValue,
     reset,
     formState: { errors },
@@ -100,37 +101,37 @@ export const CreateSavingsTransaction = ({
   });
 
   const handleClose = () => {
-    router.push(pathName);
+    router.push(pathName, { scroll: false });
   };
 
   React.useEffect(() => {
     if (result.data) {
-      toast.success(`Transaction Posted`);
-      router.push(pathName);
-      reset();
+      if (result.data.success) {
+        toast.success(`Transaction Posted`);
+        router.push(pathName);
+        reset();
+      } else {
+        toast.error('Transaction failed. Please try again.');
+      }
     }
   }, [result]);
 
   const flattenAccounts = React.useMemo(
     () =>
-      accounts.flatMap((group) =>
-        group.Children.map((account) => ({
-          ...account,
-          group: group.rootName,
-          rootType: group.rootType,
-        }))
-      ),
+      // Filter only Assets, Liabilities, and Equity
+      accounts
+        .filter(
+          (account) =>
+            account.rootType === 'Assets' || account.rootType === 'Liability' || account.rootType === 'Equity'
+        )
+        .flatMap((group) =>
+          group.Children.map((account) => ({
+            ...account,
+            group: group.rootName,
+            rootType: group.rootType,
+          }))
+        ),
     [accounts]
-  );
-  const updateJournalItems = React.useCallback(
-    (amount: number) => {
-      const [firstLine, secondLine] = getValues('journalLineItems');
-      setValue('journalLineItems', [
-        { ...firstLine, debit: amount },
-        { ...secondLine, credit: amount },
-      ]);
-    },
-    [getValues, setValue]
   );
 
   React.useEffect(() => {
@@ -183,7 +184,11 @@ export const CreateSavingsTransaction = ({
           <Stack spacing={2} direction="column">
             <FormControl disabled>
               <InputLabel>Transaction Type</InputLabel>
-              <OutlinedInput defaultValue="Deposit" />
+              <OutlinedInput
+                defaultValue={
+                  ['SavingsDeposit', 'ShareCapDeposit'].includes(transactionType) ? 'Deposit' : 'Withdrawal'
+                }
+              />
             </FormControl>
             <FormControl disabled>
               <InputLabel>Member Name</InputLabel>
@@ -221,16 +226,6 @@ export const CreateSavingsTransaction = ({
                   onChange={(_, value) => {
                     field.onChange(value);
                   }}
-                  // filterOptions={(options, { inputValue }) =>
-                  //   options.filter((option) =>
-                  //     transactionType === 'SavingsDeposit' || transactionType === 'ShareCapDeposit'
-                  //       ? option.rootType === 'Assets' &&
-                  //         (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
-                  //       : transactionType === 'ShareCapWithdrawal'
-                  //         ? option.rootType === 'Equity'
-                  //         : option.rootType === 'Liability'
-                  //   )
-                  // }
                   options={flattenAccounts}
                   getOptionLabel={(option) => option.accountName}
                   groupBy={(option) => option.group}
@@ -258,16 +253,6 @@ export const CreateSavingsTransaction = ({
                   onChange={(_, value) => {
                     field.onChange(value);
                   }}
-                  // filterOptions={(options, { inputValue }) =>
-                  //   options.filter((option) =>
-                  //     transactionType === 'SavingsDeposit'
-                  //       ? option.rootType === 'Liability'
-                  //       : transactionType === 'ShareCapDeposit'
-                  //         ? option.rootType === 'Equity' &&
-                  //           (!inputValue || option.accountName?.toLowerCase().includes(inputValue.toLowerCase()))
-                  //         : option.rootType === 'Assets'
-                  //   )
-                  // }
                   options={flattenAccounts}
                   getOptionLabel={(option) => option.accountName}
                   groupBy={(option) => option.group}
@@ -286,38 +271,20 @@ export const CreateSavingsTransaction = ({
                 />
               )}
             />
-            <Controller
-              name="postedBalance"
+            <FormInputFields
               control={control}
-              render={({ field }) => (
-                <FormControl error={Boolean(errors.postedBalance)}>
-                  <InputLabel required>Posting Amount</InputLabel>
-                  <OutlinedInput
-                    {...field}
-                    onChange={(event) => {
-                      const amount = Number(event.target.value);
-
-                      if (!isNaN(amount)) {
-                        field.onChange(amount);
-                        updateJournalItems(amount);
-                      }
-                    }}
-                    type="number"
-                  />
-                  {errors.postedBalance && <FormHelperText>{errors.postedBalance.message}</FormHelperText>}
-                </FormControl>
-              )}
+              name="postedBalance"
+              variant="number"
+              isRequired
+              inputLabel="Posting amount"
+              errors={errors.postedBalance}
             />
-            <Controller
+            <FormInputFields
               control={control}
               name="reference"
-              render={({ field }) => (
-                <FormControl error={Boolean(errors.reference)} fullWidth>
-                  <InputLabel required>OR No.</InputLabel>
-                  <OutlinedInput {...field} />
-                  {errors.reference && <FormHelperText>{errors.reference.message}</FormHelperText>}
-                </FormControl>
-              )}
+              variant="text"
+              inputLabel={['SavingsDeposit', 'ShareCapDeposit'].includes(transactionType) ? 'OR No.' : 'Voucher No.'}
+              isRequired
             />
             <Stack justifyContent="flex-end" gap={2} flexDirection="row" marginTop={1}>
               <Button type="button" variant="outlined">

@@ -47,6 +47,9 @@ export async function fetchInvoices(props: Filterers = {}) {
       },
       Members: true,
     },
+    // cursor : {
+    //     invoiceId : 1
+    // },
     /**
      * * Create nullish operator to return the original lists if paramaters are not supplied.
      */

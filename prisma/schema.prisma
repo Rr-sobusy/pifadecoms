@@ -26,27 +26,11 @@ enum AccountStatus {
   Inactive
 }
 
-
-enum SavingsType {
-  sharedCap
-  memberSavings
-}
-
-enum SavingsTransactionType {
-  withdrawal
-  deposit
-}
-
 enum ItemType {
   product
   services
 }
 
-enum InvoiceStatus {
-  pending
-  paid
-  cancelled
-}
 
 enum JournalType {
   cashReceipts
