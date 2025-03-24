@@ -6,16 +6,19 @@ import { fetchLoanSources } from './fetch-loan-source';
 import { fetchLoanDetails, fetchLoans } from './fetch-loans';
 
 export const addLoanSchema = zod.object({
-  loanType: zod.enum(['Weekly', 'Monthly', 'Yearly', 'Diminishing', 'EndOfTerm']),
+  repStyle: zod.enum(['StraightPayment', 'Diminishing', 'OneTime']),
+  repInterval: zod.enum(['Weekly', 'Monthly', 'Yearly']),
   member: zod
     .object({
       memberId: zod.string(),
     })
     .optional(),
   amountLoaned: zod.number(),
+  amountPayable: zod.number(),
   interest: zod.number(),
-  termsInMonths: zod.number(),
-  issueDate: zod.date().optional(),
+  paymentQty: zod.number(),
+  issueDate: zod.date(),
+  dueDate:zod.date(),
   party: zod
     .object({
       memberId: zod.string(),

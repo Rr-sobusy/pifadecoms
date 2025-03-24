@@ -161,7 +161,7 @@ const columns = [
 ] satisfies ColumnDef<AccountTransactionTypes[0]>[];
 
 function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
-  console.log(accountTransactions)
+  console.log(accountTransactions);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(100);
   const [currentPage, setCurrentPage] = React.useState<number>(0);
 
@@ -177,7 +177,7 @@ function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
   return (
     <React.Fragment>
       <DataTable
-        onClick={(_, row) => router.push(`${pathname}?entryId=${row.entryId}`)}
+        onClick={(_, row) => router.push(`${pathname}?entryId=${row.entryId}`, { scroll: false })}
         hover
         columns={columns}
         rows={paginatedTransactions}
@@ -221,7 +221,7 @@ function Paginator({
     <TablePagination
       component="div"
       page={page}
-      rowsPerPageOptions={[100,200]}
+      rowsPerPageOptions={[100, 200]}
       rowsPerPage={rowsPerPage}
       count={count}
       onRowsPerPageChange={onRowsPerPageChange}

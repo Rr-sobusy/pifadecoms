@@ -63,18 +63,22 @@ enum FundTransactionsType {
   ShareCapWithdrawal
 }
 
-enum LoanType {
-  Weekly
-  Monthly
-  Yearly
-  Diminishing
-  EndOfTerm
-}
-
 enum LoanStatus {
   Active
   Closed
   Renewed
+}
+
+enum RepaymentStyle {
+  StraightPayment
+  Diminishing
+  OneTime
+}
+
+enum RepaymentInterval {
+  Weekly
+  Monthly
+  Yearly
 }
 
 enum Roles {
@@ -139,12 +143,14 @@ model LoanSource {
 model MemberLoans {
   loanId          BigInt      @id @default(autoincrement())
   memberId        String      
-  loanType        LoanType  
   loanStatus      LoanStatus  @default(Active) 
+  repStyle        RepaymentStyle
+  repInterval     RepaymentInterval
   sourceId        Int 
-  amountLoaned    Decimal     @db.Decimal(10, 2)       
+  amountLoaned    Decimal     @db.Decimal(10, 2)     
+  amountPayable   Decimal     @db.Decimal(10, 2)    
   interestRate    Decimal     @db.Decimal(10, 2)
-  termInMonths    Int
+  paymentQty      Int
   issueDate       DateTime
   isExisting      Boolean     @default(false)
   journalRef      BigInt?     @unique

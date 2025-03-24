@@ -113,7 +113,6 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
       handleClose();
       toast.success('Payment posted.');
       reset()
-      selectedRows = []
     }
   }, [result]);
 

@@ -18,7 +18,7 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LoanType } from '@prisma/client';
+import type { RepaymentInterval } from '@prisma/client';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -37,14 +37,6 @@ import LoanTabs from './loan-tabs';
 
 type Props = {
   loanSources: ILoanSources;
-};
-
-const LoanTypeMap: Record<LoanType, string> = {
-  Weekly: 'Weekly',
-  Monthly: 'Monthly',
-  Yearly: 'Yearly',
-  Diminishing: 'Diminishing',
-  EndOfTerm: 'End of Term',
 };
 
 function CreateExistingLoan({ loanSources }: Props) {
@@ -67,26 +59,24 @@ function CreateExistingLoan({ loanSources }: Props) {
 
   const { execute, isExecuting, result } = useAction(createExistingLoan);
 
-  const watchLoanType = watch('loanType');
-  const watchTermsInMonths = watch('termsInMonths');
+  const watchPaymentQty = watch('paymentQty');
+  const watchPaymentInterval = watch('repInterval');
   const watchIssueDate = watch('issueDate');
   const paymentSched = watch('paymentSched');
   const memberData = watch('party');
 
   const memoizedComputeAmortizationSched = (): void => {
-    const loanTypeMap: Record<string, dayjs.ManipulateType> = {
+    const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType> = {
       Weekly: 'week',
       Monthly: 'month',
-      Diminishing: 'month',
       Yearly: 'year',
-      EndOfTerm: 'month',
     };
 
-    const interval = loanTypeMap[watchLoanType] || 'month';
+    const interval = loanTypeMap[watchPaymentInterval];
 
     setValue(
       'paymentSched',
-      Array.from({ length: watchTermsInMonths }, (_, index) => ({
+      Array.from({ length: watchPaymentQty }, (_, index) => ({
         interest: 0,
         isExisting: false,
         principal: 0,
@@ -142,7 +132,7 @@ function CreateExistingLoan({ loanSources }: Props) {
           <LoanTabs />
           <Stack divider={<Divider />} spacing={4}>
             <Stack spacing={3}>
-              <Typography variant="h6">Loan Information</Typography>
+              <Typography variant="h6"> {}</Typography>
               <Grid container spacing={3}>
                 <Grid
                   size={{
@@ -196,7 +186,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                     )}
                   />
                 </Grid>
-                <Grid
+                {/* <Grid
                   size={{
                     md: 3,
                     xs: 12,
@@ -207,7 +197,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                     name="loanType"
                     render={({ field }) => (
                       <FormControl fullWidth>
-                        <InputLabel>Loan Type</InputLabel>
+                        <InputLabel>Loan Typess</InputLabel>
                         <Select {...field}>
                           {Object.entries(LoanTypeMap).map(([key, value]) => (
                             <Option key={key} value={key}>
@@ -218,7 +208,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                       </FormControl>
                     )}
                   />
-                </Grid>
+                </Grid> */}
                 <Grid
                   size={{
                     md: 3,
@@ -230,7 +220,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                     name="loanSource"
                     render={({ field }) => (
                       <FormControl fullWidth>
-                        <InputLabel required>Loan Source</InputLabel>
+                        <InputLabel required>Loan Sources</InputLabel>
                         <Select {...field}>
                           {loanSources.map((source) => (
                             <Option key={source.sourceId} value={source.sourceId}>
@@ -241,14 +231,6 @@ function CreateExistingLoan({ loanSources }: Props) {
                       </FormControl>
                     )}
                   />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 3,
-                    xs: 12,
-                  }}
-                >
-                  <FormInputFields control={control} name="termsInMonths" variant="number" inputLabel="No. of terms" />
                 </Grid>
                 <Grid
                   size={{

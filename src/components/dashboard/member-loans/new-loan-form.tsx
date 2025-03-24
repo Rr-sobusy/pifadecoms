@@ -22,7 +22,7 @@ import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
-import type { LoanType } from '@prisma/client';
+import type { RepaymentInterval, RepaymentStyle } from '@prisma/client';
 import Decimal from 'decimal.js';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
@@ -47,12 +47,16 @@ interface Props {
   loanSources: ILoanSources;
 }
 
-const LoanTypeMap: Record<LoanType, string> = {
+const repaymentStyle: Record<RepaymentStyle, string> = {
+  Diminishing: 'Diminishing',
+  StraightPayment: 'Straight payment',
+  OneTime: 'End of term payment',
+};
+
+const repaymentInterval: Record<RepaymentInterval, string> = {
   Weekly: 'Weekly',
   Monthly: 'Monthly',
   Yearly: 'Yearly',
-  Diminishing: 'Diminishing',
-  EndOfTerm: 'End of Term',
 };
 
 function CreateNewLoan({ accounts, loanSources }: Props) {
@@ -71,6 +75,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
     defaultValues: {
       journalType: 'cashDisbursement',
       referenceType: 'LoanDisbursements',
+      paymentQty: 1,
       issueDate: new Date(),
       entryDate: new Date(),
       paymentSched: [],
@@ -89,10 +94,9 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
     },
   });
 
-  const watchLoanType = watch('loanType');
-  // const watchAmountLoaned = watch('amountLoaned');
-  const watchInterest = watch('interest');
-  const watchTermsInMonths = watch('termsInMonths');
+  const watchPaymentQty = watch('paymentQty');
+  const watchPaymentInterval = watch('repInterval');
+  const watchRepaymentStyle = watch('repStyle');
   const watchIssueDate = watch('entryDate');
   const paymentSched = watch('paymentSched');
   const lineItems = watch('journalLineItems');
@@ -179,19 +183,17 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
   const totalCredits = lineItems.reduce((sum, item) => sum + item.credit, 0);
 
   const memoizedComputeAmortizationSched = (): void => {
-    const loanTypeMap: Record<string, dayjs.ManipulateType> = {
+    const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType> = {
       Weekly: 'week',
       Monthly: 'month',
-      Diminishing: 'month',
       Yearly: 'year',
-      EndOfTerm: 'month',
     };
 
-    const interval = loanTypeMap[watchLoanType] || 'month';
+    const interval = loanTypeMap[watchPaymentInterval];
 
     setValue(
       'paymentSched',
-      Array.from({ length: watchTermsInMonths }, (_, index) => ({
+      Array.from({ length: watchPaymentQty }, (_, index) => ({
         interest: 0,
         isExisting: false,
         principal: 0,
@@ -200,6 +202,8 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
           .toDate(),
       }))
     );
+
+    setValue('dueDate', dayjs(watchIssueDate).add(watchPaymentQty, interval).toDate());
   };
 
   function submitHandler(data: ILoanSchemaExtended) {
@@ -275,29 +279,6 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                 >
                   <Controller
                     control={control}
-                    name="loanType"
-                    render={({ field }) => (
-                      <FormControl fullWidth>
-                        <InputLabel required>Loan Type</InputLabel>
-                        <Select {...field}>
-                          {Object.entries(LoanTypeMap).map(([key, value]) => (
-                            <Option key={key} value={key}>
-                              {value}
-                            </Option>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    )}
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 3,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
                     name="loanSource"
                     render={({ field }) => (
                       <FormControl fullWidth>
@@ -319,13 +300,44 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     xs: 12,
                   }}
                 >
-                  <FormInputFields
+                  <Controller
                     control={control}
-                    name="reference"
-                    inputLabel="Reference"
-                    isRequired
-                    errors={errors}
-                    variant="text"
+                    name="repStyle"
+                    render={({ field }) => (
+                      <FormControl fullWidth>
+                        <InputLabel required>Repayment Style</InputLabel>
+                        <Select {...field}>
+                          {Object.entries(repaymentStyle).map(([key, value]) => (
+                            <Option key={key} value={key}>
+                              {value}
+                            </Option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="repInterval"
+                    render={({ field }) => (
+                      <FormControl fullWidth>
+                        <InputLabel required>Repayment Interval</InputLabel>
+                        <Select {...field}>
+                          {Object.entries(repaymentInterval).map(([key, value]) => (
+                            <Option key={key} value={key}>
+                              {value}
+                            </Option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    )}
                   />
                 </Grid>
 
@@ -336,9 +348,11 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                   }}
                 >
                   <FormInputFields
+                    isDisabled={watchRepaymentStyle === 'OneTime'}
+                    sx={{ width: '100%' }}
                     control={control}
-                    name="termsInMonths"
-                    inputLabel="Terms"
+                    name="paymentQty"
+                    inputLabel="Number of payments"
                     errors={errors}
                     variant="number"
                     isRequired
@@ -351,6 +365,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                   }}
                 >
                   <FormInputFields
+                    sx={{ width: '100%' }}
                     control={control}
                     name="interest"
                     inputLabel="Interest rate"
@@ -366,11 +381,44 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                   }}
                 >
                   <FormInputFields
+                    sx={{ width: '100%' }}
                     control={control}
                     name="amountLoaned"
                     inputLabel="Amount loaned (Principal)"
                     errors={errors}
                     variant="number"
+                    isRequired
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <FormInputFields
+                    sx={{ width: '100%' }}
+                    control={control}
+                    name="amountPayable"
+                    inputLabel="Amount payable"
+                    errors={errors}
+                    variant="number"
+                    isRequired
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <FormInputFields
+                    sx={{ width: '100%' }}
+                    control={control}
+                    name="reference"
+                    inputLabel="Releasing Voucher No."
+                    errors={errors}
+                    variant="text"
                     isRequired
                   />
                 </Grid>
@@ -386,6 +434,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     render={({ field }) => (
                       <DatePicker
                         {...field}
+                        sx={{ width: '100%' }}
                         onChange={(date) => {
                           field.onChange(date?.toDate());
                           setValue('entryDate', date ? date.toDate() : new Date());
@@ -393,6 +442,30 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                         defaultValue={dayjs()}
                         value={dayjs(field.value)}
                         label="Released Date"
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="dueDate"
+                    render={({ field }) => (
+                      <DatePicker
+                        {...field}
+                        sx={{ width: '100%' }}
+                        disabled={watchRepaymentStyle !== 'OneTime'}
+                        onChange={(date) => {
+                          field.onChange(date?.toDate());
+                        }}
+                        defaultValue={dayjs()}
+                        value={dayjs(field.value)}
+                        label="Due Date"
                       />
                     )}
                   />

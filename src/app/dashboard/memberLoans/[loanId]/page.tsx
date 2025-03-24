@@ -72,7 +72,13 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
           <div>
             <Stack gap={2} direction="row">
               <OptionsPopoverButton />
-              <Button startIcon={<Printer />} variant="text">
+              <Button
+                target="_blank"
+                LinkComponent={RouterLink}
+                href={`/pdf/loans`}
+                startIcon={<Printer />}
+                variant="text"
+              >
                 Print Amortization
               </Button>
             </Stack>

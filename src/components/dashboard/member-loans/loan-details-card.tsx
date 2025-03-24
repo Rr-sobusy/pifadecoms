@@ -7,7 +7,6 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { Info } from '@phosphor-icons/react/dist/ssr/Info';
-import { LoanType } from '@prisma/client';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -18,9 +17,9 @@ interface PageProps extends CardProps {
 }
 
 function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
-  const interest = (amount: number, rate: number, term: number, loanType: LoanType): number => {
-    return amount * (loanType === 'Weekly' ? rate / 100 / 4 : rate / 100) * term;
-  };
+  // const interest = (amount: number, rate: number, term: number, loanType: LoanType): number => {
+  //   return amount * (loanType === 'Weekly' ? rate / 100 / 4 : rate / 100) * term;
+  // };
 
   return (
     <Card {...props}>
@@ -33,21 +32,23 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
           {(
             [
               { title: 'Loaner Name', value: `${loanDetails?.Member.lastName} ${loanDetails?.Member.firstName}` },
-              { title: 'Contract Type', value: loanDetails?.loanType ?? '' },
+              { title: 'Loan status', value: loanDetails?.loanStatus ?? '' },
               { title: 'Loan Source', value: loanDetails?.Source.sourceName ?? '' },
-              { title: 'Amortization Count', value: loanDetails?.termInMonths ?? 0 },
+              { title: 'Repayment Type', value: loanDetails?.repStyle ?? '' },
+              { title: 'Repayment Interval', value: loanDetails?.repInterval ?? '' },
+
+              { title: 'Amortization Count', value: loanDetails?.paymentQty ?? 0 },
               { title: 'Interest Rate', value: `${loanDetails?.interestRate ?? 0} %` },
               {
-                title: 'Received Amount (Principal)',
+                title: 'Loaned Amount (Principal)',
                 value: formatToCurrency(Number(loanDetails?.amountLoaned ?? 0), 'Fil-ph', 'Php'),
               },
               {
-                title: 'Interest computed',
-                value: `${formatToCurrency(interest(Number(loanDetails?.amountLoaned), Number(loanDetails?.interestRate), loanDetails?.termInMonths ?? 0, loanDetails?.loanType || 'EndOfTerm'), 'Fil-ph', 'Php')} in ${loanDetails?.termInMonths} payments`,
-              },
-              {
-                title: 'Subject payment per amortization',
-                value: `${formatToCurrency((interest(Number(loanDetails?.amountLoaned), Number(loanDetails?.interestRate), loanDetails?.termInMonths ?? 0, loanDetails?.loanType || 'EndOfTerm') + Number(loanDetails?.amountLoaned)) / (loanDetails?.termInMonths ?? 0), 'Fil-ph', 'Php')}`,
+                title: 'Amount payable',
+                value:
+                  loanDetails?.repStyle !== 'Diminishing'
+                    ? formatToCurrency(Number(loanDetails?.amountPayable ?? 0), 'Fil-ph', 'Php')
+                    : `${formatToCurrency(Number(loanDetails?.amountPayable ?? 0), 'Fil-ph', 'Php')} + interest accrued`,
               },
               { title: 'Date Released', value: dayjs(loanDetails?.issueDate).format('MMM DD YYYY') },
               {
@@ -56,7 +57,7 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
                   'MMM DD YYYY'
                 ),
               },
-              { title: 'Journal Entry', value: Number(loanDetails?.JournalEntries?.entryId ?? 0), isLink: true },
+              { title: 'Releasing Voucher No.', value: loanDetails?.JournalEntries?.referenceName ?? '' },
             ] satisfies { title: string; value: string | number; isLink?: boolean }[]
           ).map((item, index) => (
             <Stack key={index} spacing={2}>
@@ -64,17 +65,9 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
                 <Typography color="text.secondary" variant="body2">
                   {item.title}
                 </Typography>
-                <div>
-                  {!item.isLink ? (
-                    <Typography color="text.primary" variant="subtitle2">
-                      {item.value}
-                    </Typography>
-                  ) : (
-                    <Button LinkComponent={Link} variant="text">
-                      Journal Entry
-                    </Button>
-                  )}
-                </div>
+                <Typography color="text.primary" variant="subtitle2">
+                  {item.value}
+                </Typography>
               </Stack>
               <Divider />
             </Stack>

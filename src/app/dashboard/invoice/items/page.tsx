@@ -7,21 +7,26 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { paths } from '@/paths';
+import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchInvoiceItemPerMember } from '@/actions/invoices/fetch-invoice';
+import { fetchItemSources } from '@/actions/items/fetch-item-sources';
 import { fetchMembers } from '@/actions/members/fetch-members';
 import { MembersType } from '@/actions/members/types';
 import InvoiceItemTable from '@/components/dashboard/invoice/_invoice-item-per-member';
+import ItemSourceDropdown from '@/components/dashboard/invoice/item-source-dropdown';
 import MemberDropDown from '@/components/dashboard/invoice/member-dropdown';
-import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 
 interface PageProps {
-  searchParams: { memberId: string };
+  searchParams: { memberId: string; itemSource: string };
 }
 
 async function page({ searchParams }: PageProps) {
-  const invoiceItems = await fetchInvoiceItemPerMember(searchParams.memberId);
-  const members = await fetchMembers({ returnAll: true });
-  const accounts = await fetchAccountTree()
+  const [invoiceItems, members, accounts, itemSources] = await Promise.all([
+    fetchInvoiceItemPerMember(searchParams.memberId, Number(searchParams.itemSource)),
+    fetchMembers({ returnAll: true }),
+    fetchAccountTree(),
+    fetchItemSources(),
+  ]);
   return (
     <Box
       sx={{
@@ -44,7 +49,10 @@ async function page({ searchParams }: PageProps) {
         </Stack>
 
         <Stack direction="column" spacing={4} sx={{ alignItems: 'flex-start' }}>
-          <MemberDropDown members={members as MembersType} />
+          <Stack spacing={2} direction={'row'}>
+            <MemberDropDown members={members as MembersType} />
+            <ItemSourceDropdown itemSources={itemSources} />
+          </Stack>
 
           <InvoiceItemTable accounts={accounts} data={invoiceItems} />
         </Stack>

@@ -68,16 +68,25 @@ const columns = [
     sortable: true,
     formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2" color="text.primary">
-        {row.loanType}
+        {row.repStyle}
       </Typography>
     ),
   },
   {
-    name: 'No. of terms',
+    name: 'Repayment Interval',
     sortable: true,
     formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2" color="text.primary">
-        {row.termInMonths}
+        {row.repInterval}
+      </Typography>
+    ),
+  },
+  {
+    name: 'No. of payments',
+    sortable: true,
+    formatter: (row): React.JSX.Element => (
+      <Typography variant="subtitle2" color="text.primary">
+        {row.paymentQty}
       </Typography>
     ),
   },
@@ -104,14 +113,6 @@ const columns = [
     formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2" color="text.primary">
         {formatToCurrency(Number(row.amountLoaned), 'Fil-ph', 'Php')}
-      </Typography>
-    ),
-  },
-  {
-    name: 'Total Amortizations Paid',
-    formatter: (row): React.JSX.Element => (
-      <Typography variant="subtitle2" color="text.primary">
-        {formatToCurrency(Number(row.totalPayment), 'Fil-ph', 'Php')}
       </Typography>
     ),
   },

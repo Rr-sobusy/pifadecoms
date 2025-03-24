@@ -10,6 +10,7 @@ import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/Funne
 import { X as CloseIcon } from '@phosphor-icons/react/dist/ssr/X';
 
 import { paths } from '@/paths';
+import { dayjs } from '@/lib/dayjs';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchAccountTransactions } from '@/actions/reports/account-transactions/account-transactions';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
@@ -87,12 +88,10 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
             Account Transactions History
           </Typography>
           <Typography color="textDisabled" variant="body2">
-            From
-            {/* {searchParams.startDate
-            ? dayjs(searchParams.startDate).format('MMM DD YYYY')
-            : dayjs().subtract(30, 'day').format('MMM DD YYYY')}{' '}
-          to{' '}
-          {searchParams.endDate ? dayjs(searchParams.endDate).format('MMM DD YYYY') : dayjs().format('MMM DD YYYY')} */}
+            From{' '}
+            {Object.keys((searchParams.startDate && searchParams.endDate) || {}).length
+              ? `${dayjs(searchParams.startDate).format('MMM DD YYYY')} to ${dayjs(searchParams.endDate).format('MMM DD YYYY')}`
+              : 'last 1000 records'}
           </Typography>
         </Stack>
 

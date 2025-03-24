@@ -8,7 +8,7 @@ interface Filterers {
   endDate?: Date;
 }
 
-export async function fetchAccountTransactions(props: Filterers ) {
+export async function fetchAccountTransactions(props: Filterers) {
   const isEmpty = !props.accountId && !props.memberId && !props.startDate && !props.endDate;
 
   const conditions = [];
@@ -46,18 +46,18 @@ export async function fetchAccountTransactions(props: Filterers ) {
         },
       },
       Members: {
-        select : {
-          memberId : true,
-          lastName : true,
-          firstName : true,
-          middleName : true,
-        }
+        select: {
+          memberId: true,
+          lastName: true,
+          firstName: true,
+          middleName: true,
+        },
       },
     },
-    where: isEmpty ? undefined : { ["AND"]: conditions },
+    where: isEmpty ? undefined : { ['AND']: conditions },
     orderBy: [
       {
-        entryDate : "desc"
+        entryDate: 'desc',
       },
       {
         referenceName: 'desc',
@@ -68,6 +68,9 @@ export async function fetchAccountTransactions(props: Filterers ) {
   const sortedJournalEntries = _journalEntries.map((entry) => {
     return {
       ...entry,
+      /**
+       * * Sort journalLineItems to prioritize debit over credit
+       */
       JournalItems: entry.JournalItems.sort((a, b) => (Number(b.debit) ?? 0) - (Number(a.debit) ?? 0)),
     };
   });

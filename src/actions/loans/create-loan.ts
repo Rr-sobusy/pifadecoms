@@ -29,10 +29,12 @@ export const createNewLoan = actionClient.schema(loanSchemaExtended).action(asyn
           },
           MemberLoans: {
             create: {
-              loanType: Request.loanType,
+              repStyle: Request.repStyle,
+              repInterval: Request.repInterval,
               amountLoaned: Request.amountLoaned,
+              amountPayable : Request.amountPayable,
               interestRate: Request.interest,
-              termInMonths: Request.termsInMonths,
+              paymentQty: Request.paymentQty,
               issueDate: Request.entryDate,
               sourceId: Request.loanSource,
               isExisting: Request.isExisting,
@@ -89,11 +91,13 @@ export const createExistingLoan = actionClient.schema(addLoanSchema).action(asyn
       data: {
         memberId: Request.party?.memberId || '',
         amountLoaned: Request.amountLoaned,
+        amountPayable: Request.amountPayable,
         interestRate: Request.interest,
         issueDate: Request.issueDate || new Date(),
-        loanType: Request.loanType,
         sourceId: Request.loanSource,
-        termInMonths: Request.termsInMonths,
+        paymentQty: Request.paymentQty,
+        repInterval: Request.repInterval,
+        repStyle: Request.repStyle,
 
         Repayments: {
           create: Request.paymentSched.map((repayment) => ({

@@ -83,12 +83,16 @@ export async function fetchSingleInvoice(invoiceId: bigint) {
   return invoiceDetails;
 }
 
-export async function fetchInvoiceItemPerMember(memberId?: string) {
-
+export async function fetchInvoiceItemPerMember(memberId?: string, sourceName?: number) {
   const invoiceItems = await prisma.invoiceItems.findMany({
     where: {
       Invoice: {
         memberId: memberId,
+      },
+      Item: {
+        ItemSource: {
+          sourceId: sourceName ? sourceName : undefined,
+        },
       },
     },
     orderBy: {
