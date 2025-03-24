@@ -161,6 +161,7 @@ const columns = [
 ] satisfies ColumnDef<AccountTransactionTypes[0]>[];
 
 function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
+  console.log(accountTransactions)
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(100);
   const [currentPage, setCurrentPage] = React.useState<number>(0);
 

@@ -57,6 +57,8 @@ function FundTransactionNonPosting({
     resolver: zodResolver(memberFundsNoPosting),
     defaultValues: {
       fundId: Number(fundId),
+      postingAmount: 0,
+      journalRef: 0,
     },
   });
 
@@ -80,6 +82,7 @@ function FundTransactionNonPosting({
       if (result.data?.success) {
         toast.success('Transaction posted successfully.');
         reset();
+        handleClose();
       } else {
         toast.error('Transaction failed to post.');
       }
@@ -128,6 +131,7 @@ function FundTransactionNonPosting({
               />
             </FormControl>
             <FormInputFields
+              errors={errors.postingAmount}
               control={control}
               name="postingAmount"
               variant="number"
@@ -135,6 +139,7 @@ function FundTransactionNonPosting({
               inputLabel="Posting balance"
             />
             <FormInputFields
+              errors={errors.journalRef}
               control={control}
               name="journalRef"
               variant="number"

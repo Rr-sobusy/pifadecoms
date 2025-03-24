@@ -38,6 +38,8 @@ import { transactionalSchema, type TransactionalSchemaType } from '@/actions/tra
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
+import { FormInputFields } from '../member-loans/InputFields';
+
 interface NewJournalFromProps {
   data: AccounTreeType;
 }
@@ -328,35 +330,21 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                       />
                     )}
                   />
-                  <Controller
+                  <FormInputFields
+                    sx={{ width: '10%' }}
                     control={control}
                     name={`journalLineItems.${index}.debit`}
-                    render={({ field }) => (
-                      <FormControl sx={{ width: '10%' }}>
-                        <InputLabel>Debit</InputLabel>
-                        <OutlinedInput
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                          defaultValue={0}
-                          type="number"
-                        />
-                      </FormControl>
-                    )}
+                    inputLabel="Debit (Php)"
+                    variant="number"
+                    isRequired
                   />
-                  <Controller
+                  <FormInputFields
+                    sx={{ width: '10%' }}
                     control={control}
                     name={`journalLineItems.${index}.credit`}
-                    render={({ field }) => (
-                      <FormControl sx={{ width: '10%' }}>
-                        <InputLabel>Credit</InputLabel>
-                        <OutlinedInput
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                          defaultValue={0}
-                          type="number"
-                        />
-                      </FormControl>
-                    )}
+                    inputLabel="Credit (Php)"
+                    variant="number"
+                    isRequired
                   />
                   <IconButton
                     onClick={() => removeJournalLineItemHandler(items.journalLineItemId)}

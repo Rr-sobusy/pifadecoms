@@ -1,15 +1,12 @@
 import React from 'react';
-import { FormControl } from '@mui/material';
-import type { SxProps } from '@mui/material';
-import FormHelperText from '@mui/material/FormHelperText';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import { Controller, FieldValues, Path, type Control, type FieldErrors } from 'react-hook-form';
+import { FormControl, FormHelperText, InputLabel, OutlinedInput, SxProps } from '@mui/material';
+import { Control, Controller, FieldErrors, FieldValues, Path } from 'react-hook-form';
+import { NumericFormat } from 'react-number-format';
 
 interface FormInputFieldsProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>;
   name: Path<TFormValues>;
-  errors?: FieldErrors<TFormValues> | undefined;
+  errors?: FieldErrors<TFormValues>;
   variant: 'text' | 'number';
   inputLabel: string;
   isRequired?: boolean;
@@ -28,25 +25,51 @@ export const FormInputFields = <TFormValues extends FieldValues>({
   isDisabled = false,
 }: FormInputFieldsProps<TFormValues>) => {
   return (
-    <div>
-      <Controller
-        name={name}
-        control={control}
-        render={({ field }) => (
-          <FormControl disabled={isDisabled} sx={sx} error={Boolean(errors ? errors[name] : false)} fullWidth>
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { onChange, value, ...rest } }) => {
+        const isNumberField = variant === 'number';
+        return (
+          <FormControl sx={sx} disabled={isDisabled} error={Boolean(errors?.[name])}>
             <InputLabel required={isRequired}>{inputLabel}</InputLabel>
-            <OutlinedInput
-              {...field}
-              type={variant}
-              onChange={(e) => {
-                const value = variant === 'number' ? Number(e.target.value) : e.target.value;
-                field.onChange(value);
-              }}
-            />
+            {isNumberField ? (
+              <NumericFormat
+                {...rest}
+                customInput={OutlinedInput}
+                thousandSeparator=","
+                decimalScale={3}
+                allowNegative={false}
+                value={value ?? ''}
+                onValueChange={(values) => onChange(values.floatValue ?? null)}
+              />
+            ) : (
+              <OutlinedInput {...rest} sx={sx} onChange={onChange} value={value} type="text" />
+            )}
             {errors?.[name] && <FormHelperText>{errors[name]?.message?.toString()}</FormHelperText>}
           </FormControl>
-        )}
-      />
-    </div>
+        );
+      }}
+    />
   );
 };
+{/* <div>
+<Controller
+  name={name}
+  control={control}
+  render={({ field }) => (
+    <FormControl disabled={isDisabled} sx={sx} error={Boolean(errors ? errors[name] : false)} fullWidth>
+      <InputLabel required={isRequired}>{inputLabel}</InputLabel>
+      <OutlinedInput
+        {...field}
+        type={variant}
+        onChange={(e) => {
+          const value = variant === 'number' ? Number(e.target.value) : e.target.value;
+          field.onChange(value);
+        }}
+      />
+      {errors?.[name] && <FormHelperText>{errors[name]?.message?.toString()}</FormHelperText>}
+    </FormControl>
+  )}
+/>
+</div> */}

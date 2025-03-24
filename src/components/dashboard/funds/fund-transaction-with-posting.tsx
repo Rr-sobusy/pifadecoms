@@ -64,6 +64,8 @@ export const FundTransactionWithPosting = ({
     control,
     setValue,
     reset,
+    watch,
+    getValues,
     formState: { errors },
   } = useForm<IAddMemberSchema>({
     resolver: zodResolver(memberFundsSchema),
@@ -154,6 +156,22 @@ export const FundTransactionWithPosting = ({
     execute(data);
   };
 
+  const watchJournalLineItems = watch('journalLineItems');
+  const watchPostedBalance = watch('postedBalance');
+
+  React.useEffect(() => {
+    if (!watchJournalLineItems.length) return;
+
+    const [firstItem, secondItem] = watchJournalLineItems;
+
+    if (transactionType === 'SavingsDeposit' || transactionType === 'ShareCapDeposit') {
+      setValue('journalLineItems.0', { ...firstItem, debit: watchPostedBalance, credit: 0 });
+      setValue('journalLineItems.1', { ...secondItem, credit: watchPostedBalance, debit: 0 });
+    } else {
+      setValue('journalLineItems.0', { ...firstItem, credit: watchPostedBalance, debit: 0 });
+      setValue('journalLineItems.1', { ...secondItem, debit: watchPostedBalance, credit: 0 });
+    }
+  }, [transactionType, watchJournalLineItems, watchPostedBalance]);
   return (
     <Dialog
       maxWidth="xs"
@@ -287,7 +305,7 @@ export const FundTransactionWithPosting = ({
               isRequired
             />
             <Stack justifyContent="flex-end" gap={2} flexDirection="row" marginTop={1}>
-              <Button type="button" variant="outlined">
+              <Button onClick={() => console.log(getValues())} type="button" variant="outlined">
                 Cancel
               </Button>
               <Button disabled={isExecuting} type="submit" variant="contained">

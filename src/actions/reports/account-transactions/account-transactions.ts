@@ -68,11 +68,7 @@ export async function fetchAccountTransactions(props: Filterers ) {
   const sortedJournalEntries = _journalEntries.map((entry) => {
     return {
       ...entry,
-      JournalItems: entry.JournalItems.sort((a, b) => {
-        if (a.debit && !b.debit) return -1;
-        if (!a.debit && b.debit) return 1;
-        return 0;
-      }),
+      JournalItems: entry.JournalItems.sort((a, b) => (Number(b.debit) ?? 0) - (Number(a.debit) ?? 0)),
     };
   });
   return sortedJournalEntries;

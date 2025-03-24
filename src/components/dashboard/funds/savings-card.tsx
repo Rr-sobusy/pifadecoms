@@ -171,6 +171,7 @@ function SavingsCard({ fund }: SavingsCardProps) {
       const result = await deleteFundTransaction(selectedRow[0].fundTransactId);
 
       if (result?.data?.success) {
+        setSelectedRow([]);
         toast.success(
           'Fund transaction deleted and negated. You can delete it into acct transactions to reverse the balances update.'
         );

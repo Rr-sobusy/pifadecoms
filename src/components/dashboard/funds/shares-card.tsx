@@ -20,11 +20,14 @@ import { FundTransactionsType } from '@prisma/client';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
+import { deleteFundTransaction } from '@/actions/funds/delete-fund-transaction';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
+import { toast } from '@/components/core/toaster';
 
 import DepositButton from './deposit-button';
 import FundTransactionPaginator from './fund-transcaction-table-paginator';
+import { FormInputFields } from '../member-loans/InputFields';
 
 interface SharesCardProps {
   fund: MemberFundsType[0];
@@ -121,7 +124,13 @@ function SharesCard({ fund }: SharesCardProps) {
 
   const currentShareCapTransactions = fund.Transactions.filter((ctx) => ctx.fundType === 'ShareCapital');
   const [currentPage, setCurrentPage] = React.useState<number>(0);
+  const paginatedData = currentShareCapTransactions.slice(currentPage * 5, (currentPage + 1) * 5);
   // const paginatedTransaction = currentShareCapTransactions.slice(currentPage * 5, (currentPage + 1) * 5);
+
+  /**
+   * * States for selected rows for deleting transaction
+   */
+  const [selectedRow, setSelectedRow] = React.useState<MemberFundsType[0]['Transactions'][0][]>([]);
 
   function navigateWithQuery(transactionType: FundTransactionsType, postingType: 'non-posting' | 'with-posting') {
     const searchParams = new URLSearchParams({ transactionType, postingType });
@@ -134,6 +143,39 @@ function SharesCard({ fund }: SharesCardProps) {
 
   function computeAdb() {
     router.push(`${pathName}?computeAdb=ShareCapital`);
+  }
+
+  function handleSelectOne(_: React.ChangeEvent, row: MemberFundsType[0]['Transactions'][0]) {
+    if (selectedRow.length === 0) {
+      setSelectedRow((prev) => {
+        const isAlreadySelected = prev.some((ctx) => ctx.fundTransactId === row.fundTransactId);
+
+        return isAlreadySelected ? prev.filter((ctx) => ctx.fundTransactId !== row.fundTransactId) : [...prev, row];
+      });
+    }
+  }
+
+  function handleDeselecteOne(_: React.ChangeEvent, row: MemberFundsType[0]['Transactions'][0]) {
+    if (selectedRow.length === 1) {
+      setSelectedRow((prev) => {
+        const isAlreadySelected = prev.some((ctx) => ctx.fundTransactId === row.fundTransactId);
+
+        return isAlreadySelected ? prev.filter((ctx) => ctx.fundTransactId !== row.fundTransactId) : [...prev, row];
+      });
+    }
+  }
+
+  async function deleteTransactionHandler() {
+    if (selectedRow.length) {
+      const result = await deleteFundTransaction(selectedRow[0].fundTransactId);
+
+      if (result?.data?.success) {
+        setSelectedRow([]);
+        toast.success(
+          'Fund transaction deleted and negated. You can delete it into acct transactions to reverse the balances update.'
+        );
+      }
+    }
   }
 
   const currentShare = fund.shareCapBal;
@@ -214,6 +256,13 @@ function SharesCard({ fund }: SharesCardProps) {
                       nonPostingHandler={() => navigateWithQuery('ShareCapDeposit', 'non-posting')}
                       withPostingHandler={() => navigateWithQuery('ShareCapDeposit', 'with-posting')}
                     />
+                    <Button
+                      onClick={() => navigateWithQuery('ShareCapWithdrawal', 'with-posting')}
+                      startIcon={<WithdrawIcon />}
+                      variant="outlined"
+                    >
+                      Withdraw
+                    </Button>
                     <Button onClick={computeAdb} startIcon={<CalcuIcon />} variant="text">
                       Compute ADB & Interest
                     </Button>
@@ -232,13 +281,29 @@ function SharesCard({ fund }: SharesCardProps) {
                   Member previous transactions up-to date
                 </Typography>
               </Stack>
-
+              <Stack alignItems="flex-end">
+                <div>
+                  <Button
+                    onClick={deleteTransactionHandler}
+                    disabled={selectedRow.length !== 1}
+                    variant="contained"
+                    color="error"
+                  >
+                    Delete selected row
+                  </Button>
+                </div>
+              </Stack>
               <>
                 <DataTable<MemberFundsType[0]['Transactions'][0]>
+                  onSelectOne={handleSelectOne}
+                  onDeselectOne={handleDeselecteOne}
+                  selected={new Set(selectedRow.map((r) => r.fundTransactId))}
+                  uniqueRowId={(row) => Number(row.fundTransactId)}
+                  selectable
                   sx={{ marginTop: 3 }}
                   hideHead
                   columns={columns}
-                  rows={fund.Transactions.filter((transaction) => transaction.fundType === 'ShareCapital')}
+                  rows={paginatedData}
                 />
                 {!fund.Transactions.length ? (
                   <Box sx={{ p: 3 }}>
