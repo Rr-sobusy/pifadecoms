@@ -16,21 +16,22 @@ import { fetchAccountTransactions } from '@/actions/reports/account-transactions
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
 import TransactionDialog from '@/components/dashboard/reports/transactions/transaction-dialog';
-
+import type { JournalType } from '@prisma/client';
 interface PageProps {
   searchParams: {
     filterList: boolean;
 
     memberId: string;
     accountId: string;
+    journalType:JournalType;
     startDate: Date;
     endDate: Date;
     entryId: bigint;
   };
 }
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const { memberId, accountId, startDate, endDate, entryId } = searchParams;
-  const filters = { memberId, accountId, startDate, endDate };
+  const { memberId, accountId, startDate, endDate, entryId , journalType} = searchParams;
+  const filters = { memberId, accountId, startDate, endDate, journalType };
   const [accountTransactions, accounts] = await Promise.all([fetchAccountTransactions(filters), fetchAccountTree()]);
 
   /**

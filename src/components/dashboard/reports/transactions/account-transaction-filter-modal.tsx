@@ -14,6 +14,7 @@ import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -82,6 +83,7 @@ const filterSchema = zod.object({
       lastName: zod.string(),
     })
     .optional(),
+  journalType: zod.enum(['cashReceipts', 'cashDisbursement', 'generalJournal']).optional(),
 });
 
 type FilterSchema = zod.infer<typeof filterSchema>;
@@ -93,7 +95,7 @@ function FilterModal({ open, accounts }: FilterModalProps) {
 
   const isOpenFromParams = searchParams.get('filterList') === 'true';
 
-  const [isDialogOpen, setDialogOpen] = React.useState(false)
+  const [isDialogOpen, setDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (isDialogOpen !== isOpenFromParams) {
@@ -187,10 +189,12 @@ function FilterModal({ open, accounts }: FilterModalProps) {
     if (data.dateRange?.endDate) {
       searchParams.set('endDate', String(data.dateRange?.endDate));
     }
+    if (data.journalType) {
+      searchParams.set('journalType', String(data.journalType));
+    }
 
     router.push(`${pathname}?${searchParams.toString()}`);
-    reset()
-
+    reset();
   }
   return (
     <Dialog
@@ -277,6 +281,20 @@ function FilterModal({ open, accounts }: FilterModalProps) {
                 />
               </Grid>
             </Grid>
+            <Controller
+              control={control}
+              name="journalType"
+              render={({ field }) => (
+                <FormControl>
+                  <InputLabel>Journal Type</InputLabel>
+                  <Select {...field}>
+                    <Option value="cashReceipts">Cash Receipts</Option>
+                    <Option value="cashDisbursement">Cash Disbursement</Option>
+                    <Option value="generalJournal">General Journal</Option>
+                  </Select>
+                </FormControl>
+              )}
+            />
             <Controller
               control={control}
               name="accountDetails"

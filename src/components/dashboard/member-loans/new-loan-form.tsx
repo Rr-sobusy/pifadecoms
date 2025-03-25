@@ -487,7 +487,12 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
             <Stack spacing={3}>
               <Typography variant="h6">Payment amortization schedules</Typography>
               <Grid container spacing={3}>
-                {paymentSched.map((_, index) => (
+                <Stack>
+                  {
+                    paymentSched.map((_,index)=>(<Typography key={index} variant='caption'></Typography>))
+                  }
+                </Stack>
+                {/* {paymentSched.map((_, index) => (
                   <Stack direction="row" spacing={2}>
                     <Stack justifyContent="space-between" direction="column">
                       <InputLabel>Number</InputLabel>
@@ -534,7 +539,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                       </FormControl>
                     </Stack>
                   </Stack>
-                ))}
+                ))} */}
               </Grid>
             </Stack>
             <Stack spacing={3}>

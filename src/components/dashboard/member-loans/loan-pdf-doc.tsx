@@ -17,13 +17,20 @@ const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType> = {
     Yearly: 'year',
   };
 
+  
+function roundToTens(value: number): number {
+    return Math.round(value / 10) * 10; // Round to nearest 10
+  }
+
 function computeAmortization(
   repStyle: ILoanDetails['repStyle'] | undefined,
+  repInterval: ILoanDetails['repInterval'] | undefined,
   principal: number | undefined, // Principal amount (to be repaid without interest)
   payable: number | undefined, // Total amount to be repaid (including interest)
   releaseDate: Date | undefined,
   paymentQty: number | undefined, // Number of payments
-  interestRate: number | undefined // Annual interest rate in decimal (e.g., 12 for 12%)
+  interestRate: number | undefined ,
+// Annual interest rate in decimal (e.g., 12 for 12%)
 ): {
   paymentNo: number;
   paymentSched: Date;
@@ -44,6 +51,7 @@ function computeAmortization(
   // Validate required values
   if (
     repStyle === undefined ||
+    repInterval === undefined ||
     principal === undefined ||
     payable === undefined ||
     releaseDate === undefined ||
@@ -56,9 +64,11 @@ function computeAmortization(
 
   let balance = repStyle === 'Diminishing' ? principal : payable;
 
+
   if (repStyle === 'Diminishing') {
+
     const fixedPrincipal = Math.round(principal / paymentQty); // Fixed principal per period
-    const periodRate = interestRate / 100; // Convert annual rate to monthly
+    const periodRate = (interestRate / 100)  // Convert annual rate to monthly
 
     for (let i = 1; i <= paymentQty; i++) {
       const interest = Math.round(balance * periodRate); // Interest based on remaining balance
@@ -67,7 +77,7 @@ function computeAmortization(
 
       amortizations.push({
         paymentNo: i,
-        paymentSched: dayjs(releaseDate).add(i, 'month').toDate(), // Monthly schedule
+        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval]).toDate(),
         totalPayment,
         principal: fixedPrincipal,
         interest,
@@ -82,7 +92,7 @@ function computeAmortization(
       balance = Math.max(balance - fixedPayment, 0);
       amortizations.push({
         paymentNo: i,
-        paymentSched: dayjs(releaseDate).add(i, 'month').toDate(), // Monthly schedule
+        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval]).toDate(), 
         totalPayment: fixedPayment,
         principal: fixedPayment,
         interest: 0,
@@ -141,6 +151,7 @@ const styleSheet = StyleSheet.create({
 function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
   const amortizations = computeAmortization(
     loanDetails?.repStyle,
+    loanDetails?.repInterval,
     Number(loanDetails?.amountLoaned),
     Number(loanDetails?.amountPayable),
     loanDetails?.issueDate,
@@ -149,8 +160,6 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
   );
   console.log(amortizations);
 
-
-  const dueDate = dayjs(loanDetails?.issueDate).add(loanDetails?.paymentQty || 1, loanTypeMap[loanDetails?.repInterval || "Monthly"])
 
   if (!loanDetails) {
     return (
@@ -212,7 +221,7 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
             <View style={styleSheet.refs}>
               <View style={styleSheet.refRow}>
                 <Text style={styleSheet.refDescription}>Interest rate:</Text>
-                <Text>{Number(loanDetails.interestRate)} per month</Text>
+                <Text>{Number(loanDetails.interestRate)}% per month</Text>
               </View>
               <View style={styleSheet.refRow}>
                 <Text style={styleSheet.refDescription}>Amortization count:</Text>
@@ -224,7 +233,7 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
               </View>
               <View style={styleSheet.refRow}>
                 <Text style={styleSheet.refDescription}>Date Due:</Text>
-                <Text>{dayjs(dueDate).format('MMM DD YYYY')}</Text>
+                <Text>{dayjs(loanDetails.dueDate).format('MMM DD YYYY')}</Text>
               </View>
             </View>
           </View>

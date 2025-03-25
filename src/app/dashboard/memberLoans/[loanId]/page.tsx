@@ -79,7 +79,7 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
                 startIcon={<Printer />}
                 variant="text"
               >
-                Print Amortization
+                View Amortizations
               </Button>
             </Stack>
           </div>

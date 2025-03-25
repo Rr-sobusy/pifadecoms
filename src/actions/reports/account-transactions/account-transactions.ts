@@ -1,3 +1,5 @@
+import type { JournalType } from '@prisma/client';
+
 import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
@@ -6,10 +8,11 @@ interface Filterers {
   accountId?: string;
   startDate?: Date;
   endDate?: Date;
+  journalType?: JournalType;
 }
 
 export async function fetchAccountTransactions(props: Filterers) {
-  const isEmpty = !props.accountId && !props.memberId && !props.startDate && !props.endDate;
+  const isEmpty = !props.accountId && !props.memberId && !props.startDate && !props.endDate && !props.journalType;
 
   const conditions = [];
 
@@ -17,6 +20,10 @@ export async function fetchAccountTransactions(props: Filterers) {
     conditions.push({
       memberId: props.memberId,
     });
+  }
+
+  if (props.journalType) {
+    conditions.push({ journalType: props.journalType });
   }
 
   if (props.accountId) {

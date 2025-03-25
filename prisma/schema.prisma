@@ -66,7 +66,6 @@ enum FundTransactionsType {
 enum LoanStatus {
   Active
   Closed
-  Renewed
 }
 
 enum RepaymentStyle {
@@ -152,11 +151,12 @@ model MemberLoans {
   interestRate    Decimal     @db.Decimal(10, 2)
   paymentQty      Int
   issueDate       DateTime
+  dueDate         DateTime
   isExisting      Boolean     @default(false)
   journalRef      BigInt?     @unique
   parentLoan      BigInt?     @unique
-  children        MemberLoans[]   @relation("SelfReference")
-  Parent          MemberLoans?    @relation("SelfReference", fields: [parentLoan], references: [loanId])     
+  // children        MemberLoans[]   @relation("SelfReference")
+  // Parent          MemberLoans?    @relation("SelfReference", fields: [parentLoan], references: [loanId])     
 
   JournalEntries  JournalEntries? @relation(fields: [journalRef], references: [entryId])
   Repayments      LoanRepayments[]
