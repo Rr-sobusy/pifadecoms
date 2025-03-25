@@ -64,7 +64,7 @@ const columns = [
     },
   },
   {
-    name: 'Amortization Type',
+    name: 'Loan Contract',
     sortable: true,
     formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2" color="text.primary">

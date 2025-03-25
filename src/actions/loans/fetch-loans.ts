@@ -10,7 +10,7 @@ export async function fetchLoans() {
           },
         },
         include: {
-          JournalEntries: true
+          JournalEntries: true,
         },
       },
       Member: {
@@ -20,11 +20,11 @@ export async function fetchLoans() {
           lastName: true,
         },
       },
-      JournalEntries : {
-        select : {
-          referenceName : true
-        }
-      }
+      JournalEntries: {
+        select: {
+          referenceName: true,
+        },
+      },
     },
   });
 
@@ -57,18 +57,22 @@ export async function fetchLoanDetails(loanId: bigint) {
         orderBy: {
           paymentSched: 'asc',
         },
-        include : {
-          JournalEntries : {
-            select : {
-              referenceName : true
-            }
-          }
-        }
+        include: {
+          JournalEntries: {
+            select: {
+              referenceName: true,
+            },
+          },
+        },
       },
       JournalEntries: true,
-      Source : true
+      Source: true,
     },
   });
+
+  if (!loanDetails || Object.keys(loanDetails).length === 0) {
+    throw new Error('No loan record found!');
+  }
 
   return loanDetails;
 }

@@ -1,3 +1,6 @@
+
+
+
 import React from 'react';
 import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 
@@ -13,6 +16,7 @@ const styleSheet = StyleSheet.create({
     padding: 24,
     fontSize: 10,
     fontWeight: 400,
+    marginTop : 40
   },
   bigText: { fontSize: 22 },
   smallText: { fontSize: 9 },
@@ -47,6 +51,7 @@ const styleSheet = StyleSheet.create({
   principal: { width: '17%', margin: 2 },
   interest: { width: '17%', margin: 2 },
   balance: { width: '17%', margin: 2 },
+  footer: { marginTop: 25 },
 });
 
 function page({}: Props) {
@@ -75,7 +80,7 @@ function page({}: Props) {
                 <Text>Member Loans</Text>
               </View>
               <View style={styleSheet.refRow}>
-                <Text style={styleSheet.refDescription}>Loan style:</Text>
+                <Text style={styleSheet.refDescription}>Loan contract:</Text>
                 <Text>Diminishing</Text>
               </View>
               <View style={styleSheet.refRow}>
@@ -88,7 +93,7 @@ function page({}: Props) {
               </View>
               <View style={styleSheet.refRow}>
                 <Text style={styleSheet.refDescription}>Amount Payable</Text>
-                <Text>{formatToPHP(11000)}</Text>
+                <Text>{formatToPHP(10000)} + accrued int.</Text>
               </View>
             </View>
             <View style={styleSheet.refs}>
@@ -198,6 +203,75 @@ function page({}: Props) {
             </View>
           </View>
 
+          <View style={styleSheet.schedLine}>
+            <View style={styleSheet.paymentNo}>
+              <Text>4</Text>
+            </View>
+            <View style={styleSheet.paymentDate}>
+              <Text>{dayjs().format('MMM DD YYYY')}</Text>
+            </View>
+            <View style={styleSheet.totalPayment}>
+              <Text>{formatToPHP(1200)}</Text>
+            </View>
+            <View style={styleSheet.principal}>
+              <Text>{formatToPHP(1000)}</Text>
+            </View>
+            <View style={styleSheet.interest}>
+              <Text>{formatToPHP(200)}</Text>
+            </View>
+            <View style={styleSheet.balance}>
+              <Text>{formatToPHP(9000)}</Text>
+            </View>
+          </View>
+
+          <View style={styleSheet.schedLine}>
+            <View style={styleSheet.paymentNo}>
+              <Text>5</Text>
+            </View>
+            <View style={styleSheet.paymentDate}>
+              <Text>{dayjs().format('MMM DD YYYY')}</Text>
+            </View>
+            <View style={styleSheet.totalPayment}>
+              <Text>{formatToPHP(1200)}</Text>
+            </View>
+            <View style={styleSheet.principal}>
+              <Text>{formatToPHP(1000)}</Text>
+            </View>
+            <View style={styleSheet.interest}>
+              <Text>{formatToPHP(200)}</Text>
+            </View>
+            <View style={styleSheet.balance}>
+              <Text>{formatToPHP(9000)}</Text>
+            </View>
+          </View>
+
+          <View style={styleSheet.schedLine}>
+            <View style={styleSheet.paymentNo}>
+              <Text>6</Text>
+            </View>
+            <View style={styleSheet.paymentDate}>
+              <Text>{dayjs().format('MMM DD YYYY')}</Text>
+            </View>
+            <View style={styleSheet.totalPayment}>
+              <Text>{formatToPHP(1200)}</Text>
+            </View>
+            <View style={styleSheet.principal}>
+              <Text>{formatToPHP(1000)}</Text>
+            </View>
+            <View style={styleSheet.interest}>
+              <Text>{formatToPHP(200)}</Text>
+            </View>
+            <View style={styleSheet.balance}>
+              <Text>{formatToPHP(9000)}</Text>
+            </View>
+          </View>
+
+          <View style={styleSheet.footer}>
+            <Text>
+              Note: This is a system generated amortization schedules. Small miscalculations may be seen so better to
+              review it.
+            </Text>
+          </View>
         </Page>
       </Document>
     </PDFViewer>

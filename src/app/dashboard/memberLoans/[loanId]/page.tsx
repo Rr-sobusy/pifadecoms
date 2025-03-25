@@ -75,7 +75,7 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
               <Button
                 target="_blank"
                 LinkComponent={RouterLink}
-                href={`/pdf/loans`}
+                href={paths.dashboard.loans.viewPdf(loanDetails.loanId)}
                 startIcon={<Printer />}
                 variant="text"
               >

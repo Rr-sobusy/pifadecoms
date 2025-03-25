@@ -34,7 +34,7 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
               { title: 'Loaner Name', value: `${loanDetails?.Member.lastName} ${loanDetails?.Member.firstName}` },
               { title: 'Loan status', value: loanDetails?.loanStatus ?? '' },
               { title: 'Loan Source', value: loanDetails?.Source.sourceName ?? '' },
-              { title: 'Repayment Type', value: loanDetails?.repStyle ?? '' },
+              { title: 'Loan contract', value: loanDetails?.repStyle ?? '' },
               { title: 'Repayment Interval', value: loanDetails?.repInterval ?? '' },
 
               { title: 'Amortization Count', value: loanDetails?.paymentQty ?? 0 },
