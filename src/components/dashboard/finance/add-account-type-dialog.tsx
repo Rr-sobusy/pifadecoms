@@ -25,6 +25,8 @@ import { accountTypeSchema, AccountTypeSchema } from '@/actions/accounts/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
+import { FormInputFields } from '../member-loans/InputFields';
+
 interface AddAccountTypeProps {
   open: boolean;
 }
@@ -87,16 +89,13 @@ export const AddNewAccountTypeDialog = ({ open }: AddAccountTypeProps) => {
           </Stack>
           <Divider />
           <Stack spacing={3} marginTop={6} direction="column">
-            <Controller
-              name="accountTypeName"
+            <FormInputFields
+              isRequired
               control={control}
-              render={({ field }) => (
-                <FormControl fullWidth error={Boolean(errors.accountTypeName)}>
-                  <InputLabel required>Account Type name</InputLabel>
-                  <OutlinedInput type="text" {...field} />
-                  {errors.accountTypeName ? <FormHelperText>{errors.accountTypeName.message}</FormHelperText> : null}
-                </FormControl>
-              )}
+              name="accountTypeName"
+              variant="text"
+              inputLabel="Account Type name"
+              errors={errors}
             />
             <Controller
               name="rootType"

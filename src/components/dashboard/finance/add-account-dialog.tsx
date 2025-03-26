@@ -25,6 +25,8 @@ import { accountSchema, AccountSchemaType } from '@/actions/accounts/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
+import { FormInputFields } from '../member-loans/InputFields';
+
 interface AddAccountProps {
   open: boolean;
   accountType: { rootId: number; rootName: string; rootType: string }[];
@@ -88,16 +90,13 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
           </Stack>
           <Divider />
           <Stack spacing={3} marginTop={6} direction="column">
-            <Controller
-              name="accountName"
+            <FormInputFields
               control={control}
-              render={({ field }) => (
-                <FormControl fullWidth error={Boolean(errors.accountName)}>
-                  <InputLabel required>Account Name</InputLabel>
-                  <OutlinedInput type="text" {...field} />
-                  {errors.accountName ? <FormHelperText>{errors.accountName.message}</FormHelperText> : null}
-                </FormControl>
-              )}
+              name="accountName"
+              inputLabel="Account Name"
+              errors={errors}
+              isRequired
+              variant="text"
             />
             <Controller
               name="rootId"
@@ -127,16 +126,12 @@ export const AddNewAccountDiaglog = ({ open, accountType }: AddAccountProps) => 
                 />
               )}
             />
-            <Controller
-              name="openingBalance"
+            <FormInputFields
               control={control}
-              render={({ field }) => (
-                <FormControl fullWidth error={Boolean(errors.openingBalance)}>
-                  <InputLabel required>Opening Balance</InputLabel>
-                  <OutlinedInput type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
-                  {errors.openingBalance ? <FormHelperText>{errors.openingBalance.message}</FormHelperText> : null}
-                </FormControl>
-              )}
+              name="openingBalance"
+              variant="number"
+              isRequired
+              inputLabel="Opening Balance"
             />
             <Stack marginTop={1}>
               <Button disabled={isExecuting} type="submit" variant="contained">
