@@ -36,7 +36,7 @@ type FilterModalProps = {
   accounts: AccounTreeType;
 };
 
-const maximumDateInterval = 62;
+const maximumDateInterval = 31;
 
 const filterSchema = zod.object({
   dateRange: zod
@@ -57,7 +57,7 @@ const filterSchema = zod.object({
       if (dayjs(data?.endDate).diff(dayjs(data?.startDate), 'day') > maximumDateInterval) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
-          message: 'To minimize potential performance problems, date ranges must not more than 2 months! ',
+          message: 'To minimize potential performance problems, date ranges must not more than 1 month. ',
         });
       }
     })

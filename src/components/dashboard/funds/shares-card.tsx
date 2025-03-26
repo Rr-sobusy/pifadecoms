@@ -80,10 +80,12 @@ const columns = [
     formatter: (row) => (
       <Stack>
         <Typography fontWeight={600} variant="subtitle2">
-          Reference No.
+          Reference
         </Typography>
         <Typography color="text.secondary" variant="caption">
-          {row.JournalEntries?.referenceName ?? null}
+          {row.transactionType === 'SavingsDeposit' || row.transactionType === 'ShareCapDeposit'
+            ? `O.R No. ${row.JournalEntries?.referenceName}`
+            : `Voucher No. ${row.JournalEntries?.referenceName}`}
         </Typography>
       </Stack>
     ),

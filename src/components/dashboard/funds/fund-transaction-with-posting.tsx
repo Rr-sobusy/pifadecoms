@@ -295,7 +295,7 @@ export const FundTransactionWithPosting = ({
               variant="number"
               isRequired
               inputLabel="Posting amount"
-              errors={errors.postedBalance}
+              errors={errors}
             />
             <FormInputFields
               control={control}
@@ -303,6 +303,7 @@ export const FundTransactionWithPosting = ({
               variant="text"
               inputLabel={['SavingsDeposit', 'ShareCapDeposit'].includes(transactionType) ? 'OR No.' : 'Voucher No.'}
               isRequired
+              errors={errors}
             />
             <Stack justifyContent="flex-end" gap={2} flexDirection="row" marginTop={1}>
               <Button onClick={() => console.log(getValues())} type="button" variant="outlined">

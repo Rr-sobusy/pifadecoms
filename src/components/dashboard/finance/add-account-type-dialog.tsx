@@ -76,9 +76,9 @@ export const AddNewAccountTypeDialog = ({ open }: AddAccountTypeProps) => {
             sx={{ alignItems: 'center', flex: '0 0 auto', justifyContent: 'space-between', marginTop: 3 }}
           >
             <Stack>
-              <Typography variant="h6">Create new account</Typography>
+              <Typography variant="h6">Create account type</Typography>
               <Typography color="" variant="caption">
-                Create account based to its financial category
+                Create account type that used for account categorization
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -92,7 +92,7 @@ export const AddNewAccountTypeDialog = ({ open }: AddAccountTypeProps) => {
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={Boolean(errors.accountTypeName)}>
-                  <InputLabel required>Account Name</InputLabel>
+                  <InputLabel required>Account Type name</InputLabel>
                   <OutlinedInput type="text" {...field} />
                   {errors.accountTypeName ? <FormHelperText>{errors.accountTypeName.message}</FormHelperText> : null}
                 </FormControl>

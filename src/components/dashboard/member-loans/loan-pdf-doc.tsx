@@ -166,7 +166,7 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
       <PDFViewer style={{ border: 'none', height: '100vh', width: '100vw' }}>
         <Document>
           <Page size="A4">
-            <Text>No records found.</Text>
+            <Text>Loading record. . .</Text>
           </Page>
         </Document>
       </PDFViewer>
