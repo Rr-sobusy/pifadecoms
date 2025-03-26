@@ -38,7 +38,7 @@ function BalanceTable({ balances }: Props) {
                 </Typography>
                 <Typography paddingLeft={4} paddingRight={2} variant="subtitle2">
                   {category === 'Assets'
-                    ? formatToCurrency(totalsPerCategory - totalContraryAssets, 'Fil-ph', 'Php')
+                    ? formatToCurrency(totalsPerCategory - (totalContraryAssets * 2), 'Fil-ph', 'Php')
                     : formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')}
                 </Typography>
               </Stack>
@@ -61,7 +61,7 @@ function BalanceTable({ balances }: Props) {
             </Stack>
             <Typography variant="h6" sx={{ marginY: 2 }}>
               {category === 'Assets'
-                ? `Total ${category} : ${formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')} - ${formatToCurrency(totalContraryAssets, 'Fil-ph', 'Php')}`
+                ? `Total ${category} : ${formatToCurrency(totalsPerCategory - totalContraryAssets, 'Fil-ph', 'Php')} - ${formatToCurrency(totalContraryAssets, 'Fil-ph', 'Php')}`
                 : `Total ${category} : ${formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')}`}
             </Typography>
           </>
