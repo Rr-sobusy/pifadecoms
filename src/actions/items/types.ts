@@ -32,11 +32,9 @@ export const updateItemSchema = z.object({
   itemId: z.string(),
   itemName: z.string().optional(),
   itemDescription: z.string().optional(),
-  itemType: z.enum(['product', 'services']),
   principalPrice: z.number().optional(),
   trade: z.number().optional(),
   createdAt: z.date().optional(),
-  sourceId: z.number(),
   updatedAt: z.date().optional(),
   itemSource: z.string().optional()
 });

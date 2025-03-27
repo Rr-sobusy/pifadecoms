@@ -36,7 +36,7 @@ export function WorkspacesSwitch(): React.JSX.Element {
             Workspace
           </Typography>
           <Typography color="var(--Workspaces-name-color)" variant="subtitle2">
-            {workspace.name}
+            Current user
           </Typography>
         </Box>
         <CaretUpDownIcon color="var(--Workspaces-expand-color)" fontSize="var(--icon-fontSize-sm)" />

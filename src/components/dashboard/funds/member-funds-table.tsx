@@ -20,7 +20,12 @@ interface MemberFundsTableProps {
 
 const columns = [
   {
-    formatter: (row) => <div>{`${row.Member.lastName}, ${row.Member.firstName}`}</div>,
+    formatter: (_, index) => <div>{index + 1}</div>,
+    name: 'No.',
+    width: '150px',
+  },
+  {
+    formatter: (row) => <div>{`${row.Member.lastName}, ${row.Member.firstName} ${row.Member.middleName && row.Member.middleName}`}</div>,
     name: 'Member Name',
     width: '250px',
   },

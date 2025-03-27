@@ -58,9 +58,9 @@ export function SideNav({ color = 'evident', items = [] }: SideNavProps): React.
     >
       <Stack spacing={2} sx={{ p: 2 }}>
         <div>
-          <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
-            <Logo color={logoColor} height={32} width={122} />
-          </Box>
+          <Stack>
+            <Typography variant='h5'>PIFADECO I.M.S</Typography>
+          </Stack>
         </div>
         <WorkspacesSwitch />
       </Stack>
