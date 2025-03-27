@@ -25,10 +25,12 @@ import { addMemberIntoFundsSchema, type IAddMemberIntoFunds } from '@/actions/fu
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-interface AddFundsMemberProps  {
+import { FormInputFields } from '../member-loans/InputFields';
+
+interface AddFundsMemberProps {
   open?: boolean;
   membersList: { memberId: string; lastName: string; firstName: string }[];
-};
+}
 
 function AddFundsMember({ open = true, membersList }: AddFundsMemberProps) {
   const pathName = usePathname();
@@ -36,11 +38,7 @@ function AddFundsMember({ open = true, membersList }: AddFundsMemberProps) {
 
   const { execute, result } = useAction(createMemberIntoFunds);
 
-  const {
-    control,
-    reset,
-    handleSubmit,
-  } = useForm<IAddMemberIntoFunds>({
+  const { control, reset, handleSubmit } = useForm<IAddMemberIntoFunds>({
     resolver: zodResolver(addMemberIntoFundsSchema),
     defaultValues: {
       dateAdded: new Date(),
@@ -52,7 +50,7 @@ function AddFundsMember({ open = true, membersList }: AddFundsMemberProps) {
     if (result.data) {
       reset();
       handleClose();
-      toast.success("New member fund added.")
+      toast.success('New member fund added.');
     }
   }, [result]);
 
@@ -141,45 +139,23 @@ function AddFundsMember({ open = true, membersList }: AddFundsMemberProps) {
                 />
               )}
             />
-            <Controller
+            <FormInputFields
               control={control}
+              isRequired
+              variant="number"
+              inputLabel="Initial Share Cap. Balance"
               name="initialShareCapBalance"
-              render={({ field }) => (
-                <FormControl>
-                  <InputLabel>Initial Shared Cap. Balance</InputLabel>
-                  <OutlinedInput
-                    {...field}
-                    onChange={(event) => {
-                      const amount = event.target.value;
-                      field.onChange(Number(amount));
-                    }}
-                    type="number"
-                  />
-                </FormControl>
-              )}
             />
-            <Controller
+            <FormInputFields
               control={control}
+              isRequired
+              variant="number"
+              inputLabel="Initial Savings Balance"
               name="initialSavingsBalance"
-              render={({ field }) => (
-                <FormControl>
-                  <InputLabel>Initial Member Savings Balance</InputLabel>
-                  <OutlinedInput
-                    {...field}
-                    onChange={(event) => {
-                      const amount = event.target.value;
-                      field.onChange(Number(amount));
-                    }}
-                    type="number"
-                  />
-                </FormControl>
-              )}
             />
           </Stack>
           <Stack justifyContent="flex-end" gap={2} flexDirection="row" marginTop={1}>
-            <Button type="button">
-              Cancel
-            </Button>
+            <Button type="button">Cancel</Button>
             <Button type="submit" variant="contained">
               Add Member
             </Button>
