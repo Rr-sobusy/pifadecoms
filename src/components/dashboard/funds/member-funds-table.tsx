@@ -25,7 +25,9 @@ const columns = [
     width: '150px',
   },
   {
-    formatter: (row) => <div>{`${row.Member.lastName}, ${row.Member.firstName} ${row.Member.middleName && row.Member.middleName}`}</div>,
+    formatter: (row) => (
+      <div>{`${row.Member.lastName}, ${row.Member.firstName} ${row.Member.middleName === null ? '' : `, ${row.Member.middleName}`}`}</div>
+    ),
     name: 'Member Name',
     width: '250px',
   },
