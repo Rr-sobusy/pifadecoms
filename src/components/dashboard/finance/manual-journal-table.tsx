@@ -1,8 +1,12 @@
 'use client';
 
 import React from 'react';
+import { TablePagination } from '@mui/material';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import type { JournalType as JourType } from '@prisma/client';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -11,6 +15,12 @@ import { ColumnDef, DataTable } from '@/components/core/data-table';
 
 interface ManualJournalTableProps {
   journal: JournalType;
+}
+
+const journalMap: Record<JourType, string> = {
+  cashDisbursement: 'Cash Disbursement',
+  cashReceipts: 'Cash Receipts',
+  generalJournal: 'General Journal',
 };
 
 const columns = [
@@ -30,7 +40,7 @@ const columns = [
   },
   {
     formatter(row) {
-      return <Stack>{row.journalType}</Stack>;
+      return <Stack>{journalMap[row.journalType]}</Stack>;
     },
     name: 'Journal Type',
     width: '100px',
@@ -60,10 +70,64 @@ const columns = [
 ] satisfies ColumnDef<JournalType[0]>[];
 
 function ManualJournalTable({ journal }: ManualJournalTableProps) {
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(100);
+  const [currentPage, setCurrentPage] = React.useState<number>(0);
+
+  function handlePageChange(_: React.MouseEvent<HTMLButtonElement> | null, pageNumber: number) {
+    setCurrentPage(pageNumber);
+  }
   return (
-    <Card>
-      <DataTable columns={columns} rows={journal} />
-    </Card>
+    <>
+      <Card>
+        {journal.length > 0 ? (
+          <Stack>
+            <DataTable columns={columns} rows={journal} />
+            <Paginator
+              rowsPerPage={rowsPerPage}
+              count={journal.length}
+              onPageChange={handlePageChange}
+              page={currentPage}
+              onRowsPerPageChange={(event) => {
+                const currRow = event.target.value;
+                if (currRow) return setRowsPerPage(Number(currRow));
+              }}
+            />
+          </Stack>
+        ) : (
+          <Box sx={{ p: 3 }}>
+            <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="overline">
+              No transactions found
+            </Typography>
+          </Box>
+        )}
+      </Card>
+    </>
+  );
+}
+
+function Paginator({
+  count,
+  rowsPerPage,
+  page,
+  onPageChange,
+  onRowsPerPageChange,
+}: {
+  count: number;
+  rowsPerPage: number;
+  page: number;
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, pageNumber: number) => void;
+  onRowsPerPageChange: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+}) {
+  return (
+    <TablePagination
+      component="div"
+      page={page}
+      rowsPerPageOptions={[100, 200]}
+      rowsPerPage={rowsPerPage}
+      count={count}
+      onRowsPerPageChange={onRowsPerPageChange}
+      onPageChange={onPageChange}
+    />
   );
 }
 

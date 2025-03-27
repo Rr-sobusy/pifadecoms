@@ -39,41 +39,53 @@ export const transactionalSchema = z.object({
   // entries
   journalLineItems: z
     .array(
-      z.object({
-        journalLineItemId: z.string(),
-        accountDetails: z.object({
-          accountId: z.string().min(1).default(''),
-          accountName: z.string().default(''),
-          createdAt: z.date().optional().default(new Date()),
-          rootId: z.number().optional().default(1),
-          openingBalance: z.preprocess((val) => {
-            if (typeof val === 'number' || typeof val === 'string') {
-              try {
-                return new Decimal(val);
-              } catch (error) {
-                return new Decimal(0); 
+      z
+        .object({
+          journalLineItemId: z.string(),
+          accountDetails: z.object({
+            accountId: z.string().min(1).default(''),
+            accountName: z.string().default(''),
+            createdAt: z.date().optional().default(new Date()),
+            rootId: z.number().optional().default(1),
+            openingBalance: z.preprocess((val) => {
+              if (typeof val === 'number' || typeof val === 'string') {
+                try {
+                  return new Decimal(val);
+                } catch (error) {
+                  return new Decimal(0);
+                }
               }
-            }
-            return new Decimal(0); 
-          }, z.instanceof(Decimal)),
-          runningBalance: z.preprocess((val) => {
-            if (typeof val === 'number' || typeof val === 'string') {
-              try {
-                return new Decimal(val);
-              } catch (error) {
-                return new Decimal(0); 
+              return new Decimal(0);
+            }, z.instanceof(Decimal)),
+            runningBalance: z.preprocess((val) => {
+              if (typeof val === 'number' || typeof val === 'string') {
+                try {
+                  return new Decimal(val);
+                } catch (error) {
+                  return new Decimal(0);
+                }
               }
-            }
-            return new Decimal(0);
-          }, z.instanceof(Decimal)),
-          updatedAt: z.date().optional().default(new Date()),
-          isActive: z.boolean().optional().default(false),
-          group: z.string().default(''),
-          rootType: z.enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense', 'Contra_Assets']).optional().default('Assets'),
-        }),
-        debit: z.number(),
-        credit: z.number(),
-      })
+              return new Decimal(0);
+            }, z.instanceof(Decimal)),
+            updatedAt: z.date().optional().default(new Date()),
+            isActive: z.boolean().optional().default(false),
+            group: z.string().default(''),
+            rootType: z
+              .enum(['Assets', 'Liability', 'Equity', 'Revenue', 'Expense', 'Contra_Assets'])
+              .optional()
+              .default('Assets'),
+          }),
+          debit: z.number(),
+          credit: z.number(),
+        })
+        .superRefine((items, ctx) => {
+          if (items.credit === 0 && items.debit === 0) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Debit and Credit must not be both 0.',
+            });
+          }
+        })
     )
     .min(2, { message: 'Affected account must be two or more!' })
     .superRefine((items, ctx) => {

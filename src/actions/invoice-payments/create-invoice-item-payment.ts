@@ -42,6 +42,7 @@ export const invoiceItemPaymentAction = actionClient
               create: Request.paymentLine.map((paymentLine) => ({
                 interestPaid: paymentLine.interestPaying,
                 principalPaid: paymentLine.principalPaying,
+                tradingPaid: paymentLine.tradePaying,
                 invoiceItemId: paymentLine.invoiceItemId,
               })),
             },

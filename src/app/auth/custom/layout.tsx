@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import { AuthStrategy } from '@/lib/auth/strategy';
+import { SignInForm } from '@/components/auth/cognito/sign-in-form';
+import { SplitLayout } from '@/components/auth/split-layout';
 import { StrategyGuard } from '@/components/auth/strategy-guard';
 
 // We are not adding the auth check because there might be individual pages that require the user to be authenticated.
@@ -11,5 +13,9 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
-  return <StrategyGuard expected={AuthStrategy.CUSTOM}>{children}</StrategyGuard>;
+  return (
+    <SplitLayout>
+      <SignInForm />
+    </SplitLayout>
+  );
 }

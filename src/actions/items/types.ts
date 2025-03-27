@@ -24,10 +24,24 @@ export const itemSourceSchema = z.object({
   accountDetails: z.object({
     accountId: z.string(),
     accountName: z.string(),
-    group: z.string()
+    group: z.string(),
   }),
+});
+
+export const updateItemSchema = z.object({
+  itemId: z.string(),
+  itemName: z.string().optional(),
+  itemDescription: z.string().optional(),
+  itemType: z.enum(['product', 'services']),
+  principalPrice: z.number().optional(),
+  trade: z.number().optional(),
+  createdAt: z.date().optional(),
+  sourceId: z.number(),
+  updatedAt: z.date().optional(),
+  itemSource: z.string().optional()
 });
 
 export type ItemsSchemaType = z.infer<typeof itemSchema>;
 export type ItemSourcesType = Prisma.PromiseReturnType<typeof fetchItemSources>;
-export type ItemSourceSchemaType = z.infer<typeof itemSourceSchema>
+export type ItemSourceSchemaType = z.infer<typeof itemSourceSchema>;
+export type IUpdateItemSchema = z.infer<typeof updateItemSchema>

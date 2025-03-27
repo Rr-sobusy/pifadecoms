@@ -27,13 +27,13 @@ function isPastDue(inputtedDate: Date): boolean {
 
 function computeRemainingInterest(
   inputtedDate: Date,
-  principalAmount: number,
-  paidPrincipal: number,
+  grandTotal: number,
+  paidPrincipalAndTrade: number,
   rate: number
 ): number {
   const numberOfMonthsPast = dayjs(inputtedDate).add(dueMonth, 'M').diff(dayjs(), 'M');
 
-  return (rate / 100) * (principalAmount - paidPrincipal) * (numberOfMonthsPast - 1) * -1;
+  return (rate / 100) * (grandTotal - paidPrincipalAndTrade) * (numberOfMonthsPast - 1) * -1;
 }
 
 function formatToTwoDecimalPlaces(num: number): string {
@@ -95,12 +95,6 @@ const columns = [
     },
   },
   {
-    name: 'Item Source',
-    formatter: (row) => {
-      return <Typography variant="subtitle2">{row.Item.ItemSource.sourceName}</Typography>;
-    },
-  },
-  {
     name: 'Item name',
     formatter: (row) => {
       return <Typography variant="subtitle2">{row.Item.itemName}</Typography>;
@@ -143,11 +137,14 @@ const columns = [
     name: 'Int. accrued (2%)',
     formatter: (row) => {
       const totalAmountDue = row.quantity * (row.Item.sellingPrice + row.Item.trade);
-      const totalPrincipalPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.principalPaid), 0);
+      const totalPrincipalAndTradePaid = row.ItemPayment.reduce(
+        (acc, curr) => acc + (Number(curr.principalPaid) + Number(curr.tradingPaid)),
+        0
+      );
       return (
         <Typography variant="subtitle2">
           {isPastDue(row.Invoice.dateOfInvoice) && !row.isTotallyPaid
-            ? `${formatToCurrency(computeRemainingInterest(row.Invoice.dateOfInvoice, totalAmountDue, totalPrincipalPaid, 2), 'Fil-ph', 'Php')} due for ${dayjs(row.Invoice.dateOfInvoice).diff(dayjs(), 'M') * -1} months`
+            ? `${formatToCurrency(computeRemainingInterest(row.Invoice.dateOfInvoice, totalAmountDue, totalPrincipalAndTradePaid, 2), 'Fil-ph', 'Php')} due for ${dayjs(row.Invoice.dateOfInvoice).diff(dayjs(), 'M') * -1} months`
             : formatToCurrency(0, 'Fil-ph', 'Php')}
         </Typography>
       );
@@ -156,11 +153,14 @@ const columns = [
   {
     name: 'Outstanding Qty',
     formatter: (row) => {
-      const totalPrincipalPaid = row.ItemPayment?.reduce((acc, curr) => acc + Number(curr.principalPaid), 0);
+      const totalPrincipalPaid = row.ItemPayment?.reduce(
+        (acc, curr) => acc + (Number(curr.principalPaid) + Number(curr.tradingPaid)),
+        0
+      );
       const totalAmountDue = row.quantity * (row.trade + row.principalPrice);
-      const amountPerQty = row.trade + row.principalPrice
+      const amountPerQty = row.trade + row.principalPrice;
       return (
-        <Typography variant='subtitle2' color="error">
+        <Typography variant="subtitle2" color="error">
           {formatToTwoDecimalPlaces((totalAmountDue - totalPrincipalPaid) / amountPerQty)}
         </Typography>
       );
@@ -170,14 +170,33 @@ const columns = [
     name: 'Principal Paid',
     formatter: (row) => {
       const totalPrincipalPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.principalPaid), 0);
-      return <Typography variant='subtitle2' color="error">{formatToCurrency(totalPrincipalPaid, 'Fil-ph', 'Php')}</Typography>;
+      return (
+        <Typography variant="subtitle2" color="error">
+          {formatToCurrency(totalPrincipalPaid, 'Fil-ph', 'Php')}
+        </Typography>
+      );
+    },
+  },
+  {
+    name: 'Trading Paid',
+    formatter: (row) => {
+      const totalTradingPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.tradingPaid), 0);
+      return (
+        <Typography variant="subtitle2" color="error">
+          {formatToCurrency(totalTradingPaid, 'Fil-ph', 'Php')}
+        </Typography>
+      );
     },
   },
   {
     name: 'Interest Paid',
     formatter: (row) => {
       const totalInterestPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.interestPaid), 0);
-      return <Typography variant='subtitle2' color="error">{formatToCurrency(totalInterestPaid, 'Fil-ph', 'Php')}</Typography>;
+      return (
+        <Typography variant="subtitle2" color="error">
+          {formatToCurrency(totalInterestPaid, 'Fil-ph', 'Php')}
+        </Typography>
+      );
     },
   },
   {
@@ -209,6 +228,16 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
     });
   }
 
+  function handleDeselectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes[0]) {
+    setSelectedRows((prevSelected) => {
+      const isAlreadySelected = prevSelected.some((r) => Number(r.invoiceItemId) === Number(row.invoiceItemId));
+      if (isAlreadySelected) {
+        return prevSelected.filter((r) => r.invoiceItemId !== row.invoiceItemId);
+      }
+      return prevSelected;
+    });
+  }
+
   function togglePaymentDialog(): void {
     setPaymentDialogOpen((prev) => !prev);
   }
@@ -226,8 +255,10 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
           </Stack>
           <Divider />
           <DataTable
+            selected={new Set(selectedRows.map((r) => Number(r.invoiceItemId)))}
             uniqueRowId={(row) => Number(row.invoiceItemId)}
             onSelectOne={handleSelectOne}
+            onDeselectOne={handleDeselectOne}
             selectable
             columns={columns}
             rows={computedData}

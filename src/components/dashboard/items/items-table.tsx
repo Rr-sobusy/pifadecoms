@@ -3,30 +3,18 @@
 import * as React from 'react';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { dayjs } from '@/lib/dayjs';
+import { Notepad as Info } from '@phosphor-icons/react/dist/ssr';
 
 import { paths } from '@/paths';
+import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { ItemTypes } from '@/actions/items/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
-
-export interface Product {
-  id: string;
-  name: string;
-  image: string | null;
-  category: string;
-  type: string;
-  quantity: number;
-  currency: string;
-  price: number;
-  sku: string;
-  status: 'published' | 'draft';
-  createdAt: Date;
-}
 
 const columns = [
   {
@@ -35,8 +23,6 @@ const columns = [
         <div>
           <Link
             color="text.primary"
-            // component={RouterLink}
-            // href={paths.dashboard.products.preview('1')}
             sx={{ whiteSpace: 'nowrap' }}
             variant="subtitle2"
           >
@@ -67,11 +53,20 @@ const columns = [
     width: '100px',
   },
   {
-    formatter: (row) => dayjs(row.updatedAt).format("MMM DD YYYY"),
+    formatter: (row) => dayjs(row.updatedAt).format('MMM DD YYYY'),
     name: 'Last Updated',
     width: '100px',
   },
-
+  {
+    formatter: (row) => (
+      <IconButton LinkComponent={RouterLink} href={`${paths.dashboard.items.list}?itemId=${row.itemID}`}>
+        <Info />
+      </IconButton>
+    ),
+    name: 'Action',
+    width: '100px',
+    align: 'right',
+  },
 ] satisfies ColumnDef<ItemTypes[0]>[];
 
 export interface ProductsTableProps {

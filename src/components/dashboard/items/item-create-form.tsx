@@ -117,7 +117,9 @@ function ItemCreateForm({ itemSources = [] }: ItemCreateFormProps) {
                         <InputLabel required>Item Source</InputLabel>
                         <Select {...field}>
                           {itemSources.map((source) => (
-                            <Option key={source.sourceId} value={source.sourceId}>{source.sourceName}</Option>
+                            <Option key={source.sourceId} value={source.sourceId}>
+                              {source.sourceName}
+                            </Option>
                           ))}
                         </Select>
                         {errors.itemType ? <FormHelperText error>{errors.itemType.message}</FormHelperText> : null}
@@ -131,27 +133,22 @@ function ItemCreateForm({ itemSources = [] }: ItemCreateFormProps) {
                     xs: 12,
                   }}
                 >
-                  <Controller
+                  <FormInputFields
+                    sx={{ width: '100%' }}
                     control={control}
                     name="itemDescription"
-                    render={({ field }) => (
-                      <FormControl error={Boolean(errors.itemDescription)} fullWidth>
-                        <InputLabel>Item description</InputLabel>
-                        <OutlinedInput {...field} />
-                        {errors.itemDescription ? (
-                          <FormHelperText>{errors.itemDescription.message}</FormHelperText>
-                        ) : null}
-                      </FormControl>
-                    )}
+                    variant="text"
+                    inputLabel="Item description"
                   />
                 </Grid>
                 <Grid
                   size={{
-                    md: 2,
+                    md: 3,
                     xs: 6,
                   }}
                 >
                   <FormInputFields
+                    sx={{ width: '100%' }}
                     control={control}
                     name="principalPrice"
                     variant="number"
@@ -160,36 +157,24 @@ function ItemCreateForm({ itemSources = [] }: ItemCreateFormProps) {
                 </Grid>
                 <Grid
                   size={{
-                    md: 2,
+                    md: 3,
                     xs: 6,
                   }}
                 >
-                  <FormInputFields control={control} name="trade" variant="number" inputLabel="Trade" />
+                  <FormInputFields
+                    sx={{ width: '100%' }}
+                    control={control}
+                    name="trade"
+                    variant="number"
+                    inputLabel="Trade"
+                  />
                 </Grid>
                 <Grid
                   size={{
                     md: 3,
                     xs: 6,
                   }}
-                >
-                  {/* <Controller
-                    control={control}
-                    name="sellingPrice"
-                    render={({ field }) => (
-                      <FormControl error={Boolean(errors.sellingPrice)} fullWidth>
-                        <InputLabel required>Sales Price</InputLabel>
-                        <OutlinedInput
-                          {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
-                          type="number"
-                        />
-                        {errors.sellingPrice ? (
-                          <FormHelperText error>{errors.sellingPrice.message}</FormHelperText>
-                        ) : null}
-                      </FormControl>
-                    )}
-                  /> */}
-                </Grid>
+                ></Grid>
               </Grid>
             </Stack>
           </Stack>

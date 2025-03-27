@@ -251,7 +251,7 @@ model InvoiceItemsPayments {
   principalPaid   Decimal           @db.Decimal(10,2)
   journalRef      BigInt
   interestPaid    Decimal           @db.Decimal(10,2)
-
+  tradingPaid     Decimal           @db.Decimal(10,2)
   InvoiceItem     InvoiceItems      @relation(fields: [invoiceItemId], references: [invoiceItemId])
   JournalEntry    JournalEntries    @relation(fields: [journalRef], references: [entryId])
 
@@ -353,7 +353,7 @@ model JournalEntries {
 
 
   @@map("journal_entries")
-  @@index([entryDate, memberId,referenceName])
+  @@index([entryDate, memberId,referenceName, journalType])
 }
 
 model JournalItems {

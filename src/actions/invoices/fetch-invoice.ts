@@ -95,11 +95,7 @@ export async function fetchInvoiceItemPerMember(memberId?: string, sourceName?: 
         },
       },
     },
-    orderBy: {
-      Invoice: {
-        dateOfInvoice: 'desc',
-      },
-    },
+    orderBy: [{ Invoice: { dateOfInvoice: 'desc' } }, { Invoice: { invoiceId: 'desc' } }],
     include: {
       ItemPayment: {
         include: {

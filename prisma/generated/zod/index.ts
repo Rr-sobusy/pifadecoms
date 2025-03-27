@@ -52,7 +52,7 @@ export const InvoiceScalarFieldEnumSchema = z.enum(['invoiceId','memberId','date
 
 export const InvoiceItemsScalarFieldEnumSchema = z.enum(['invoiceItemId','invoiceId','itemID','principalPrice','trade','quantity','isTotallyPaid']);
 
-export const InvoiceItemsPaymentsScalarFieldEnumSchema = z.enum(['itemsPaymentId','invoiceItemId','principalPaid','journalRef','interestPaid']);
+export const InvoiceItemsPaymentsScalarFieldEnumSchema = z.enum(['itemsPaymentId','invoiceItemId','principalPaid','journalRef','interestPaid','tradingPaid']);
 
 export const ItemSourceScalarFieldEnumSchema = z.enum(['sourceId','sourceName','defaultAccount']);
 
@@ -291,6 +291,7 @@ export const InvoiceItemsPaymentsSchema = z.object({
   principalPaid: z.instanceof(Prisma.Decimal, { message: "Field 'principalPaid' must be a Decimal. Location: ['Models', 'InvoiceItemsPayments']"}),
   journalRef: z.bigint(),
   interestPaid: z.instanceof(Prisma.Decimal, { message: "Field 'interestPaid' must be a Decimal. Location: ['Models', 'InvoiceItemsPayments']"}),
+  tradingPaid: z.instanceof(Prisma.Decimal, { message: "Field 'tradingPaid' must be a Decimal. Location: ['Models', 'InvoiceItemsPayments']"}),
 })
 
 export type InvoiceItemsPayments = z.infer<typeof InvoiceItemsPaymentsSchema>
@@ -726,6 +727,7 @@ export const InvoiceItemsPaymentsSelectSchema: z.ZodType<Prisma.InvoiceItemsPaym
   principalPaid: z.boolean().optional(),
   journalRef: z.boolean().optional(),
   interestPaid: z.boolean().optional(),
+  tradingPaid: z.boolean().optional(),
   InvoiceItem: z.union([z.boolean(),z.lazy(() => InvoiceItemsArgsSchema)]).optional(),
   JournalEntry: z.union([z.boolean(),z.lazy(() => JournalEntriesArgsSchema)]).optional(),
 }).strict()
@@ -1756,6 +1758,7 @@ export const InvoiceItemsPaymentsWhereInputSchema: z.ZodType<Prisma.InvoiceItems
   principalPaid: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   journalRef: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   interestPaid: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  tradingPaid: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   InvoiceItem: z.union([ z.lazy(() => InvoiceItemsRelationFilterSchema),z.lazy(() => InvoiceItemsWhereInputSchema) ]).optional(),
   JournalEntry: z.union([ z.lazy(() => JournalEntriesRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional(),
 }).strict();
@@ -1766,6 +1769,7 @@ export const InvoiceItemsPaymentsOrderByWithRelationInputSchema: z.ZodType<Prism
   principalPaid: z.lazy(() => SortOrderSchema).optional(),
   journalRef: z.lazy(() => SortOrderSchema).optional(),
   interestPaid: z.lazy(() => SortOrderSchema).optional(),
+  tradingPaid: z.lazy(() => SortOrderSchema).optional(),
   InvoiceItem: z.lazy(() => InvoiceItemsOrderByWithRelationInputSchema).optional(),
   JournalEntry: z.lazy(() => JournalEntriesOrderByWithRelationInputSchema).optional()
 }).strict();
@@ -1782,6 +1786,7 @@ export const InvoiceItemsPaymentsWhereUniqueInputSchema: z.ZodType<Prisma.Invoic
   principalPaid: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   journalRef: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   interestPaid: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  tradingPaid: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   InvoiceItem: z.union([ z.lazy(() => InvoiceItemsRelationFilterSchema),z.lazy(() => InvoiceItemsWhereInputSchema) ]).optional(),
   JournalEntry: z.union([ z.lazy(() => JournalEntriesRelationFilterSchema),z.lazy(() => JournalEntriesWhereInputSchema) ]).optional(),
 }).strict());
@@ -1792,6 +1797,7 @@ export const InvoiceItemsPaymentsOrderByWithAggregationInputSchema: z.ZodType<Pr
   principalPaid: z.lazy(() => SortOrderSchema).optional(),
   journalRef: z.lazy(() => SortOrderSchema).optional(),
   interestPaid: z.lazy(() => SortOrderSchema).optional(),
+  tradingPaid: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => InvoiceItemsPaymentsCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => InvoiceItemsPaymentsAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => InvoiceItemsPaymentsMaxOrderByAggregateInputSchema).optional(),
@@ -1808,6 +1814,7 @@ export const InvoiceItemsPaymentsScalarWhereWithAggregatesInputSchema: z.ZodType
   principalPaid: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   journalRef: z.union([ z.lazy(() => BigIntWithAggregatesFilterSchema),z.bigint() ]).optional(),
   interestPaid: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  tradingPaid: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
 }).strict();
 
 export const ItemSourceWhereInputSchema: z.ZodType<Prisma.ItemSourceWhereInput> = z.object({
@@ -3062,6 +3069,7 @@ export const InvoiceItemsPaymentsCreateInputSchema: z.ZodType<Prisma.InvoiceItem
   itemsPaymentId: z.bigint().optional(),
   principalPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  tradingPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   InvoiceItem: z.lazy(() => InvoiceItemsCreateNestedOneWithoutItemPaymentInputSchema),
   JournalEntry: z.lazy(() => JournalEntriesCreateNestedOneWithoutInvoiceItemPaymentsInputSchema)
 }).strict();
@@ -3071,13 +3079,15 @@ export const InvoiceItemsPaymentsUncheckedCreateInputSchema: z.ZodType<Prisma.In
   invoiceItemId: z.bigint(),
   principalPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   journalRef: z.bigint(),
-  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  tradingPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const InvoiceItemsPaymentsUpdateInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsUpdateInput> = z.object({
   itemsPaymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   InvoiceItem: z.lazy(() => InvoiceItemsUpdateOneRequiredWithoutItemPaymentNestedInputSchema).optional(),
   JournalEntry: z.lazy(() => JournalEntriesUpdateOneRequiredWithoutInvoiceItemPaymentsNestedInputSchema).optional()
 }).strict();
@@ -3088,6 +3098,7 @@ export const InvoiceItemsPaymentsUncheckedUpdateInputSchema: z.ZodType<Prisma.In
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   journalRef: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InvoiceItemsPaymentsCreateManyInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsCreateManyInput> = z.object({
@@ -3095,13 +3106,15 @@ export const InvoiceItemsPaymentsCreateManyInputSchema: z.ZodType<Prisma.Invoice
   invoiceItemId: z.bigint(),
   principalPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   journalRef: z.bigint(),
-  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  tradingPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const InvoiceItemsPaymentsUpdateManyMutationInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsUpdateManyMutationInput> = z.object({
   itemsPaymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InvoiceItemsPaymentsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsUncheckedUpdateManyInput> = z.object({
@@ -3110,6 +3123,7 @@ export const InvoiceItemsPaymentsUncheckedUpdateManyInputSchema: z.ZodType<Prism
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   journalRef: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ItemSourceCreateInputSchema: z.ZodType<Prisma.ItemSourceCreateInput> = z.object({
@@ -4567,7 +4581,8 @@ export const InvoiceItemsPaymentsCountOrderByAggregateInputSchema: z.ZodType<Pri
   invoiceItemId: z.lazy(() => SortOrderSchema).optional(),
   principalPaid: z.lazy(() => SortOrderSchema).optional(),
   journalRef: z.lazy(() => SortOrderSchema).optional(),
-  interestPaid: z.lazy(() => SortOrderSchema).optional()
+  interestPaid: z.lazy(() => SortOrderSchema).optional(),
+  tradingPaid: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const InvoiceItemsPaymentsAvgOrderByAggregateInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsAvgOrderByAggregateInput> = z.object({
@@ -4575,7 +4590,8 @@ export const InvoiceItemsPaymentsAvgOrderByAggregateInputSchema: z.ZodType<Prism
   invoiceItemId: z.lazy(() => SortOrderSchema).optional(),
   principalPaid: z.lazy(() => SortOrderSchema).optional(),
   journalRef: z.lazy(() => SortOrderSchema).optional(),
-  interestPaid: z.lazy(() => SortOrderSchema).optional()
+  interestPaid: z.lazy(() => SortOrderSchema).optional(),
+  tradingPaid: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const InvoiceItemsPaymentsMaxOrderByAggregateInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsMaxOrderByAggregateInput> = z.object({
@@ -4583,7 +4599,8 @@ export const InvoiceItemsPaymentsMaxOrderByAggregateInputSchema: z.ZodType<Prism
   invoiceItemId: z.lazy(() => SortOrderSchema).optional(),
   principalPaid: z.lazy(() => SortOrderSchema).optional(),
   journalRef: z.lazy(() => SortOrderSchema).optional(),
-  interestPaid: z.lazy(() => SortOrderSchema).optional()
+  interestPaid: z.lazy(() => SortOrderSchema).optional(),
+  tradingPaid: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const InvoiceItemsPaymentsMinOrderByAggregateInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsMinOrderByAggregateInput> = z.object({
@@ -4591,7 +4608,8 @@ export const InvoiceItemsPaymentsMinOrderByAggregateInputSchema: z.ZodType<Prism
   invoiceItemId: z.lazy(() => SortOrderSchema).optional(),
   principalPaid: z.lazy(() => SortOrderSchema).optional(),
   journalRef: z.lazy(() => SortOrderSchema).optional(),
-  interestPaid: z.lazy(() => SortOrderSchema).optional()
+  interestPaid: z.lazy(() => SortOrderSchema).optional(),
+  tradingPaid: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const InvoiceItemsPaymentsSumOrderByAggregateInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsSumOrderByAggregateInput> = z.object({
@@ -4599,7 +4617,8 @@ export const InvoiceItemsPaymentsSumOrderByAggregateInputSchema: z.ZodType<Prism
   invoiceItemId: z.lazy(() => SortOrderSchema).optional(),
   principalPaid: z.lazy(() => SortOrderSchema).optional(),
   journalRef: z.lazy(() => SortOrderSchema).optional(),
-  interestPaid: z.lazy(() => SortOrderSchema).optional()
+  interestPaid: z.lazy(() => SortOrderSchema).optional(),
+  tradingPaid: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const ItemsListRelationFilterSchema: z.ZodType<Prisma.ItemsListRelationFilter> = z.object({
@@ -8285,6 +8304,7 @@ export const InvoiceItemsPaymentsCreateWithoutInvoiceItemInputSchema: z.ZodType<
   itemsPaymentId: z.bigint().optional(),
   principalPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  tradingPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   JournalEntry: z.lazy(() => JournalEntriesCreateNestedOneWithoutInvoiceItemPaymentsInputSchema)
 }).strict();
 
@@ -8292,7 +8312,8 @@ export const InvoiceItemsPaymentsUncheckedCreateWithoutInvoiceItemInputSchema: z
   itemsPaymentId: z.bigint().optional(),
   principalPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   journalRef: z.bigint(),
-  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  tradingPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const InvoiceItemsPaymentsCreateOrConnectWithoutInvoiceItemInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsCreateOrConnectWithoutInvoiceItemInput> = z.object({
@@ -8390,6 +8411,7 @@ export const InvoiceItemsPaymentsScalarWhereInputSchema: z.ZodType<Prisma.Invoic
   principalPaid: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
   journalRef: z.union([ z.lazy(() => BigIntFilterSchema),z.bigint() ]).optional(),
   interestPaid: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  tradingPaid: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
 }).strict();
 
 export const InvoiceItemsCreateWithoutItemPaymentInputSchema: z.ZodType<Prisma.InvoiceItemsCreateWithoutItemPaymentInput> = z.object({
@@ -9367,6 +9389,7 @@ export const InvoiceItemsPaymentsCreateWithoutJournalEntryInputSchema: z.ZodType
   itemsPaymentId: z.bigint().optional(),
   principalPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  tradingPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   InvoiceItem: z.lazy(() => InvoiceItemsCreateNestedOneWithoutItemPaymentInputSchema)
 }).strict();
 
@@ -9374,7 +9397,8 @@ export const InvoiceItemsPaymentsUncheckedCreateWithoutJournalEntryInputSchema: 
   itemsPaymentId: z.bigint().optional(),
   invoiceItemId: z.bigint(),
   principalPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
-  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  tradingPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const InvoiceItemsPaymentsCreateOrConnectWithoutJournalEntryInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsCreateOrConnectWithoutJournalEntryInput> = z.object({
@@ -10147,13 +10171,15 @@ export const InvoiceItemsPaymentsCreateManyInvoiceItemInputSchema: z.ZodType<Pri
   itemsPaymentId: z.bigint().optional(),
   principalPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
   journalRef: z.bigint(),
-  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  tradingPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const InvoiceItemsPaymentsUpdateWithoutInvoiceItemInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsUpdateWithoutInvoiceItemInput> = z.object({
   itemsPaymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   JournalEntry: z.lazy(() => JournalEntriesUpdateOneRequiredWithoutInvoiceItemPaymentsNestedInputSchema).optional()
 }).strict();
 
@@ -10162,6 +10188,7 @@ export const InvoiceItemsPaymentsUncheckedUpdateWithoutInvoiceItemInputSchema: z
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   journalRef: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InvoiceItemsPaymentsUncheckedUpdateManyWithoutInvoiceItemInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsUncheckedUpdateManyWithoutInvoiceItemInput> = z.object({
@@ -10169,6 +10196,7 @@ export const InvoiceItemsPaymentsUncheckedUpdateManyWithoutInvoiceItemInputSchem
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   journalRef: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ItemsCreateManyItemSourceInputSchema: z.ZodType<Prisma.ItemsCreateManyItemSourceInput> = z.object({
@@ -10426,7 +10454,8 @@ export const InvoiceItemsPaymentsCreateManyJournalEntryInputSchema: z.ZodType<Pr
   itemsPaymentId: z.bigint().optional(),
   invoiceItemId: z.bigint(),
   principalPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
-  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+  interestPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  tradingPaid: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
 }).strict();
 
 export const LoanRepaymentsCreateManyJournalEntriesInputSchema: z.ZodType<Prisma.LoanRepaymentsCreateManyJournalEntriesInput> = z.object({
@@ -10494,6 +10523,7 @@ export const InvoiceItemsPaymentsUpdateWithoutJournalEntryInputSchema: z.ZodType
   itemsPaymentId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   InvoiceItem: z.lazy(() => InvoiceItemsUpdateOneRequiredWithoutItemPaymentNestedInputSchema).optional()
 }).strict();
 
@@ -10502,6 +10532,7 @@ export const InvoiceItemsPaymentsUncheckedUpdateWithoutJournalEntryInputSchema: 
   invoiceItemId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InvoiceItemsPaymentsUncheckedUpdateManyWithoutJournalEntryInputSchema: z.ZodType<Prisma.InvoiceItemsPaymentsUncheckedUpdateManyWithoutJournalEntryInput> = z.object({
@@ -10509,6 +10540,7 @@ export const InvoiceItemsPaymentsUncheckedUpdateManyWithoutJournalEntryInputSche
   invoiceItemId: z.union([ z.bigint(),z.lazy(() => BigIntFieldUpdateOperationsInputSchema) ]).optional(),
   principalPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
   interestPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  tradingPaid: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LoanRepaymentsUpdateWithoutJournalEntriesInputSchema: z.ZodType<Prisma.LoanRepaymentsUpdateWithoutJournalEntriesInput> = z.object({

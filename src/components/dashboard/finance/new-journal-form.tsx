@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormLabel } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -26,6 +27,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
+import { paths } from '@/paths';
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
@@ -370,6 +372,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
               <div>
                 <Typography marginBottom={1} color="error">
                   {errors.journalLineItems?.root?.message}
+                  {errors.journalLineItems?.[0]?.root?.message}
                 </Typography>
                 <Button
                   onClick={handleAddJournallineLineItem}
@@ -383,7 +386,9 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
             </Stack>
           </Stack>
           <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
-            <Button type="button">Cancel</Button>
+            <Button LinkComponent={Link} href={paths.dashboard.finance.journal} type="button">
+              Cancel
+            </Button>
             <Button disabled={isExecuting} type="submit" variant="contained">
               {isExecuting ? 'Posting Entry...' : 'Post Entry'}
             </Button>

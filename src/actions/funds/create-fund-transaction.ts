@@ -99,7 +99,7 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
       }),
 
       /**
-       * * Second batch of queries. Update current savings or share capital based on given parameters
+       * * Second batch of queries. Update current savings or share capital based on given parameters and update the updateAt
        */
       prisma.memberFunds.update({
         where: {
@@ -108,6 +108,7 @@ export const createFundTransaction = actionClient.schema(memberFundsSchema).acti
         data: {
           savingsBal: getSavingsUpdate(Request.fundTransactionsType),
           shareCapBal: getShareCapUpdate(Request.fundTransactionsType),
+          updatedAt: new Date(),
         },
       }),
 

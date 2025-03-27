@@ -49,6 +49,7 @@ export const invoiceItemsPaymentschema = transactionalSchema
         quantityPurchased: z.number(),
         principal: z.number(),
         trade: z.number(),
+        tradePaying:z.number(),
         principalPaying: z.number(),
         interestPaying: z.number(),
       })
@@ -68,7 +69,8 @@ export const invoiceItemsPaymentschema = transactionalSchema
     const totalPayments = items.paymentLine.reduce((acc, curr) => {
       const principal = Number(curr.principalPaying) || 0;
       const interest = Number(curr.interestPaying) || 0;
-      return acc + principal + interest;
+      const trade = Number(curr.tradePaying) || 0;
+      return acc + (principal + interest + trade);
     }, 0);
 
 

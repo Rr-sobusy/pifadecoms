@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { Typography } from '@mui/material';
 
 import { formatToCurrency } from '@/lib/format-currency';
 import type { InvoiceItemsWithItem } from '@/actions/invoices/types';
@@ -38,6 +39,14 @@ const columns = [
   },
   {
     formatter: (row) => {
+      const principalPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.tradingPaid), 0);
+      return formatToCurrency(principalPaid, 'Fil-ph', 'Php');
+    },
+    name: 'Trading Paid',
+    width: '100px',
+  },
+  {
+    formatter: (row) => {
       const interestPaid = row.ItemPayment.reduce((acc, curr) => acc + Number(curr.interestPaid), 0);
       return formatToCurrency(interestPaid, 'Fil-ph', 'Php');
     },
@@ -48,9 +57,9 @@ const columns = [
     formatter: (row) => {
       const amount = row.quantity * (row.trade + row.principalPrice);
 
-      return formatToCurrency(amount, 'Fil-ph', 'Php');
+      return <Typography variant='subtitle2' color="error">{formatToCurrency(amount, 'Fil-ph', 'Php')}</Typography>;
     },
-    name: 'Total Principal Amount',
+    name: 'Total Amount',
     width: '100px',
   },
 ] satisfies ColumnDef<InvoiceItemsWithItem['InvoiceItems'][0]>[];

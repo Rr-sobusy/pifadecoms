@@ -62,7 +62,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
     getValues,
     formState: { errors },
     handleSubmit,
-    reset
+    reset,
   } = useForm<InvoiceItemsPaymentType>({
     resolver: zodResolver(invoiceItemsPaymentschema),
     defaultValues: {
@@ -104,6 +104,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
         trade: row.trade,
         principalPaying: 0,
         interestPaying: 0,
+        tradePaying: 0,
       }))
     );
   }, [selectedRows, setValue]);
@@ -112,7 +113,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
     if (result.data?.success) {
       handleClose();
       toast.success('Payment posted.');
-      reset()
+      reset();
     }
   }, [result]);
 
@@ -165,7 +166,10 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
     [getValues, setValue]
   );
 
-  const paymentTotal = watch('paymentLine')?.reduce((acc, curr) => acc + curr.principalPaying + curr.interestPaying, 0)
+  const paymentTotal = watch('paymentLine')?.reduce(
+    (acc, curr) => acc + (curr.principalPaying + curr.interestPaying + curr.tradePaying),
+    0
+  );
 
   const watchPaymentLine = watch('paymentLine') || [];
   const watchJournalLines = watch('journalLineItems');
@@ -257,8 +261,10 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                       const totalAmountPerItem = watchPaymentLine[index].trade + watchPaymentLine[index].principal;
                       setValue(
                         `paymentLine.${index}.principalPaying`,
-                        Number(value) * (watchPaymentLine[index].principal + watchPaymentLine[index].trade)
+                        Number(value) * watchPaymentLine[index].principal
                       );
+
+                      setValue(`paymentLine.${index}.tradePaying`, Number(value) * watchPaymentLine[index].trade);
 
                       if (isPastDue(currentRow.Invoice.dateOfInvoice) && !currentRow.isTotallyPaid) {
                         setValue(
@@ -272,13 +278,23 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                   />
                 </FormControl>
                 <FormInputFields
+                  isDisabled
+                  errors={errors.paymentLine?.[index]?.tradePaying}
+                  control={control}
+                  name={`paymentLine.${index}.tradePaying`}
+                  variant="number"
+                  inputLabel="Total trade"
+                />
+                <FormInputFields
+                  isDisabled
                   errors={errors.paymentLine?.[index]?.principalPaying}
                   control={control}
                   name={`paymentLine.${index}.principalPaying`}
                   variant="number"
-                  inputLabel="Total principal"
+                  inputLabel="Total principal (A.R)"
                 />
                 <FormInputFields
+                  isDisabled
                   errors={errors.paymentLine?.[index]?.interestPaying}
                   control={control}
                   name={`paymentLine.${index}.interestPaying`}
@@ -363,6 +379,11 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                   ))}
                 </Stack>
               )}
+              {errors.journalLineItems?.[0] && (
+                <Typography color="error" variant="subtitle2">
+                  {errors.journalLineItems[0].root?.message}
+                </Typography>
+              )}
             </Stack>
             <div>
               <Button onClick={handleAddJournalLine} variant="outlined" color="secondary">
@@ -374,12 +395,6 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
         <DialogAction sx={{ justifyContent: 'flex-end' }}>
           <Button disabled={isExecuting} variant="contained" type="submit">
             {isExecuting ? 'Posting' : 'Post Payment'}
-          </Button>
-          {/* <Button type="button" onClick={() => console.log(errors)}>
-            Check error
-          </Button> */}
-          <Button type="button" onClick={() => console.log(getValues('paymentLine'))}>
-            log values
           </Button>
         </DialogAction>
       </form>
