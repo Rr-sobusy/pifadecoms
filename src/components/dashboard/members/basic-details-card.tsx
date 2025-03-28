@@ -63,8 +63,10 @@ function getDefaultValues(memberData: MemberDataType): IMemberUpdateSchema {
     middleName: memberData?.middleName || '',
     firstName: memberData?.firstName,
     address: memberData?.address ?? '',
+    birthDate: memberData?.birthDate || null,
     annualIncom: memberData?.annualIncom || 0,
     civilStatus: memberData?.civilStatus || '',
+    dateAccepted: memberData?.dateAccepted || null,
     contactNo: memberData?.contactNo || '',
     highestEduAttainment: memberData?.highestEdAttain || '',
     occupation: memberData?.occupation || '',
@@ -73,7 +75,7 @@ function getDefaultValues(memberData: MemberDataType): IMemberUpdateSchema {
 }
 
 function BasicDetailsCard({ memberData }: BasicDetailsCardProps) {
-  const { control, handleSubmit, getValues } = useForm<IMemberUpdateSchema>({
+  const { control, handleSubmit } = useForm<IMemberUpdateSchema>({
     resolver: zodResolver(memberUpdateSchema),
     defaultValues: getDefaultValues(memberData),
   });
@@ -84,6 +86,7 @@ function BasicDetailsCard({ memberData }: BasicDetailsCardProps) {
   function formSubmitHandler(data: IMemberUpdateSchema) {
     const filtered: IMemberUpdateSchema = getChangedValues(data, getDefaultValues(memberData));
     execute(filtered);
+
   }
 
   React.useEffect(() => {
@@ -144,7 +147,11 @@ function BasicDetailsCard({ memberData }: BasicDetailsCardProps) {
                     control={control}
                     name="birthDate"
                     render={({ field }) => (
-                      <DatePicker {...field} value={dayjs(field.value)} onChange={(date) => date?.toDate()} />
+                      <DatePicker
+                        {...field}
+                        value={dayjs(field.value)}
+                        onChange={(date) => field.onChange(date?.toDate())}
+                      />
                     )}
                   />
                 ),
@@ -174,7 +181,11 @@ function BasicDetailsCard({ memberData }: BasicDetailsCardProps) {
                     control={control}
                     name="dateAccepted"
                     render={({ field }) => (
-                      <DatePicker {...field} value={dayjs(field.value)} onChange={(date) => date?.toDate()} />
+                      <DatePicker
+                        {...field}
+                        value={dayjs(field.value)}
+                        onChange={(date) => field.onChange(date?.toDate())}
+                      />
                     )}
                   />
                 ),
@@ -219,7 +230,7 @@ function BasicDetailsCard({ memberData }: BasicDetailsCardProps) {
         {isUpdateMode && (
           <Stack margin={3} alignItems="flex-end">
             <div>
-              <Button type="submit" variant="contained">
+              <Button disabled={isExecuting} type="submit" variant="contained">
                 Update
               </Button>
             </div>

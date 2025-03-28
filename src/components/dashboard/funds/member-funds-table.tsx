@@ -67,7 +67,7 @@ const columns = [
 export function MemberFundsTable({ rows = [] }: MemberFundsTableProps): React.JSX.Element {
   return (
     <React.Fragment>
-      <DataTable columns={columns} rows={rows} />
+      <DataTable hover columns={columns} rows={rows} />
       {!rows.length ? (
         <Box sx={{ p: 3 }}>
           <Typography color="text.secondary" variant="body2">
