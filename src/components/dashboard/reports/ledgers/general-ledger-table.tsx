@@ -84,8 +84,8 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
   const totals = rows.reduce(
     (acc, curr) => {
       const type = curr.account?.RootID.rootType as keyof typeof acc;
-      const debit = new Decimal(curr._sum.debit ?? 0);
-      const credit = new Decimal(curr._sum.credit ?? 0);
+      const debit = new Decimal(Number(curr._sum.debit ?? 0));
+      const credit = new Decimal(Number(curr._sum.credit ?? 0));
       const value = ['Assets', 'Expense'].includes(type ?? '')
         ? debit.minus(credit) // Debit-based accounts
         : credit.minus(debit); // Credit-based accounts
