@@ -23,7 +23,13 @@ export const memberUpdateSchema = z.object({
   middleName:z.string().optional(),
   address: z.string().optional(),
   birthDate: z.date().optional(),
-  contactNo: z.date().optional(),
+  contactNo: z.string().optional(),
+  occupation: z.string().optional(),
+  dateAccepted: z.date().optional(),
+  tin:z.string().optional(),
+  civilStatus:z.string().optional(),
+  highestEduAttainment: z.string().optional(),
+  annualIncome: z.number().optional()
 });
 
 export type MemberSchema = z.infer<typeof memberSchema> & { id: number };

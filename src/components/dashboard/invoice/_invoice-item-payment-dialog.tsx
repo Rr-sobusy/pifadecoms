@@ -294,7 +294,6 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                   inputLabel="Total principal (A.R)"
                 />
                 <FormInputFields
-                  isDisabled
                   errors={errors.paymentLine?.[index]?.interestPaying}
                   control={control}
                   name={`paymentLine.${index}.interestPaying`}
