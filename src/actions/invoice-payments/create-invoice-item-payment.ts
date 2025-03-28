@@ -61,10 +61,10 @@ export const invoiceItemPaymentAction = actionClient
 
             const totalPaid = await tx.invoiceItemsPayments.aggregate({
               where: { invoiceItemId: payment.invoiceItemId },
-              _sum: { principalPaid: true, interestPaid: true },
+              _sum: { principalPaid: true, interestPaid: true, tradingPaid: true },
             });
 
-            const totalPaymentMade = Number(totalPaid._sum.principalPaid);
+            const totalPaymentMade = Number(totalPaid._sum.principalPaid) + Number(totalPaid._sum.tradingPaid);
 
             if (totalPaymentMade >= totalAmount) {
               await tx.invoiceItems.update({

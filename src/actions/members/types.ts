@@ -18,6 +18,7 @@ export const memberSchema = z.object({
 });
 
 export const memberUpdateSchema = z.object({
+  memberId: z.string(),
   lastName: z.string().optional(),
   firstName: z.string().optional(),
   middleName:z.string().optional(),
