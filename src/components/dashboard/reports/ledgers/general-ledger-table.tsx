@@ -84,12 +84,12 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
   const totals = rows.reduce(
     (acc, curr) => {
       const type = curr.account?.RootID.rootType as keyof typeof acc;
-      const debit = new Decimal(Number(curr._sum.debit ?? 0));
-      const credit = new Decimal(Number(curr._sum.credit ?? 0));
+      const debit = new Decimal(curr._sum.debit ?? 0);
+      const credit = new Decimal(curr._sum.credit ?? 0);
       const value = ['Assets', 'Expense'].includes(type ?? '')
         ? debit.minus(credit) // Debit-based accounts
         : credit.minus(debit); // Credit-based accounts
-
+  
       acc[type] = (acc[type] || new Decimal(0)).plus(value);
       return acc;
     },
@@ -101,23 +101,18 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
       Revenue: new Decimal(0),
     }
   );
-
-  // Round values for comparison
-  const roundedAssets = totals.Assets.toDecimalPlaces(2);
-  const roundedLiabilityPlusEquityPlusNetIncome = totals.Liability.plus(totals.Equity).plus(totals.Revenue.minus(totals.Expense)).toDecimalPlaces(2);
-
-  // Ensure precise comparison without floating-point errors
-  const isNotBalanced = !roundedAssets.equals(roundedLiabilityPlusEquityPlusNetIncome);
-
-  // Convert for display, but keep calculations in `Decimal`
+  
+  const isNotBalanced = !totals.Assets
+    .toDecimalPlaces(2)
+    .equals(totals.Liability.plus(totals.Equity).plus(totals.Revenue.minus(totals.Expense)).toDecimalPlaces(2));
+  
   const displayTotals = {
-    Assets: totals.Assets.toFixed(2),
-    Equity: totals.Equity.toFixed(2),
-    Liability: totals.Liability.toFixed(2),
-    Expense: totals.Expense.toFixed(2),
-    Revenue: totals.Revenue.toFixed(2),
+    Assets: totals.Assets.toDecimalPlaces(2).toFixed(2),
+    Equity: totals.Equity.toDecimalPlaces(2).toFixed(2),
+    Liability: totals.Liability.toDecimalPlaces(2).toFixed(2),
+    Expense: totals.Expense.toDecimalPlaces(2).toFixed(2),
+    Revenue: totals.Revenue.toDecimalPlaces(2).toFixed(2),
   };
-
   return (
     <>
       {rows.length ? (
