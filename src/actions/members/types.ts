@@ -18,7 +18,6 @@ export const memberSchema = z.object({
 });
 
 export const memberUpdateSchema = z.object({
-  memberId: z.string(),
   lastName: z.string().optional(),
   firstName: z.string().optional(),
   middleName:z.string().optional(),
@@ -30,7 +29,7 @@ export const memberUpdateSchema = z.object({
   tin:z.string().optional(),
   civilStatus:z.string().optional(),
   highestEduAttainment: z.string().optional(),
-  annualIncome: z.number().optional()
+  annualIncom: z.number().optional()
 });
 
 export type MemberSchema = z.infer<typeof memberSchema> & { id: number };

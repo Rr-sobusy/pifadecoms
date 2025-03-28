@@ -41,7 +41,7 @@ const columns = [
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="subtitle2">
-            {row.lastName + ', ' + row.firstName}
+            {`${row.lastName}, ${row.firstName} ${row.middleName ?? ''}`}
           </Typography>
         </div>
       </Stack>

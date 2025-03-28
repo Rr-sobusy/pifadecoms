@@ -26,6 +26,7 @@ import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/C
 import { CreditCard as CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard';
 import { PencilSimple as PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
+import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 
 import { config } from '@/config';
@@ -35,9 +36,11 @@ import { formatToCurrency } from '@/lib/format-currency';
 import { fetchMemberData } from '@/actions/members/fetch-members';
 import type { MemberDataType } from '@/actions/members/types';
 import { IMemberUpdateSchema, memberUpdateSchema } from '@/actions/members/types';
+import { updateMemberStatsAction } from '@/actions/members/update-member-stats';
 import { fetchMemberPatronages } from '@/actions/reports/patronages';
 import { PropertyItem } from '@/components/core/property-item';
 import { PropertyList } from '@/components/core/property-list';
+import { toast } from '@/components/core/toaster';
 
 import { FormInputFields } from '../member-loans/InputFields';
 
@@ -45,16 +48,22 @@ interface BasicDetailsCardProps {
   memberData: MemberDataType;
 }
 
+/**
+ * * Compare values that changed from original state
+ */
+const getChangedValues = (newValues: IMemberUpdateSchema, oldValues: IMemberUpdateSchema) => {
+  return Object.fromEntries(
+    Object.entries(newValues).filter(([key, value]) => value !== oldValues[key as keyof IMemberUpdateSchema])
+  );
+};
+
 function getDefaultValues(memberData: MemberDataType): IMemberUpdateSchema {
   return {
-    memberId: memberData?.memberId || '',
     lastName: memberData?.lastName,
     middleName: memberData?.middleName || '',
     firstName: memberData?.firstName,
-    birthDate: memberData?.birthDate ?? new Date(),
     address: memberData?.address ?? '',
-    dateAccepted: memberData?.dateAccepted || new Date(),
-    annualIncome: memberData?.annualIncom || 0,
+    annualIncom: memberData?.annualIncom || 0,
     civilStatus: memberData?.civilStatus || '',
     contactNo: memberData?.contactNo || '',
     highestEduAttainment: memberData?.highestEdAttain || '',
@@ -64,13 +73,25 @@ function getDefaultValues(memberData: MemberDataType): IMemberUpdateSchema {
 }
 
 function BasicDetailsCard({ memberData }: BasicDetailsCardProps) {
-  const { control, handleSubmit } = useForm<IMemberUpdateSchema>({
+  const { control, handleSubmit, getValues } = useForm<IMemberUpdateSchema>({
     resolver: zodResolver(memberUpdateSchema),
     defaultValues: getDefaultValues(memberData),
   });
   const [isUpdateMode, setUpdateMode] = React.useState<boolean>(false);
 
-  function formSubmitHandler(data: IMemberUpdateSchema) {}
+  const { execute, isExecuting, result } = useAction(updateMemberStatsAction.bind(null, memberData?.memberId || ''));
+
+  function formSubmitHandler(data: IMemberUpdateSchema) {
+    const filtered: IMemberUpdateSchema = getChangedValues(data, getDefaultValues(memberData));
+    execute(filtered);
+  }
+
+  React.useEffect(() => {
+    if (result.data?.success) {
+      setUpdateMode(false);
+      toast.success('Member data updated successfully!');
+    }
+  }, [result]);
 
   return (
     <form onSubmit={handleSubmit(formSubmitHandler)}>
@@ -187,7 +208,7 @@ function BasicDetailsCard({ memberData }: BasicDetailsCardProps) {
                 key: 'Annual Income',
                 value: memberData?.annualIncom ?? formatToCurrency(memberData?.annualIncom ?? 0, 'Fil-ph', 'Php'),
                 editMode: (
-                  <FormInputFields control={control} name="annualIncome" hideLabel variant="number" inputLabel="" />
+                  <FormInputFields control={control} name="annualIncom" hideLabel variant="number" inputLabel="" />
                 ),
               },
             ] satisfies { key: string; value: React.ReactNode; editMode?: React.ReactNode }[]
