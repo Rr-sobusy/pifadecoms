@@ -4,6 +4,7 @@ import React from 'react';
 import { Divider } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Decimal from 'decimal.js';
 
 import { formatToCurrency } from '@/lib/format-currency';
 import type { LedgerTypes } from '@/actions/reports/types';
@@ -46,36 +47,49 @@ const columns = [
 function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
   const totalDebit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.debit), 0);
   const totalCredit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.credit), 0);
+
   const totals = rows.reduce(
     (acc, curr) => {
       const type = curr.account?.RootID.rootType;
+      const debit = new Decimal(curr._sum.debit ?? 0);
+      const credit = new Decimal(curr._sum.credit ?? 0);
       const value = ['Assets', 'Expense'].includes(type ?? '')
-        ? (Number(curr._sum.debit) || 0) - (Number(curr._sum.credit) || 0)
-        : (Number(curr._sum.credit) || 0) - (Number(curr._sum.debit) || 0);
+        ? debit.minus(credit) // Debit-based accounts
+        : credit.minus(debit); // Credit-based accounts
 
       if (type === 'Assets') {
-        acc.Assets += value;
+        acc.Assets = acc.Assets.plus(value);
       }
       if (type === 'Equity') {
-        acc.Equity += value;
+        acc.Equity = acc.Equity.plus(value);
       }
       if (type === 'Liability') {
-        acc.Liability += value;
+        acc.Liability = acc.Liability.plus(value);
       }
       if (type === 'Expense') {
-        acc.Expense += value;
+        acc.Expense = acc.Expense.plus(value);
       }
       if (type === 'Revenue') {
-        acc.Revenue += value;
+        acc.Revenue = acc.Revenue.plus(value);
       }
 
       return acc;
     },
-    { Assets: 0, Equity: 0, Liability: 0, Expense: 0, Revenue: 0 }
+    {
+      Assets: new Decimal(0),
+      Equity: new Decimal(0),
+      Liability: new Decimal(0),
+      Expense: new Decimal(0),
+      Revenue: new Decimal(0),
+    }
   );
 
-  const isNotBalanced =
-    (totals.Equity + totals.Liability + (totals.Revenue - totals.Expense)).toFixed(2) !== totals.Assets.toFixed(2);
+  /**
+   * * Use decimal data type to minimize precision errors
+   */
+  const isNotBalanced = !new Decimal(totals.Assets).equals(
+    new Decimal(totals.Liability).plus(totals.Equity).plus(new Decimal(totals.Revenue).minus(totals.Expense))
+  );
 
   return (
     <>
@@ -93,7 +107,7 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
       <Divider sx={{ marginY: 2 }} />
       <Stack>
         <Typography variant="subtitle2">Accounting Equation:</Typography>
-        <Typography variant="caption">{`Assets (${formatToCurrency(totals.Assets, 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(totals.Liability, 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(totals.Equity, 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(totals.Revenue - totals.Expense, 'Fil-ph', 'Php')})`}</Typography>
+        <Typography variant="caption">{`Assets (${formatToCurrency(Number(totals.Assets), 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(Number(totals.Liability), 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(Number(totals.Equity), 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(Number(totals.Revenue) - Number(totals.Expense), 'Fil-ph', 'Php')})`}</Typography>
         {isNotBalanced && (
           <Typography variant="caption" color="error">
             Warning: The accounting equation is not balanced. Please check for possible errors in entry.
