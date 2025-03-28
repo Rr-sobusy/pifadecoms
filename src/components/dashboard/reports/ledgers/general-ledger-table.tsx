@@ -45,7 +45,7 @@ const columns = [
 ] satisfies ColumnDef<LedgerTypes[0]>[];
 
 function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
-  const totalDebit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.debit), 0);
+ const totalDebit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.debit), 0);
   const totalCredit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.credit), 0);
 
   const totals = rows.reduce(
