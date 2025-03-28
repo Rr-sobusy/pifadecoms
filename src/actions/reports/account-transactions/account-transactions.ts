@@ -65,10 +65,10 @@ export async function fetchAccountTransactions(props: Filterers) {
     take: !props.startDate && !props.endDate ? 1500 : undefined,
     orderBy: [
       {
-        entryDate: 'desc',
+        referenceName: 'desc',
       },
       {
-        referenceName: 'desc',
+        entryDate: 'desc',
       },
     ],
   });
