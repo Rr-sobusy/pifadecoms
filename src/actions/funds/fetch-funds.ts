@@ -22,11 +22,18 @@ export async function fetchMemberFunds(memberName?: string) {
         },
       ],
     },
-    orderBy: {
-      Member: {
-        lastName: 'asc',
+    orderBy: [
+      {
+        Member: {
+          lastName: 'asc',
+        },
       },
-    },
+      {
+        Member: {
+          firstName: 'asc',
+        },
+      },
+    ],
     include: {
       Member: true,
       Transactions: {

@@ -20,6 +20,7 @@ export const updateItemAction = actionClient.schema(updateItemSchema).action(asy
       data: {
         trade: Request.trade,
         sellingPrice: Request.principalPrice,
+        updatedAt: new Date(),
       },
     });
     serverResponse = { success: true, message: 'Item updated.' };

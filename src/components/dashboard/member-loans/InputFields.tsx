@@ -12,6 +12,7 @@ interface FormInputFieldsProps<TFormValues extends FieldValues> {
   isRequired?: boolean;
   sx?: SxProps;
   isDisabled?: boolean;
+  hideLabel?: boolean;
 }
 
 export const FormInputFields = <TFormValues extends FieldValues>({
@@ -23,6 +24,7 @@ export const FormInputFields = <TFormValues extends FieldValues>({
   isRequired = false,
   sx,
   isDisabled = false,
+  hideLabel = false,
 }: FormInputFieldsProps<TFormValues>) => {
   return (
     <Controller
@@ -32,7 +34,7 @@ export const FormInputFields = <TFormValues extends FieldValues>({
         const isNumberField = variant === 'number';
         return (
           <FormControl sx={sx} disabled={isDisabled} error={Boolean(errors?.[name])}>
-            <InputLabel required={isRequired}>{inputLabel}</InputLabel>
+            {!hideLabel ? <InputLabel required={isRequired}>{inputLabel}</InputLabel> : null}
             {isNumberField ? (
               <NumericFormat
                 {...rest}
@@ -53,7 +55,8 @@ export const FormInputFields = <TFormValues extends FieldValues>({
     />
   );
 };
-{/* <div>
+{
+  /* <div>
 <Controller
   name={name}
   control={control}
@@ -72,4 +75,5 @@ export const FormInputFields = <TFormValues extends FieldValues>({
     </FormControl>
   )}
 />
-</div> */}
+</div> */
+}

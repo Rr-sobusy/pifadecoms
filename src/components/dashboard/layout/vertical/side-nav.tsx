@@ -59,7 +59,7 @@ export function SideNav({ color = 'evident', items = [] }: SideNavProps): React.
       <Stack spacing={2} sx={{ p: 2 }}>
         <div>
           <Stack>
-            <Typography variant='h5'>PIFADECO I.M.S</Typography>
+            <Typography variant='h6'>PIFADECO I.M.S</Typography>
           </Stack>
         </div>
         <WorkspacesSwitch />
