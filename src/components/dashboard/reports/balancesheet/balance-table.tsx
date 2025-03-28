@@ -38,13 +38,15 @@ function BalanceTable({ balances }: Props) {
                 </Typography>
                 <Typography paddingLeft={4} paddingRight={2} variant="subtitle2">
                   {category === 'Assets'
-                    ? formatToCurrency(totalsPerCategory - (totalContraryAssets * 2), 'Fil-ph', 'Php')
+                    ? formatToCurrency(totalsPerCategory - totalContraryAssets * 2, 'Fil-ph', 'Php')
                     : formatToCurrency(totalsPerCategory, 'Fil-ph', 'Php')}
                 </Typography>
               </Stack>
               {accounts.map((account, idx) => (
                 <Stack padding={2} key={idx}>
-                  <Typography variant="h6">{account.parentAccount}</Typography>
+                  <Typography variant="h6">
+                    {account.isContra ? `${account.parentAccount} (Contra)` : account.parentAccount}
+                  </Typography>
 
                   <ul>
                     {account.children.map((child, index) => (
