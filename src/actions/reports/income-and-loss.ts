@@ -65,7 +65,7 @@ export async function fetchIncomeAndLossReport({
             JournalEntries: {
               entryDate: {
                 gte: dayjs(startDate).startOf('day').toISOString(),
-                lte: dayjs(endDate).startOf('day').toISOString(),
+                lte: dayjs(endDate).endOf('day').toISOString(),
               },
             },
           },
