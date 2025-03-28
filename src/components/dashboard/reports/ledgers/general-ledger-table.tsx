@@ -110,9 +110,13 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
   const isNotBalanced = !roundedAssets.equals(roundedLiabilityPlusEquityPlusNetIncome);
 
   // Convert for display, but keep calculations in `Decimal`
-  const displayTotals = Object.fromEntries(
-    Object.entries(totals).map(([key, value]) => [key, value.toFixed(2)])
-  );
+  const displayTotals = {
+    Assets: totals.Assets.toFixed(2),
+    Equity: totals.Equity.toFixed(2),
+    Liability: totals.Liability.toFixed(2),
+    Expense: totals.Expense.toFixed(2),
+    Revenue: totals.Revenue.toFixed(2),
+  };
 
   return (
     <>
@@ -130,7 +134,7 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
       <Divider sx={{ marginY: 2 }} />
       <Stack>
         <Typography variant="subtitle2">Accounting Equation:</Typography>
-        <Typography variant="caption">{`Assets (${formatToCurrency(Number(totals.Assets), 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(Number(totals.Liability), 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(Number(totals.Equity), 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(Number(totals.Revenue) - Number(totals.Expense), 'Fil-ph', 'Php')})`}</Typography>
+        <Typography variant="caption">{`Assets (${formatToCurrency(Number(displayTotals.Assets), 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(Number(displayTotals.Liability), 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(Number(displayTotals.Equity), 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(Number(displayTotals.Revenue) - Number(displayTotals.Expense), 'Fil-ph', 'Php')})`}</Typography>
         {isNotBalanced && (
           <Typography variant="caption" color="error">
             Warning: The accounting equation is not balanced. Please check for possible errors in entry.
