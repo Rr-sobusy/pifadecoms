@@ -50,29 +50,14 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
 
   const totals = rows.reduce(
     (acc, curr) => {
-      const type = curr.account?.RootID.rootType;
+      const type = curr.account?.RootID.rootType as keyof typeof acc;
       const debit = new Decimal(curr._sum.debit ?? 0);
       const credit = new Decimal(curr._sum.credit ?? 0);
       const value = ['Assets', 'Expense'].includes(type ?? '')
         ? debit.minus(credit) // Debit-based accounts
         : credit.minus(debit); // Credit-based accounts
-
-      if (type === 'Assets') {
-        acc.Assets = acc.Assets.plus(value);
-      }
-      if (type === 'Equity') {
-        acc.Equity = acc.Equity.plus(value);
-      }
-      if (type === 'Liability') {
-        acc.Liability = acc.Liability.plus(value);
-      }
-      if (type === 'Expense') {
-        acc.Expense = acc.Expense.plus(value);
-      }
-      if (type === 'Revenue') {
-        acc.Revenue = acc.Revenue.plus(value);
-      }
-
+  
+      acc[type] = (acc[type] || new Decimal(0)).plus(value);
       return acc;
     },
     {
@@ -83,12 +68,15 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
       Revenue: new Decimal(0),
     }
   );
-
-  /**
-   * * Use decimal data type to minimize precision errors
-   */
-  const isNotBalanced = !new Decimal(totals.Assets).equals(
-    new Decimal(totals.Liability).plus(totals.Equity).plus(new Decimal(totals.Revenue).minus(totals.Expense))
+  
+  // Ensure precise comparison without floating-point errors
+  const isNotBalanced = !totals.Assets.equals(
+    totals.Liability.plus(totals.Equity).plus(totals.Revenue.minus(totals.Expense))
+  );
+  
+  // Convert for display, but keep calculations in `Decimal`
+  const displayTotals = Object.fromEntries(
+    Object.entries(totals).map(([key, value]) => [key, value.toFixed(2)])
   );
 
   return (
