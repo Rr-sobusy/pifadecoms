@@ -26,7 +26,7 @@ import type { ItemTypes } from '@/actions/items/types';
 import { updateItemAction } from '@/actions/items/update-item';
 import { toast } from '@/components/core/toaster';
 
-import { FormInputFields } from '../member-loans/InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 interface ViewItemDialogProps {
   isOpen: boolean;

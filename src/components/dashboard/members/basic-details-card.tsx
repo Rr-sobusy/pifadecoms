@@ -42,7 +42,7 @@ import { PropertyItem } from '@/components/core/property-item';
 import { PropertyList } from '@/components/core/property-list';
 import { toast } from '@/components/core/toaster';
 
-import { FormInputFields } from '../member-loans/InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 interface BasicDetailsCardProps {
   memberData: MemberDataType;

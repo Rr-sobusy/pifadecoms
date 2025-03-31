@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   fontMedium: { fontWeight: 500 },
   fontSemibold: { fontWeight: 600 },
   textLg: { fontSize: 10, lineHeight: 1.5 },
-  textXl: { fontSize: 18, lineHeight: 1.6 },
+  textXl: { fontSize: 22, lineHeight: 1.6 },
   textRight: { textAlign: 'right' },
   uppercase: { textTransform: 'uppercase' },
   gutterBottom: { marginBottom: 4 },
@@ -67,10 +67,7 @@ export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Elem
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <View style={styles.flexGrow}>
-            <Text style={[styles.textXl, styles.fontSemibold]}>Sales Invoice</Text>
-          </View>
-          <View>
-            <Image source="/assets/logo-emblem--dark.png" style={styles.brand} />
+            <Text style={[styles.textXl]}>Sales Invoice</Text>
           </View>
         </View>
         <View style={styles.refs}>
@@ -103,7 +100,7 @@ export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Elem
           </View>
           <View style={styles.w100}>
             <Text style={[styles.fontMedium, styles.gutterBottom]}>Billed To</Text>
-            <Text>{`${invoice?.Members.lastName}, ${invoice?.Members.firstName}`}</Text>
+            <Text>{`${invoice?.Members.lastName}, ${invoice?.Members.firstName} ${invoice?.Members.middleName ?? ''}`}</Text>
             <Text>{invoice?.Members.address}</Text>
           </View>
         </View>

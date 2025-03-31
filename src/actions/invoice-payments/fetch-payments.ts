@@ -1,20 +1,37 @@
 import prisma from '@/lib/prisma';
 
 export async function fetchReceivedPayments() {
-  const payments = await prisma.invoicePayments.findMany({
+  const payments = await prisma.invoiceItemsPayments.findMany({
     include: {
-      Invoice: {
-        include: {
-          Members: true,
-        },
-      },
       JournalEntry: {
         include: {
-          JournalItems: {
-            include : {
-                Accounts : true
-            }
-          }
+          Members: {
+            select: {
+              lastName: true,
+              firstName: true,
+              middleName: true,
+            },
+          },
+        },
+      },
+      InvoiceItem: {
+        include: {
+          Invoice: {
+            include: {
+              Members: {
+                select: {
+                  lastName: true,
+                  firstName: true,
+                  middleName: true,
+                },
+              },
+            },
+          },
+          Item: {
+            select: {
+              itemName: true,
+            },
+          },
         },
       },
     },

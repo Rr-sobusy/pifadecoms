@@ -32,7 +32,7 @@ import { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-import { FormInputFields } from './InputFields';
+import { FormInputFields } from '../../core/InputFields';
 import LoanTabs from './loan-tabs';
 
 type Props = {

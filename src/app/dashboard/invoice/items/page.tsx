@@ -50,7 +50,7 @@ async function page({ searchParams }: PageProps) {
 
         <Stack direction="column" spacing={4} sx={{ alignItems: 'flex-start' }}>
           <Stack spacing={2} direction={'row'}>
-            <MemberDropDown members={members as MembersType} />
+            <MemberDropDown members={members.members as MembersType["members"]} />
             <ItemSourceDropdown itemSources={itemSources} />
           </Stack>
 

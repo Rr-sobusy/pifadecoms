@@ -25,7 +25,7 @@ import { addMemberIntoFundsSchema, type IAddMemberIntoFunds } from '@/actions/fu
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-import { FormInputFields } from '../member-loans/InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 interface AddFundsMemberProps {
   open?: boolean;

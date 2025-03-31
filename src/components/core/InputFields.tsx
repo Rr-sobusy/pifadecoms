@@ -41,7 +41,7 @@ export const FormInputFields = <TFormValues extends FieldValues>({
                 customInput={OutlinedInput}
                 thousandSeparator=","
                 decimalScale={3}
-                allowNegative={false}
+                allowNegative={true}
                 value={value ?? ''}
                 onValueChange={(values) => onChange(values.floatValue ?? null)}
               />

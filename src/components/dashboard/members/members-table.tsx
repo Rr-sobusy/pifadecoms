@@ -18,7 +18,7 @@ import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
 
 // extended interface to inject {id} object
-type ExtendedMemberType = MembersType[0] & {
+type ExtendedMemberType = MembersType["members"][0] & {
   id?: number;
 };
 
@@ -152,6 +152,7 @@ export interface MembersTableProps {
 }
 
 export function MembersTable({ rows = [] }: MembersTableProps): React.JSX.Element {
+  console.log(rows)
   return (
     <React.Fragment>
       <DataTable<ExtendedMemberType> columns={columns} rows={rows} />

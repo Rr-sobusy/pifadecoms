@@ -30,7 +30,7 @@ import { IAddMemberSchema, memberFundsSchema } from '@/actions/funds/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-import { FormInputFields } from '../member-loans/InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 interface FundTransactionWithPostingProps {
   open: boolean;

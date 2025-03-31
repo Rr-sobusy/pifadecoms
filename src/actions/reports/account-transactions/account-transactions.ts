@@ -62,7 +62,7 @@ export async function fetchAccountTransactions(props: Filterers) {
       },
     },
     where: isEmpty ? undefined : { ['AND']: conditions },
-    take: !props.startDate && !props.endDate ? 1500 : undefined,
+    take: !props.startDate && !props.endDate ? 1000 : undefined,
     orderBy: [
       {
         referenceName: 'desc',

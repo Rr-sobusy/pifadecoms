@@ -33,7 +33,7 @@ import { invoiceItemsPaymentschema, type InvoiceItemsPaymentType } from '@/actio
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-import { FormInputFields } from '../member-loans/InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 const dueMonth = 1;
 

@@ -28,7 +28,7 @@ import { itemSchema, ItemSourcesType, ItemsSchemaType } from '@/actions/items/ty
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-import { FormInputFields } from '../member-loans/InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 interface ItemCreateFormProps {
   accounts?: { accountId: string; accountName: string; accountRootType: AccountType[0]['RootID']['rootType'] }[];

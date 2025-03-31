@@ -31,7 +31,7 @@ import { createAmortizationPayment } from '@/actions/loans/create-amortization-p
 import { ILoanType, IRepaymentAction, repaymentAction } from '@/actions/loans/types';
 import { Option } from '@/components/core/option';
 
-import { FormInputFields } from './InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 interface PageProps {
   open: boolean;

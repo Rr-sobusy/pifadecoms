@@ -50,7 +50,7 @@ const page = async () => {
               trade: item.trade,
             };
           })}
-          members={members}
+          members={members.members}
         />
       </Stack>
     </Box>

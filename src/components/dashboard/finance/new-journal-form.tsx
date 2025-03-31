@@ -40,7 +40,7 @@ import { transactionalSchema, type TransactionalSchemaType } from '@/actions/tra
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
-import { FormInputFields } from '../member-loans/InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 interface NewJournalFromProps {
   data: AccounTreeType;
@@ -82,7 +82,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
     resolver: zodResolver(transactionalSchema),
   });
 
-  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
+  const [member, setMemberData] = React.useState<MembersType['members'][0][]>([]);
 
   const memberData = watch('particulars');
 
@@ -96,7 +96,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
 
     async function fetchMemberDataOnDebounce() {
       try {
-        const data: MembersType = await fetch('/dashboard/members/api', {
+        const data: MembersType['members'] = await fetch('/dashboard/members/api', {
           method: 'POST',
           body: JSON.stringify({ memberName: debouncedValue }),
         }).then((res) => res.json());

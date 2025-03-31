@@ -25,7 +25,7 @@ import { createNewItemSourceAction } from '@/actions/items/create-new-item-sourc
 import { itemSourceSchema, ItemSourceSchemaType } from '@/actions/items/types';
 import { Option } from '@/components/core/option';
 
-import { FormInputFields } from '../member-loans/InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 type ItemSourceDialogProps = {
   isOpen: boolean;

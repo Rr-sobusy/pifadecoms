@@ -27,7 +27,7 @@ import { memberFundsNoPosting, type MemberFundsNoPostingType } from '@/actions/f
 import type { FundTransactions } from '@/actions/funds/types';
 import { toast } from '@/components/core/toaster';
 
-import { FormInputFields } from '../member-loans/InputFields';
+import { FormInputFields } from '../../core/InputFields';
 
 interface FundTransactionNonPostingProps {
   open: boolean;

@@ -113,10 +113,10 @@ const Page = async ({ searchParams }: PageProps): Promise<React.JSX.Element> => 
           <MemberFilters basePath={paths.dashboard.members.list} filters={{ memberName }} />
           <Divider />
           <Box sx={{ overflowX: 'auto' }}>
-            <MembersTable rows={members} />
+            <MembersTable rows={members.members} />
           </Box>
           <Divider />
-          <MembersPagination count={1000} offsetPage={offsetPage} />
+          <MembersPagination count={members.totalCount} offsetPage={offsetPage} />
         </Card>
       </Stack>
     </Box>
