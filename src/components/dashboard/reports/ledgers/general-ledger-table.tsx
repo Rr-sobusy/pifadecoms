@@ -77,7 +77,7 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
   // );
 
   // // Convert for display, but keep calculations in `Decimal`
-  // const displayTotals = Object.fromEntries(
+  // const totals = Object.fromEntries(
   //   Object.entries(totals).map(([key, value]) => [key, value.toFixed(2)])
   // );
   const totalDebit = rows.reduce((acc, ctx) => acc + Number(ctx._sum.debit), 0);
@@ -109,14 +109,6 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
     .toDecimalPlaces(2)
     .equals(totals.Liability.plus(totals.Equity).plus(totals.Revenue.minus(totals.Expense)).toDecimalPlaces(2));
 
-  const displayTotals = {
-    Assets: totals.Assets.toDecimalPlaces(2).toFixed(2),
-    Equity: totals.Equity.toDecimalPlaces(2).toFixed(2),
-    Liability: totals.Liability.toDecimalPlaces(2).toFixed(2),
-    Expense: totals.Expense.toDecimalPlaces(2).toFixed(2),
-    Revenue: totals.Revenue.toDecimalPlaces(2).toFixed(2),
-    Contra_Assets: totals.Revenue.toDecimalPlaces(2).toFixed(2),
-  };
   console.log(rows);
   return (
     <>
@@ -139,7 +131,7 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
         <Typography>assets</Typography>
         <Typography>{totals.Assets.toString()}</Typography>
         
-        <Typography variant="caption">{`Assets (${formatToCurrency(Number(displayTotals.Assets) - Number(displayTotals.Contra_Assets), 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(Number(displayTotals.Liability), 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(Number(displayTotals.Equity), 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(Number(displayTotals.Revenue) - Number(displayTotals.Expense), 'Fil-ph', 'Php')})`}</Typography>
+        <Typography variant="caption">{`Assets (${formatToCurrency(Number(totals.Assets) - Number(totals.Contra_Assets), 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(Number(totals.Liability), 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(Number(totals.Equity), 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(Number(totals.Revenue) - Number(totals.Expense), 'Fil-ph', 'Php')})`}</Typography>
         {isNotBalanced && (
           <Typography variant="caption" color="error">
             Warning: The accounting equation is not balanced. Please check for possible errors in entry.
