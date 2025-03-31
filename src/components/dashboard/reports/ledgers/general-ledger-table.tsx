@@ -117,7 +117,7 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
     Revenue: totals.Revenue.toDecimalPlaces(2).toFixed(2),
     Contra_Assets: totals.Revenue.toDecimalPlaces(2).toFixed(2),
   };
-
+  console.log(rows);
   return (
     <>
       {rows.length ? (
@@ -134,6 +134,11 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
       <Divider sx={{ marginY: 2 }} />
       <Stack>
         <Typography variant="subtitle2">Accounting Equation:</Typography>
+        <Typography>Contra</Typography>
+        <Typography>{totals.Contra_Assets.toString()}</Typography>
+        <Typography>assets</Typography>
+        <Typography>{totals.Assets.toString()}</Typography>
+        
         <Typography variant="caption">{`Assets (${formatToCurrency(Number(displayTotals.Assets) - Number(displayTotals.Contra_Assets), 'Fil-ph', 'Php')}) = Liability (${formatToCurrency(Number(displayTotals.Liability), 'Fil-ph', 'Php')}) + Equity (${formatToCurrency(Number(displayTotals.Equity), 'Fil-ph', 'Php')}) + Net Income/Undivided Net Surplus (${formatToCurrency(Number(displayTotals.Revenue) - Number(displayTotals.Expense), 'Fil-ph', 'Php')})`}</Typography>
         {isNotBalanced && (
           <Typography variant="caption" color="error">
