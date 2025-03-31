@@ -11,7 +11,10 @@ import { config } from '@/config';
 import { paths } from '@/paths';
 import { CreateMemberForm } from '@/components/dashboard/members/create-member-form';
 
-export const metadata = { title: `Create | Members | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata: Metadata = {
+  title: 'PIFADECO | Create new member',
+};
+
 
 export default function Page(): React.JSX.Element {
   return (

@@ -26,10 +26,7 @@ export interface Filters {
   endDate?: Date | string;
   invoiceId?: number;
   startDate?: Date | string;
-  status?: string;
 }
-
-export type SortDir = 'asc' | 'desc';
 
 const schema = zod
   .object({
@@ -65,7 +62,6 @@ function getDefaultValues(filters: Filters): Values {
     },
     endDate: filters.endDate ? dayjs(filters.endDate).toDate() : null,
     invoiceId: filters.invoiceId ?? 0,
-    status: filters.status ?? '',
     startDate: filters.startDate ? dayjs(filters.startDate).toDate() : null,
   };
 }
@@ -74,7 +70,6 @@ export interface InvoiceFiltererProps {
   filters?: { memberId?: string; endDate?: Date; invoiceId?: number; startDate?: Date; status?: string };
   onFiltersApplied?: () => void;
   onFiltersCleared?: () => void;
-  sortDir?: SortDir;
   view?: 'group' | 'list';
 }
 
@@ -82,7 +77,6 @@ export function InvoiceFilterer({
   filters = { endDate: new Date(), invoiceId: 0, memberId: '0', startDate: new Date(), status: '' },
   onFiltersApplied,
   onFiltersCleared,
-  sortDir = 'desc',
   view,
 }: InvoiceFiltererProps): React.JSX.Element {
   const router = useRouter();
@@ -95,7 +89,7 @@ export function InvoiceFilterer({
     setValue,
   } = useForm<Values>({ values: getDefaultValues(filters), resolver: zodResolver(schema) });
 
-  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
+  const [member, setMemberData] = React.useState<MembersType['members']>([]);
 
   const memberData = watch('member');
 
@@ -109,7 +103,7 @@ export function InvoiceFilterer({
 
     async function fetchMemberDataOnDebounce() {
       try {
-        const data: MembersType = await fetch('/dashboard/members/api', {
+        const data: MembersType['members'] = await fetch('/dashboard/members/api', {
           method: 'POST',
           body: JSON.stringify({ memberName: debouncedValue }),
         }).then((res) => res.json());
@@ -127,14 +121,6 @@ export function InvoiceFilterer({
 
       if (view) {
         searchParams.set('view', view);
-      }
-
-      if (sortDir === 'asc') {
-        searchParams.set('sortDir', sortDir);
-      }
-
-      if (newFilters.status) {
-        searchParams.set('status', newFilters.status);
       }
 
       if (newFilters.invoiceId) {
@@ -155,7 +141,7 @@ export function InvoiceFilterer({
 
       router.push(`${paths.dashboard.invoice.list}?${searchParams.toString()}`);
     },
-    [router, sortDir, view]
+    [router, view]
   );
 
   const handleApplyFilters = React.useCallback(
@@ -177,7 +163,6 @@ export function InvoiceFilterer({
     onFiltersCleared?.();
   }, [updateSearchParams, onFiltersCleared]);
 
-  // const hasFilters = filters.invoiceId || filters.memberId || filters.status || filters.startDate || filters.endDate;
 
   return (
     <form onSubmit={handleSubmit(handleApplyFilters)}>
@@ -199,21 +184,6 @@ export function InvoiceFilterer({
                 }}
                 type="number"
               />
-            </FormControl>
-          )}
-        />
-        <Controller
-          control={control}
-          name="status"
-          render={({ field }) => (
-            <FormControl error={Boolean(errors.status)} fullWidth>
-              <InputLabel required>Status</InputLabel>
-              <Select {...field}>
-                <Option value="">All</Option>
-                <Option value="pending">Pending</Option>
-                <Option value="paid">Paid</Option>
-                <Option value="canceled">Canceled</Option>
-              </Select>
             </FormControl>
           )}
         />

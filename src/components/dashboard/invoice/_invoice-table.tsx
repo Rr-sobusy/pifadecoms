@@ -11,8 +11,6 @@ import Typography from '@mui/material/Typography';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
 import { DotsThreeVertical as Dots } from '@phosphor-icons/react/dist/ssr/DotsThreeVertical';
-import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
-
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -21,7 +19,7 @@ import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
 
 interface InvoiceTableProps {
-  rows: InvoiceType;
+  rows: InvoiceType['invoice'];
 }
 
 const dueMonth = 1;
@@ -30,9 +28,8 @@ const columns = [
   {
     formatter: (row): React.JSX.Element => {
       const mapping = {
-        pending: { label: 'Pending', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
+        unpaid: { label: 'Unpaid', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
         paid: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
-        due: { label: 'due', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
       } as const;
 
       const totalPaid = row.InvoiceItems.map((invoiceItem) => {
@@ -50,7 +47,7 @@ const columns = [
 
       function getMapping() {
         if (totalBalanceDue <= totalPaid) return mapping['paid'];
-        return mapping['pending'];
+        return mapping['unpaid'];
       }
 
       const { label, icon } = getMapping();
@@ -161,12 +158,12 @@ const columns = [
     width: '10px',
     align: 'right',
   },
-] satisfies ColumnDef<InvoiceType[0]>[];
+] satisfies ColumnDef<InvoiceType['invoice'][0]>[];
 
 const InvoiceTable = ({ rows }: InvoiceTableProps) => {
   return (
     <Card sx={{ overflowX: 'auto' }}>
-      <DataTable<InvoiceType[0]> hover columns={columns} hideHead rows={rows} />
+      <DataTable<InvoiceType['invoice'][0]> hover columns={columns} hideHead rows={rows} />
       {!rows.length ? (
         <Box sx={{ p: 3 }}>
           <Typography color="text.secondary" sx={{ textAlign: 'center' }} variant="body2">

@@ -5,11 +5,16 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
-
+import type { Metadata } from 'next';
 import { paths } from '@/paths';
 import { fetchChartofAccounts } from '@/actions/accounts/fetch-accounts';
 import { fetchItemSources } from '@/actions/items/fetch-item-sources';
 import ItemCreateForm from '@/components/dashboard/items/item-create-form';
+
+export const metadata: Metadata = {
+  title: 'PIFADECO | Create new item',
+};
+
 
 async function page(): Promise<React.JSX.Element> {
   const [chartOfAccounts, itemSources] = await Promise.all([fetchChartofAccounts(), fetchItemSources()]);

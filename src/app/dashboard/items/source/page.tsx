@@ -15,6 +15,11 @@ import AddItemSourceDialog from '@/components/dashboard/items/add-item-source-di
 import ItemSourceTable from '@/components/dashboard/items/item-source-table';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 
+export const metadata: Metadata = {
+  title: 'PIFADECO | Item sources',
+};
+
+
 interface PageProps {
   searchParams: { createNew: boolean };
 }

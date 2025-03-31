@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { paths } from '@/paths';
 import { fetchInvoices } from '@/actions/invoices/fetch-invoice';
 import InvoiceTable from '@/components/dashboard/invoice/_invoice-table';
-import InfiniteScroll from '@/components/dashboard/invoice/infinite-scroll';
+import InfiniteScroll from '@/components/dashboard/invoice/invoice-infinite-scroll';
 import { InvoicesFiltersCard } from '@/components/dashboard/invoice/invoices-filters-card';
 
 interface PageProps {
@@ -20,6 +20,7 @@ interface PageProps {
     invoiceId?: number;
     startDate?: Date;
     status?: string;
+    cursor?: string;
   };
 }
 
@@ -28,8 +29,8 @@ export const metadata: Metadata = {
 };
 
 const page = async ({ searchParams }: PageProps) => {
-  const { memberId, endDate, invoiceId, startDate, status } = searchParams;
-  const filters = { memberId, endDate, invoiceId, startDate, status };
+  const { memberId, endDate, invoiceId, startDate, status, cursor } = searchParams;
+  const filters = { memberId, endDate, invoiceId, startDate, status , cursor};
   const invoices = await fetchInvoices(filters);
 
   return (
@@ -56,8 +57,8 @@ const page = async ({ searchParams }: PageProps) => {
         <Stack direction="row" spacing={4} sx={{ alignItems: 'flex-start' }}>
           <InvoicesFiltersCard filters={filters} />
           <Stack spacing={4} sx={{ flex: '1 1 auto', minWidth: 0 }}>
-            <InvoiceTable rows={invoices} />
-            <InfiniteScroll />
+            <InvoiceTable rows={invoices.invoice} />
+            <InfiniteScroll invoices={invoices.invoice} nextCursor={String(invoices.nextCursor)} />
           </Stack>
         </Stack>
       </Stack>

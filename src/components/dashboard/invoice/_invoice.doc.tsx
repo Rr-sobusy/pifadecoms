@@ -57,7 +57,7 @@ export interface InvoicePDFDocumentProps {
 }
 
 export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Element {
-  const invDueDate = dayjs(dayjs(invoice?.dateOfInvoice).add(1, 'M')).format('MMM DD,YYYY');
+  const invDueDate = dayjs(dayjs(invoice?.dateOfInvoice).add(1, 'M')).format('MMM DD YYYY');
   const totalAmountDue = invoice?.InvoiceItems.reduce(
     (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
     0
@@ -77,11 +77,11 @@ export function InvoiceDoc({ invoice }: InvoicePDFDocumentProps): React.JSX.Elem
           </View>
           <View style={styles.refRow}>
             <Text style={styles.refDescription}>Due Date:</Text>
-            <Text>{dayjs(invoice?.dateOfInvoice).add(1, 'month').format('MMM DD YYYY')}</Text>
+            <Text>{invDueDate}</Text>
           </View>
           <View style={styles.refRow}>
             <Text style={styles.refDescription}>Issue Date:</Text>
-            <Text>{dayjs(invoice?.dateOfInvoice).format('MMM D, YYYY')}</Text>
+            <Text>{dayjs(invoice?.dateOfInvoice).format('MMM DD YYYY')}</Text>
           </View>
           <View style={styles.refRow}>
             <Text style={styles.refDescription}>Issuer VAT No:</Text>

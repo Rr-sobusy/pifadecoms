@@ -16,6 +16,7 @@ import FundTransactionNonPosting from '@/components/dashboard/funds/fund-transac
 import { FundTransactionWithPosting } from '@/components/dashboard/funds/fund-transaction-with-posting';
 import SavingsCard from '@/components/dashboard/funds/savings-card';
 import SharesCard from '@/components/dashboard/funds/shares-card';
+import type { Metadata } from 'next';
 
 interface PageProps {
   params: { fundId: number };
@@ -25,6 +26,11 @@ interface PageProps {
     postingType: 'non-posting' | 'with-posting';
   };
 }
+
+export const metadata: Metadata = {
+  title: 'PIFADECO | Member funds current',
+};
+
 
 async function page({ params, searchParams }: PageProps) {
   const [fundTransactions, accounts] = await Promise.all([

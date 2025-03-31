@@ -11,11 +11,11 @@ interface Filterers {
   invoiceId?: number;
   startDate?: Date;
   endDate?: Date;
-  status?: string;
+  cursor?: string;
 }
 
 export async function fetchInvoices(props: Filterers = {}) {
-  const isEmpty = !props.memberId && !props.invoiceId && !props.startDate && !props.endDate && !props.status;
+  const isEmpty = !props.memberId && !props.invoiceId && !props.startDate && !props.endDate;
 
   const conditions = [];
 
@@ -41,15 +41,17 @@ export async function fetchInvoices(props: Filterers = {}) {
       InvoiceItems: {
         include: {
           Item: true,
-
           ItemPayment: true,
         },
       },
       Members: true,
     },
-    // cursor : {
-    //     invoiceId : 1
-    // },
+    cursor: props.cursor ? { invoiceId: 1 } : undefined,
+    skip: props.cursor ? 1 : 0,
+    take: 150,
+    orderBy: {
+      invoiceId: 'desc',
+    },
     /**
      * * Create nullish operator to return the original lists if paramaters are not supplied.
      */
@@ -59,8 +61,9 @@ export async function fetchInvoices(props: Filterers = {}) {
           OR: conditions,
         },
   });
+  const nextCursor = invoice.length > 0 ? invoice[invoice.length - 1].invoiceId : undefined;
 
-  return invoice;
+  return { nextCursor, invoice };
 }
 
 export async function fetchSingleInvoice(invoiceId: bigint) {

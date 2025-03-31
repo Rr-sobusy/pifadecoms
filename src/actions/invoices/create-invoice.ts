@@ -6,7 +6,6 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import { paths } from '@/paths';
@@ -19,6 +18,7 @@ export const createInvoice = actionClient
   .schema(invoiceSchema)
   .bindArgsSchemas<[grandTotal: z.ZodNumber]>([z.number()])
   .action(async ({ parsedInput: Request }) => {
+    let serverResponse;
     try {
       const queryResponse = await prisma.invoice.create({
         data: {
@@ -35,11 +35,13 @@ export const createInvoice = actionClient
         },
       });
 
-      return { success: true, message: queryResponse };
+      serverResponse = { success: true, message: 'New invoice created.' };
     } catch (error) {
-      return { success: false, errorMessage: error };
-    } finally {
-      revalidatePath(paths.dashboard.invoice.list);
-      redirect(paths.dashboard.invoice.list);
+      serverResponse = {
+        success: false,
+        message: error instanceof Error ? `Error message: ${error.stack}` : 'Error occured in server.',
+      };
     }
+    revalidatePath(paths.dashboard.invoice.list);
+    return serverResponse;
   });

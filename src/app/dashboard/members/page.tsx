@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 // import xl from 'exceljs';
-
+import type { Metadata } from 'next';
 // import { AccountType } from '@/lib/api-utils/account-tree';
 // import { dayjs } from '@/lib/dayjs';
 // import prisma from '@/lib/prisma';
@@ -80,6 +80,11 @@ interface PageProps {
 //     });
 //   });
 // }
+
+export const metadata: Metadata = {
+  title: 'PIFADECO | Members list',
+};
+
 
 const Page = async ({ searchParams }: PageProps): Promise<React.JSX.Element> => {
   // const rex = await seed(AccountType)

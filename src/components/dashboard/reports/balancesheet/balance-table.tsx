@@ -80,7 +80,7 @@ function BalanceTable({ balances }: Props) {
           Liability + Equity
         </Typography>
         <Typography paddingLeft={4} paddingRight={2} fontWeight={600} variant="subtitle2">
-          {formatToCurrency(totalLiabilities + totalEquity, 'Fil-ph', 'Php')}
+          {formatToCurrency(totalLiabilities + totalEquity, 'Fil-ph', 'Php')} + accumulated Net Surplus
         </Typography>
       </Stack>
     </Box>

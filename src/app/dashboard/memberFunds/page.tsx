@@ -7,7 +7,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-
+import type { Metadata } from 'next';
 import { paths } from '@/paths';
 import { fetchAggregatedFunds } from '@/actions/funds/fetch-aggregated-funds';
 import { fetchMemberFunds } from '@/actions/funds/fetch-funds';
@@ -20,6 +20,11 @@ import { MemberFilters } from '@/components/dashboard/members/members-filter';
 interface PageProps {
   searchParams: { addNewFund: boolean; memberName: string };
 }
+
+export const metadata: Metadata = {
+  title: 'PIFADECO | Member funds',
+};
+
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const { memberName } = searchParams;
 

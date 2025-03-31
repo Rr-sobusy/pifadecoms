@@ -17,7 +17,10 @@ import { ItemsTable } from '@/components/dashboard/items/items-table';
 import ViewItemDialog from '@/components/dashboard/items/view-item-or-edit-dialog';
 import type { Filters } from '@/components/dashboard/product/products-filters';
 
-export const metadata = { title: `List | Products | Dashboard | ${config.site.name}` } satisfies Metadata;
+export const metadata: Metadata = {
+  title: 'PIFADECO | Items lists',
+};
+
 interface PageProps {
   searchParams: { itemId:string };
 }

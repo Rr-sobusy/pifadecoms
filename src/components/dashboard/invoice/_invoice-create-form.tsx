@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -65,15 +65,14 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
     defaultValues,
   });
 
-  console.log(items);
-
   const router = useRouter();
+  const pathname = usePathname();
 
   const lineItems = watch('lineItems');
 
   const grandTotal = calculateGrandTotal(lineItems);
 
-  const { executeAsync, result, isExecuting } = useAction(createInvoice.bind(null, grandTotal));
+  const { execute, result, isExecuting } = useAction(createInvoice.bind(null, grandTotal));
 
   const handleAddLineItem = React.useCallback(() => {
     const _lineItems = watch('lineItems');
@@ -103,13 +102,14 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
   );
 
   React.useEffect(() => {
-    if (result.data) {
+    if (result.data?.success) {
       toast.success('New Invoice Created');
+      router.push(pathname);
     }
   }, [result]);
 
   function submitHandler(data: InvoiceSchemaType) {
-    executeAsync(data);
+    execute(data);
   }
 
   return (
@@ -286,7 +286,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                         </FormControl>
                       )}
                     />
-                  
+
                     <Controller
                       control={control}
                       name={`lineItems.${index}.rate`}
@@ -315,7 +315,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                         </FormControl>
                       )}
                     />
-                      <Controller
+                    <Controller
                       control={control}
                       name={`lineItems.${index}.trade`}
                       render={({ field }) => (
