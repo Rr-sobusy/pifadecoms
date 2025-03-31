@@ -104,7 +104,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
   React.useEffect(() => {
     if (result.data?.success) {
       toast.success('New Invoice Created');
-      router.push(pathname);
+      router.push(paths.dashboard.invoice.list);
     }
   }, [result]);
 
