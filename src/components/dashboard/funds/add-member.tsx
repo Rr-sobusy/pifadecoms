@@ -29,7 +29,7 @@ import { FormInputFields } from '../../core/InputFields';
 
 interface AddFundsMemberProps {
   open?: boolean;
-  membersList: { memberId: string; lastName: string; firstName: string }[];
+  membersList: { memberId: string; lastName: string; firstName: string , middleName:string}[];
 }
 
 function AddFundsMember({ open = true, membersList }: AddFundsMemberProps) {
@@ -133,7 +133,7 @@ function AddFundsMember({ open = true, membersList }: AddFundsMemberProps) {
                   }
                   renderOption={(props, option) => (
                     <Option {...props} key={option.memberId} value={option.memberId}>
-                      {`${option.lastName}, ${option.firstName}`}
+                      {`${option.lastName}, ${option.firstName} ${option.middleName}` }
                     </Option>
                   )}
                 />

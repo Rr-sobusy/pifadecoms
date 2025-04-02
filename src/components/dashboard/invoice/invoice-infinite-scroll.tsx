@@ -22,7 +22,7 @@ function InfiniteScroll({ nextCursor, invoices }: Props) {
     if (inView && nextCursor) {
       const _searchParams = new URLSearchParams(searchParams.toString());
       _searchParams.set('cursor', String(nextCursor));
-      router.replace(`?${_searchParams.toString()}`, { scroll: false });
+      router.replace(`?${_searchParams.toString()}`, { scroll: true });
     }
   }, [inView]);
 

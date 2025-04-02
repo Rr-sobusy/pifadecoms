@@ -28,6 +28,7 @@ export const addMemberIntoFundsSchema = zod.object({
     memberId: zod.string(),
     lastName: zod.string(),
     firstName: zod.string(),
+    middleName: zod.string()
   }),
   initialSavingsBalance: zod.number(),
   initialShareCapBalance: zod.number(),

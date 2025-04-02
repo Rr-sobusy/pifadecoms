@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -7,7 +8,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import type { Metadata } from 'next';
+
 import { paths } from '@/paths';
 import { fetchAggregatedFunds } from '@/actions/funds/fetch-aggregated-funds';
 import { fetchMemberFunds } from '@/actions/funds/fetch-funds';
@@ -74,6 +75,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
             memberId: member.memberId,
             lastName: member.lastName,
             firstName: member.firstName,
+            middleName: member.middleName ?? '',
           };
         })}
         open={Boolean(searchParams.addNewFund)}
