@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 // import xl from 'exceljs';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 // import { AccountType } from '@/lib/api-utils/account-tree';
 // import { dayjs } from '@/lib/dayjs';
 // import prisma from '@/lib/prisma';
@@ -109,8 +110,8 @@ const Page = async ({ searchParams }: PageProps): Promise<React.JSX.Element> => 
             <Typography variant="h4">Members</Typography>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button startIcon={<PlusIcon />} variant="contained">
-              Add
+            <Button LinkComponent={Link} href={paths.dashboard.members.create} startIcon={<PlusIcon />} variant="contained">
+              Add member
             </Button>
           </Box>
         </Stack>

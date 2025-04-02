@@ -18,11 +18,20 @@ function InfiniteScroll({ nextCursor, invoices }: Props) {
   const router = useRouter();
   const { ref, inView } = useInView({ triggerOnce: false });
 
+  const updateURLWithDelay = (nextCursor: string | undefined) => {
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        const _searchParams = new URLSearchParams(searchParams.toString());
+        _searchParams.set('cursor', String(nextCursor));
+        router.replace(`?${_searchParams.toString()}`, { scroll: true });
+        resolve();
+      }, 2000);
+    });
+  };
+
   useEffect(() => {
     if (inView && nextCursor) {
-      const _searchParams = new URLSearchParams(searchParams.toString());
-      _searchParams.set('cursor', String(nextCursor));
-      router.replace(`?${_searchParams.toString()}`, { scroll: true });
+      updateURLWithDelay(nextCursor);
     }
   }, [inView]);
 

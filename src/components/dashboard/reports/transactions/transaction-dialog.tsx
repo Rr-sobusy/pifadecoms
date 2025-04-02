@@ -96,7 +96,9 @@ function TransactionDialog({ isOpen, accountTransactions }: TransactionDialogPro
     },
     {
       title: 'Particular',
-      value: accountTransactions?.Members?.lastName + ' ' + accountTransactions?.Members?.firstName,
+      value: accountTransactions?.Members
+        ? accountTransactions?.Members?.lastName + ' ' + accountTransactions?.Members?.firstName
+        : 'N/A',
     },
     {
       title: 'Notes',

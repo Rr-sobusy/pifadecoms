@@ -84,7 +84,7 @@ const columns = [
       return (
         <Stack>
           <Typography variant="caption">
-            {row.Members === null ? ' ' : `${row.Members?.lastName} ${row.Members.firstName}`}
+            {row.Members === null ? 'N/A' : `${row.Members?.lastName} ${row.Members.firstName ?? ''}`}
           </Typography>
         </Stack>
       );
