@@ -31,7 +31,7 @@ function computeRemainingInterest(
   paidPrincipalAndTrade: number,
   rate: number
 ): number {
-  const numberOfMonthsPast = dayjs(inputtedDate).add(dueMonth, 'M').diff(dayjs(), 'M');
+  const numberOfMonthsPast = dayjs(inputtedDate).add(dueMonth, 'M').diff(dayjs(), 'month');
 
   return (rate / 100) * (grandTotal - paidPrincipalAndTrade) * (numberOfMonthsPast - 1) * -1;
 }
@@ -136,7 +136,7 @@ const columns = [
   {
     name: 'Int. accrued (2%)',
     formatter: (row) => {
-      const totalAmountDue = row.quantity * (row.Item.sellingPrice + row.Item.trade);
+      const totalAmountDue = row.quantity * (row.principalPrice + row.trade);
       const totalPrincipalAndTradePaid = row.ItemPayment.reduce(
         (acc, curr) => acc + (Number(curr.principalPaid) + Number(curr.tradingPaid)),
         0

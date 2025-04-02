@@ -17,6 +17,8 @@ interface Filterers {
 export async function fetchInvoices(props: Filterers = {}) {
   const isEmpty = !props.memberId && !props.invoiceId && !props.startDate && !props.endDate;
 
+  const cursorValue = props.cursor ? Number(props.cursor) : undefined;
+
   const conditions = [];
 
   if (props.memberId) {
@@ -46,7 +48,7 @@ export async function fetchInvoices(props: Filterers = {}) {
       },
       Members: true,
     },
-    cursor: props.cursor ? { invoiceId: 1 } : undefined,
+    cursor: cursorValue ? { invoiceId: cursorValue } : undefined,
     skip: props.cursor ? 1 : 0,
     take: 150,
     orderBy: {
