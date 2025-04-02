@@ -38,7 +38,7 @@ export async function fetchInvoices(props: Filterers = {}) {
     });
   }
 
-  const invoices = await prisma.invoice.findMany({
+  const invoice = await prisma.invoice.findMany({
     include: {
       InvoiceItems: {
         include: {
@@ -50,7 +50,7 @@ export async function fetchInvoices(props: Filterers = {}) {
     },
     cursor: cursorValue ? { invoiceId: cursorValue } : undefined,
     skip: props.cursor ? 1 : 0,
-    take: 151,
+    take: 150,
     orderBy: {
       invoiceId: 'desc',
     },
@@ -63,9 +63,9 @@ export async function fetchInvoices(props: Filterers = {}) {
           OR: conditions,
         },
   });
-  const nextCursor = invoices.length > 0 ? invoices[150].invoiceId : undefined;
+  const nextCursor = invoice.length > 0 ? invoice[invoice.length - 1].invoiceId : undefined;
 
-  return { nextCursor, invoice: invoices.slice(0, 150) };
+  return { nextCursor, invoice };
 }
 
 export async function fetchSingleInvoice(invoiceId: bigint) {
