@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Typography } from "@mui/material";
-import Stack from "@mui/material/Stack";
-import { useInView } from "react-intersection-observer";
+import React, { useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Typography } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import { useInView } from 'react-intersection-observer';
 
-import { InvoiceType } from "@/actions/invoices/types";
+import { InvoiceType } from '@/actions/invoices/types';
 
 interface Props {
   nextCursor: string | undefined;
-  invoices: InvoiceType["invoice"];
+  invoices: InvoiceType['invoice'];
 }
 
 function InfiniteScroll({ nextCursor, invoices }: Props) {
@@ -18,21 +18,16 @@ function InfiniteScroll({ nextCursor, invoices }: Props) {
   const router = useRouter();
   const { ref, inView } = useInView({ triggerOnce: false });
 
-  const [currentCursor, setCurrentCursor] = useState<string | undefined>(
-    searchParams.get("cursor") ?? nextCursor
-  );
-
   useEffect(() => {
-    if (inView && nextCursor && nextCursor !== currentCursor) {
-      setCurrentCursor(nextCursor);
-
+    if (inView && nextCursor) {
       const _searchParams = new URLSearchParams(searchParams.toString());
-      _searchParams.set("cursor", nextCursor);
+      _searchParams.set('cursor', String(nextCursor));
       router.replace(`?${_searchParams.toString()}`, { scroll: false });
     }
-  }, [inView, nextCursor, currentCursor, router]);
+  }, [inView]);
 
-  if (!nextCursor) return null;
+  // Prevent rendering if nextCursor is invalid (i.e., no more data)
+  if (!nextCursor || invoices.length < 15) return null;
 
   return (
     <Stack ref={ref} alignItems="center" justifyContent="center">
