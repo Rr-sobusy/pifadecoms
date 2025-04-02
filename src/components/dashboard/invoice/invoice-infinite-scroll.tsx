@@ -18,23 +18,21 @@ function InfiniteScroll({ nextCursor, invoices }: Props) {
   const router = useRouter();
   const { ref, inView } = useInView({ triggerOnce: false });
 
- 
   const [currentCursor, setCurrentCursor] = useState<string | undefined>(
     searchParams.get("cursor") ?? nextCursor
   );
 
   useEffect(() => {
-   
     if (inView && nextCursor && nextCursor !== currentCursor) {
       setCurrentCursor(nextCursor);
 
       const _searchParams = new URLSearchParams(searchParams.toString());
       _searchParams.set("cursor", nextCursor);
-      router.replace(`?${_searchParams.toString()}`, { scroll: false }); // 🔹 Use replace to prevent history pollution
+      router.replace(`?${_searchParams.toString()}`, { scroll: false });
     }
-  }, [inView, nextCursor]);
+  }, [inView, nextCursor, currentCursor, router]);
 
-  if (!nextCursor) return null; 
+  if (!nextCursor) return null;
 
   return (
     <Stack ref={ref} alignItems="center" justifyContent="center">
