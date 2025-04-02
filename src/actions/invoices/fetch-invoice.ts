@@ -63,7 +63,7 @@ export async function fetchInvoices(props: Filterers = {}) {
           OR: conditions,
         },
   });
-  const nextCursor = invoices.length > 0 ? invoices[invoices.length - 1].invoiceId : undefined;
+  const nextCursor = invoices.length > 0 ? invoices[150].invoiceId : undefined;
 
   return { nextCursor, invoice: invoices.slice(0, 150) };
 }

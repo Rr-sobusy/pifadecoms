@@ -18,9 +18,8 @@ function InfiniteScroll({ nextCursor, invoices }: Props) {
   const router = useRouter();
   const { ref, inView } = useInView({ triggerOnce: false });
 
-  const [currentCursor, setCurrentCursor] = useState<string | undefined>(
-    searchParams.get("cursor") ?? nextCursor
-  );
+  const searchCursor = searchParams.get("cursor");
+  const [currentCursor, setCurrentCursor] = useState<string | undefined>(searchCursor ?? nextCursor);
 
   useEffect(() => {
     if (inView && nextCursor && nextCursor !== currentCursor) {
@@ -29,8 +28,21 @@ function InfiniteScroll({ nextCursor, invoices }: Props) {
       const _searchParams = new URLSearchParams(searchParams.toString());
       _searchParams.set("cursor", nextCursor);
       router.replace(`?${_searchParams.toString()}`, { scroll: false });
+
+      console.log("Updated Cursor:", nextCursor);
     }
   }, [inView, nextCursor, currentCursor, router]);
+
+  // ✅ Ensure the URL updates even if `useState` delays changes
+  useEffect(() => {
+    if (currentCursor !== searchCursor) {
+      const _searchParams = new URLSearchParams(searchParams.toString());
+      _searchParams.set("cursor", currentCursor!);
+      router.replace(`?${_searchParams.toString()}`, { scroll: false });
+
+      console.log("Forced URL update:", currentCursor);
+    }
+  }, [currentCursor]);
 
   if (!nextCursor) return null;
 
