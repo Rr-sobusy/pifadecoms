@@ -41,7 +41,8 @@ function formatToTwoDecimalPlaces(num: number): string {
 }
 
 type PageProps = {
-  data: InvoiceItemPerMemberTypes;
+  data: InvoiceItemPerMemberTypes['invoiceItems'];
+  member: InvoiceItemPerMemberTypes['member'];
   accounts: AccounTreeType;
 };
 
@@ -207,13 +208,13 @@ const columns = [
       return <Typography variant="subtitle2">{paymentOr.join(',')}</Typography>;
     },
   },
-] satisfies ColumnDef<InvoiceItemPerMemberTypes[0]>[];
+] satisfies ColumnDef<InvoiceItemPerMemberTypes['invoiceItems'][0]>[];
 
-function InvoiceItemTable({ data, accounts }: PageProps) {
-  const [selectedRows, setSelectedRows] = React.useState<InvoiceItemPerMemberTypes[0][]>([]);
+function InvoiceItemTable({ data, accounts, member }: PageProps) {
+  const [selectedRows, setSelectedRows] = React.useState<InvoiceItemPerMemberTypes['invoiceItems'][0][]>([]);
   const [isPaymentDialogOpen, setPaymentDialogOpen] = React.useState<boolean>(false);
 
-  function handleSelectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes[0]) {
+  function handleSelectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes['invoiceItems'][0]) {
     if (row.isTotallyPaid) {
       toast.error('Payment already settled for this invoice item.');
       return;
@@ -228,7 +229,7 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
     });
   }
 
-  function handleDeselectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes[0]) {
+  function handleDeselectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes['invoiceItems'][0]) {
     setSelectedRows((prevSelected) => {
       const isAlreadySelected = prevSelected.some((r) => Number(r.invoiceItemId) === Number(row.invoiceItemId));
       if (isAlreadySelected) {
@@ -243,11 +244,16 @@ function InvoiceItemTable({ data, accounts }: PageProps) {
   }
 
   const computedData = React.useMemo(() => data, [data]);
+  console.log(computedData);
 
   return (
     <>
       <Card>
         <CardContent>
+          <Stack spacing={1} flexDirection="row">
+            <Typography>Member name:</Typography>
+            <Typography>{member && `${member.lastName} , ${member.firstName} ${member.middleName || ''}`}</Typography>
+          </Stack>
           <Stack paddingY={3} alignItems="flex-end">
             <Button onClick={togglePaymentDialog} disabled={selectedRows.length < 1} variant="contained">
               Create payment

@@ -90,7 +90,17 @@ export async function fetchSingleInvoice(invoiceId: bigint) {
 }
 
 export async function fetchInvoiceItemPerMember(memberId?: string, sourceName?: number) {
-  const invoiceItems = await prisma.invoiceItems.findMany({
+  const member = await prisma.members.findUnique({
+    where: {
+      memberId: memberId || '',
+    },
+  });
+
+  if(!member){
+    console.log("mo one")
+  }
+
+  const _invoiceItems = await prisma.invoiceItems.findMany({
     where: {
       Invoice: {
         memberId: memberId,
@@ -128,5 +138,5 @@ export async function fetchInvoiceItemPerMember(memberId?: string, sourceName?: 
     },
   });
 
-  return memberId ? invoiceItems : [];
+  return memberId ? { member, invoiceItems: _invoiceItems } : { member: member, invoiceItems: [] };
 }

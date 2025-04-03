@@ -205,7 +205,7 @@ export function InvoiceFilterer({
                 field.onChange(value); // Update form value on selection
               }}
               options={member}
-              getOptionLabel={(option) => option && `${option.lastName} ${option.firstName}`}
+              getOptionLabel={(option) => (option.lastName.length ? `${option.lastName} ${option.firstName}` : '')}
               renderInput={(params) => (
                 <FormControl fullWidth>
                   <FormLabel>Member Name</FormLabel>

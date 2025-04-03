@@ -40,7 +40,7 @@ const dueMonth = 1;
 interface PageProps {
   open: boolean;
   handleClose: () => void;
-  selectedRows: InvoiceItemPerMemberTypes;
+  selectedRows: InvoiceItemPerMemberTypes['invoiceItems'];
   accounts: AccounTreeType;
 }
 
