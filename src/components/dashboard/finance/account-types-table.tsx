@@ -9,7 +9,7 @@ import type { AccounTreeType } from '@/actions/accounts/types';
 import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
 
-type Props = {
+interface Props {
   accounts: AccounTreeType;
 };
 

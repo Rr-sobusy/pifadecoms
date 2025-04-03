@@ -19,7 +19,7 @@ const bars = [
 function MonthBalancesChart({ data, interestRate }: Props) {
   console.log(data)
   return (
-    <NoSsr fallback={<Box sx={{ height: `${300}px` }} />}>
+    <NoSsr fallback={<Box sx={{ height: '300px' }} />}>
       <ResponsiveContainer height={300}>
         <BarChart barGap={-32} data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <XAxis axisLine={false} dataKey="month" tickLine={false} type="category" xAxisId={0} />

@@ -2,12 +2,11 @@
 
 import React from 'react';
 
-import { dayjs } from '@/lib/dayjs';
 import { logger } from '@/lib/default-logger';
 import type { ILoanDetails } from '@/actions/loans/types';
 import LoanPdfDoc from '@/components/dashboard/member-loans/loan-pdf-doc';
 
-function page({ params }: { params: { loanId: number } }) {
+function Page({ params }: { params: { loanId: number } }) {
   const [loanDetails, setLoanDetails] = React.useState<ILoanDetails | undefined>();
 
   /**
@@ -31,4 +30,4 @@ function page({ params }: { params: { loanId: number } }) {
   return <LoanPdfDoc loanDetails={loanDetails} />;
 }
 
-export default page;
+export default Page;

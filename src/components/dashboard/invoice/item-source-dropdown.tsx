@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ChangeEventHandler } from 'react';
+import React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';

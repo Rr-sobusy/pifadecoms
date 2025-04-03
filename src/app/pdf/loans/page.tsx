@@ -2,13 +2,11 @@
 
 
 import React from 'react';
-import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Document,  Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 
 import { formatToPHP } from '@/lib/api-utils/format-to-php';
 import { dayjs } from '@/lib/dayjs';
 import { PDFViewer } from '@/components/core/pdf-viewer';
-
-type Props = {};
 
 const styleSheet = StyleSheet.create({
   page: {
@@ -54,7 +52,7 @@ const styleSheet = StyleSheet.create({
   footer: { marginTop: 25 },
 });
 
-function page({}: Props) {
+function page() {
   return (
     <PDFViewer style={{ border: 'none', height: '100vh', width: '100vw' }}>
       <Document>

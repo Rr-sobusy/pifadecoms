@@ -55,25 +55,4 @@ export const FormInputFields = <TFormValues extends FieldValues>({
     />
   );
 };
-{
-  /* <div>
-<Controller
-  name={name}
-  control={control}
-  render={({ field }) => (
-    <FormControl disabled={isDisabled} sx={sx} error={Boolean(errors ? errors[name] : false)} fullWidth>
-      <InputLabel required={isRequired}>{inputLabel}</InputLabel>
-      <OutlinedInput
-        {...field}
-        type={variant}
-        onChange={(e) => {
-          const value = variant === 'number' ? Number(e.target.value) : e.target.value;
-          field.onChange(value);
-        }}
-      />
-      {errors?.[name] && <FormHelperText>{errors[name]?.message?.toString()}</FormHelperText>}
-    </FormControl>
-  )}
-/>
-</div> */
-}
+

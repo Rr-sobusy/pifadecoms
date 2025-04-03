@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import RouterLink from 'next/link';
-import { redirect } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';

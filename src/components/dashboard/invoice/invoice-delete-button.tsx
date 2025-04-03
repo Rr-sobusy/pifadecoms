@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Button from '@mui/material/Button';
 import { Trash } from '@phosphor-icons/react/dist/ssr';
 
@@ -9,7 +9,7 @@ import { paths } from '@/paths';
 import { deleteInvoiceAction } from '@/actions/invoices/delete-invoice-actions';
 import { toast } from '@/components/core/toaster';
 
-type Props = {
+interface Props {
   invoiceId: bigint;
 };
 

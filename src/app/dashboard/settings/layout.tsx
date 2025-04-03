@@ -1,11 +1,9 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
+// interface LayoutProps {}
 
-export default function Layout({ children }: LayoutProps): React.JSX.Element {
+export default function Layout(): React.JSX.Element {
   return (
     // <Box
     //   sx={{
@@ -20,8 +18,6 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     //     <Box sx={{ flex: '1 1 auto', minWidth: 0 }}>{children}</Box>
     //   </Stack>
     // </Box>
-    <Box>
-      Construction on-going.
-    </Box>
+    <Box>Construction on-going.</Box>
   );
 }

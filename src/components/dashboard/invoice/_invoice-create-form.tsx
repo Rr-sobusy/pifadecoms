@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -66,7 +66,6 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
   });
 
   const router = useRouter();
-  const pathname = usePathname();
 
   const lineItems = watch('lineItems');
 

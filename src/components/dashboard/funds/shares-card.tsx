@@ -27,7 +27,7 @@ import { toast } from '@/components/core/toaster';
 
 import DepositButton from './deposit-button';
 import FundTransactionPaginator from './fund-transcaction-table-paginator';
-import { FormInputFields } from '../../core/InputFields';
+
 
 interface SharesCardProps {
   fund: MemberFundsType[0];

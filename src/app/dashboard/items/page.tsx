@@ -9,13 +9,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
-import { config } from '@/config';
 import { paths } from '@/paths';
-import { dayjs } from '@/lib/dayjs';
+
 import { fetchItems } from '@/actions/items/fetch-items';
 import { ItemsTable } from '@/components/dashboard/items/items-table';
 import ViewItemDialog from '@/components/dashboard/items/view-item-or-edit-dialog';
-import type { Filters } from '@/components/dashboard/product/products-filters';
+
 
 export const metadata: Metadata = {
   title: 'PIFADECO | Items lists',

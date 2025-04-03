@@ -9,7 +9,6 @@ import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Controller, useForm } from 'react-hook-form';
@@ -18,6 +17,7 @@ import { z as zod } from 'zod';
 import { paths } from '@/paths';
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
+import { logger } from '@/lib/default-logger';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
 
@@ -108,7 +108,9 @@ export function InvoiceFilterer({
           body: JSON.stringify({ memberName: debouncedValue }),
         }).then((res) => res.json());
         setMemberData(data);
-      } catch (error) {}
+      } catch (error) {
+        logger.debug(error);
+      }
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);
@@ -163,7 +165,6 @@ export function InvoiceFilterer({
     onFiltersCleared?.();
   }, [updateSearchParams, onFiltersCleared]);
 
-
   return (
     <form onSubmit={handleSubmit(handleApplyFilters)}>
       <Stack spacing={3}>
@@ -204,9 +205,7 @@ export function InvoiceFilterer({
                 field.onChange(value); // Update form value on selection
               }}
               options={member}
-              getOptionLabel={(option) =>
-                option && option.lastName && option.firstName ? `${option.lastName} ${option.firstName}` : ''
-              }
+              getOptionLabel={(option) => option && `${option.lastName} ${option.firstName}`}
               renderInput={(params) => (
                 <FormControl fullWidth>
                   <FormLabel>Member Name</FormLabel>

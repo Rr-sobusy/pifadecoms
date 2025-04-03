@@ -21,7 +21,7 @@ import Typography from '@mui/material/Typography';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
+import {toast} from '@/components/core/toaster'
 import { computeMonthlyBalances } from '@/lib/api-utils/calculate-balance-every-14th';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { Option } from '@/components/core/option';
@@ -72,7 +72,9 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
     router.push(pathName);
   }
 
-  function submitHandler(_: IAdbSchema) {}
+  function submitHandler(_: IAdbSchema) {
+      toast.info("ADB Computed")
+  }
 
   // const currentAdb = calculateADB(
   //   fundTransaction.sort((a, b) => a.fundTransactId - b.fundTransactId),

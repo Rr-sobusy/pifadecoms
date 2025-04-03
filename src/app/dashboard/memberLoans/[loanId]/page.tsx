@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid2';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { DotsThreeVertical as OptionIcon, Printer } from '@phosphor-icons/react/dist/ssr';
+import { Printer } from '@phosphor-icons/react/dist/ssr';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
 import { paths } from '@/paths';

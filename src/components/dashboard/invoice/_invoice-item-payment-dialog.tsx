@@ -37,12 +37,12 @@ import { FormInputFields } from '../../core/InputFields';
 
 const dueMonth = 1;
 
-type PageProps = {
+interface PageProps {
   open: boolean;
   handleClose: () => void;
   selectedRows: InvoiceItemPerMemberTypes;
   accounts: AccounTreeType;
-};
+}
 
 function isPastDue(inputtedDate: Date): boolean {
   return !dayjs(inputtedDate).add(dueMonth, 'M').isSameOrAfter(dayjs(), 'D');
