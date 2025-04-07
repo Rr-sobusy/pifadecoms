@@ -1,6 +1,7 @@
 import React from 'react';
-import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import type { RepaymentInterval } from '@prisma/client';
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+
 import { formatToPHP } from '@/lib/api-utils/format-to-php';
 import { dayjs } from '@/lib/dayjs';
 import { ILoanDetails } from '@/actions/loans/types';
@@ -10,17 +11,11 @@ interface LoanPdfDocProps {
   loanDetails: ILoanDetails | undefined;
 }
 
-
 const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType> = {
-    Weekly: 'week',
-    Monthly: 'month',
-    Yearly: 'year',
-  };
-
-  
-function roundToTens(value: number): number {
-    return Math.round(value / 10) * 10; // Round to nearest 10
-  }
+  Weekly: 'week',
+  Monthly: 'month',
+  Yearly: 'year',
+};
 
 function computeAmortization(
   repStyle: ILoanDetails['repStyle'] | undefined,
@@ -29,8 +24,8 @@ function computeAmortization(
   payable: number | undefined, // Total amount to be repaid (including interest)
   releaseDate: Date | undefined,
   paymentQty: number | undefined, // Number of payments
-  interestRate: number | undefined ,
-// Annual interest rate in decimal (e.g., 12 for 12%)
+  interestRate: number | undefined
+  // Annual interest rate in decimal (e.g., 12 for 12%)
 ): {
   paymentNo: number;
   paymentSched: Date;
@@ -64,11 +59,9 @@ function computeAmortization(
 
   let balance = repStyle === 'Diminishing' ? principal : payable;
 
-
   if (repStyle === 'Diminishing') {
-
     const fixedPrincipal = Math.round(principal / paymentQty); // Fixed principal per period
-    const periodRate = (interestRate / 100)  // Convert annual rate to monthly
+    const periodRate = interestRate / 100; // Convert annual rate to monthly
 
     for (let i = 1; i <= paymentQty; i++) {
       const interest = Math.round(balance * periodRate); // Interest based on remaining balance
@@ -92,7 +85,7 @@ function computeAmortization(
       balance = Math.max(balance - fixedPayment, 0);
       amortizations.push({
         paymentNo: i,
-        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval]).toDate(), 
+        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval]).toDate(),
         totalPayment: fixedPayment,
         principal: fixedPayment,
         interest: 0,
@@ -159,7 +152,6 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
     Number(loanDetails?.interestRate)
   );
   console.log(amortizations);
-
 
   if (!loanDetails) {
     return (
@@ -261,8 +253,8 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
             </View>
           </View>
 
-          {amortizations.map((ammort) => (
-            <View style={styleSheet.schedLine}>
+          {amortizations.map((ammort, index) => (
+            <View key={index} style={styleSheet.schedLine}>
               <View style={styleSheet.paymentNo}>
                 <Text>{ammort.paymentNo}</Text>
               </View>

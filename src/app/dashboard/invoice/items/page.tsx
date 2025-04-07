@@ -20,6 +20,10 @@ interface PageProps {
   searchParams: { memberId: string; itemSource: string };
 }
 
+export const metadata: Metadata = {
+  title : "PIFEDECO || Invoice Item per memeber"
+}
+
 async function page({ searchParams }: PageProps) {
   const [invoiceItems, members, accounts, itemSources] = await Promise.all([
     fetchInvoiceItemPerMember(searchParams.memberId, Number(searchParams.itemSource)),
@@ -49,7 +53,7 @@ async function page({ searchParams }: PageProps) {
         </Stack>
 
         <Stack direction="column" spacing={4} sx={{ alignItems: 'flex-start' }}>
-          <Stack spacing={2} direction={'row'}>
+          <Stack spacing={2} direction="row">
             <MemberDropDown members={members.members as MembersType['members']} />
             <ItemSourceDropdown itemSources={itemSources} />
           </Stack>

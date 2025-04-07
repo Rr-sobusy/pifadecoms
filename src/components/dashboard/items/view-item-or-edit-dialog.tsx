@@ -4,22 +4,15 @@ import React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogContent } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import DialogAction from '@mui/material/DialogActions';
 import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { getValue } from '@mui/system';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { useAction } from 'next-safe-action/hooks';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { IUpdateItemSchema, updateItemSchema } from '@/actions/items/types';
 import type { ItemTypes } from '@/actions/items/types';
@@ -44,7 +37,6 @@ function ViewItemDialog({ isOpen, items }: ViewItemDialogProps) {
     handleSubmit,
     control,
     setValue,
-    getValues,
     watch,
     formState: { errors },
   } = useForm<IUpdateItemSchema>({
@@ -127,8 +119,8 @@ function ViewItemDialog({ isOpen, items }: ViewItemDialogProps) {
               inputLabel="Item description"
               name="itemDescription"
             />
-            <FormInputFields control={control} variant="number" inputLabel="A.R Price" name="principalPrice" />
-            <FormInputFields control={control} variant="number" inputLabel="Trade" name="trade" />
+            <FormInputFields errors={errors} control={control} variant="number" inputLabel="A.R Price" name="principalPrice" />
+            <FormInputFields errors={errors} control={control} variant="number" inputLabel="Trade" name="trade" />
           </Stack>
           <Stack>
             <Button type="submit" disabled={isFormChanged || isExecuting} variant="contained">

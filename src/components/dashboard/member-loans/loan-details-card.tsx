@@ -1,7 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
 import { Typography } from '@mui/material';
-import Button from '@mui/material/Button';
 import Card, { CardProps } from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';

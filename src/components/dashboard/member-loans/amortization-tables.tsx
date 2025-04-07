@@ -11,7 +11,7 @@ import { CreditCard } from '@phosphor-icons/react/dist/ssr/CreditCard';
 import { X as Xicon } from '@phosphor-icons/react/dist/ssr/X';
 import { stringify } from 'json-bigint';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-
+import { toast } from '@/components/core/toaster';
 import { dayjs } from '@/lib/dayjs';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import { ILoanType } from '@/actions/loans/types';
@@ -20,12 +20,12 @@ import { DataTable } from '@/components/core/data-table';
 
 import CreateAmortizationPayment from './create-amortization-payment-dialog';
 
-type Props = {
+interface Props {
   rows: ILoanType[0]['Repayments'][0][];
   accounts: AccounTreeType;
   memberId: string | undefined;
   loanId: bigint | undefined;
-};
+}
 
 function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
   const { control, getValues } = useForm<{ rows: ILoanType[0]['Repayments'][0][] }>({ defaultValues: { rows: rows } });
@@ -52,7 +52,8 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
   const columns: ColumnDef<ILoanType[0]['Repayments'][0]>[] = [
     {
       name: 'Payment Schedule',
-      formatter: ({ paymentSched, paymentDate }) => {
+      formatter: (row) => {
+        const { paymentSched, paymentDate } = row;
         const isPastDue = dayjs(paymentSched).isBefore(dayjs()) && !paymentDate;
 
         return (
@@ -111,7 +112,7 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
           : [...prevSelected, row];
       });
     } else {
-      alert('Payment already settled');
+      toast.error("Payment already made. Can't select this row.");
     }
   }
 

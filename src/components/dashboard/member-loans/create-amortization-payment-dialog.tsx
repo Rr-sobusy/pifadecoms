@@ -117,7 +117,7 @@ function CreateAmortizationPayment({
     [accounts]
   );
 
-  function submitHandler(data: any) {
+  function submitHandler(data: IRepaymentAction) {
     execute(data);
   }
 
@@ -336,9 +336,7 @@ function CreateAmortizationPayment({
               </Button>
             </div>
             <DialogAction sx={{ justifyContent: 'flex-end' }}>
-              <Button variant="contained">
-                details
-              </Button>
+              <Button variant="contained">details</Button>
               <Button disabled={isExecuting} type="submit" variant="contained">
                 Post Payment
               </Button>

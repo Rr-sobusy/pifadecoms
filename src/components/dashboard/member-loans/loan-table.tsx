@@ -46,7 +46,7 @@ const columns = [
   {
     name: 'Loan Status',
     sortable: true,
-    formatter: (row): React.JSX.Element => {
+    formatter: (): React.JSX.Element => {
 
       const mapping = {
         active: { label: 'Running', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },

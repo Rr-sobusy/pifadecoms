@@ -26,7 +26,7 @@ interface DateRangePopoverProps {
   onMarkAllAsRead?: () => void;
   onRemoveOne?: (id: string) => void;
   open?: boolean;
-};
+}
 
 function DateRangePopover({ anchorEl, onClose, open = false }: DateRangePopoverProps) {
   const [dateRange, setDateRange] = React.useState<{ startDate: Dayjs; endDate: Dayjs }>({
@@ -45,12 +45,11 @@ function DateRangePopover({ anchorEl, onClose, open = false }: DateRangePopoverP
     if (result.error?.issues) {
       toast.error('Fill the date fields.');
     } else {
-
       const searchParams = new URLSearchParams();
-      searchParams.set('startDate', dateRange.startDate.toString())
-      searchParams.set('endDate', dateRange.endDate.toString())
+      searchParams.set('startDate', dateRange.startDate.toString());
+      searchParams.set('endDate', dateRange.endDate.toString());
 
-      router.push(`${paths.dashboard.reports.ledgerList}?${searchParams.toString()}`)
+      router.push(`${paths.dashboard.reports.ledgerList}?${searchParams.toString()}`);
     }
   }
 
@@ -71,8 +70,8 @@ function DateRangePopover({ anchorEl, onClose, open = false }: DateRangePopoverP
             md: 6,
           }}
         >
-          <DateCalendar          
-            onChange={(date) => setDateRange({ endDate: dateRange.startDate, startDate: dayjs(date) })}
+          <DateCalendar
+            onChange={(date: Date) => setDateRange({ endDate: dateRange.startDate, startDate: dayjs(date) })}
             value={dayjs(dateRange.startDate)}
           />
         </Grid>
@@ -83,7 +82,7 @@ function DateRangePopover({ anchorEl, onClose, open = false }: DateRangePopoverP
           }}
         >
           <DateCalendar
-            onChange={(date:Date) => setDateRange({ endDate: dayjs(date), startDate: dateRange.startDate })}
+            onChange={(date: Date) => setDateRange({ endDate: dayjs(date), startDate: dateRange.startDate })}
             value={dayjs(dateRange.endDate)}
           />
         </Grid>

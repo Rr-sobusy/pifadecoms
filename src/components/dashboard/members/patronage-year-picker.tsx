@@ -1,9 +1,7 @@
 'use client';
 
-import { url } from 'inspector';
-
 import React from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
@@ -11,9 +9,8 @@ import Select from '@mui/material/Select';
 import { dayjs } from '@/lib/dayjs';
 import { Option } from '@/components/core/option';
 
-type Props = {};
 
-function PatronageYearPicker({}: Props) {
+function PatronageYearPicker() {
   const router = useRouter();
   const currentParams = useSearchParams();
 

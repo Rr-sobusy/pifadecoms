@@ -23,7 +23,10 @@ import { toast } from '@/components/core/toaster';
 
 import { transactionTypeMap } from './account-transactions-table';
 
-type TransactionDialogProps = { isOpen: boolean; accountTransactions: AccountTransactionTypes[0] | undefined };
+interface TransactionDialogProps {
+  isOpen: boolean;
+  accountTransactions: AccountTransactionTypes[0] | undefined;
+}
 
 const getKeyByValue = (value: JournalType = 'cashReceipts') => {
   return Object.keys(JournalMap).find((key) => JournalMap[key] === value);
@@ -157,7 +160,7 @@ function TransactionDialog({ isOpen, accountTransactions }: TransactionDialogPro
 
           <DataTable
             columns={columns}
-            rows={(accountTransactions?.JournalItems as AccountTransactionTypes[0]['JournalItems'][0][]) || []}
+            rows={accountTransactions?.JournalItems as AccountTransactionTypes[0]['JournalItems'][0][]}
           />
         </Stack>
         <Typography variant="caption" color="text.secondary" sx={{ position: 'absolute', bottom: 85 }}>

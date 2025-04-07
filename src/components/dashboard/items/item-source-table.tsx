@@ -1,18 +1,15 @@
-"use client"
-
+'use client';
 
 import * as React from 'react';
-import type { Metadata } from 'next';
 import Card from '@mui/material/Card';
-
 
 import type { ItemSourcesType } from '@/actions/items/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
 
-type PageProps = {
+interface PageProps {
   rows: ItemSourcesType;
-};
+}
 
 const columns = [
   {

@@ -5,7 +5,6 @@ import { Divider } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Decimal from 'decimal.js';
-import { stringify } from 'json-bigint';
 
 import { formatToCurrency } from '@/lib/format-currency';
 import type { LedgerTypes } from '@/actions/reports/types';

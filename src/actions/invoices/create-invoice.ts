@@ -20,7 +20,7 @@ export const createInvoice = actionClient
   .action(async ({ parsedInput: Request }) => {
     let serverResponse;
     try {
-      const queryResponse = await prisma.invoice.create({
+      await prisma.invoice.create({
         data: {
           dateOfInvoice: Request.invDate,
           memberId: Request.member.memberId,

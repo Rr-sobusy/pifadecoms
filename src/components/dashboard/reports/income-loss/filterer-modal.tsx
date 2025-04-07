@@ -36,9 +36,9 @@ const filterSchema = zod
     return ctx;
   });
 
-type FiltererProps = {
+interface FiltererProps {
   open: boolean;
-};
+}
 
 function IncomeAndLossFiltererModal({ open }: FiltererProps) {
   const pathname = usePathname();
@@ -84,7 +84,7 @@ function IncomeAndLossFiltererModal({ open }: FiltererProps) {
             <Stack>
               <Typography variant="h6">Filter results</Typography>
               <Typography color="text.secondary" variant="caption">
-                Filter income and losses by date range. 
+                Filter income and losses by date range.
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>

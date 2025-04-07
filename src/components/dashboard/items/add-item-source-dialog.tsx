@@ -27,10 +27,10 @@ import { Option } from '@/components/core/option';
 
 import { FormInputFields } from '../../core/InputFields';
 
-type ItemSourceDialogProps = {
+interface ItemSourceDialogProps {
   isOpen: boolean;
   accounts: AccounTreeType;
-};
+}
 
 function AddItemSourceDialog({ isOpen, accounts }: ItemSourceDialogProps) {
   const router = useRouter();

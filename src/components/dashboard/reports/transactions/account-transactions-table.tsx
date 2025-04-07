@@ -129,7 +129,7 @@ const columns = [
       return (
         <Stack>
           {row.JournalItems.map((ctx, index) => (
-            <Typography color="info" variant="subtitle2">
+            <Typography key={index} color="info" variant="subtitle2">
               {Number(ctx.debit) !== 0 ? formatToCurrency(Number(row.JournalItems[index].debit), 'Fil-ph', 'Php') : '-'}
             </Typography>
           ))}
@@ -145,7 +145,7 @@ const columns = [
       return (
         <Stack>
           {row.JournalItems.map((ctx, index) => (
-            <Typography color="info" variant="subtitle2">
+            <Typography key={index} color="info" variant="subtitle2">
               {Number(ctx.credit) !== 0
                 ? formatToCurrency(Number(row.JournalItems[index].credit), 'Fil-ph', 'Php')
                 : '-'}

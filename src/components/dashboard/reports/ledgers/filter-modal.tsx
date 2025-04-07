@@ -23,9 +23,9 @@ import { z as zod } from 'zod';
 import { dayjs } from '@/lib/dayjs';
 import { Option } from '@/components/core/option';
 
-type FilterDialogProps = {
+interface FilterDialogProps {
   open: boolean;
-};
+}
 
 const journalMap: Record<JournalType | 'All', string> = {
   All: 'All',
@@ -111,7 +111,7 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
                   <FormControl fullWidth>
                     <InputLabel>Journal Type</InputLabel>
                     <Select {...field} fullWidth>
-                      {Object.entries(journalMap).map(([key, value]) => (
+                      {Object.entries(journalMap).map(([key, _]) => (
                         <Option key={key} value={key}>
                           {journalMap[key as JournalType & 'All']}
                         </Option>

@@ -66,10 +66,10 @@
 import { dayjs } from '@/lib/dayjs';
 import { MemberFundsType } from '@/actions/funds/types';
 
-type MonthlyBalance = {
+interface MonthlyBalance {
   month: string;
   balance: number;
-};
+}
 
 export const computeMonthlyBalances = (
   transactions: MemberFundsType[0],

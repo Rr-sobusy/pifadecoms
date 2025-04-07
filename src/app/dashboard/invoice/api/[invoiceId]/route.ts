@@ -8,5 +8,4 @@ import { fetchSingleInvoice } from '@/actions/invoices/fetch-invoice';
 
 export async function GET(_: Request, { params }: { params: { invoiceId: number } }) {
   if (params) return new Response(stringify(await fetchSingleInvoice(BigInt(params.invoiceId))));
-  return null;
 }

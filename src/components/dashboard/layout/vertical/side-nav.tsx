@@ -12,19 +12,11 @@ import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/Car
 
 import type { NavItemConfig } from '@/types/nav';
 import type { NavColor } from '@/types/settings';
-import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
-import { Logo } from '@/components/core/logo';
-import type { ColorScheme } from '@/styles/theme/types';
 
 import { icons } from '../nav-icons';
 import { WorkspacesSwitch } from '../workspaces-switch';
 import { navColorStyles } from './styles';
-
-const logoColors = {
-  dark: { blend_in: 'light', discrete: 'light', evident: 'light' },
-  light: { blend_in: 'dark', discrete: 'dark', evident: 'light' },
-} as Record<ColorScheme, Record<NavColor, 'dark' | 'light'>>;
 
 export interface SideNavProps {
   color?: NavColor;
@@ -37,7 +29,6 @@ export function SideNav({ color = 'evident', items = [] }: SideNavProps): React.
   const { colorScheme = 'light' } = useColorScheme();
 
   const styles = navColorStyles[colorScheme][color];
-  const logoColor = logoColors[colorScheme][color];
 
   return (
     <Box

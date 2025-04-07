@@ -53,7 +53,7 @@ function CreateExistingLoan({ loanSources }: Props) {
     },
   });
 
-  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
+  const [member, setMemberData] = React.useState<MembersType['members'][0][]>([]);
 
   const router = useRouter();
 
@@ -109,7 +109,7 @@ function CreateExistingLoan({ loanSources }: Props) {
 
     async function fetchMemberDataOnDebounce() {
       try {
-        const data: MembersType = await fetch('/dashboard/members/api', {
+        const data: MembersType['members'] = await fetch('/dashboard/members/api', {
           method: 'POST',
           body: JSON.stringify({ memberName: debouncedValue }),
         }).then((res) => res.json());
@@ -299,7 +299,7 @@ function CreateExistingLoan({ loanSources }: Props) {
               <Typography variant="h6">Payment amortization schedules</Typography>
               <Grid container spacing={3}>
                 {paymentSched.map((_, index) => (
-                  <Stack direction="row" spacing={2}>
+                  <Stack key={index} direction="row" spacing={2}>
                     <Stack justifyContent="space-between" direction="column">
                       <InputLabel>Number</InputLabel>
                       <Typography>{index + 1}</Typography>

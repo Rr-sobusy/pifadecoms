@@ -16,9 +16,9 @@ import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 
 import { dayjs } from '@/lib/dayjs';
 
-type FiltererModalProps = {
+interface FiltererModalProps {
   open: boolean;
-};
+}
 
 function BalanceSheetFilterModal({ open }: FiltererModalProps) {
   const [asOf, setAsOf] = React.useState<Date | null>(dayjs().toDate());

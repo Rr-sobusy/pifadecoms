@@ -31,6 +31,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { paths } from '@/paths';
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { dayjs } from '@/lib/dayjs';
+import { logger } from '@/lib/default-logger';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import { createNewLoan } from '@/actions/loans/create-loan';
@@ -60,7 +61,7 @@ const repaymentInterval: Record<RepaymentInterval, string> = {
 };
 
 function CreateNewLoan({ accounts, loanSources }: Props) {
-  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
+  const [member, setMemberData] = React.useState<MembersType['members'][0][]>([]);
   const { execute, result, isExecuting } = useAction(createNewLoan);
   const {
     control,
@@ -109,7 +110,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
 
   React.useEffect(() => {
     if (result.data?.success) {
-      toast.success(result.data.message.toString());
+      toast.success('Loan created successfully!');
       router.push(paths.dashboard.loans.list);
     }
   }, [result]);
@@ -122,12 +123,14 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
 
     async function fetchMemberDataOnDebounce() {
       try {
-        const data: MembersType = await fetch('/dashboard/members/api', {
+        const data: MembersType['members'] = await fetch('/dashboard/members/api', {
           method: 'POST',
           body: JSON.stringify({ memberName: debouncedValue }),
         }).then((res) => res.json());
         setMemberData(data);
-      } catch (error) {}
+      } catch (error) {
+        logger.debug(error);
+      }
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);
@@ -254,7 +257,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                         }}
                         options={member}
                         getOptionLabel={(option) =>
-                          option && option.lastName && option.firstName ? `${option.lastName} ${option.firstName}` : ''
+                          option.lastName.length ? `${option.lastName} ${option.firstName}` : ''
                         }
                         renderInput={(params) => (
                           <FormControl error={Boolean(errors.particulars?.message)} fullWidth>
@@ -488,9 +491,9 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
               <Typography variant="h6">Payment amortization schedules</Typography>
               <Grid container spacing={3}>
                 <Stack>
-                  {
-                    paymentSched.map((_,index)=>(<Typography key={index} variant='caption'></Typography>))
-                  }
+                  {paymentSched.map((_, index) => (
+                    <Typography key={index} variant="caption"></Typography>
+                  ))}
                 </Stack>
                 {/* {paymentSched.map((_, index) => (
                   <Stack direction="row" spacing={2}>

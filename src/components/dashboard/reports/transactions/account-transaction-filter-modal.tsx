@@ -32,7 +32,6 @@ import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
 
 type FilterModalProps = {
-  open: boolean;
   accounts: AccounTreeType;
 };
 
@@ -88,7 +87,7 @@ const filterSchema = zod.object({
 
 type FilterSchema = zod.infer<typeof filterSchema>;
 
-function FilterModal({ open, accounts }: FilterModalProps) {
+function FilterModal({ accounts }: FilterModalProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -128,7 +127,7 @@ function FilterModal({ open, accounts }: FilterModalProps) {
     },
   });
 
-  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
+  const [member, setMemberData] = React.useState<MembersType['members'][0][]>([]);
 
   const flattenAccounts = React.useMemo(
     () =>
@@ -162,7 +161,7 @@ function FilterModal({ open, accounts }: FilterModalProps) {
 
         if (!response.ok) throw new Error('Failed to fetch member data');
 
-        const data: MembersType = await response.json();
+        const data: MembersType['members'] = await response.json();
         setMemberData(data);
       } catch (error) {
         logger.debug('Error fetching members:', error);
@@ -335,12 +334,10 @@ function FilterModal({ open, accounts }: FilterModalProps) {
                     setValue('member.lastName', value); // Update form value when input changes
                   }}
                   onChange={(event, value) => {
-                    field.onChange(value); // Update form value on selection
+                    field.onChange(value); // Update form value on selectio
                   }}
                   options={member}
-                  getOptionLabel={(option) =>
-                    option && option.lastName && option.firstName ? `${option.lastName} ${option.firstName}` : ''
-                  }
+                  getOptionLabel={(option) => (option.lastName.length ? `${option.lastName} ${option.firstName}` : '')}
                   renderInput={(params) => (
                     <FormControl error={Boolean(errors.member?.message)} fullWidth>
                       <FormLabel>Member Name</FormLabel>

@@ -11,7 +11,10 @@ import { DataTable } from '@/components/core/data-table';
 
 import { MemberPatronagesTab } from './member-patronage-tab';
 
-type Props = { content: { month: string; value: number }[]; rows: MemberPatronageType };
+interface Props {
+  content: { month: string; value: number }[];
+  rows: MemberPatronageType;
+}
 
 const columns = [
   {

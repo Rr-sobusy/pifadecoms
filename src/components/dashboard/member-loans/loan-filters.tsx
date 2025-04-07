@@ -15,7 +15,9 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
+
 import useDebounce from '@/lib/api-utils/use-debounce';
+import { logger } from '@/lib/default-logger';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
 
@@ -35,7 +37,7 @@ function LoanFilters() {
   } = useForm<zod.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
   });
-  const [member, setMemberData] = React.useState<MembersType[0][]>([]);
+  const [member, setMemberData] = React.useState<MembersType['members'][0][]>([]);
   const router = useRouter();
   const pathname = usePathname();
   const memberData = watch('member');
@@ -50,12 +52,14 @@ function LoanFilters() {
 
     async function fetchMemberDataOnDebounce() {
       try {
-        const data: MembersType = await fetch('/dashboard/members/api', {
+        const data: MembersType['members'] = await fetch('/dashboard/members/api', {
           method: 'POST',
           body: JSON.stringify({ memberName: debouncedValue }),
         }).then((res) => res.json());
         setMemberData(data);
-      } catch (error) {}
+      } catch (error) {
+        logger.debug(error);
+      }
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);
@@ -78,7 +82,7 @@ function LoanFilters() {
     <form onSubmit={handleSubmit(submitHandler)}>
       <Card>
         <CardContent>
-          <Typography variant='h6'>Filters</Typography>
+          <Typography variant="h6">Filters</Typography>
           <Stack marginTop={2} spacing={3}>
             <Controller
               control={control}

@@ -40,11 +40,11 @@ function formatToTwoDecimalPlaces(num: number): string {
   return num % 1 === 0 || num.toString().split('.')[1]?.length <= 2 ? num.toString() : num.toFixed(2);
 }
 
-type PageProps = {
+interface PageProps {
   data: InvoiceItemPerMemberTypes['invoiceItems'];
   member: InvoiceItemPerMemberTypes['member'];
   accounts: AccounTreeType;
-};
+}
 
 const columns = [
   {
