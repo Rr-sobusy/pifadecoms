@@ -12,7 +12,6 @@ import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -28,7 +27,7 @@ import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import { createAmortizationPayment } from '@/actions/loans/create-amortization-payment';
-import { ILoanType, IRepaymentAction, repaymentAction } from '@/actions/loans/types';
+import { IRepaymentAction, repaymentAction } from '@/actions/loans/types';
 import { Option } from '@/components/core/option';
 
 import { FormInputFields } from '../../core/InputFields';
