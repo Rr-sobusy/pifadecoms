@@ -8,7 +8,6 @@ import Stack from '@mui/material/Stack';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import { ReferenceType } from '@prisma/client';
-
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -161,9 +160,10 @@ const columns = [
 ] satisfies ColumnDef<AccountTransactionTypes[0]>[];
 
 function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
-  console.log(accountTransactions);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(100);
   const [currentPage, setCurrentPage] = React.useState<number>(0);
+
+
 
   const pathname = usePathname();
   const router = useRouter();
@@ -172,7 +172,8 @@ function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
     setCurrentPage(pageNumber);
   }
 
-  const paginatedTransactions = accountTransactions.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+  const paginatedTransactions =
+    accountTransactions?.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage) || [];
 
   return (
     <React.Fragment>

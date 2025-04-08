@@ -51,7 +51,7 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
               { title: 'Date Released', value: dayjs(loanDetails?.issueDate).format('MMM DD YYYY') },
               {
                 title: 'Due Date',
-                value: dayjs(loanDetails?.Repayments[loanDetails?.Repayments.length - 1].paymentSched).format(
+                value: dayjs(loanDetails?.dueDate).format(
                   'MMM DD YYYY'
                 ),
               },

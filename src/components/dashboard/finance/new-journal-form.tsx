@@ -249,14 +249,15 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                       if (!value) {
                         return setValue('particulars.lastName', '');
                       }
-
                       setValue('particulars.lastName', value); // Update form value when input changes
                     }}
                     onChange={(_, value) => {
                       field.onChange(value); // Update form value on selection
                     }}
                     options={member}
-                    getOptionLabel={(option) => option && `${option.lastName} ${option.firstName}`}
+                    getOptionLabel={(option) =>
+                      option && `${option.lastName} ${option.firstName} ${option.middleName || ''}`
+                    }
                     renderInput={(params) => (
                       <FormControl error={Boolean(errors.particulars?.message)} fullWidth>
                         <FormLabel>Member Name</FormLabel>

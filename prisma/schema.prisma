@@ -154,9 +154,7 @@ model MemberLoans {
   dueDate         DateTime
   isExisting      Boolean     @default(false)
   journalRef      BigInt?     @unique
-  parentLoan      BigInt?     @unique
-  // children        MemberLoans[]   @relation("SelfReference")
-  // Parent          MemberLoans?    @relation("SelfReference", fields: [parentLoan], references: [loanId])     
+   
 
   JournalEntries  JournalEntries? @relation(fields: [journalRef], references: [entryId])
   Repayments      LoanRepayments[]
@@ -164,7 +162,7 @@ model MemberLoans {
   Source          LoanSource  @relation(references: [sourceId], fields: [sourceId])
 
 
-  @@index([memberId, loanStatus])
+  @@index([memberId, loanStatus, issueDate])
 }
 
 model LoanRepayments {
@@ -176,13 +174,13 @@ model LoanRepayments {
   principal       Decimal       @default(0) @db.Decimal(10, 2)
   interest        Decimal       @default(0) @db.Decimal(10, 2)
   remarks         String?
+  journalRef      BigInt?  
 
-  journalRef      BigInt?     
   JournalEntries  JournalEntries? @relation(fields: [journalRef], references: [entryId])
 
   Loan            MemberLoans   @relation(references: [loanId], fields: [loanId], onDelete: Cascade)
 
-  @@index([loanId, paymentDate])
+  @@index([loanId, paymentSched])
 }
 
 model MemberFunds {

@@ -18,7 +18,7 @@ export const addLoanSchema = zod.object({
   interest: zod.number(),
   paymentQty: zod.number(),
   issueDate: zod.date(),
-  dueDate:zod.date(),
+  dueDate: zod.date(),
   party: zod
     .object({
       memberId: zod.string(),
@@ -30,20 +30,19 @@ export const addLoanSchema = zod.object({
   loanSource: zod.number(),
   isExisting: zod.boolean().default(false),
   ledgerId: zod.bigint().optional(),
-  paymentSched: zod
-    .array(
-      zod.object({
-        repaymentId: zod.number().optional(),
-        paymentSched: zod.date(),
-        principal: zod.number(),
-        interest: zod.number(),
-        datePaid: zod.date().optional(),
-        amountPaid: zod.number().optional(),
-        balance: zod.number().optional(),
-        isExisting: zod.boolean().default(false),
-      })
-    )
-    .min(1, { message: 'Amortization sched must not be null!' }),
+  paymentSched: zod.array(
+    zod.object({
+      repaymentId: zod.number().optional(),
+      paymentSched: zod.date(),
+      principal: zod.number(),
+      interest: zod.number(),
+      datePaid: zod.date().optional(),
+      amountPaid: zod.number().optional(),
+      balance: zod.number().optional(),
+      isExisting: zod.boolean().default(false),
+      notes: zod.string().optional(),
+    })
+  ),
 });
 
 export const loanSchemaExtended = transactionalSchema.merge(addLoanSchema);

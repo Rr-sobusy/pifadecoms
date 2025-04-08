@@ -22,6 +22,7 @@ export const transactionalSchema = z.object({
       memberId: z.string(),
       firstName: z.string(),
       lastName: z.string(),
+      middleName:z.string().optional().nullable()
     })
     .optional(),
   referenceType: z.enum([

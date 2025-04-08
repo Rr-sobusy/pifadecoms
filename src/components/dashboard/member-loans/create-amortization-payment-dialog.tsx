@@ -36,7 +36,6 @@ import { FormInputFields } from '../../core/InputFields';
 interface PageProps {
   open: boolean;
   handleClose: () => void;
-  selectedRows: ILoanType[0]['Repayments'][0][];
   accounts: AccounTreeType;
   memberId: string | undefined;
   loanId: bigint | undefined;
@@ -46,7 +45,6 @@ interface PageProps {
 function CreateAmortizationPayment({
   open = true,
   handleClose,
-  selectedRows,
   handleRemoveSelectedRows,
   accounts,
   memberId,
@@ -61,7 +59,7 @@ function CreateAmortizationPayment({
     formState: { errors },
   } = useForm<IRepaymentAction>({
     defaultValues: {
-      paymentSched: [],
+      paymentSched: [{ paymentSched: new Date(), principal: 0, interest: 0 }],
       loanId: Number(loanId),
       entryDate: new Date(),
       particulars: { firstName: '', lastName: '', memberId: memberId },
@@ -86,22 +84,7 @@ function CreateAmortizationPayment({
   const { execute, result, isExecuting } = useAction(createAmortizationPayment);
 
   const router = useRouter();
-
-  React.useEffect(() => {
-    if (selectedRows.length > 0) {
-      setValue(
-        'paymentSched',
-        selectedRows.map((rows) => ({
-          ...rows,
-          isExisting: true,
-          principal: Number(rows.principal),
-          interest: Number(rows.interest),
-          paymentSched: rows.paymentSched,
-          repaymentId: Number(rows.repaymentId),
-        }))
-      );
-    }
-  }, [selectedRows, setValue]);
+  const watchPaymentSched = watch('paymentSched');
 
   const watchJournalLines = watch('journalLineItems');
 
@@ -211,57 +194,39 @@ function CreateAmortizationPayment({
           <Divider />
           <Stack spacing={2} marginY={2}>
             <Typography variant="h6">Payment Line</Typography>
-            {selectedRows.map((row, index) => (
+            {watchPaymentSched.map((row, index) => (
               <Stack key={index} alignItems="center" spacing={2} direction="row">
                 <Controller
                   control={control}
                   name={`paymentSched.${index}.paymentSched`}
                   render={({ field }) => (
-                    <FormControl>
+                    <FormControl sx={{ width: '20%' }}>
                       <InputLabel>Payment schedule</InputLabel>
-                      <OutlinedInput {...field} value={dayjs(field.value).format('MMM DD YYYY')} disabled type="text" />
+                      <DatePicker {...field} value={dayjs(field.value)} />
                     </FormControl>
                   )}
                 />
                 <Controller
+                  control={control}
+                  name={`paymentSched.${index}.datePaid`}
+                  render={({ field }) => (
+                    <FormControl sx={{ width: '20%' }}>
+                      <InputLabel>Date paid</InputLabel>
+                      <DatePicker {...field} value={dayjs(field.value)} />
+                    </FormControl>
+                  )}
+                />
+                <FormInputFields
+                  control={control}
+                  variant="number"
+                  inputLabel="Principal"
                   name={`paymentSched.${index}.principal`}
-                  control={control}
-                  render={({ field }) => (
-                    <FormControl>
-                      <InputLabel>Principal</InputLabel>
-                      <OutlinedInput
-                        {...field}
-                        onChange={(event) => {
-                          const parsedInput = Number(event.target.value);
-                          if (!isNaN(parsedInput)) {
-                            field.onChange(parsedInput);
-                          }
-                        }}
-                        defaultValue={field.value}
-                        type="number"
-                      />
-                    </FormControl>
-                  )}
                 />
-                <Controller
-                  name={`paymentSched.${index}.interest`}
+                <FormInputFields
                   control={control}
-                  render={({ field }) => (
-                    <FormControl>
-                      <InputLabel>Interest</InputLabel>
-                      <OutlinedInput
-                        {...field}
-                        onChange={(event) => {
-                          const parsedInput = Number(event.target.value);
-                          if (!isNaN(parsedInput)) {
-                            field.onChange(parsedInput);
-                          }
-                        }}
-                        defaultValue={field.value}
-                        type="number"
-                      />
-                    </FormControl>
-                  )}
+                  variant="number"
+                  inputLabel="Interest"
+                  name={`paymentSched.${index}.interest`}
                 />
               </Stack>
             ))}

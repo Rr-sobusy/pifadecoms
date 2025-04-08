@@ -160,7 +160,7 @@ function TransactionDialog({ isOpen, accountTransactions }: TransactionDialogPro
 
           <DataTable
             columns={columns}
-            rows={accountTransactions?.JournalItems as AccountTransactionTypes[0]['JournalItems'][0][]}
+            rows={accountTransactions?.JournalItems as AccountTransactionTypes[0]['JournalItems'][0][] || []}
           />
         </Stack>
         <Typography variant="caption" color="text.secondary" sx={{ position: 'absolute', bottom: 85 }}>

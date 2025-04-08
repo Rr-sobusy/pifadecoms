@@ -1,5 +1,4 @@
 import type { JournalType } from '@prisma/client';
-
 import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 

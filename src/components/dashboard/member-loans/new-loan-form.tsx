@@ -95,18 +95,15 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
     },
   });
 
-  const watchPaymentQty = watch('paymentQty');
-  const watchPaymentInterval = watch('repInterval');
   const watchRepaymentStyle = watch('repStyle');
-  const watchIssueDate = watch('entryDate');
-  const paymentSched = watch('paymentSched');
   const lineItems = watch('journalLineItems');
 
   const memberData = watch('particulars');
-
+  const watchPaymentQty = watch('paymentQty');
+  const watchPaymentInterval = watch('repInterval');
   const router = useRouter();
 
-  const debouncedValue = useDebounce(memberData?.lastName ?? '', 300);
+  const debouncedValue = useDebounce(memberData?.lastName ?? '', 500);
 
   React.useEffect(() => {
     if (result.data?.success) {
@@ -184,30 +181,6 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
 
   const totalDebits = lineItems.reduce((sum, item) => sum + item.debit, 0);
   const totalCredits = lineItems.reduce((sum, item) => sum + item.credit, 0);
-
-  const memoizedComputeAmortizationSched = (): void => {
-    const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType> = {
-      Weekly: 'week',
-      Monthly: 'month',
-      Yearly: 'year',
-    };
-
-    const interval = loanTypeMap[watchPaymentInterval];
-
-    setValue(
-      'paymentSched',
-      Array.from({ length: watchPaymentQty }, (_, index) => ({
-        interest: 0,
-        isExisting: false,
-        principal: 0,
-        paymentSched: dayjs(watchIssueDate)
-          .add(index + 1, interval)
-          .toDate(),
-      }))
-    );
-
-    setValue('dueDate', dayjs(watchIssueDate).add(watchPaymentQty, interval).toDate());
-  };
 
   function submitHandler(data: ILoanSchemaExtended) {
     execute(data);
@@ -441,6 +414,16 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                         onChange={(date) => {
                           field.onChange(date?.toDate());
                           setValue('entryDate', date ? date.toDate() : new Date());
+
+                          const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType> = {
+                            Weekly: 'week',
+                            Monthly: 'month',
+                            Yearly: 'year',
+                          };
+
+                          const interval = loanTypeMap[watchPaymentInterval];
+
+                          setValue('dueDate', dayjs(date).add(watchPaymentQty, interval).toDate());
                         }}
                         defaultValue={dayjs()}
                         value={dayjs(field.value)}
@@ -473,76 +456,6 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     )}
                   />
                 </Grid>
-                <Grid
-                  size={{
-                    md: 3,
-                    xs: 12,
-                  }}
-                >
-                  <Stack spacing={2}>
-                    <Button onClick={memoizedComputeAmortizationSched} variant="outlined">
-                      Compute amortization
-                    </Button>
-                  </Stack>
-                </Grid>
-              </Grid>
-            </Stack>
-            <Stack spacing={3}>
-              <Typography variant="h6">Payment amortization schedules</Typography>
-              <Grid container spacing={3}>
-                <Stack>
-                  {paymentSched.map((_, index) => (
-                    <Typography key={index} variant="caption"></Typography>
-                  ))}
-                </Stack>
-                {/* {paymentSched.map((_, index) => (
-                  <Stack direction="row" spacing={2}>
-                    <Stack justifyContent="space-between" direction="column">
-                      <InputLabel>Number</InputLabel>
-                      <Typography>{index + 1}</Typography>
-                    </Stack>
-                    <Controller
-                      control={control}
-                      name={`paymentSched.${index}.balance`}
-                      render={({ field }) => (
-                        <FormControl>
-                          <InputLabel required>Payment Schedule</InputLabel>
-                          <OutlinedInput
-                            {...field}
-                            disabled
-                            value={dayjs(paymentSched[index].paymentSched).toDate().toLocaleDateString()}
-                            type="text"
-                          />
-                        </FormControl>
-                      )}
-                    />
-
-                    <Stack
-                      direction={{
-                        md: 'row',
-                        xs: 'column',
-                      }}
-                      spacing={2}
-                    >
-                      <FormControl fullWidth>
-                        <InputLabel>Principal</InputLabel>
-                        <OutlinedInput type="number" />
-                      </FormControl>
-                    </Stack>
-                    <Stack
-                      direction={{
-                        md: 'row',
-                        xs: 'column',
-                      }}
-                      spacing={2}
-                    >
-                      <FormControl fullWidth>
-                        <InputLabel>Interest</InputLabel>
-                        <OutlinedInput type="number" />
-                      </FormControl>
-                    </Stack>
-                  </Stack>
-                ))} */}
               </Grid>
             </Stack>
             <Stack spacing={3}>

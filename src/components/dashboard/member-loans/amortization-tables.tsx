@@ -101,38 +101,38 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
       ),
     },
   ];
-  const [selectedRows, setSelectedRows] = React.useState<ILoanType[0]['Repayments'][0][]>([]);
+  // const [selectedRows, setSelectedRows] = React.useState<ILoanType[0]['Repayments'][0][]>([]);
 
-  function handleSelectOne(_: React.ChangeEvent, row: ILoanType[0]['Repayments'][0]) {
-    if (!row.paymentDate) {
-      setSelectedRows((prevSelected) => {
-        const isAlreadySelected = prevSelected.some((r) => Number(r.repaymentId) === Number(row.repaymentId));
-        return isAlreadySelected
-          ? prevSelected.filter((r) => r.repaymentId !== row.repaymentId)
-          : [...prevSelected, row];
-      });
-    } else {
-      toast.error("Payment already made. Can't select this row.");
-    }
-  }
+  // function handleSelectOne(_: React.ChangeEvent, row: ILoanType[0]['Repayments'][0]) {
+  //   if (!row.paymentDate) {
+  //     setSelectedRows((prevSelected) => {
+  //       const isAlreadySelected = prevSelected.some((r) => Number(r.repaymentId) === Number(row.repaymentId));
+  //       return isAlreadySelected
+  //         ? prevSelected.filter((r) => r.repaymentId !== row.repaymentId)
+  //         : [...prevSelected, row];
+  //     });
+  //   } else {
+  //     toast.error("Payment already made. Can't select this row.");
+  //   }
+  // }
 
-  function handleDeselectOne(_: React.ChangeEvent, row: ILoanType[0]['Repayments'][0]) {
-    setSelectedRows((prevSelected) => {
-      const isAlreadySelected = prevSelected.some((r) => Number(r.repaymentId) === Number(row.repaymentId));
-      if (isAlreadySelected) {
-        return prevSelected.filter((r) => r.repaymentId !== row.repaymentId);
-      }
-      return prevSelected;
-    });
-  }
+  // function handleDeselectOne(_: React.ChangeEvent, row: ILoanType[0]['Repayments'][0]) {
+  //   setSelectedRows((prevSelected) => {
+  //     const isAlreadySelected = prevSelected.some((r) => Number(r.repaymentId) === Number(row.repaymentId));
+  //     if (isAlreadySelected) {
+  //       return prevSelected.filter((r) => r.repaymentId !== row.repaymentId);
+  //     }
+  //     return prevSelected;
+  //   });
+  // }
 
-  function handleSelectAll(_: React.ChangeEvent) {
-    setSelectedRows(rows.filter((row) => !row.paymentDate)); // Select all unpaid
-  }
+  // function handleSelectAll(_: React.ChangeEvent) {
+  //   setSelectedRows(rows.filter((row) => !row.paymentDate)); // Select all unpaid
+  // }
 
-  function handleDeselectAll() {
-    setSelectedRows([]);
-  }
+  // function handleDeselectAll() {
+  //   setSelectedRows([]);
+  // }
 
   const isSame = Object.is(stringify(rows), stringify(watchedRows));
 
@@ -146,12 +146,12 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
   return (
     <>
       <DataTable
-        selected={new Set(selectedRows.map((r) => Number(r.repaymentId)))}
-        onSelectOne={handleSelectOne}
-        onDeselectOne={handleDeselectOne}
-        onSelectAll={handleSelectAll}
-        onDeselectAll={handleDeselectAll}
-        selectable
+        // selected={new Set(selectedRows.map((r) => Number(r.repaymentId)))}
+        // onSelectOne={handleSelectOne}
+        // onDeselectOne={handleDeselectOne}
+        // onSelectAll={handleSelectAll}
+        // onDeselectAll={handleDeselectAll}
+        // selectable
         uniqueRowId={(row) => Number(row.repaymentId)}
         columns={columns}
         rows={getValues('rows')}
@@ -177,10 +177,9 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
           <Button
             startIcon={<CreditCard />}
             onClick={setDialogOpen}
-            disabled={selectedRows.length === 0}
             variant="contained"
           >
-            Create Payment
+            Post Payment
           </Button>
         </Stack>
       </div>
@@ -188,10 +187,9 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
         loanId={loanId}
         memberId={memberId}
         accounts={accounts}
-        selectedRows={selectedRows}
         handleClose={setDialogClose}
         open={isDialogOpen}
-        handleRemoveSelectedRows={handleDeselectAll}
+        // handleRemoveSelectedRows={handleDeselectAll}
       />
     </>
   );

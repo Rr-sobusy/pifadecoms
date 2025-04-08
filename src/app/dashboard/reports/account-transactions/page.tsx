@@ -39,7 +39,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
    * * Filter single transaction in application level by creating a map first to avoid linear search
    * * performance problems for large datasets
    */
-  const dataMap = new Map(accountTransactions.map((trx) => [trx.entryId, trx]));
+  const dataMap = new Map(accountTransactions.map((trx) => [trx.entryId, trx])) 
   const filteredDataMap = dataMap.get(BigInt(entryId || 0));
 
   return (

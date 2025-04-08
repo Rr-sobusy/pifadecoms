@@ -171,7 +171,7 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
         <Page size="A4" style={styleSheet.page}>
           <View style={styleSheet.sampleStyle}>
             <Text style={styleSheet.bigText}>Loan Amortization Schedule</Text>
-            <Text style={styleSheet.smallText}>Pinagsibaan Farmer's Development Multi-purpose Cooperative</Text>
+            <Text style={styleSheet.smallText}>Pinagsibaan Farmer's Development Multi-Purpose Cooperative</Text>
           </View>
 
           {/* ***** Loan Details ***** */}
