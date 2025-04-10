@@ -10,9 +10,14 @@ export async function fetchMembers({ memberName, offsetPage = 1, returnAll = fal
   const totalCount = await prisma.members.count(); // Get total number of members
 
   const members = await prisma.members.findMany({
-    orderBy: {
-      lastName: 'asc',
-    },
+    orderBy: [
+      {
+        lastName: 'asc',
+      },
+      {
+        firstName: 'asc',
+      },
+    ],
   });
 
   const extendedMembers = members.map((member, index) => ({
@@ -40,7 +45,6 @@ export async function fetchMembers({ memberName, offsetPage = 1, returnAll = fal
 
   return { totalCount, members: extendedMembers };
 }
-
 
 //* Fetch data per member
 export async function fetchMemberData(memberId: string) {
