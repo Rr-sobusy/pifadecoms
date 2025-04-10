@@ -68,7 +68,7 @@ const columns = [
               {FundTransactionMap[row.transactionType]}
             </Typography>
             <Typography color="text.secondary" variant="caption">
-              {dayjs().format('MMM DD YYYY')}
+              {dayjs(row.JournalEntries?.entryDate).format('MMM DD YYYY')}
             </Typography>
           </Stack>
         </Stack>
