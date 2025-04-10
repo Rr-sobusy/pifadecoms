@@ -1,5 +1,7 @@
 import type { JournalType } from '@prisma/client';
+
 import { dayjs } from '@/lib/dayjs';
+import { logger } from '@/lib/default-logger';
 import prisma from '@/lib/prisma';
 
 interface Filterers {
@@ -82,4 +84,33 @@ export async function fetchAccountTransactions(props: Filterers) {
     };
   });
   return sortedJournalEntries;
+}
+
+export async function fetchSingleAccountTransaction(entryId?: bigint) {
+  const journalEntry = await prisma.journalEntries.findUnique({
+    include: {
+      JournalItems: {
+        include: {
+          Accounts: true,
+        },
+      },
+      Members: {
+        select: {
+          memberId: true,
+          lastName: true,
+          firstName: true,
+          middleName: true,
+        },
+      },
+    },
+    where: {
+      entryId: entryId || BigInt(0),
+    },
+  });
+
+  if (!journalEntry) {
+    logger.debug('No journal entry found with the given ID.');
+  }
+
+  return journalEntry;
 }

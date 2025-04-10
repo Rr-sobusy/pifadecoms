@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import { ReferenceType } from '@prisma/client';
+
 import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -83,7 +84,9 @@ const columns = [
       return (
         <Stack>
           <Typography variant="caption">
-            {row.Members === null ? 'N/A' : `${row.Members?.lastName} ${row.Members.firstName ?? ''}`}
+            {row.Members === null
+              ? 'N/A'
+              : `${row.Members?.lastName}, ${row.Members?.firstName} ${row.Members?.middleName ?? ''}`}
           </Typography>
         </Stack>
       );
@@ -162,8 +165,6 @@ const columns = [
 function TransactionsTable({ accountTransactions }: TransactionsTableProps) {
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(100);
   const [currentPage, setCurrentPage] = React.useState<number>(0);
-
-
 
   const pathname = usePathname();
   const router = useRouter();

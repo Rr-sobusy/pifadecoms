@@ -13,7 +13,10 @@ import type { JournalType } from '@prisma/client';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
-import { fetchAccountTransactions } from '@/actions/reports/account-transactions/account-transactions';
+import {
+  fetchAccountTransactions,
+  fetchSingleAccountTransaction,
+} from '@/actions/reports/account-transactions/account-transactions';
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
 import TransactionDialog from '@/components/dashboard/reports/transactions/transaction-dialog';
@@ -33,14 +36,11 @@ interface PageProps {
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const { memberId, accountId, startDate, endDate, entryId, journalType } = searchParams;
   const filters = { memberId, accountId, startDate, endDate, journalType };
-  const [accountTransactions, accounts] = await Promise.all([fetchAccountTransactions(filters), fetchAccountTree()]);
-
-  /**
-   * * Filter single transaction in application level by creating a map first to avoid linear search
-   * * performance problems for large datasets
-   */
-  const dataMap = new Map(accountTransactions.map((trx) => [trx.entryId, trx])) 
-  const filteredDataMap = dataMap.get(BigInt(entryId || 0));
+  const [accountTransactions, accounts, singleAccountTransaction] = await Promise.all([
+    fetchAccountTransactions(filters),
+    fetchAccountTree(),
+    fetchSingleAccountTransaction(entryId),
+  ]);
 
   return (
     <Box
@@ -104,7 +104,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         </Card>
       </Stack>
       <FilterModal accounts={accounts} />
-      <TransactionDialog accountTransactions={filteredDataMap} isOpen={Boolean(entryId)} />
+      <TransactionDialog accountTransactions={singleAccountTransaction} isOpen={Boolean(entryId)} />
     </Box>
   );
 }

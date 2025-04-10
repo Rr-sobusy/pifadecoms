@@ -17,7 +17,7 @@ import { JournalMap } from '@/lib/api-utils/journal-map';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { deleteTransactionAction } from '@/actions/reports/account-transactions/delete-transaction';
-import { AccountTransactionTypes } from '@/actions/reports/types';
+import { AccountTransactionTypes, SingleAccountTransactionType } from '@/actions/reports/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 import { toast } from '@/components/core/toaster';
 
@@ -25,7 +25,7 @@ import { transactionTypeMap } from './account-transactions-table';
 
 interface TransactionDialogProps {
   isOpen: boolean;
-  accountTransactions: AccountTransactionTypes[0] | undefined;
+  accountTransactions: SingleAccountTransactionType | undefined;
 }
 
 const getKeyByValue = (value: JournalType = 'cashReceipts') => {

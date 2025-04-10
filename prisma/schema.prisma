@@ -253,6 +253,7 @@ model InvoiceItemsPayments {
   InvoiceItem     InvoiceItems      @relation(fields: [invoiceItemId], references: [invoiceItemId])
   JournalEntry    JournalEntries    @relation(fields: [journalRef], references: [entryId])
 
+  @@index([invoiceItemId, journalRef])
 }
 
 

@@ -11,7 +11,9 @@ export async function fetchFundTransactions(fundId: number) {
           JournalEntries: true,
         },
         orderBy: {
-          fundTransactId : "desc"
+          JournalEntries : {
+            entryDate: 'desc',
+          }
         },
       },
       Member: true,

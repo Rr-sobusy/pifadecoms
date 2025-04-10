@@ -97,7 +97,7 @@ export async function fetchInvoiceItemPerMember(memberId?: string, sourceName?: 
   });
 
   if(!member){
-    console.log("mo one")
+    console.log("no one")
   }
 
   const _invoiceItems = await prisma.invoiceItems.findMany({
