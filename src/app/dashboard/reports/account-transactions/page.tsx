@@ -43,7 +43,6 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
     fetchSingleAccountTransaction(entryId),
   ]);
 
-  const isClient = typeof window !== 'undefined';
 
   return (
     <Box

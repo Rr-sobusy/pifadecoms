@@ -7,7 +7,6 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { CreditCard } from '@phosphor-icons/react/dist/ssr/CreditCard';
-import { X as Xicon } from '@phosphor-icons/react/dist/ssr/X';
 
 // import { toast } from '@/components/core/toaster';
 import { dayjs } from '@/lib/dayjs';
