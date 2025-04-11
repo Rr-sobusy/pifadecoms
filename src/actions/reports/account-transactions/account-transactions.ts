@@ -121,9 +121,5 @@ export async function fetchSingleAccountTransaction(entryId?: bigint) {
     },
   });
 
-  if (!journalEntry) {
-    logger.debug('No journal entry found with the given ID.');
-  }
-
   return journalEntry;
 }
