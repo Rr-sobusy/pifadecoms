@@ -38,7 +38,6 @@ export const createNewLoan = actionClient.schema(loanSchemaExtended).action(asyn
               issueDate: Request.entryDate,
               dueDate: Request.dueDate,
               sourceId: Request.loanSource,
-              isExisting: Request.isExisting,
               memberId: Request.particulars?.memberId ?? '',
               Repayments: {
                 create: Request.paymentSched.map((payment) => ({
@@ -106,7 +105,6 @@ export const createExistingLoan = actionClient.schema(addLoanSchema).action(asyn
             paymentSched: repayment.paymentSched,
             principal: repayment.principal,
             interest: repayment.interest,
-            isExisting: true,
             paymentDate: repayment.datePaid,
           })),
         },

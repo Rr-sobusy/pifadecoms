@@ -45,7 +45,6 @@ export const createAmortizationPayment = actionClient
             tx.loanRepayments.createMany({
               data: {
                 journalRef: journalEntry.entryId,
-                isExisting: false,
                 loanId: BigInt(Request.loanId ?? 0),
                 paymentSched: repayments.paymentSched,
                 principal: repayments.principal,
