@@ -31,16 +31,19 @@ interface PageProps {
     startDate: Date;
     endDate: Date;
     entryId: bigint;
+    referenceName: string;
   };
 }
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const { memberId, accountId, startDate, endDate, entryId, journalType } = searchParams;
-  const filters = { memberId, accountId, startDate, endDate, journalType };
+  const { memberId, accountId, startDate, endDate, entryId, journalType, referenceName } = searchParams;
+  const filters = { memberId, accountId, startDate, endDate, journalType, referenceName };
   const [accountTransactions, accounts, singleAccountTransaction] = await Promise.all([
     fetchAccountTransactions(filters),
     fetchAccountTree(),
     fetchSingleAccountTransaction(entryId),
   ]);
+
+  const isClient = typeof window !== 'undefined';
 
   return (
     <Box
@@ -104,7 +107,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         </Card>
       </Stack>
       <FilterModal accounts={accounts} />
-      <TransactionDialog accountTransactions={singleAccountTransaction} isOpen={Boolean(entryId)} />
+      <TransactionDialog accountTransactions={singleAccountTransaction} />
     </Box>
   );
 }

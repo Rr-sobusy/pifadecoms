@@ -29,6 +29,7 @@ import { dayjs } from '@/lib/dayjs';
 import { logger } from '@/lib/default-logger';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import type { MembersType } from '@/actions/members/types';
+import { FormInputFields } from '@/components/core/InputFields';
 import { Option } from '@/components/core/option';
 
 type FilterModalProps = {
@@ -83,6 +84,7 @@ const filterSchema = zod.object({
     })
     .optional(),
   journalType: zod.enum(['cashReceipts', 'cashDisbursement', 'generalJournal']).optional(),
+  referenceName: zod.string().optional(),
 });
 
 type FilterSchema = zod.infer<typeof filterSchema>;
@@ -192,12 +194,18 @@ function FilterModal({ accounts }: FilterModalProps) {
       searchParams.set('journalType', String(data.journalType));
     }
 
+    if (data.referenceName) {
+      searchParams.set('referenceName', String(data.referenceName));
+    }
+
     router.push(`${pathname}?${searchParams.toString()}`);
     reset();
   }
   return (
     <Dialog
       maxWidth="md"
+      keepMounted
+      disableScrollLock
       open={isDialogOpen}
       sx={{
         '& .MuiDialog-container': { justifyContent: 'center' },
@@ -280,6 +288,12 @@ function FilterModal({ accounts }: FilterModalProps) {
                 />
               </Grid>
             </Grid>
+            <FormInputFields
+              control={control}
+              variant="text"
+              inputLabel="Reference No. (O.R or Voucher) - Character sensitive like in leading and trailing zeros"
+              name="referenceName"
+            />
             <Controller
               control={control}
               name="journalType"

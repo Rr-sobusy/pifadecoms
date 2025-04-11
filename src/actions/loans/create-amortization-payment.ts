@@ -37,31 +37,34 @@ export const createAmortizationPayment = actionClient
         });
 
         /**
-         * * Update records in loan repayments
+         * * Create a records in payment amortizations table
          */
+
         await Promise.all(
           Request.paymentSched.map((repayments) =>
-            tx.loanRepayments.updateMany({
-              where: { repaymentId: repayments.repaymentId },
+            tx.loanRepayments.createMany({
               data: {
                 journalRef: journalEntry.entryId,
+                isExisting: false,
+                loanId: BigInt(Request.loanId ?? 0),
+                paymentSched: repayments.paymentSched,
                 principal: repayments.principal,
                 interest: repayments.interest,
-                paymentDate: Request.entryDate,
+                paymentDate: journalEntry.entryDate,
               },
             })
           )
         );
 
-         /**
+        /**
          * * Third batch of query. Adjust account balances depends to their account "rootType".
          * * Increase balance of assets and expense account on debit and decrease in credit.
          * * Increase balance of income, equity and liability on credit and decrease in debit.
          */
-         const balanceUpdates = Request.journalLineItems.map((lineItem) => {
+        const balanceUpdates = Request.journalLineItems.map((lineItem) => {
           const isIncrement = ['Assets', 'Expense'].includes(lineItem.accountDetails.rootType ?? '');
           const amount = lineItem.debit - lineItem.credit;
-    
+
           return tx.accountsThirdLvl.update({
             where: { accountId: lineItem.accountDetails.accountId },
             data: {
@@ -71,7 +74,7 @@ export const createAmortizationPayment = actionClient
             },
           });
         });
-    
+
         await Promise.all(balanceUpdates);
 
         return journalEntry;
@@ -85,7 +88,6 @@ export const createAmortizationPayment = actionClient
       };
     }
 
-  
     revalidatePath(paths.dashboard.loans.view(BigInt(Request.loanId ?? 0)));
 
     return serverResponse;

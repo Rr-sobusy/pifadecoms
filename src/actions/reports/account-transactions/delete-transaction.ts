@@ -53,11 +53,11 @@ export const deleteTransactionAction = actionClient.schema(transactionSchema).ac
           },
         });
       });
-
       await Promise.all(balanceUpdates);
     });
 
     serverResponse = { success: true, message: 'Posted Transaction removed and balanced diverted!' };
+    
   } catch (error) {
     logger.debug(error);
     serverResponse = {

@@ -10,10 +10,17 @@ interface Filterers {
   startDate?: Date;
   endDate?: Date;
   journalType?: JournalType;
+  referenceName?: string;
 }
 
 export async function fetchAccountTransactions(props: Filterers) {
-  const isEmpty = !props.accountId && !props.memberId && !props.startDate && !props.endDate && !props.journalType;
+  const isEmpty =
+    !props.accountId &&
+    !props.memberId &&
+    !props.startDate &&
+    !props.endDate &&
+    !props.journalType &&
+    !props.referenceName;
 
   const conditions = [];
 
@@ -43,6 +50,12 @@ export async function fetchAccountTransactions(props: Filterers) {
         ...(props.startDate && { gte: dayjs(props.startDate).startOf('day').toISOString() }),
         ...(props.endDate && { lte: dayjs(props.endDate).endOf('day').toISOString() }),
       },
+    });
+  }
+
+  if (props.referenceName) {
+    conditions.push({
+      referenceName: props.referenceName,
     });
   }
 

@@ -15,9 +15,6 @@ interface PageProps extends CardProps {
 }
 
 function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
-  // const interest = (amount: number, rate: number, term: number, loanType: LoanType): number => {
-  //   return amount * (loanType === 'Weekly' ? rate / 100 / 4 : rate / 100) * term;
-  // };
 
   return (
     <Card {...props}>

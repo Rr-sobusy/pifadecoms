@@ -9,17 +9,18 @@ import Stack from '@mui/material/Stack';
 import { Info } from '@phosphor-icons/react/dist/ssr/Info';
 
 import { formatToCurrency } from '@/lib/format-currency';
+import type { AccounTreeType } from '@/actions/accounts/types';
 import type { ILoanDetails } from '@/actions/loans/types';
 import { ILoanType } from '@/actions/loans/types';
-import type { AccounTreeType } from '@/actions/accounts/types';
+
 import AmortizationTable from './amortization-tables';
 
 interface PageProps extends CardProps {
   loanDetails: ILoanDetails;
-  accounts: AccounTreeType
+  accounts: AccounTreeType;
 }
 
-function LoanAmortizationDetails({ loanDetails,accounts, ...props }: PageProps) {
+function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps) {
   // aggregate all records that has field datePaid is not null
   const totalAmortizationPaid = React.useMemo(() => {
     if (!loanDetails?.Repayments) return 0; // Ensure Repayments exists
@@ -55,7 +56,12 @@ function LoanAmortizationDetails({ loanDetails,accounts, ...props }: PageProps) 
           <Divider />
           <Stack spacing={2}>
             <Typography variant="h6">Amortization schedules</Typography>
-            <AmortizationTable loanId={loanDetails?.loanId} accounts={accounts} memberId={loanDetails?.Member.memberId} rows={loanDetails?.Repayments as ILoanType[0]['Repayments'][0][]} />
+            <AmortizationTable
+              loanId={loanDetails?.loanId}
+              accounts={accounts}
+              memberId={loanDetails?.Member.memberId}
+              rows={loanDetails?.Repayments as ILoanType[0]['Repayments'][0][]}
+            />
           </Stack>
         </Stack>
       </CardContent>

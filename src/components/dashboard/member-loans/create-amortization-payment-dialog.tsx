@@ -22,13 +22,13 @@ import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
-import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import { createAmortizationPayment } from '@/actions/loans/create-amortization-payment';
 import { IRepaymentAction, repaymentAction } from '@/actions/loans/types';
 import { Option } from '@/components/core/option';
+import { toast } from '@/components/core/toaster';
 
 import { FormInputFields } from '../../core/InputFields';
 
@@ -38,17 +38,9 @@ interface PageProps {
   accounts: AccounTreeType;
   memberId: string | undefined;
   loanId: bigint | undefined;
-  handleRemoveSelectedRows?: () => void;
 }
 
-function CreateAmortizationPayment({
-  open = true,
-  handleClose,
-  handleRemoveSelectedRows,
-  accounts,
-  memberId,
-  loanId,
-}: PageProps) {
+function CreateAmortizationPayment({ open = true, handleClose, accounts, memberId, loanId }: PageProps) {
   const {
     control,
     getValues,
@@ -58,7 +50,7 @@ function CreateAmortizationPayment({
     formState: { errors },
   } = useForm<IRepaymentAction>({
     defaultValues: {
-      paymentSched: [{ paymentSched: new Date(), principal: 0, interest: 0 }],
+      paymentSched: [{ paymentSched: new Date(), datePaid: new Date(), principal: 0, interest: 0 }],
       loanId: Number(loanId),
       entryDate: new Date(),
       particulars: { firstName: '', lastName: '', memberId: memberId },
@@ -83,6 +75,7 @@ function CreateAmortizationPayment({
   const { execute, result, isExecuting } = useAction(createAmortizationPayment);
 
   const router = useRouter();
+
   const watchPaymentSched = watch('paymentSched');
 
   const watchJournalLines = watch('journalLineItems');
@@ -106,8 +99,7 @@ function CreateAmortizationPayment({
   React.useEffect(() => {
     if (result.data?.success) {
       handleClose();
-      handleRemoveSelectedRows?.();
-      router.push(paths.dashboard.loans.view(loanId || 0));
+      toast.success('Payment successfully posted');
     }
   }, [result]);
 
@@ -201,17 +193,11 @@ function CreateAmortizationPayment({
                   render={({ field }) => (
                     <FormControl sx={{ width: '20%' }}>
                       <InputLabel>Payment schedule</InputLabel>
-                      <DatePicker {...field} value={dayjs(field.value)} />
-                    </FormControl>
-                  )}
-                />
-                <Controller
-                  control={control}
-                  name={`paymentSched.${index}.datePaid`}
-                  render={({ field }) => (
-                    <FormControl sx={{ width: '20%' }}>
-                      <InputLabel>Date paid</InputLabel>
-                      <DatePicker {...field} value={dayjs(field.value)} />
+                      <DatePicker
+                        {...field}
+                        value={dayjs(field.value)}
+                        onChange={(date) => field.onChange(date?.toDate())}
+                      />
                     </FormControl>
                   )}
                 />
@@ -300,7 +286,9 @@ function CreateAmortizationPayment({
               </Button>
             </div>
             <DialogAction sx={{ justifyContent: 'flex-end' }}>
-              <Button variant="contained">details</Button>
+              <Button onClick={() => console.log(errors)} variant="contained">
+                details
+              </Button>
               <Button disabled={isExecuting} type="submit" variant="contained">
                 Post Payment
               </Button>
