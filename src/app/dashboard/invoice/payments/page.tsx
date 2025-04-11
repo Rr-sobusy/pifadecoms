@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { fetchReceivedPayments } from '@/actions/invoice-payments/fetch-payments';
 import PaymentsTable from '@/components/dashboard/payments/payments-table';
 
-async function page(): Promise<JSX.Element> {
+async function page(): Promise<React.JSX.Element> {
   const payments = await fetchReceivedPayments();
   return (
     <Box
