@@ -1,7 +1,6 @@
 import type { JournalType } from '@prisma/client';
 
 import { dayjs } from '@/lib/dayjs';
-import { logger } from '@/lib/default-logger';
 import prisma from '@/lib/prisma';
 
 interface Filterers {
