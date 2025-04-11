@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
@@ -73,8 +72,6 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
   });
 
   const { execute, result, isExecuting } = useAction(createAmortizationPayment);
-
-  const router = useRouter();
 
   const watchPaymentSched = watch('paymentSched');
 
