@@ -8,9 +8,9 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
 import { Notepad as Info } from '@phosphor-icons/react/dist/ssr/Notepad';
-import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
+import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
+import type { RepaymentStyle } from '@prisma/client';
 
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
@@ -18,6 +18,12 @@ import { formatToCurrency } from '@/lib/format-currency';
 import { ILoanType } from '@/actions/loans/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
+
+const repStyleMap: Record<RepaymentStyle, string> = {
+  Diminishing: 'Diminishing',
+  StraightPayment: 'Straight Payment',
+  OneTime: 'End of Term',
+};
 
 const columns = [
   {
@@ -46,17 +52,21 @@ const columns = [
   {
     name: 'Loan Status',
     sortable: true,
-    formatter: (): React.JSX.Element => {
-
+    formatter: (row): React.JSX.Element => {
       const mapping = {
-        active: { label: 'Running', icon: <ClockIcon color="var(--mui-palette-warning-main)" weight="fill" /> },
-        closed: { label: 'Paid', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
-        renewed: { label: 'overdue', icon: <XCircleIcon color="var(--mui-palette-error-main)" weight="fill" /> },
+        closed: { label: 'Closed', icon: <XIcon color="var(--mui-palette-error-main)" weight="fill" /> },
+        active: { label: 'Active', icon: <CheckCircleIcon color="var(--mui-palette-success-main)" weight="fill" /> },
       } as const;
 
       function getMapping() {
-        
-        return mapping["active"];
+        if (row.loanStatus === 'Active') {
+          return mapping['active'];
+        }
+        if (row.loanStatus === 'Closed') {
+          return mapping['closed'];
+        }
+
+        return mapping.active;
       }
 
       const { label, icon } = getMapping();
@@ -68,7 +78,7 @@ const columns = [
     sortable: true,
     formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2" color="text.primary">
-        {row.repStyle}
+        {repStyleMap[row.repStyle]}
       </Typography>
     ),
   },

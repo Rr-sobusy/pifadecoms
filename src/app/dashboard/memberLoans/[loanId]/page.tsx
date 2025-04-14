@@ -15,7 +15,6 @@ import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchLoanDetails } from '@/actions/loans/fetch-loans';
 import LoanAmortizationDetails from '@/components/dashboard/member-loans/loan-amortization-details-card';
 import LoanDetailsCard from '@/components/dashboard/member-loans/loan-details-card';
-import LoanStatsCard from '@/components/dashboard/member-loans/loan-stats-card';
 import OptionsPopoverButton from '@/components/dashboard/member-loans/option-popover-button';
 
 interface PageProps {
@@ -67,7 +66,10 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
             </div>
             <Typography variant="h4">Loan-{params.loanId.toString().padStart(6, '0')}</Typography>
             <div>
-              <Chip color="success" label="Active" />
+              <Chip
+                color={loanDetails.loanStatus === 'Active' ? 'success' : 'error'}
+                label={loanDetails.loanStatus === 'Active' ? 'Active' : 'Closed'}
+              />
             </div>
           </Stack>
           <div>
@@ -92,10 +94,7 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
               lg: 4,
             }}
           >
-            <Stack spacing={3}>
-              <LoanDetailsCard sx={{ p: 3 }} loanDetails={loanDetails} />
-              <LoanStatsCard />
-            </Stack>
+            <LoanDetailsCard sx={{ p: 3 }} loanDetails={loanDetails} />
           </Grid>
           <Grid
             size={{

@@ -10,12 +10,13 @@ import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { ILoanDetails } from '@/actions/loans/types';
 
+import StatusToggler from './loan-stats-toggler';
+
 interface PageProps extends CardProps {
   loanDetails: ILoanDetails;
 }
 
 function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
-
   return (
     <Card {...props}>
       <CardContent>
@@ -27,7 +28,10 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
           {(
             [
               { title: 'Loaner Name', value: `${loanDetails?.Member.lastName} ${loanDetails?.Member.firstName}` },
-              { title: 'Loan status', value: loanDetails?.loanStatus ?? '' },
+              {
+                title: 'Loan status',
+                value: <StatusToggler isActive={loanDetails.loanStatus === 'Active'} loanId={loanDetails.loanId} />,
+              },
               { title: 'Loan Source', value: loanDetails?.Source.sourceName ?? '' },
               { title: 'Loan contract', value: loanDetails?.repStyle ?? '' },
               { title: 'Repayment Interval', value: loanDetails?.repInterval ?? '' },
@@ -48,21 +52,23 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
               { title: 'Date Released', value: dayjs(loanDetails?.issueDate).format('MMM DD YYYY') },
               {
                 title: 'Due Date',
-                value: dayjs(loanDetails?.dueDate).format(
-                  'MMM DD YYYY'
-                ),
+                value: dayjs(loanDetails?.dueDate).format('MMM DD YYYY'),
               },
               { title: 'Releasing Voucher No.', value: loanDetails?.JournalEntries?.referenceName ?? '' },
-            ] satisfies { title: string; value: string | number; isLink?: boolean }[]
+            ] satisfies { title: string; value: string | number | React.ReactNode; isLink?: boolean }[]
           ).map((item, index) => (
             <Stack key={index} spacing={2}>
               <Stack spacing={1}>
                 <Typography color="text.secondary" variant="body2">
                   {item.title}
                 </Typography>
-                <Typography color="text.primary" variant="subtitle2">
-                  {item.value}
-                </Typography>
+                {typeof item.value === 'string' || typeof item.value === 'number' ? (
+                  <Typography color="text.primary" variant="subtitle2">
+                    {item.value}
+                  </Typography>
+                ) : (
+                  item.value
+                )}
               </Stack>
               <Divider />
             </Stack>
