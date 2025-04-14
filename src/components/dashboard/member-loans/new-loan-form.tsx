@@ -58,6 +58,7 @@ const repaymentInterval: Record<RepaymentInterval, string> = {
   Weekly: 'Weekly',
   Monthly: 'Monthly',
   Yearly: 'Yearly',
+  None: 'None',
 };
 
 function CreateNewLoan({ accounts, loanSources }: Props) {
@@ -303,7 +304,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     control={control}
                     name="repInterval"
                     render={({ field }) => (
-                      <FormControl fullWidth>
+                      <FormControl disabled={watchRepaymentStyle === 'OneTime'} fullWidth>
                         <InputLabel required>Repayment Interval</InputLabel>
                         <Select {...field}>
                           {Object.entries(repaymentInterval).map(([key, value]) => (
@@ -415,15 +416,17 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                           field.onChange(date?.toDate());
                           setValue('entryDate', date ? date.toDate() : new Date());
 
-                          const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType> = {
+                          const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
                             Weekly: 'week',
                             Monthly: 'month',
                             Yearly: 'year',
+                            None: null,
                           };
 
                           const interval = loanTypeMap[watchPaymentInterval];
-
-                          setValue('dueDate', dayjs(date).add(watchPaymentQty, interval).toDate());
+                          if (interval && date) {
+                            setValue('dueDate', dayjs(date).add(watchPaymentQty, interval).toDate());
+                          }
                         }}
                         defaultValue={dayjs()}
                         value={dayjs(field.value)}

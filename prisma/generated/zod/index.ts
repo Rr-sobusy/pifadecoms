@@ -110,7 +110,7 @@ export const RepaymentStyleSchema = z.enum(['StraightPayment','Diminishing','One
 
 export type RepaymentStyleType = `${z.infer<typeof RepaymentStyleSchema>}`
 
-export const RepaymentIntervalSchema = z.enum(['Weekly','Monthly','Yearly']);
+export const RepaymentIntervalSchema = z.enum(['Weekly','Monthly','Yearly','None']);
 
 export type RepaymentIntervalType = `${z.infer<typeof RepaymentIntervalSchema>}`
 

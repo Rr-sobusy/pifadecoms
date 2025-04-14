@@ -164,13 +164,8 @@ export const FundTransactionWithPosting = ({
 
     const [firstItem, secondItem] = watchJournalLineItems;
 
-    if (transactionType === 'SavingsDeposit' || transactionType === 'ShareCapDeposit') {
-      setValue('journalLineItems.0', { ...firstItem, debit: watchPostedBalance, credit: 0 });
-      setValue('journalLineItems.1', { ...secondItem, credit: watchPostedBalance, debit: 0 });
-    } else {
-      setValue('journalLineItems.0', { ...firstItem, credit: watchPostedBalance, debit: 0 });
-      setValue('journalLineItems.1', { ...secondItem, debit: watchPostedBalance, credit: 0 });
-    }
+    setValue('journalLineItems.0', { ...firstItem, debit: watchPostedBalance, credit: 0 });
+    setValue('journalLineItems.1', { ...secondItem, credit: watchPostedBalance, debit: 0 });
   }, [transactionType, watchJournalLineItems, watchPostedBalance]);
   return (
     <Dialog

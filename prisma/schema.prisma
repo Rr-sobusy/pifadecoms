@@ -78,6 +78,7 @@ enum RepaymentInterval {
   Weekly
   Monthly
   Yearly
+  None
 }
 
 enum Roles {
