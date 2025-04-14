@@ -18,7 +18,6 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import type { RepaymentInterval } from '@prisma/client';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -59,9 +58,9 @@ function CreateExistingLoan({ loanSources }: Props) {
 
   const { execute, isExecuting, result } = useAction(createExistingLoan);
 
-  const watchPaymentQty = watch('paymentQty');
-  const watchPaymentInterval = watch('repInterval');
-  const watchIssueDate = watch('issueDate');
+  // const watchPaymentQty = watch('paymentQty');
+  // const watchPaymentInterval = watch('repInterval');
+  // const watchIssueDate = watch('issueDate');
   const paymentSched = watch('paymentSched');
   const memberData = watch('party');
 
