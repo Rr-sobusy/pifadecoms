@@ -65,27 +65,28 @@ function CreateExistingLoan({ loanSources }: Props) {
   const paymentSched = watch('paymentSched');
   const memberData = watch('party');
 
-  const memoizedComputeAmortizationSched = (): void => {
-    const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType> = {
-      Weekly: 'week',
-      Monthly: 'month',
-      Yearly: 'year',
-    };
+  // const memoizedComputeAmortizationSched = (): void => {
+  //   const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
+  //     Weekly: 'week',
+  //     Monthly: 'month',
+  //     Yearly: 'year',
+  //     None: null
+  //   };
 
-    const interval = loanTypeMap[watchPaymentInterval];
+  //   const interval = loanTypeMap[watchPaymentInterval];
 
-    setValue(
-      'paymentSched',
-      Array.from({ length: watchPaymentQty }, (_, index) => ({
-        interest: 0,
-        isExisting: false,
-        principal: 0,
-        paymentSched: dayjs(watchIssueDate)
-          .add(index + 1, interval)
-          .toDate(),
-      }))
-    );
-  };
+  //   setValue(
+  //     'paymentSched',
+  //     Array.from({ length: watchPaymentQty }, (_, index) => ({
+  //       interest: 0,
+  //       isExisting: false,
+  //       principal: 0,
+  //       paymentSched: dayjs(watchIssueDate)
+  //         .add(index + 1, interval)
+  //         .toDate(),
+  //     }))
+  //   );
+  // };
 
   React.useEffect(() => {
     if (result.data) {
@@ -288,7 +289,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                   }}
                 >
                   <Stack direction="row" alignItems="center" spacing={2}>
-                    <Button onClick={memoizedComputeAmortizationSched} variant="outlined">
+                    <Button variant="outlined">
                       Compute amortization
                     </Button>
                   </Stack>
