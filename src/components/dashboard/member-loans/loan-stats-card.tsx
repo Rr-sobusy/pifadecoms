@@ -5,9 +5,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { CardHeader } from '@mui/material';
 
-type Props = {};
+// type Props = {};
 
-function LoanStatsCard({}: Props) {
+function LoanStatsCard() {
   return (
     <Card>
       <CardContent>
