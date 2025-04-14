@@ -283,7 +283,16 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     render={({ field }) => (
                       <FormControl fullWidth>
                         <InputLabel required>Repayment Style</InputLabel>
-                        <Select {...field}>
+                        <Select
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            if (e.target.value === 'OneTime') {
+                              setValue('repInterval', 'None');
+                              setValue('paymentQty', 1);
+                            }
+                          }}
+                        >
                           {Object.entries(repaymentStyle).map(([key, value]) => (
                             <Option key={key} value={key}>
                               {value}

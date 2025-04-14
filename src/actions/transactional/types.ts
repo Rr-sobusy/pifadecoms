@@ -90,10 +90,12 @@ export const transactionalSchema = z.object({
     )
     .min(2, { message: 'Affected account must be two or more!' })
     .superRefine((items, ctx) => {
-      const totalDebit = items.reduce((sum, item) => sum + item.debit, 0);
-      const totalCredit = items.reduceRight((sum, item) => sum + item.credit, 0);
+  
+  
+      const totalDebit = items.reduce((sum, item) => sum.plus(item.debit), new Decimal(0));
+      const totalCredit = items.reduce((sum, item) => sum.plus(item.credit), new Decimal(0));
 
-      if (totalDebit !== totalCredit) {
+      if (totalDebit.toFixed(2) !== totalCredit.toFixed(2)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Total debits and total credits must be equal.',

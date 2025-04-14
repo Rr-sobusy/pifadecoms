@@ -7,7 +7,7 @@ import { fetchLoanDetails, fetchLoans } from './fetch-loans';
 
 export const addLoanSchema = zod.object({
   repStyle: zod.enum(['StraightPayment', 'Diminishing', 'OneTime']),
-  repInterval: zod.enum(['Weekly', 'Monthly', 'Yearly']),
+  repInterval: zod.enum(['Weekly', 'Monthly', 'Yearly', 'None']),
   member: zod
     .object({
       memberId: zod.string(),

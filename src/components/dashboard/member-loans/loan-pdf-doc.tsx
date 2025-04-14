@@ -18,12 +18,19 @@ const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
   None : null
 };
 
+const loanContractMap: Record<ILoanDetails['repStyle'], string> = {
+  StraightPayment: 'Straight Payment',
+  Diminishing: 'Diminishing',
+  OneTime: 'End of term',
+}
+
 function computeAmortization(
   repStyle: ILoanDetails['repStyle'] | undefined,
   repInterval: ILoanDetails['repInterval'] | undefined,
   principal: number | undefined, // Principal amount (to be repaid without interest)
   payable: number | undefined, // Total amount to be repaid (including interest)
   releaseDate: Date | undefined,
+  dueDate: Date | undefined,
   paymentQty: number | undefined, // Number of payments
   interestRate: number | undefined
   // Annual interest rate in decimal (e.g., 12 for 12%)
@@ -95,6 +102,17 @@ function computeAmortization(
     }
   }
 
+  if(repStyle === 'OneTime') {
+    amortizations.push({
+      paymentNo: 1,
+      paymentSched: dayjs(dueDate).toDate(),
+      totalPayment: payable,
+      principal: Math.round(payable),
+      interest: 0,
+      balance: 0,
+    });
+  }
+
   return amortizations;
 }
 
@@ -149,6 +167,7 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
     Number(loanDetails?.amountLoaned),
     Number(loanDetails?.amountPayable),
     loanDetails?.issueDate,
+    loanDetails?.dueDate,
     loanDetails?.paymentQty,
     Number(loanDetails?.interestRate)
   );
@@ -192,7 +211,7 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
               </View>
               <View style={styleSheet.refRow}>
                 <Text style={styleSheet.refDescription}>Loan contract:</Text>
-                <Text>{loanDetails.repStyle}</Text>
+                <Text>{loanContractMap[loanDetails.repStyle]}</Text>
               </View>
               <View style={styleSheet.refRow}>
                 <Text style={styleSheet.refDescription}>Repayment interval:</Text>
