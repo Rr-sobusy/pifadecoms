@@ -11,10 +11,11 @@ interface LoanPdfDocProps {
   loanDetails: ILoanDetails | undefined;
 }
 
-const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType> = {
+const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
   Weekly: 'week',
   Monthly: 'month',
   Yearly: 'year',
+  None : null
 };
 
 function computeAmortization(
@@ -70,7 +71,7 @@ function computeAmortization(
 
       amortizations.push({
         paymentNo: i,
-        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval]).toDate(),
+        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval] ?? undefined).toDate(),
         totalPayment,
         principal: fixedPrincipal,
         interest,
@@ -85,7 +86,7 @@ function computeAmortization(
       balance = Math.max(balance - fixedPayment, 0);
       amortizations.push({
         paymentNo: i,
-        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval]).toDate(),
+        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval] ?? undefined).toDate(),
         totalPayment: fixedPayment,
         principal: fixedPayment,
         interest: 0,
