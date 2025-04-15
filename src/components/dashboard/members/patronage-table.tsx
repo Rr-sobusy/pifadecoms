@@ -28,7 +28,7 @@ const columns = [
     formatter: (row) => {
       return (
         <Typography variant="subtitle2">
-          {formatToCurrency(Math.abs(Number(row._sum.debit) - Number(row._sum.credit)), 'Fil-ph', 'Php')}
+          {`${formatToCurrency(Math.abs(Number(row._sum.debit) - Number(row._sum.credit)), 'Fil-ph', 'Php')} ${row.account?.RootID.rootType === 'Assets' ? 'Dr' : 'Cr'}`}
         </Typography>
       );
     },

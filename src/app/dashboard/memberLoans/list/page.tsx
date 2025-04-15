@@ -33,7 +33,6 @@ async function page(): Promise<React.ReactElement> {
           </Box>
         </Stack>
         <Stack direction="row" spacing={4} sx={{ alignItems: 'flex-start' }}>
-          {/* <InvoicesFiltersCard filters={filters} /> */}
           <LoanFilters />
           <Stack spacing={4} sx={{ flex: '1 1 auto', minWidth: 0 }}>
             <LoanTable rows={loans} />

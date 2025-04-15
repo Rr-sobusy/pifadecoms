@@ -21,9 +21,8 @@ interface PageProps extends CardProps {
 }
 
 function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps) {
-  // aggregate all records that has field datePaid is not null
   const totalAmortizationPaid = React.useMemo(() => {
-    if (!loanDetails?.Repayments) return 0; // Ensure Repayments exists
+    if (!loanDetails?.Repayments) return 0;
 
     return loanDetails.Repayments.filter((repayment) => repayment.paymentDate)
       .reduce((acc, curr) => {
@@ -35,10 +34,11 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
   }, [loanDetails]);
 
   const amortizationPaidCount = loanDetails?.Repayments.filter((repayments) => repayments.paymentDate).length;
+
   return (
     <Card {...props}>
       <CardContent>
-        <Stack spacing={3}>
+        <Stack spacing={2}>
           <Stack alignItems="center" direction="row" spacing={2}>
             <Info fontSize="var(--icon-fontSize-md)" />
             <Typography variant="h6">Amortization Details</Typography>
@@ -51,11 +51,25 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
           </Stack>
           <Stack direction="row" spacing={2}>
             <Typography variant="body2">Terms Paid:</Typography>
-            <Typography variant="body2">{amortizationPaidCount}</Typography>
+            <Typography variant="body2" color="error">
+              {amortizationPaidCount}
+            </Typography>
           </Stack>
+
+          <Stack direction="row" spacing={2}>
+            <Typography variant="body2">
+              {loanDetails?.loanStatus === 'Closed' && loanDetails?.repStyle !== 'Diminishing'
+                ? 'Discount'
+                : 'Payment remaining'}
+            </Typography>
+            <Typography variant="body2" color="error">
+              {formatToCurrency(Number(loanDetails.amountPayable) - Number(totalAmortizationPaid), 'Fil-ph', 'Php')}
+            </Typography>
+          </Stack>
+
           <Divider />
           <Stack spacing={2}>
-            <Typography variant="h6">Amortization schedules</Typography>
+            <Typography variant="h6">Paid amortization/s</Typography>
             <AmortizationTable
               loanId={loanDetails?.loanId}
               accounts={accounts}

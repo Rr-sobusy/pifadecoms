@@ -78,8 +78,8 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
       journalType: 'cashDisbursement',
       referenceType: 'LoanDisbursements',
       paymentQty: 1,
-      issueDate: new Date(),
-      entryDate: new Date(),
+      // issueDate: new Date(),
+      // entryDate: new Date(),
       paymentSched: [],
       journalLineItems: Array(2)
         .fill(null)
@@ -416,7 +416,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                 >
                   <Controller
                     control={control}
-                    name="entryDate"
+                    name="issueDate"
                     render={({ field }) => (
                       <DatePicker
                         {...field}

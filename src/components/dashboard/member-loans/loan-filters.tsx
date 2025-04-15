@@ -20,14 +20,21 @@ import useDebounce from '@/lib/api-utils/use-debounce';
 import { logger } from '@/lib/default-logger';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
+import { ILoanSources } from '@/actions/loans/types';
 
 const filterSchema = zod.object({
   loanId: zod.number().optional(),
-  status: zod.enum(['All', 'Running', 'Overdue', 'Paid']).optional(),
+  status: zod.enum(['all', 'active', 'closed', 'due']).optional(),
   member: zod.object({ memberId: zod.string(), firstName: zod.string(), lastName: zod.string() }).optional(),
+  loanSource: zod.number().optional(),
+  contractType: zod.enum(['StraightPayment', 'Diminishing', 'OneTime']).optional(),
 });
 
-function LoanFilters() {
+interface LoanFiltersProps {
+    loanSource : ILoanSources;
+}
+
+function LoanFilters({loanSource}: LoanFiltersProps) {
   const {
     control,
     watch,
@@ -106,21 +113,6 @@ function LoanFilters() {
             />
             <Controller
               control={control}
-              name="status"
-              render={({ field }) => (
-                <FormControl fullWidth>
-                  <InputLabel required>Status</InputLabel>
-                  <Select {...field}>
-                    <Option value="All">All</Option>
-                    <Option value="Running">Running</Option>
-                    <Option value="Overdue">Overdue</Option>
-                    <Option value="Paid">Paid</Option>
-                  </Select>
-                </FormControl>
-              )}
-            />
-            <Controller
-              control={control}
               name="member"
               render={({ field }) => (
                 <Autocomplete
@@ -151,6 +143,51 @@ function LoanFilters() {
                     </Option>
                   )}
                 />
+              )}
+            />
+            <Controller
+              control={control}
+              name="status"
+              render={({ field }) => (
+                <FormControl fullWidth>
+                  <InputLabel>Status</InputLabel>
+                  <Select {...field}>
+                    <Option value="all">All</Option>
+                    <Option value="active">Active</Option>
+                    <Option value="closed">Closed</Option>
+                    <Option value="due">Due</Option>
+                  </Select>
+                </FormControl>
+              )}
+            />
+            <Controller
+              control={control}
+              name="status"
+              render={({ field }) => (
+                <FormControl fullWidth>
+                  <InputLabel>Loan source</InputLabel>
+                  <Select {...field}>
+                    <Option value="all">All</Option>
+                    <Option value="active">Active</Option>
+                    <Option value="closed">Closed</Option>
+                    <Option value="due">Due</Option>
+                  </Select>
+                </FormControl>
+              )}
+            />
+            <Controller
+              control={control}
+              name="status"
+              render={({ field }) => (
+                <FormControl fullWidth>
+                  <InputLabel>Contract Type</InputLabel>
+                  <Select {...field}>
+                    <Option value="all">All</Option>
+                    <Option value="active">Straight Payment</Option>
+                    <Option value="closed">Diminishing</Option>
+                    <Option value="due">End of term</Option>
+                  </Select>
+                </FormControl>
               )}
             />
             <Button type="submit" variant="contained">

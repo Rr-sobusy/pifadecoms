@@ -255,16 +255,13 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
                 />
               </Stack>
             ))}
-            <Stack spacing={4} flexDirection="row">
-              <Stack sx={{ width: '50%' }} spacing={3}>
-                <Typography variant="subtitle2">Totals</Typography>
-              </Stack>
-              <Stack sx={{ width: '10%' }} spacing={3}>
-                <Typography variant="subtitle2">{formatToCurrency(totalDebits, 'Fil-ph', 'Php')}</Typography>
-              </Stack>
-              <Stack sx={{ width: '10%', marginLeft: '-7px' }} spacing={3}>
-                <Typography variant="subtitle2">{formatToCurrency(totalCredits, 'Fil-ph', 'Php')}</Typography>
-              </Stack>
+            <Stack sx={{ width: '50%' }}>
+              <Typography variant="subtitle2">
+                Total Debit : {formatToCurrency(totalDebits, 'Fil-ph', 'Php')}
+              </Typography>
+              <Typography variant="subtitle2">
+                Total Credit : {formatToCurrency(totalCredits, 'Fil-ph', 'Php')}
+              </Typography>
             </Stack>
             <Stack>
               {Object.keys(errors).length > 0 && (

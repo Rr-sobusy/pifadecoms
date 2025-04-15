@@ -3,9 +3,7 @@
 import React, { useState } from 'react';
 import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { CreditCard } from '@phosphor-icons/react/dist/ssr/CreditCard';
 
 // import { toast } from '@/components/core/toaster';
@@ -32,39 +30,45 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
     {
       name: '#',
       formatter: (_, index) => <div>{(index + 1).toString()}</div>,
-      width: '80px',
+      width: '50px',
     },
     {
       name: 'Payment Schedule',
       formatter: (row) => {
-        const { paymentSched, paymentDate } = row;
-        return (
-          <Stack alignItems="center" spacing={1} direction="row">
-            <Typography variant="subtitle2" sx={{ color: paymentDate ? 'text.secondary' : 'text.primary' }}>
-              {dayjs(paymentSched).format('MMM DD YYYY')}
-            </Typography>
-
-            <Chip label="Paid" color="success" variant="outlined" icon={<CheckCircleIcon />} size="small" />
-          </Stack>
-        );
+        const { paymentSched } = row;
+        return <Typography variant="subtitle2">{dayjs(paymentSched).format('MMM DD YYYY')}</Typography>;
       },
     },
 
     {
       name: 'Date Paid',
-      formatter: (row) => <div>{row.paymentDate && dayjs(row.paymentDate).format('MMM DD YYYY')}</div>,
+      formatter: (row) => (
+        <Typography variant="subtitle2">{row.paymentDate && dayjs(row.paymentDate).format('MMM DD YYYY')}</Typography>
+      ),
     },
     {
       name: 'Payment O.R',
-      formatter: (row) => <div>{row.JournalEntries?.referenceName.toString()}</div>,
+      formatter: (row) => <Typography variant="subtitle2">{row.JournalEntries?.referenceName.toString()}</Typography>,
     },
     {
       name: 'Principal Amount',
-      formatter: (row) => formatToCurrency(Number(row.principal), 'Fil-ph', 'Php'),
+      formatter: (row) => (
+        <Typography variant="subtitle2">{formatToCurrency(Number(row.principal), 'Fil-ph', 'Php')}</Typography>
+      ),
     },
     {
       name: 'Interest',
-      formatter: (row) => formatToCurrency(Number(row.interest), 'Fil-ph', 'Php'),
+      formatter: (row) => (
+        <Typography variant="subtitle2">{formatToCurrency(Number(row.interest), 'Fil-ph', 'Php')}</Typography>
+      ),
+    },
+    {
+      name: 'Total Amount',
+      formatter: (row) => (
+        <Typography variant="subtitle2">
+          {formatToCurrency(Number(row.interest) + Number(row.principal), 'Fil-ph', 'Php')}
+        </Typography>
+      ),
     },
   ];
 
@@ -78,7 +82,7 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
 
   return (
     <>
-      <DataTable uniqueRowId={(row) => Number(row.repaymentId)} columns={columns} rows={rows} />
+      <DataTable hover uniqueRowId={(row) => Number(row.repaymentId)} columns={columns} rows={rows} />
       <div>
         <Stack spacing={2} direction="row" justifyContent="flex-end">
           <Button startIcon={<CreditCard />} onClick={setDialogOpen} variant="contained">

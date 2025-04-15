@@ -105,16 +105,16 @@ const columns = [
     sortable: true,
     formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2" color="text.primary">
-        {dayjs(row.issueDate).format('MM-DD-YYYY')}
+        {dayjs(row.issueDate).format('MMM DD YYYY')}
       </Typography>
     ),
   },
   {
-    name: 'Voucher No.',
+    name: 'Due Date',
     sortable: true,
     formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2" color="text.primary">
-        {row.journalRef && row.JournalEntries?.referenceName}
+        {dayjs(row.dueDate).format('MMM DD YYYY')}
       </Typography>
     ),
   },

@@ -10,9 +10,9 @@ import { fetchLoanSources } from '@/actions/loans/fetch-loan-source';
 import CreateExistingLoan from '@/components/dashboard/member-loans/existing-loan-form';
 
 const page = async () => {
-  // const members = await fetchMembers({ returnAll: true });
-  // const items = await fetchItems();
+
   const loanSources = await fetchLoanSources();
+  
   return (
     <Box
       sx={{

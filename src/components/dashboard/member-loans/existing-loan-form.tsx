@@ -18,6 +18,7 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import type { RepaymentInterval, RepaymentStyle } from '@prisma/client';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -38,6 +39,19 @@ type Props = {
   loanSources: ILoanSources;
 };
 
+const repaymentStyle: Record<RepaymentStyle, string> = {
+  Diminishing: 'Diminishing',
+  StraightPayment: 'Straight payment',
+  OneTime: 'End of term payment',
+};
+
+const repaymentInterval: Record<RepaymentInterval, string> = {
+  Weekly: 'Weekly',
+  Monthly: 'Monthly',
+  Yearly: 'Yearly',
+  None: 'None',
+};
+
 function CreateExistingLoan({ loanSources }: Props) {
   const {
     control,
@@ -54,38 +68,14 @@ function CreateExistingLoan({ loanSources }: Props) {
 
   const [member, setMemberData] = React.useState<MembersType['members'][0][]>([]);
 
+  const { execute, isExecuting, result } = useAction(createExistingLoan);
+  const watchRepaymentStyle = watch('repStyle');
+
+  const watchPaymentQty = watch('paymentQty');
+  const watchPaymentInterval = watch('repInterval');
   const router = useRouter();
 
-  const { execute, isExecuting, result } = useAction(createExistingLoan);
-
-  // const watchPaymentQty = watch('paymentQty');
-  // const watchPaymentInterval = watch('repInterval');
-  // const watchIssueDate = watch('issueDate');
-  const paymentSched = watch('paymentSched');
   const memberData = watch('party');
-
-  // const memoizedComputeAmortizationSched = (): void => {
-  //   const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
-  //     Weekly: 'week',
-  //     Monthly: 'month',
-  //     Yearly: 'year',
-  //     None: null
-  //   };
-
-  //   const interval = loanTypeMap[watchPaymentInterval];
-
-  //   setValue(
-  //     'paymentSched',
-  //     Array.from({ length: watchPaymentQty }, (_, index) => ({
-  //       interest: 0,
-  //       isExisting: false,
-  //       principal: 0,
-  //       paymentSched: dayjs(watchIssueDate)
-  //         .add(index + 1, interval)
-  //         .toDate(),
-  //     }))
-  //   );
-  // };
 
   React.useEffect(() => {
     if (result.data) {
@@ -132,7 +122,7 @@ function CreateExistingLoan({ loanSources }: Props) {
           <LoanTabs />
           <Stack divider={<Divider />} spacing={4}>
             <Stack spacing={3}>
-              <Typography variant="h6"> {}</Typography>
+              <Typography variant="h6">Loan Information</Typography>
               <Grid container spacing={3}>
                 <Grid
                   size={{
@@ -141,7 +131,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                   }}
                 >
                   <FormControl disabled fullWidth>
-                    <InputLabel required>Loan ID</InputLabel>
+                    <InputLabel>Loan ID</InputLabel>
                     <OutlinedInput defaultValue="Loan No. - ***" type="text" />
                   </FormControl>
                 </Grid>
@@ -164,12 +154,12 @@ function CreateExistingLoan({ loanSources }: Props) {
 
                           setValue('party.lastName', value); // Update form value when input changes
                         }}
-                        onChange={(event, value) => {
+                        onChange={(_, value) => {
                           field.onChange(value); // Update form value on selection
                         }}
                         options={member}
                         getOptionLabel={(option) =>
-                          option && option.lastName && option.firstName ? `${option.lastName} ${option.firstName}` : ''
+                          option.lastName.length ? `${option.lastName} ${option.firstName}` : ''
                         }
                         renderInput={(params) => (
                           <FormControl error={Boolean(errors.party?.message)} fullWidth>
@@ -186,29 +176,6 @@ function CreateExistingLoan({ loanSources }: Props) {
                     )}
                   />
                 </Grid>
-                {/* <Grid
-                  size={{
-                    md: 3,
-                    xs: 12,
-                  }}
-                >
-                  <Controller
-                    control={control}
-                    name="loanType"
-                    render={({ field }) => (
-                      <FormControl fullWidth>
-                        <InputLabel>Loan Typess</InputLabel>
-                        <Select {...field}>
-                          {Object.entries(LoanTypeMap).map(([key, value]) => (
-                            <Option key={key} value={key}>
-                              {value}
-                            </Option>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    )}
-                  />
-                </Grid> */}
                 <Grid
                   size={{
                     md: 3,
@@ -220,7 +187,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                     name="loanSource"
                     render={({ field }) => (
                       <FormControl fullWidth>
-                        <InputLabel required>Loan Sources</InputLabel>
+                        <InputLabel required>Loan Source</InputLabel>
                         <Select {...field}>
                           {loanSources.map((source) => (
                             <Option key={source.sourceId} value={source.sourceId}>
@@ -238,45 +205,28 @@ function CreateExistingLoan({ loanSources }: Props) {
                     xs: 12,
                   }}
                 >
-                  <FormInputFields
-                    control={control}
-                    name="interest"
-                    variant="number"
-                    inputLabel="Monthly interest rate"
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 3,
-                    xs: 12,
-                  }}
-                >
-                  <FormInputFields
-                    control={control}
-                    name="amountLoaned"
-                    variant="number"
-                    inputLabel="Amount loaned (Principal)"
-                  />
-                </Grid>
-                <Grid
-                  size={{
-                    md: 4,
-                    xs: 12,
-                  }}
-                >
                   <Controller
                     control={control}
-                    name="issueDate"
+                    name="repStyle"
                     render={({ field }) => (
-                      <FormControl>
-                        <InputLabel required>Release date</InputLabel>
-                        <DatePicker
+                      <FormControl fullWidth>
+                        <InputLabel required>Repayment Style</InputLabel>
+                        <Select
                           {...field}
-                          onChange={(date) => {
-                            field.onChange(date?.toDate());
+                          onChange={(e) => {
+                            field.onChange(e);
+                            if (e.target.value === 'OneTime') {
+                              setValue('repInterval', 'None');
+                              setValue('paymentQty', 1);
+                            }
                           }}
-                          value={dayjs(field.value)}
-                        />
+                        >
+                          {Object.entries(repaymentStyle).map(([key, value]) => (
+                            <Option key={key} value={key}>
+                              {value}
+                            </Option>
+                          ))}
+                        </Select>
                       </FormControl>
                     )}
                   />
@@ -287,70 +237,148 @@ function CreateExistingLoan({ loanSources }: Props) {
                     xs: 12,
                   }}
                 >
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <Button variant="outlined">
-                      Compute amortization
-                    </Button>
-                  </Stack>
+                  <Controller
+                    control={control}
+                    name="repInterval"
+                    render={({ field }) => (
+                      <FormControl disabled={watchRepaymentStyle === 'OneTime'} fullWidth>
+                        <InputLabel required>Repayment Interval</InputLabel>
+                        <Select {...field}>
+                          {Object.entries(repaymentInterval).map(([key, value]) => (
+                            <Option key={key} value={key}>
+                              {value}
+                            </Option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    )}
+                  />
                 </Grid>
-              </Grid>
-            </Stack>
-            <Stack spacing={3}>
-              <Typography variant="h6">Payment amortization schedules</Typography>
-              <Grid container spacing={3}>
-                {paymentSched.map((_, index) => (
-                  <Stack key={index} direction="row" spacing={2}>
-                    <Stack justifyContent="space-between" direction="column">
-                      <InputLabel>Number</InputLabel>
-                      <Typography>{index + 1}</Typography>
-                    </Stack>
-                    <Controller
-                      control={control}
-                      name={`paymentSched.${index}.paymentSched`}
-                      render={({ field }) => (
-                        <FormControl>
-                          <InputLabel required>Payment Schedule</InputLabel>
-                          <OutlinedInput
-                            {...field}
-                            disabled
-                            value={dayjs(paymentSched[index].paymentSched).toDate().toLocaleDateString()}
-                            type="text"
-                          />
-                        </FormControl>
-                      )}
-                    />
-                    <Controller
-                      control={control}
-                      name={`paymentSched.${index}.datePaid`}
-                      render={({ field }) => (
-                        <DatePicker
-                          {...field}
-                          value={field.value ? dayjs(field.value) : null}
-                          onChange={(date) => {
-                            field.onChange(date?.toDate());
-                          }}
-                          label="Date paid"
-                        />
-                      )}
-                    />
 
-                    <FormInputFields
-                      sx={{ width: 'auto' }}
-                      control={control}
-                      inputLabel="Principal"
-                      variant="number"
-                      name={`paymentSched.${index}.principal`}
-                    />
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <FormInputFields
+                    isDisabled={watchRepaymentStyle === 'OneTime'}
+                    sx={{ width: '100%' }}
+                    control={control}
+                    name="paymentQty"
+                    inputLabel="Number of payments"
+                    errors={errors}
+                    variant="number"
+                    isRequired
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <FormInputFields
+                    sx={{ width: '100%' }}
+                    control={control}
+                    name="interest"
+                    inputLabel="Interest rate"
+                    errors={errors}
+                    variant="number"
+                    isRequired
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <FormInputFields
+                    sx={{ width: '100%' }}
+                    control={control}
+                    name="amountLoaned"
+                    inputLabel="Amount loaned (Principal)"
+                    errors={errors}
+                    variant="number"
+                    isRequired
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <FormInputFields
+                    sx={{ width: '100%' }}
+                    control={control}
+                    name="amountPayable"
+                    inputLabel="Amount payable"
+                    errors={errors}
+                    variant="number"
+                    isRequired
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="issueDate"
+                    render={({ field }) => (
+                      <DatePicker
+                        {...field}
+                        sx={{ width: '100%' }}
+                        onChange={(date) => {
+                          field.onChange(date?.toDate());
 
-                    <FormInputFields
-                      sx={{ width: 'auto' }}
-                      control={control}
-                      inputLabel="Interest"
-                      variant="number"
-                      name={`paymentSched.${index}.interest`}
-                    />
-                  </Stack>
-                ))}
+                          const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
+                            Weekly: 'week',
+                            Monthly: 'month',
+                            Yearly: 'year',
+                            None: null,
+                          };
+
+                          const interval = loanTypeMap[watchPaymentInterval];
+                          if (interval && date) {
+                            setValue('dueDate', dayjs(date).add(watchPaymentQty, interval).toDate());
+                          }
+                        }}
+                        defaultValue={dayjs()}
+                        value={dayjs(field.value)}
+                        label="Released Date"
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid
+                  size={{
+                    md: 3,
+                    xs: 12,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="dueDate"
+                    render={({ field }) => (
+                      <DatePicker
+                        {...field}
+                        sx={{ width: '100%' }}
+                        disabled={watchRepaymentStyle !== 'OneTime'}
+                        onChange={(date) => {
+                          field.onChange(date?.toDate());
+                        }}
+                        defaultValue={dayjs()}
+                        value={dayjs(field.value)}
+                        label="Due Date"
+                      />
+                    )}
+                  />
+                </Grid>
               </Grid>
             </Stack>
           </Stack>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { DialogActions } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -64,7 +64,6 @@ const columns = [
 
 function TransactionDialog({ accountTransactions }: TransactionDialogProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParamss = useSearchParams();
 
   const [isOpen, setIsOpen] = React.useState(true);
@@ -78,11 +77,7 @@ function TransactionDialog({ accountTransactions }: TransactionDialogProps) {
   }, [searchParamss]);
 
   function handleClose() {
-    const searchParams = new URLSearchParams(searchParamss.toString());
-
-    searchParams.delete('entryId'); // Remove the query parameter
-
-    router.replace(`${pathname}?${searchParams.toString()}`, { scroll: false });
+    router.back();
   }
 
   const list = [

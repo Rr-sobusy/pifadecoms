@@ -45,7 +45,23 @@ export const addLoanSchema = zod.object({
   ),
 });
 
-export const loanSchemaExtended = transactionalSchema.merge(addLoanSchema);
+export const loanSchemaExtended = transactionalSchema.merge(addLoanSchema).superRefine((items, ctx) => {
+  /**
+   * * If Loan contract is not diminishing, the aggregated journal line must be equal to amount payable.
+   */
+  if (items.repStyle !== 'Diminishing') {
+    const totalJournalLines = (items.journalLineItems || []).reduce((acc, curr) => acc + (curr.debit || 0), 0);
+
+    if (totalJournalLines !== items.amountPayable) {
+      ctx.addIssue({
+        code: zod.ZodIssueCode.custom,
+        message: 'Total journal lines must be equal to amount payable if not diminishing.',
+        path: ['journalLineItems'],
+      });
+      return;
+    }
+  }
+});
 export type ILoanDetails = Prisma.PromiseReturnType<typeof fetchLoanDetails>;
 export type IAddLoanSchema = zod.infer<typeof addLoanSchema>;
 export type ILoanSchemaExtended = zod.infer<typeof loanSchemaExtended>;

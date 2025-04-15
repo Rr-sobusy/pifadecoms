@@ -5,6 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { Info } from '@phosphor-icons/react/dist/ssr/Info';
+import type { RepaymentStyle } from '@prisma/client';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -15,6 +16,12 @@ import StatusToggler from './loan-stats-toggler';
 interface PageProps extends CardProps {
   loanDetails: ILoanDetails;
 }
+
+const repStyleMap: Record<RepaymentStyle, string> = {
+  Diminishing: 'Diminishing',
+  StraightPayment: 'Straight Payment',
+  OneTime: 'End of Term',
+};
 
 function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
   return (
@@ -33,7 +40,7 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
                 value: <StatusToggler isActive={loanDetails.loanStatus === 'Active'} loanId={loanDetails.loanId} />,
               },
               { title: 'Loan Source', value: loanDetails?.Source.sourceName ?? '' },
-              { title: 'Loan contract', value: loanDetails?.repStyle ?? '' },
+              { title: 'Loan contract', value: repStyleMap[loanDetails?.repStyle ?? 'StraightPayment'] },
               { title: 'Repayment Interval', value: loanDetails?.repInterval ?? '' },
 
               { title: 'Amortization Count', value: loanDetails?.paymentQty ?? 0 },
