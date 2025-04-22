@@ -7,7 +7,9 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { Info } from '@phosphor-icons/react/dist/ssr/Info';
+import type { Dayjs } from 'dayjs';
 
+import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
 import type { ILoanDetails } from '@/actions/loans/types';
@@ -33,12 +35,10 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
       .toFixed(2);
   }, [loanDetails]);
 
-  const amortizationPaidCount = loanDetails?.Repayments.filter((repayments) => repayments.paymentDate).length;
-
   return (
     <Card {...props}>
       <CardContent>
-        <Stack spacing={2}>
+        <Stack spacing={1.5}>
           <Stack alignItems="center" direction="row" spacing={2}>
             <Info fontSize="var(--icon-fontSize-md)" />
             <Typography variant="h6">Amortization Details</Typography>
@@ -47,12 +47,6 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
             <Typography variant="body2">Total amortization paid:</Typography>
             <Typography variant="body2" color="error">
               {formatToCurrency(Number(totalAmortizationPaid), 'Fil-ph', 'Php')}
-            </Typography>
-          </Stack>
-          <Stack direction="row" spacing={2}>
-            <Typography variant="body2">Terms Paid:</Typography>
-            <Typography variant="body2" color="error">
-              {amortizationPaidCount}
             </Typography>
           </Stack>
 
@@ -66,6 +60,29 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
               {formatToCurrency(Number(loanDetails.amountPayable) - Number(totalAmortizationPaid), 'Fil-ph', 'Php')}
             </Typography>
           </Stack>
+
+          {loanDetails?.loanStatus === 'Active' && (
+            <Stack direction="row" spacing={2}>
+              <Typography variant="body2">Penalty interest:</Typography>
+              <Typography variant="body2" color="error">
+                {`${formatToCurrency(
+                  calculateLapseInterest(
+                    dayjs(loanDetails.dueDate).toDate(),
+                    Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid),
+                    2
+                  ).computedLapseInterest,
+                  'Fil-ph',
+                  'Php'
+                )} in ${
+                  calculateLapseInterest(
+                    dayjs(loanDetails.dueDate).toDate(),
+                    Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid),
+                    Number(loanDetails?.interestRate)
+                  ).monthsLapse
+                } month(s)`}
+              </Typography>
+            </Stack>
+          )}
 
           <Divider />
           <Stack spacing={2}>
@@ -81,6 +98,23 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
       </CardContent>
     </Card>
   );
+}
+
+function calculateLapseInterest(
+  dueDate: Date,
+  remainingBalance: number,
+  interest: number
+): { monthsLapse: number; computedLapseInterest: number } {
+  const monthsLapse = dayjs().diff(dayjs(dueDate), 'month');
+
+  if (dayjs().toDate() < dayjs(dueDate).toDate()) {
+    return { monthsLapse: 0, computedLapseInterest: 0 };
+  }
+
+  return {
+    monthsLapse,
+    computedLapseInterest: (remainingBalance * interest * monthsLapse) / 100,
+  };
 }
 
 export default LoanAmortizationDetails;

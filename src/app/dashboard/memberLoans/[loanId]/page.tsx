@@ -15,6 +15,7 @@ import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchLoanDetails } from '@/actions/loans/fetch-loans';
 import LoanAmortizationDetails from '@/components/dashboard/member-loans/loan-amortization-details-card';
 import LoanDetailsCard from '@/components/dashboard/member-loans/loan-details-card';
+import LoanNotes from '@/components/dashboard/member-loans/loan-notes';
 import OptionsPopoverButton from '@/components/dashboard/member-loans/option-popover-button';
 
 interface PageProps {
@@ -94,7 +95,10 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
               lg: 4,
             }}
           >
-            <LoanDetailsCard sx={{ p: 3 }} loanDetails={loanDetails} />
+            <Stack spacing={3}>
+              <LoanDetailsCard sx={{ p: 3 }} loanDetails={loanDetails} />
+              <LoanNotes notes={loanDetails?.notes} loanId={loanDetails?.loanId} />
+            </Stack>
           </Grid>
           <Grid
             size={{

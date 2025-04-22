@@ -61,7 +61,7 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
                 title: 'Due Date',
                 value: dayjs(loanDetails?.dueDate).format('MMM DD YYYY'),
               },
-              { title: 'Releasing Voucher No.', value: loanDetails?.JournalEntries?.referenceName ?? '' },
+              { title: 'Releasing Voucher No.', value: loanDetails?.JournalEntries?.referenceName ?? 'Historical Loan' },
             ] satisfies { title: string; value: string | number | React.ReactNode; isLink?: boolean }[]
           ).map((item, index) => (
             <Stack key={index} spacing={2}>

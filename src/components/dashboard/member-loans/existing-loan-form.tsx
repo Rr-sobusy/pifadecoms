@@ -18,9 +18,11 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr';
 import type { RepaymentInterval, RepaymentStyle } from '@prisma/client';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
 
 import { paths } from '@/paths';
 import useDebounce from '@/lib/api-utils/use-debounce';
@@ -58,11 +60,14 @@ function CreateExistingLoan({ loanSources }: Props) {
     watch,
     setValue,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<IAddLoanSchema>({
     resolver: zodResolver(addLoanSchema),
     defaultValues: {
-      paymentSched: [],
+      paymentSched: [
+       
+      ],
     },
   });
 
@@ -74,6 +79,8 @@ function CreateExistingLoan({ loanSources }: Props) {
   const watchPaymentQty = watch('paymentQty');
   const watchPaymentInterval = watch('repInterval');
   const router = useRouter();
+
+  const watchPaymentSched = React.useMemo(() => watch('paymentSched'), [getValues('paymentSched')]);
 
   const memberData = watch('party');
 
@@ -111,6 +118,19 @@ function CreateExistingLoan({ loanSources }: Props) {
     }
     fetchMemberDataOnDebounce();
   }, [debouncedValue]);
+
+  const addExistingPaymentLine = React.useCallback(() => {
+    const existingLine = getValues('paymentSched');
+    const newLine = {
+      repaymentId: uuidv4(),
+      paymentSched: new Date(),
+      principal: 0,
+      interest: 0,
+      isExisting: true,
+    };
+
+    return setValue('paymentSched', [...existingLine, newLine]);
+  }, [getValues('paymentSched'), setValue]);
 
   function submitHandler(data: IAddLoanSchema) {
     execute(data);
@@ -380,6 +400,65 @@ function CreateExistingLoan({ loanSources }: Props) {
                   />
                 </Grid>
               </Grid>
+            </Stack>
+            <Stack spacing={3}>
+              <Typography variant="h6">Existing Payments</Typography>
+              {watchPaymentSched.map((_, index) => (
+                <Stack spacing={3} direction="row">
+                 <Stack paddingTop={5}>{index + 1}</Stack>
+                  <Controller
+                    name={`paymentSched.${index}.paymentSched`}
+                    control={control}
+                    render={({ field }) => (
+                      <DatePicker
+                        {...field}
+                        onChange={(date) => {
+                          field.onChange(date?.toDate());
+                        }}
+                        defaultValue={dayjs()}
+                        value={dayjs(field.value)}
+                        label="Payment Schedule"
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`paymentSched.${index}.datePaid`}
+                    control={control}
+                    render={({ field }) => (
+                      <DatePicker
+                        {...field}
+                        onChange={(date) => {
+                          field.onChange(date?.toDate());
+                        }}
+                        defaultValue={dayjs()}
+                        value={dayjs(field.value)}
+                        label="Date Paid"
+                      />
+                    )}
+                  />
+                  <FormInputFields
+                    control={control}
+                    name={`paymentSched.${index}.principal`}
+                    inputLabel="Principal"
+                    errors={errors}
+                    variant="number"
+                    isRequired
+                  />
+                  <FormInputFields
+                    control={control}
+                    name={`paymentSched.${index}.interest`}
+                    inputLabel="Interest"
+                    errors={errors}
+                    variant="number"
+                    isRequired
+                  />
+                </Stack>
+              ))}
+              <div>
+                <Button onClick={addExistingPaymentLine} color="secondary" startIcon={<PlusIcon />} variant="text">
+                  Add line
+                </Button>
+              </div>
             </Stack>
           </Stack>
         </CardContent>

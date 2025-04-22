@@ -32,7 +32,7 @@ export const addLoanSchema = zod.object({
   ledgerId: zod.bigint().optional(),
   paymentSched: zod.array(
     zod.object({
-      repaymentId: zod.number().optional(),
+      repaymentId: zod.string().optional(),
       paymentSched: zod.date(),
       principal: zod.number(),
       interest: zod.number(),

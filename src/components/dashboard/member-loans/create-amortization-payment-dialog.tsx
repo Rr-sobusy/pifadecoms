@@ -20,7 +20,8 @@ import Decimal from 'decimal.js';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
@@ -46,6 +47,7 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<IRepaymentAction>({
     defaultValues: {
@@ -97,6 +99,7 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
     if (result.data?.success) {
       handleClose();
       toast.success('Payment successfully posted');
+      reset()
     }
   }, [result]);
 
@@ -182,8 +185,10 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
           <Divider />
           <Stack spacing={2} marginY={2}>
             <Typography variant="h6">Payment Line</Typography>
-            {watchPaymentSched.map((row, index) => (
+            <FormControlLabel control={<Checkbox />} label="Span payment" />
+            {watchPaymentSched.map((_, index) => (
               <Stack key={index} alignItems="center" spacing={2} direction="row">
+             
                 <Controller
                   control={control}
                   name={`paymentSched.${index}.paymentSched`}
