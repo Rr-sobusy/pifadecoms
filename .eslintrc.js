@@ -102,5 +102,6 @@ module.exports = {
     '@typescript-eslint/no-unnecessary-type-assertion': 'off',
     'react/no-unstable-nested-components': 'off',
     '@typescript-eslint/no-unsafe-call': 'off',
+    'react/display-name': 'off',
   },
 };
