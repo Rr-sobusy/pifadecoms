@@ -10,6 +10,15 @@ export async function fetchLoans() {
           lastName: true,
         },
       },
+      Repayments : {
+        include : {
+          JournalEntries: {
+            select: {
+              referenceName: true,
+            },
+          },
+        }
+      },
     },
   });
 
