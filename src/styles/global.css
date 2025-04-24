@@ -144,7 +144,7 @@ body {
 
 @media print {
   @page {
-    margin: 32px 32px 64px 32px; /* bottom margin */
+    margin: 64px 32px 64px 32px; /* bottom margin */
   }
 
   body {

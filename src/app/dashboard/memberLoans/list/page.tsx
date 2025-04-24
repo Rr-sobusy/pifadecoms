@@ -6,13 +6,29 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { paths } from '@/paths';
-import { fetchLoans } from '@/actions/loans/fetch-loans';
-import { LoanTable } from '@/components/dashboard/member-loans/loan-table';
-import LoanFilters from '@/components/dashboard/member-loans/loan-filters';
 import { fetchLoanSources } from '@/actions/loans/fetch-loan-source';
+import { fetchLoans } from '@/actions/loans/fetch-loans';
+import LoanFilters from '@/components/dashboard/member-loans/loan-filters';
+import { LoanTable } from '@/components/dashboard/member-loans/loan-table';
 
-async function page(): Promise<React.ReactElement> {
-  const [loans, loanSource] = await Promise.all([fetchLoans(), fetchLoanSources()]);
+interface PageProps {
+  searchParams: {
+    memberId?: string;
+    loanId?: number;
+    status?: 'Active' | 'Closed';
+    sourceId?: number;
+    contractType?: 'StraightPayment' | 'Diminishing' | 'OneTime';
+    releasedDateFrom?: Date;
+    releasedDateTo?: Date;
+    dueDate?: Date | string;
+  };
+}
+
+async function page(props: PageProps): Promise<React.ReactElement> {
+  const { memberId, loanId, status, sourceId, contractType, releasedDateFrom, releasedDateTo, dueDate } =
+    props.searchParams;
+  const filters = { memberId, loanId, status, sourceId, contractType, releasedDateFrom, releasedDateTo, dueDate };
+  const [loans, loanSource] = await Promise.all([fetchLoans(filters), fetchLoanSources()]);
   return (
     <Box
       sx={{

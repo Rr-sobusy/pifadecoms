@@ -252,7 +252,7 @@ function FilterModal({ accounts }: FilterModalProps) {
                           fullWidth: true,
                         },
                       }}
-                      value={dayjs(field.value)}
+                      value={field.value ? dayjs(field.value) : null}
                       label="Start Date"
                       sx={{ width: '100%' }}
                     />
@@ -280,7 +280,7 @@ function FilterModal({ accounts }: FilterModalProps) {
                           fullWidth: true,
                         },
                       }}
-                      value={dayjs(field.value)}
+                      value={field.value ? dayjs(field.value) : null}
                       label="End Date"
                       sx={{ width: '100%' }}
                     />

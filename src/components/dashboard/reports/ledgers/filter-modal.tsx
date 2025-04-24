@@ -52,10 +52,6 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
     resolver: zodResolver(filterSchema),
     defaultValues: {
       journalType: 'All',
-      dateRange: {
-        startDate: new Date(),
-        endDate: new Date(),
-      },
     },
   });
 
@@ -133,7 +129,7 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
                       onChange={(date) => {
                         field.onChange(date?.toDate());
                       }}
-                      value={dayjs(field.value)}
+                      value={field.value ? dayjs(field.value) : null}
                     />
                   </FormControl>
                 )}
@@ -148,11 +144,10 @@ function LedgerFilterModal({ open }: FilterDialogProps) {
                     <InputLabel>End Date</InputLabel>
                     <DatePicker
                       {...field}
-                      {...field}
                       onChange={(date) => {
                         field.onChange(date?.toDate());
                       }}
-                      value={dayjs(field.value)}
+                      value={field.value ? dayjs(field.value) : null}
                     />
                   </FormControl>
                 )}

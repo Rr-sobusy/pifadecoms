@@ -1,5 +1,7 @@
 'use client';
 
+import { url } from 'inspector';
+
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,6 +23,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
 import useDebounce from '@/lib/api-utils/use-debounce';
+import { dayjs } from '@/lib/dayjs';
 import { logger } from '@/lib/default-logger';
 import { ILoanSources } from '@/actions/loans/types';
 import type { MembersType } from '@/actions/members/types';
@@ -28,16 +31,23 @@ import { Option } from '@/components/core/option';
 
 const filterSchema = zod.object({
   loanId: zod.number().optional(),
-  status: zod.enum(['all', 'active', 'closed']).optional(),
+  status: zod.enum(['All', 'Active', 'Closed']).optional(),
   member: zod.object({ memberId: zod.string(), firstName: zod.string(), lastName: zod.string() }).optional(),
-  loanSource: zod.number().optional(),
+  sourceId: zod.number().optional(),
   contractType: zod.enum(['StraightPayment', 'Diminishing', 'OneTime']).optional(),
+  releasedDate: zod
+    .object({
+      from: zod.date().max(new Date('2099-01-01')).nullable().optional(),
+      to: zod.date().max(new Date('2099-01-01')).nullable().optional(),
+    })
+    .optional(),
+  dueDate: zod.date().max(new Date('2099-01-01')).nullable().optional(),
 });
 
 const repStyleMap: Record<RepaymentStyle, string> = {
   StraightPayment: 'Straight Payment',
   Diminishing: 'Diminishing',
-  OneTime: 'One Time',
+  OneTime: 'End of term',
 };
 
 interface LoanFiltersProps {
@@ -48,7 +58,9 @@ type FilterValues = zod.infer<typeof filterSchema>;
 
 function getDefaultValues(filters: FilterValues): FilterValues {
   return {
-    status: filters.status ?? undefined,
+    status: filters.status ?? 'All',
+    loanId: filters.loanId ?? 0,
+    member: undefined,
   };
 }
 
@@ -59,6 +71,7 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
     setValue,
     handleSubmit,
     reset,
+    formState: { errors },
   } = useForm<zod.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
     defaultValues: getDefaultValues({}),
@@ -101,8 +114,23 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
     if (data.member) {
       urlSearchParams.set('memberId', data.member.memberId);
     }
-    if (data.loanSource) {
-      urlSearchParams.set('loanSource', data.loanSource.toString());
+    if (data.sourceId) {
+      urlSearchParams.set('sourceId', data.sourceId.toString());
+    }
+    if (data.contractType) {
+      urlSearchParams.set('contractType', data.contractType);
+    }
+
+    if (data.releasedDate?.from) {
+      urlSearchParams.set('releasedDateFrom', data.releasedDate.from.toString());
+    }
+    
+    if (data.releasedDate?.to) {
+      urlSearchParams.set('releasedDateTo', data.releasedDate.to.toString());
+    }
+
+    if (data.dueDate) {
+      urlSearchParams.set('dueDate', data.dueDate.toString());
     }
     router.push(`${pathname}?${urlSearchParams.toString()}`);
   }
@@ -179,16 +207,16 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
                   <Select {...field}>
-                    <Option value="all">All</Option>
-                    <Option value="active">Active</Option>
-                    <Option value="closed">Closed</Option>
+                    <Option value="All">All</Option>
+                    <Option value="Active">Active</Option>
+                    <Option value="Closed">Closed</Option>
                   </Select>
                 </FormControl>
               )}
             />
             <Controller
               control={control}
-              name="loanSource"
+              name="sourceId"
               render={({ field }) => (
                 <FormControl fullWidth>
                   <InputLabel>Loan source</InputLabel>
@@ -222,19 +250,47 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
             <FormControl>
               <InputLabel>Released date</InputLabel>
               <Box gap={2} display="flex" flexDirection="column">
-                <DatePicker label="From" />
-                <DatePicker label="To" />
+                <Controller
+                  control={control}
+                  name="releasedDate.from"
+                  render={({ field }) => (
+                    <DatePicker
+                      label="From"
+                      {...field}
+                      onChange={(date) => field.onChange(date?.toDate())}
+                      value={field.value ? dayjs(field.value) : null}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="releasedDate.to"
+                  render={({ field }) => (
+                    <DatePicker
+                      label="From"
+                      {...field}
+                      onChange={(date) => field.onChange(date?.toDate())}
+                      value={field.value ? dayjs(field.value) : null}
+                    />
+                  )}
+                />
               </Box>
             </FormControl>
             <Divider />
-            <FormControl>
-              <InputLabel>Due date</InputLabel>
-              <Box gap={2} display="flex" flexDirection="column">
-                <DatePicker label="From" />
-                <DatePicker label="To" />
-              </Box>
-            </FormControl>
-
+            <Box gap={2} display="flex" flexDirection="column">
+              <Controller
+                control={control}
+                name="dueDate"
+                render={({ field }) => (
+                  <DatePicker
+                    label="Due date (From start to current selected)"
+                    {...field}
+                    value={field.value ? dayjs(field.value) : null}
+                    onChange={(date) => field.onChange(date?.toDate())}
+                  />
+                )}
+              />
+            </Box>
             <Button type="submit" variant="contained">
               Apply
             </Button>
