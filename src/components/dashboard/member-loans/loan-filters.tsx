@@ -58,7 +58,6 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
     watch,
     setValue,
     handleSubmit,
-    formState: { errors },
     reset,
   } = useForm<zod.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),

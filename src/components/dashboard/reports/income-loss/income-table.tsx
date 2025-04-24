@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Divider } from '@mui/material';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -15,7 +15,7 @@ interface Props {
   searchParams: { startDate?: Date | string; endDate?: Date | string; isFilterOpen: boolean };
 }
 
-const IncomeAndLossTable = React.forwardRef<HTMLDivElement, Props>(({ balances, searchParams }, ref) => {
+const IncomeAndLossTable = forwardRef<HTMLDivElement, Props>(({ balances, searchParams }, ref) => {
   const totalRevenue = balances.Revenue.reduce((acc, curr) => acc + curr.totalBalance, 0);
   const totalExpense = balances.Expense.reduce((acc, curr) => acc + curr.totalBalance, 0);
 

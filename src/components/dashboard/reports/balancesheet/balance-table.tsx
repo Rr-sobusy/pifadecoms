@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -14,7 +14,7 @@ interface Props {
   balances: BalanceSheetTypes;
 }
 
-const BalanceTable = React.forwardRef<HTMLDivElement, Props>(({ balances }, ref) => {
+const BalanceTable = forwardRef<HTMLDivElement, Props>(({ balances }, ref) => {
   const asOf = useSearchParams().get('asOf') || undefined;
 
   const totalContraryAssets = balances.Assets.filter((account) => account.isContra).reduce(
