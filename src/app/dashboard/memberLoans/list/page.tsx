@@ -9,9 +9,10 @@ import { paths } from '@/paths';
 import { fetchLoans } from '@/actions/loans/fetch-loans';
 import { LoanTable } from '@/components/dashboard/member-loans/loan-table';
 import LoanFilters from '@/components/dashboard/member-loans/loan-filters';
+import { fetchLoanSources } from '@/actions/loans/fetch-loan-source';
 
 async function page(): Promise<React.ReactElement> {
-  const [loans] = await Promise.all([fetchLoans()]);
+  const [loans, loanSource] = await Promise.all([fetchLoans(), fetchLoanSources()]);
   return (
     <Box
       sx={{
@@ -33,7 +34,7 @@ async function page(): Promise<React.ReactElement> {
           </Box>
         </Stack>
         <Stack direction="row" spacing={4} sx={{ alignItems: 'flex-start' }}>
-          <LoanFilters />
+          <LoanFilters loanSource={loanSource} />
           <Stack spacing={4} sx={{ flex: '1 1 auto', minWidth: 0 }}>
             <LoanTable rows={loans} />
           </Stack>

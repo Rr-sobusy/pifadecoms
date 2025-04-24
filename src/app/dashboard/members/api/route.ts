@@ -34,7 +34,7 @@ export async function POST(request: Request) {
         ],
         accountStatus : "Active"
       },
-      take: 20, // Limit the number of results to improve UX and performance
+      take: 30, // Limit the number of results to improve UX and performance
     });
 
     return new Response(JSON.stringify(members), { status: 200 });

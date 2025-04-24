@@ -138,4 +138,21 @@ html {
 
 body {
   height: 100%;
+
+  
+}
+
+@media print {
+  @page {
+    margin: 32px 32px 64px 32px; /* bottom margin */
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+
+  .print-bottom-spacer {
+    height: 48px;
+    width: 100%;
+  }
 }

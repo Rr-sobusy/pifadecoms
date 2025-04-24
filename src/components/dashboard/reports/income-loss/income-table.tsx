@@ -6,20 +6,31 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
+import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { IncomeAndLossTypes } from '@/actions/reports/types';
 
 interface Props {
   balances: IncomeAndLossTypes;
+  searchParams: { startDate?: Date | string; endDate?: Date | string; isFilterOpen: boolean };
 }
 
-function IncomeAndLossTable({ balances }: Props) {
+const IncomeAndLossTable = React.forwardRef<HTMLDivElement, Props>(({ balances, searchParams }, ref) => {
   const totalRevenue = balances.Revenue.reduce((acc, curr) => acc + curr.totalBalance, 0);
   const totalExpense = balances.Expense.reduce((acc, curr) => acc + curr.totalBalance, 0);
 
-  console.log(balances)
+  const isSearchParamsEmpty = !searchParams || Object.keys(searchParams).length === 0;
   return (
-    <Box padding={3}>
+    <Box ref={ref} padding={3}>
+      <Stack sx={{ alignItems: 'center', marginY: 3 }}>
+        <Typography variant="overline">Pinagsibaan Farmer&apos;s Development Multi-purpose Cooperative</Typography>
+        <Typography fontWeight="700" fontSize="30px" variant="body1">
+          Statement of Income and Loss
+        </Typography>
+        <Typography color="text.secondary" variant="body2">
+          {`${isSearchParamsEmpty ? 'Please select a target date' : `For the period ${dayjs(searchParams.startDate).format('MMMM DD YYYY')} to ${dayjs(searchParams.endDate).format('MMMM DD YYYY')}`}`}
+        </Typography>
+      </Stack>
       {Object.entries(balances).map(([category, accounts]) => {
         const totalsPerCategory = accounts.reduce((acc, curr) => acc + curr.totalBalance, 0);
         return (
@@ -46,9 +57,14 @@ function IncomeAndLossTable({ balances }: Props) {
 
                   <ul>
                     {account.children.map((child, index) => (
-                      <Typography variant="subtitle2" key={index}>
-                        {child.accountName}: {formatToCurrency(child.balance, 'Fil-ph', 'Php')}
-                      </Typography>
+                      <Stack gap={1} flexDirection="row" key={index}>
+                        <Typography variant="caption" key={index}>
+                          {child.accountName}:
+                        </Typography>
+                        <Typography variant="caption" key={index}>
+                          {formatToCurrency(child.balance, 'Fil-ph', 'Php')}
+                        </Typography>
+                      </Stack>
                     ))}
                   </ul>
                   <Typography variant="body1">
@@ -77,6 +93,6 @@ function IncomeAndLossTable({ balances }: Props) {
       </Stack>
     </Box>
   );
-}
+});
 
 export default IncomeAndLossTable;

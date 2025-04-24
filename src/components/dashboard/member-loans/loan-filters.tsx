@@ -5,44 +5,64 @@ import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormLabel, Typography } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import type { RepaymentStyle } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
 import useDebounce from '@/lib/api-utils/use-debounce';
 import { logger } from '@/lib/default-logger';
+import { ILoanSources } from '@/actions/loans/types';
 import type { MembersType } from '@/actions/members/types';
 import { Option } from '@/components/core/option';
-import { ILoanSources } from '@/actions/loans/types';
 
 const filterSchema = zod.object({
   loanId: zod.number().optional(),
-  status: zod.enum(['all', 'active', 'closed', 'due']).optional(),
+  status: zod.enum(['all', 'active', 'closed']).optional(),
   member: zod.object({ memberId: zod.string(), firstName: zod.string(), lastName: zod.string() }).optional(),
   loanSource: zod.number().optional(),
   contractType: zod.enum(['StraightPayment', 'Diminishing', 'OneTime']).optional(),
 });
 
+const repStyleMap: Record<RepaymentStyle, string> = {
+  StraightPayment: 'Straight Payment',
+  Diminishing: 'Diminishing',
+  OneTime: 'One Time',
+};
+
 interface LoanFiltersProps {
-    loanSource : ILoanSources;
+  loanSource: ILoanSources;
 }
 
-function LoanFilters({loanSource}: LoanFiltersProps) {
+type FilterValues = zod.infer<typeof filterSchema>;
+
+function getDefaultValues(filters: FilterValues): FilterValues {
+  return {
+    status: filters.status ?? undefined,
+  };
+}
+
+function LoanFilters({ loanSource }: LoanFiltersProps) {
   const {
     control,
     watch,
     setValue,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<zod.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
+    defaultValues: getDefaultValues({}),
   });
   const [member, setMemberData] = React.useState<MembersType['members'][0][]>([]);
   const router = useRouter();
@@ -82,7 +102,15 @@ function LoanFilters({loanSource}: LoanFiltersProps) {
     if (data.member) {
       urlSearchParams.set('memberId', data.member.memberId);
     }
+    if (data.loanSource) {
+      urlSearchParams.set('loanSource', data.loanSource.toString());
+    }
     router.push(`${pathname}?${urlSearchParams.toString()}`);
+  }
+
+  function clearFilterHandler() {
+    reset();
+    submitHandler({});
   }
 
   return (
@@ -155,46 +183,64 @@ function LoanFilters({loanSource}: LoanFiltersProps) {
                     <Option value="all">All</Option>
                     <Option value="active">Active</Option>
                     <Option value="closed">Closed</Option>
-                    <Option value="due">Due</Option>
                   </Select>
                 </FormControl>
               )}
             />
             <Controller
               control={control}
-              name="status"
+              name="loanSource"
               render={({ field }) => (
                 <FormControl fullWidth>
                   <InputLabel>Loan source</InputLabel>
                   <Select {...field}>
-                    <Option value="all">All</Option>
-                    <Option value="active">Active</Option>
-                    <Option value="closed">Closed</Option>
-                    <Option value="due">Due</Option>
+                    {loanSource.map((source) => (
+                      <Option key={source.sourceId} value={source.sourceId}>
+                        {source.sourceName}
+                      </Option>
+                    ))}
                   </Select>
                 </FormControl>
               )}
             />
             <Controller
               control={control}
-              name="status"
+              name="contractType"
               render={({ field }) => (
                 <FormControl fullWidth>
                   <InputLabel>Contract Type</InputLabel>
                   <Select {...field}>
-                    <Option value="all">All</Option>
-                    <Option value="active">Straight Payment</Option>
-                    <Option value="closed">Diminishing</Option>
-                    <Option value="due">End of term</Option>
+                    {Object.entries(repStyleMap).map(([key, value]) => (
+                      <Option key={key} value={key}>
+                        {value}
+                      </Option>
+                    ))}
                   </Select>
                 </FormControl>
               )}
             />
+            <Divider />
+            <FormControl>
+              <InputLabel>Released date</InputLabel>
+              <Box gap={2} display="flex" flexDirection="column">
+                <DatePicker label="From" />
+                <DatePicker label="To" />
+              </Box>
+            </FormControl>
+            <Divider />
+            <FormControl>
+              <InputLabel>Due date</InputLabel>
+              <Box gap={2} display="flex" flexDirection="column">
+                <DatePicker label="From" />
+                <DatePicker label="To" />
+              </Box>
+            </FormControl>
+
             <Button type="submit" variant="contained">
               Apply
             </Button>
 
-            <Button onClick={() => console.log(errors)} color="secondary">
+            <Button onClick={clearFilterHandler} color="secondary">
               Clear filters
             </Button>
           </Stack>

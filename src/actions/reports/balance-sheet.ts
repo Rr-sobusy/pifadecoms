@@ -36,7 +36,7 @@ export async function getBalanceSheet(asOf?: Date): Promise<BalanceSheet> {
         select: {
           accountName: true,
           accountId: true,
-          runningBalance: true, // Needed for journal lookup
+          runningBalance: true,
         },
       },
     },
@@ -76,7 +76,9 @@ export async function getBalanceSheet(asOf?: Date): Promise<BalanceSheet> {
     );
 
     // Filter out accounts with zero balances
-    const childrenWithBalances = childBalances.filter((child): child is ChildAccount => child !== null);
+    const childrenWithBalances = childBalances
+      .filter((child): child is ChildAccount => child !== null)
+      .sort((a, b) => a.accountName.localeCompare(b.accountName));
 
     const totalBalance = childrenWithBalances.reduce((sum, child) => sum + child.balance, 0);
 

@@ -3,16 +3,6 @@ import prisma from '@/lib/prisma';
 export async function fetchLoans() {
   const loanList = await prisma.memberLoans.findMany({
     include: {
-      Repayments: {
-        where: {
-          paymentDate: {
-            not: null,
-          },
-        },
-        include: {
-          JournalEntries: true,
-        },
-      },
       Member: {
         select: {
           memberId: true,
@@ -20,24 +10,10 @@ export async function fetchLoans() {
           lastName: true,
         },
       },
-      JournalEntries: {
-        select: {
-          referenceName: true,
-        },
-      },
     },
   });
 
-  const loans = loanList.map((loan) => {
-    const totalPayment = loan.Repayments.reduce((curr, acc) => curr + Number(acc.principal) + Number(acc.interest), 0);
-
-    return {
-      ...loan,
-      totalPayment,
-    };
-  });
-
-  return loans;
+  return loanList;
 }
 
 export async function fetchLoanDetails(loanId: bigint) {

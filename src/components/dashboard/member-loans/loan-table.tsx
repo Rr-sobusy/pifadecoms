@@ -83,11 +83,11 @@ const columns = [
     ),
   },
   {
-    name: 'Repayment Interval',
+    name: 'Loan Source',
     sortable: true,
     formatter: (row): React.JSX.Element => (
       <Typography variant="subtitle2" color="text.primary">
-        {row.repInterval}
+        {row.sourceId}
       </Typography>
     ),
   },
