@@ -109,4 +109,4 @@ const BalanceTable = forwardRef<HTMLDivElement, Props>(({ balances }, ref) => {
 });
 
 export default BalanceTable;
-BalanceTable.displayName = 'BalanceTable';
+

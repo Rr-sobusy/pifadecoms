@@ -404,7 +404,7 @@ function CreateExistingLoan({ loanSources }: Props) {
             <Stack spacing={3}>
               <Typography variant="h6">Existing Payments</Typography>
               {watchPaymentSched.map((_, index) => (
-                <Stack spacing={3} direction="row">
+                <Stack key={index} spacing={3} direction="row">
                  <Stack paddingTop={5}>{index + 1}</Stack>
                   <Controller
                     name={`paymentSched.${index}.paymentSched`}

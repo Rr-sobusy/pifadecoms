@@ -100,6 +100,7 @@ module.exports = {
     '@typescript-eslint/non-nullable-type-assertion-style': 'off',
     'prefer-named-capture-group': 'off',
     '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-    'react/no-unstable-nested-components': 'off'
+    'react/no-unstable-nested-components': 'off',
+    '@typescript-eslint/no-unsafe-call': 'off',
   },
 };
