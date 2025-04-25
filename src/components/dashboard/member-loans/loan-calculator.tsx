@@ -68,7 +68,6 @@ function LoanCalculator() {
     control,
     watch,
     handleSubmit,
-    formState: { errors },
   } = useForm<z.infer<typeof loanCalculatorSchema>>({
     resolver: zodResolver(loanCalculatorSchema),
     mode: 'onTouched',
