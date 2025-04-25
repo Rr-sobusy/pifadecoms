@@ -59,22 +59,16 @@ export const layoutConfig = {
           icon: 'loan',
           items: [
             {
-              key: 'memberLoans',
-              title: 'Member Loans',
-              items: [
-                {
-                  key: 'memberLoans:list',
-                  title: 'Loan List',
-                  href: paths.dashboard.loans.list,
-                },
-                {
-                  key: 'memberLoans:create',
-                  title: 'Create Loan',
-                  href: paths.dashboard.loans.create,
-                },
-              ],
+              key: 'memberLoans:list',
+              title: 'Loan List',
+              href: paths.dashboard.loans.list,
             },
-            // { key: 'members:details', title: 'Customer details', href: paths.dashboard.members.details('1') },
+            {
+              key: 'memberLoans:create',
+              title: 'Loan Create',
+              href: paths.dashboard.loans.create,
+            },
+            { key: 'memberLoans:calculator', title: 'Loan calculator', href: paths.dashboard.loans.calculator },
           ],
         },
         // {
@@ -105,7 +99,7 @@ export const layoutConfig = {
             { key: 'items', title: 'List items', href: paths.dashboard.items.list },
             { key: 'items:create', title: 'Create item', href: paths.dashboard.items.create },
             { key: 'items:source', title: 'Item source', href: paths.dashboard.items.source },
-            
+
             // { key: 'product:details', title: 'Product details', href: paths.dashboard.products.details('1') },
           ],
         },
@@ -125,7 +119,11 @@ export const layoutConfig = {
           icon: 'receipt',
           items: [
             { key: 'invoices:list', title: 'List invoices', href: paths.dashboard.invoice.list },
-            { key: 'invoices:itemsPerMember', title: 'Invoice Item per member', href: paths.dashboard.invoice.itemsPerMember },
+            {
+              key: 'invoices:itemsPerMember',
+              title: 'Invoice Item per member',
+              href: paths.dashboard.invoice.itemsPerMember,
+            },
             { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoice.create },
             { key: 'invoices:payments', title: 'Sales payments', href: paths.dashboard.invoice.payments },
             // { key: 'invoices:create', title: 'Create invoice', href: paths.dashboard.invoices.create },

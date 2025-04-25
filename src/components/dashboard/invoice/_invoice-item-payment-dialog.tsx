@@ -42,6 +42,7 @@ interface PageProps {
   handleClose: () => void;
   selectedRows: InvoiceItemPerMemberTypes['invoiceItems'];
   accounts: AccounTreeType;
+  setSelectedRowsToNull?: () => void;
 }
 
 function isPastDue(inputtedDate: Date): boolean {
@@ -54,7 +55,7 @@ function computeRemainingInterest(inputtedDate: Date, toPay: number, rate: numbe
   return (rate / 100) * toPay * (numberOfMonthsPast - 1) * -1;
 }
 
-function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, accounts }: PageProps) {
+function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, accounts, setSelectedRowsToNull }: PageProps) {
   const {
     control,
     watch,
@@ -114,6 +115,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
       handleClose();
       toast.success('Payment posted.');
       reset();
+      setSelectedRowsToNull?.()
     }
   }, [result]);
 
@@ -395,6 +397,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
           <Button disabled={isExecuting} variant="contained" type="submit">
             {isExecuting ? 'Posting' : 'Post Payment'}
           </Button>
+          {/* <Button onClick={()=>console.log(selectedRows)}>Debug</Button> */}
         </DialogAction>
       </form>
     </Dialog>

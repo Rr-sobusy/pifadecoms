@@ -244,7 +244,6 @@ function InvoiceItemTable({ data, accounts, member }: PageProps) {
   }
 
   const computedData = React.useMemo(() => data, [data]);
-  console.log(computedData);
 
   return (
     <>
@@ -273,6 +272,7 @@ function InvoiceItemTable({ data, accounts, member }: PageProps) {
       </Card>
       <InvoiceItemPaymentDialog
         accounts={accounts}
+        setSelectedRowsToNull={() => setSelectedRows([])}
         selectedRows={selectedRows}
         handleClose={togglePaymentDialog}
         open={isPaymentDialogOpen}
