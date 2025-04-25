@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid2';
 import InputLabel from '@mui/material/InputLabel';
@@ -199,9 +198,9 @@ function LoanCalculator() {
                   <Button variant="contained" type="submit">
                     Compute
                   </Button>
-                  <Button onClick={() => console.log(errors)} variant="contained" type="button">
+                  {/* <Button onClick={() => console.log(errors)} variant="contained" type="button">
                     debug
-                  </Button>
+                  </Button> */}
                 </div>
               </Stack>
             </Stack>
