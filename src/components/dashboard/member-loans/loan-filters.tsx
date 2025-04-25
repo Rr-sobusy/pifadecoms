@@ -1,8 +1,5 @@
 'use client';
-
-import { url } from 'inspector';
-
-import * as React from 'react';
+import  React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormLabel, Typography } from '@mui/material';
@@ -71,7 +68,6 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
     setValue,
     handleSubmit,
     reset,
-    formState: { errors },
   } = useForm<zod.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
     defaultValues: getDefaultValues({}),
