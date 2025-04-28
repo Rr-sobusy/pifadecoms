@@ -116,6 +116,7 @@ export const paths = {
       view: (loanId: bigint | 0) => `/dashboard/memberLoans/${loanId}`,
       viewPdf: (loanId: bigint | 0) => `/pdf/loans/${loanId}`,
       calculator: '/dashboard/memberLoans/calculator',
+      source: '/dashboard/memberLoans/sources'
     },
     reports: {
       ledgerList: '/dashboard/reports/ledger',

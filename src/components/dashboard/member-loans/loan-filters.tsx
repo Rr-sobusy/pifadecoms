@@ -1,5 +1,6 @@
 'use client';
-import  React from 'react';
+
+import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormLabel, Typography } from '@mui/material';
@@ -31,7 +32,7 @@ const filterSchema = zod.object({
   status: zod.enum(['All', 'Active', 'Closed']).optional(),
   member: zod.object({ memberId: zod.string(), firstName: zod.string(), lastName: zod.string() }).optional(),
   sourceId: zod.number().optional(),
-  contractType: zod.enum(['StraightPayment', 'Diminishing', 'OneTime']).optional(),
+  contractType: zod.enum(['StraightPayment', 'Diminishing', 'OneTime', 'All']).optional(),
   releasedDate: zod
     .object({
       from: zod.date().max(new Date('2099-01-01')).nullable().optional(),
@@ -58,17 +59,13 @@ function getDefaultValues(filters: FilterValues): FilterValues {
     status: filters.status ?? 'All',
     loanId: filters.loanId ?? 0,
     member: undefined,
+    sourceId: filters.sourceId ?? 0,
+    contractType : filters.contractType ?? 'All'
   };
 }
 
 function LoanFilters({ loanSource }: LoanFiltersProps) {
-  const {
-    control,
-    watch,
-    setValue,
-    handleSubmit,
-    reset,
-  } = useForm<zod.infer<typeof filterSchema>>({
+  const { control, watch, setValue, handleSubmit, reset } = useForm<zod.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
     defaultValues: getDefaultValues({}),
   });
@@ -120,7 +117,7 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
     if (data.releasedDate?.from) {
       urlSearchParams.set('releasedDateFrom', data.releasedDate.from.toString());
     }
-    
+
     if (data.releasedDate?.to) {
       urlSearchParams.set('releasedDateTo', data.releasedDate.to.toString());
     }
@@ -217,9 +214,10 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
                 <FormControl fullWidth>
                   <InputLabel>Loan source</InputLabel>
                   <Select {...field}>
+                    <Option value={0}>All</Option>
                     {loanSource.map((source) => (
-                      <Option key={source.sourceId} value={source.sourceId}>
-                        {source.sourceName}
+                      <Option key={source.loanSourceId} value={source.loanSourceId}>
+                        {source.loanSourceName}
                       </Option>
                     ))}
                   </Select>
@@ -233,6 +231,7 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
                 <FormControl fullWidth>
                   <InputLabel>Contract Type</InputLabel>
                   <Select {...field}>
+                    <Option value="All">All</Option>
                     {Object.entries(repStyleMap).map(([key, value]) => (
                       <Option key={key} value={key}>
                         {value}

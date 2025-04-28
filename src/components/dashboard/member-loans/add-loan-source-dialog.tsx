@@ -21,28 +21,28 @@ import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 
 import { AccounTreeType } from '@/actions/accounts/types';
-import { createNewItemSourceAction } from '@/actions/items/create-new-item-source';
-import { itemSourceSchema, ItemSourceSchemaType } from '@/actions/items/types';
+import { addLoanSourceAction } from '@/actions/loans/create-loan-source';
+import { addLoanSourceSchema, IAddLoanSource } from '@/actions/loans/types';
 import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
 import { FormInputFields } from '../../core/InputFields';
 
-interface ItemSourceDialogProps {
+interface LoanSourceDialogProps {
   isOpen: boolean;
   accounts: AccounTreeType;
 }
 
-function AddItemSourceDialog({ isOpen, accounts }: ItemSourceDialogProps) {
+function AddLoanSourceDialog({ isOpen, accounts }: LoanSourceDialogProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { execute, result } = useAction(createNewItemSourceAction);
+  const { execute, result } = useAction(addLoanSourceAction);
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<ItemSourceSchemaType>({
-    resolver: zodResolver(itemSourceSchema),
+  } = useForm<IAddLoanSource>({
+    resolver: zodResolver(addLoanSourceSchema),
   });
 
   const flattenAccounts = React.useMemo(
@@ -59,7 +59,7 @@ function AddItemSourceDialog({ isOpen, accounts }: ItemSourceDialogProps) {
 
   React.useEffect(() => {
     if (result.data?.success) {
-      toast.success('New Item source created.');
+      toast.success('New loan source created.');
       handleClose();
     }
   }, [result]);
@@ -68,7 +68,7 @@ function AddItemSourceDialog({ isOpen, accounts }: ItemSourceDialogProps) {
     router.push(pathname);
   }
 
-  function submitHandler(data: ItemSourceSchemaType) {
+  function submitHandler(data: IAddLoanSource) {
     execute(data);
   }
   return (
@@ -87,9 +87,9 @@ function AddItemSourceDialog({ isOpen, accounts }: ItemSourceDialogProps) {
             sx={{ alignItems: 'center', flex: '0 0 auto', justifyContent: 'space-between', marginTop: 1 }}
           >
             <Stack>
-              <Typography variant="h6">New Item Source</Typography>
+              <Typography variant="h6">New Loan Source</Typography>
               <Typography color="" variant="caption">
-                Create new Item source
+                Create new Loan source
               </Typography>
             </Stack>
             <IconButton onClick={handleClose}>
@@ -103,7 +103,7 @@ function AddItemSourceDialog({ isOpen, accounts }: ItemSourceDialogProps) {
               name="sourceName"
               inputLabel="Source name"
               variant="text"
-              errors={errors.sourceName}
+              errors={errors}
             />
 
             <Controller
@@ -120,7 +120,7 @@ function AddItemSourceDialog({ isOpen, accounts }: ItemSourceDialogProps) {
                   groupBy={(option) => option.group}
                   renderInput={(params) => (
                     <FormControl error={Boolean(errors.accountDetails)} fullWidth>
-                      <InputLabel required>Default Account</InputLabel>
+                      <InputLabel required>Default/Associated Account</InputLabel>
                       <OutlinedInput inputProps={params.inputProps} ref={params.InputProps.ref} />
                       {errors.accountDetails && <FormHelperText>{errors.accountDetails.message}</FormHelperText>}
                     </FormControl>
@@ -145,4 +145,4 @@ function AddItemSourceDialog({ isOpen, accounts }: ItemSourceDialogProps) {
   );
 }
 
-export default AddItemSourceDialog;
+export default AddLoanSourceDialog;

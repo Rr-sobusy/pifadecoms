@@ -55,6 +55,9 @@ export async function fetchLoans(props: Filterers = {}) {
   }
 
   const loanList = await prisma.memberLoans.findMany({
+    orderBy : {
+        loanId : "desc"
+    },
     include: {
       Member: {
         select: {

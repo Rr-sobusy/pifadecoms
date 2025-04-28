@@ -14,6 +14,9 @@ export async function fetchItemSources() {
             include: {
               ItemPayment: true,
             },
+            where: {
+              isTotallyPaid: false,
+            },
           },
         },
       },
@@ -41,7 +44,7 @@ export async function fetchItemSources() {
 
     return {
       itemSourceId: source.sourceId,
-      itemSourceName:source.sourceName,
+      itemSourceName: source.sourceName,
       accountName: source.Accounts?.accountName || null,
       totalUnpaidAmt,
     };

@@ -68,6 +68,11 @@ export const layoutConfig = {
               title: 'Loan Create',
               href: paths.dashboard.loans.create,
             },
+            {
+              key: 'memberLoans:sources',
+              title: 'Loan sources',
+              href: paths.dashboard.loans.source,
+            },
             { key: 'memberLoans:calculator', title: 'Loan calculator', href: paths.dashboard.loans.calculator },
           ],
         },

@@ -117,8 +117,8 @@ function ItemCreateForm({ itemSources = [] }: ItemCreateFormProps) {
                         <InputLabel required>Item Source</InputLabel>
                         <Select {...field}>
                           {itemSources.map((source) => (
-                            <Option key={source.sourceId} value={source.sourceId}>
-                              {source.sourceName}
+                            <Option key={source.itemSourceId} value={source.itemSourceId}>
+                              {source.itemSourceName}
                             </Option>
                           ))}
                         </Select>

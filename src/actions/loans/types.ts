@@ -99,5 +99,16 @@ export const repaymentAction = transactionalSchema
       });
     }
   });
+
+export const addLoanSourceSchema = zod.object({
+  sourceName: zod.string(),
+  accountDetails: zod.object({
+    accountId: zod.string(),
+    accountName: zod.string(),
+    group: zod.string(),
+  }),
+});
+
+export type IAddLoanSource = zod.infer<typeof addLoanSourceSchema>;
 export type IRepaymentAction = zod.infer<typeof repaymentAction>;
 export type ILoanSources = Prisma.PromiseReturnType<typeof fetchLoanSources>;

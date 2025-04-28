@@ -65,7 +65,7 @@ function returnNumberOfMonths(
     case 'Monthly':
       return paymentQty;
     case 'Yearly':
-      return paymentQty / 12;
+      return paymentQty * 12;
     default:
       return undefined;
   }

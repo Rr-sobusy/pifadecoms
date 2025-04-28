@@ -262,8 +262,8 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                         <InputLabel required>Loan Source</InputLabel>
                         <Select {...field}>
                           {loanSources.map((source) => (
-                            <Option key={source.sourceId} value={source.sourceId}>
-                              {source.sourceName}
+                            <Option key={source.loanSourceId} value={source.loanSourceId}>
+                              {source.loanSourceName}
                             </Option>
                           ))}
                         </Select>
