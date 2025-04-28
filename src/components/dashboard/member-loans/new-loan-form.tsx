@@ -282,7 +282,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                     name="repStyle"
                     render={({ field }) => (
                       <FormControl fullWidth>
-                        <InputLabel required>Repayment Style</InputLabel>
+                        <InputLabel required>Loan Contract</InputLabel>
                         <Select
                           {...field}
                           onChange={(e) => {

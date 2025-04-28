@@ -35,7 +35,7 @@ const columns = [
       const totalPaid = row.InvoiceItems.map((invoiceItem) => {
         let totalPayment = 0;
         for (const payment of invoiceItem.ItemPayment) {
-          totalPayment += Number(payment.principalPaid);
+          totalPayment += Number(payment.principalPaid) + Number(payment.tradingPaid);
         }
         return { ...invoiceItem, payment: totalPayment };
       }).reduce((acc, curr) => acc + curr.payment, 0);

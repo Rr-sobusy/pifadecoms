@@ -63,6 +63,11 @@ export async function fetchLoans(props: Filterers = {}) {
           lastName: true,
         },
       },
+      Source : {
+        select : {
+          sourceName : true
+        }
+      },
       Repayments: {
         include: {
           JournalEntries: {

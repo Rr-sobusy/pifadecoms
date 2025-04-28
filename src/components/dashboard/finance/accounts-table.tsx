@@ -19,7 +19,7 @@ import type { ColumnDef } from '@/components/core/data-table';
 
 const columns = [
   {
-    formatter: (row, index): React.JSX.Element => (
+    formatter: (_, index): React.JSX.Element => (
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <div>
           <Typography color="inherit" variant="body2">
@@ -99,17 +99,6 @@ const columns = [
     },
     name: 'Status',
     width: '100px',
-  },
-  {
-    formatter: (): React.JSX.Element => (
-      <IconButton component={RouterLink} href={paths.dashboard.customers.details('1')}>
-        <PencilSimpleIcon />
-      </IconButton>
-    ),
-    name: 'Actions',
-    hideName: true,
-    width: '100px',
-    align: 'right',
   },
 ] satisfies ColumnDef<AccountType[0]>[];
 export interface MembersTableProps {
