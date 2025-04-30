@@ -2,8 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Typography } from '@mui/material';
-import Stack from '@mui/material/Stack';
+import { Typography, Stack } from '@mui/material';
 import { useInView } from 'react-intersection-observer';
 
 import { InvoiceType } from '@/actions/invoices/types';
@@ -18,25 +17,18 @@ function InfiniteScroll({ nextCursor, invoices }: Props) {
   const router = useRouter();
   const { ref, inView } = useInView({ triggerOnce: false });
 
-  const updateURLWithDelay = (nextCursor: string | undefined) => {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
+  useEffect(() => {
+    if (inView && nextCursor) {
+      const delay = setTimeout(() => {
         const _searchParams = new URLSearchParams(searchParams.toString());
         _searchParams.set('cursor', String(nextCursor));
         router.replace(`?${_searchParams.toString()}`, { scroll: true });
-        resolve();
       }, 2000);
-    });
-  };
-
-  useEffect(() => {
-    if (inView && nextCursor) {
-      updateURLWithDelay(nextCursor);
+      return () => clearTimeout(delay);
     }
-  }, [inView]);
+  }, [inView, nextCursor]);
 
-  // Prevent rendering if nextCursor is invalid (i.e., no more data)
-  if (!nextCursor || invoices.length < 15) return null;
+  if (!nextCursor || nextCursor === 'undefined') return null;
 
   return (
     <Stack ref={ref} alignItems="center" justifyContent="center">
