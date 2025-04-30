@@ -4,7 +4,6 @@ import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid2';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
