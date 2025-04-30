@@ -35,8 +35,8 @@ function ItemSourceDropdown({ itemSources }: ItemSourceDropdownProps) {
       <Select onChange={selectHandler}>
         <Option value={'all'}>All</Option>
         {itemSources.map((itemSource) => (
-          <Option value={itemSource.sourceId} key={itemSource.sourceId}>
-            {itemSource.sourceName}
+          <Option value={itemSource.itemSourceId} key={itemSource.itemSourceId}>
+            {itemSource.itemSourceName}
           </Option>
         ))}
       </Select>
