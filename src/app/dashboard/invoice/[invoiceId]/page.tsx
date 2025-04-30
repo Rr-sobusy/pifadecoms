@@ -70,9 +70,6 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
           <Stack direction="row" spacing={3} sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <Stack spacing={1}>
               <Typography variant="h4">INV-{params.invoiceId.toString().padStart(6, '0')}</Typography>
-              <div>
-                <Chip color="warning" label={``} variant="soft" />
-              </div>
             </Stack>
             <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
               {/* <InvoicePDFLink invoice={undefined}>

@@ -1,17 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { Minus as MinusIcon } from '@phosphor-icons/react/dist/ssr/Minus';
-import { PencilSimple as PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple';
-
-import { paths } from '@/paths';
 import { formatToCurrency } from '@/lib/format-currency';
 import { AccountType } from '@/actions/accounts/types';
 import { DataTable } from '@/components/core/data-table';

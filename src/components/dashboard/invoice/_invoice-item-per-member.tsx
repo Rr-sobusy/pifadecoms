@@ -211,7 +211,9 @@ const columns = [
 ] satisfies ColumnDef<InvoiceItemPerMemberTypes['invoiceItems'][0]>[];
 
 function InvoiceItemTable({ data, accounts, member }: PageProps) {
-  const [selectedRows, setSelectedRows] = React.useState<InvoiceItemPerMemberTypes['invoiceItems'][0][]>([]);
+  const [selectedRows, setSelectedRows] = React.useState<
+    (InvoiceItemPerMemberTypes['invoiceItems'][0] & { unpaidQty?: number })[]
+  >([]);
   const [isPaymentDialogOpen, setPaymentDialogOpen] = React.useState<boolean>(false);
 
   function handleSelectOne(_: React.ChangeEvent, row: InvoiceItemPerMemberTypes['invoiceItems'][0]) {
@@ -245,6 +247,22 @@ function InvoiceItemTable({ data, accounts, member }: PageProps) {
 
   const computedData = React.useMemo(() => data, [data]);
 
+  const selectedRowsWithUnpaidAmount = React.useMemo(() => {
+    return selectedRows.map((item) => {
+      const totalDue = item.quantity * (item.principalPrice + item.trade);
+      const totalPaid = item.ItemPayment.reduce(
+        (sum, payment) => sum + Number(payment.principalPaid) + Number(payment.tradingPaid),
+        0
+      );
+      const amountPerQty = item.trade + item.principalPrice;
+
+      return {
+        ...item,
+        unpaidQty: ((totalDue - totalPaid) / amountPerQty) || 0,
+      };
+    });
+  }, [selectedRows]);
+
   return (
     <>
       <Card>
@@ -273,7 +291,7 @@ function InvoiceItemTable({ data, accounts, member }: PageProps) {
       <InvoiceItemPaymentDialog
         accounts={accounts}
         setSelectedRowsToNull={() => setSelectedRows([])}
-        selectedRows={selectedRows}
+        selectedRows={selectedRowsWithUnpaidAmount}
         handleClose={togglePaymentDialog}
         open={isPaymentDialogOpen}
       />

@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 import { Typography } from '@mui/material';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
 import { formatToCurrency } from '@/lib/format-currency';
 import type { InvoiceItemsWithItem } from '@/actions/invoices/types';
@@ -10,7 +12,16 @@ import type { ColumnDef } from '@/components/core/data-table';
 
 const columns = [
   {
-    formatter: (row) => row.Item.itemName,
+    formatter: (row) => (
+      <Stack alignItems="center" flexDirection="row" gap={2}>
+        <Typography variant="subtitle2">{row.Item.itemName}</Typography>
+        {row.isTotallyPaid && (
+          <div>
+            <Chip variant='soft' color="success" label="Paid" />
+          </div>
+        )}
+      </Stack>
+    ),
     name: 'Item Name',
     width: '250px',
   },
@@ -57,7 +68,11 @@ const columns = [
     formatter: (row) => {
       const amount = row.quantity * (row.trade + row.principalPrice);
 
-      return <Typography variant='subtitle2' color="error">{formatToCurrency(amount, 'Fil-ph', 'Php')}</Typography>;
+      return (
+        <Typography variant="subtitle2" color="error">
+          {formatToCurrency(amount, 'Fil-ph', 'Php')}
+        </Typography>
+      );
     },
     name: 'Total Amount',
     width: '100px',

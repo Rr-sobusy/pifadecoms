@@ -40,7 +40,7 @@ const dueMonth = 1;
 interface PageProps {
   open: boolean;
   handleClose: () => void;
-  selectedRows: InvoiceItemPerMemberTypes['invoiceItems'];
+  selectedRows: (InvoiceItemPerMemberTypes['invoiceItems'][0] & { unpaidQty?: number })[];
   accounts: AccounTreeType;
   setSelectedRowsToNull?: () => void;
 }
@@ -55,7 +55,13 @@ function computeRemainingInterest(inputtedDate: Date, toPay: number, rate: numbe
   return (rate / 100) * toPay * (numberOfMonthsPast - 1) * -1;
 }
 
-function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, accounts, setSelectedRowsToNull }: PageProps) {
+function InvoiceItemPaymentDialog({
+  open = true,
+  handleClose,
+  selectedRows,
+  accounts,
+  setSelectedRowsToNull,
+}: PageProps) {
   const {
     control,
     watch,
@@ -95,27 +101,32 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
    */
   React.useEffect(() => {
     if (!selectedRows || selectedRows.length === 0) return;
+
     setValue(
       'paymentLine',
-      selectedRows.map((row) => ({
-        invoiceItemId: Number(row.invoiceItemId),
-        itemName: row.Item.itemName,
-        quantityPurchased: row.quantity,
-        principal: row.principalPrice,
-        trade: row.trade,
-        principalPaying: 0,
-        interestPaying: 0,
-        tradePaying: 0,
-      }))
+      selectedRows.map((row) => {
+        return {
+          invoiceItemId: Number(row.invoiceItemId),
+          itemName: row.Item.itemName,
+          quantityPurchased: row.quantity,
+          principal: row.principalPrice,
+          trade: row.trade,
+          principalPaying: 0,
+          interestPaying: 0,
+          tradePaying: 0,
+        };
+      })
     );
   }, [selectedRows, setValue]);
+
+  console.log(selectedRows);
 
   React.useEffect(() => {
     if (result.data?.success) {
       handleClose();
       toast.success('Payment posted.');
       reset();
-      setSelectedRowsToNull?.()
+      setSelectedRowsToNull?.();
     }
   }, [result]);
 
@@ -243,7 +254,7 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
           <Divider />
           <Stack marginY={2} spacing={1}>
             <Typography variant="h6">Payment Line</Typography>
-            {watchPaymentLine.map((_, index) => (
+            {watchPaymentLine.map((_, index:number) => (
               <Stack key={index} direction="row" spacing={2}>
                 <FormInputFields
                   isDisabled
@@ -254,25 +265,20 @@ function InvoiceItemPaymentDialog({ open = true, handleClose, selectedRows, acco
                   inputLabel="Item Name"
                 />
                 <FormControl>
-                  <InputLabel>To pay quantity</InputLabel>
+                  <InputLabel>{`To pay qty (Remaining:${selectedRows[index]?.unpaidQty || 0})`}</InputLabel>
                   <OutlinedInput
                     onChange={(event) => {
-                      const value = event.target.value;
-                      const parsedValue = Number(value);
+                      const value = Number(event.target.value);
                       const currentRow = selectedRows[index];
                       const totalAmountPerItem = watchPaymentLine[index].trade + watchPaymentLine[index].principal;
-                      setValue(
-                        `paymentLine.${index}.principalPaying`,
-                        Number(value) * watchPaymentLine[index].principal
-                      );
 
-                      setValue(`paymentLine.${index}.tradePaying`, Number(value) * watchPaymentLine[index].trade);
+                      setValue(`paymentLine.${index}.principalPaying`, value * currentRow.principalPrice);
+                      setValue(`paymentLine.${index}.tradePaying`, value * currentRow.trade);
 
                       if (isPastDue(currentRow.Invoice.dateOfInvoice) && !currentRow.isTotallyPaid) {
                         setValue(
                           `paymentLine.${index}.interestPaying`,
-                          computeRemainingInterest(selectedRows[index].Invoice.dateOfInvoice, totalAmountPerItem, 2) *
-                            parsedValue
+                          computeRemainingInterest(currentRow.Invoice.dateOfInvoice, totalAmountPerItem, 2) * value
                         );
                       }
                     }}
