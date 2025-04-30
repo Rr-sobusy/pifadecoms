@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { Info } from '@phosphor-icons/react/dist/ssr/Info';
+import { RepaymentStyle } from '@prisma/client';
 
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -20,6 +21,12 @@ interface PageProps extends CardProps {
   loanDetails: ILoanDetails;
   accounts: AccounTreeType;
 }
+
+const loanContractMap: Record<RepaymentStyle, string> = {
+  Diminishing: 'Diminishing 3.5%',
+  StraightPayment: 'Straight Payment 3.25%',
+  OneTime: 'End of Term',
+};
 
 function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps) {
   const totalAmortizationPaid = React.useMemo(() => {
@@ -52,8 +59,8 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
           <Stack direction="row" spacing={2}>
             <Typography variant="body2">
               {loanDetails?.loanStatus === 'Closed' && loanDetails?.repStyle !== 'Diminishing'
-                ? 'Discount'
-                : 'Payment remaining'}
+                ? 'Discount:'
+                : 'Payment remaining:'}
             </Typography>
             <Typography variant="body2" color="error">
               {formatToCurrency(Number(loanDetails.amountPayable) - Number(totalAmortizationPaid), 'Fil-ph', 'Php')}
@@ -62,13 +69,13 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
 
           {loanDetails?.loanStatus === 'Active' && (
             <Stack direction="row" spacing={2}>
-              <Typography variant="body2">Penalty interest:</Typography>
+              <Typography variant="body2">{`Penalty Interest (${loanContractMap[loanDetails?.repStyle]}):`}</Typography>
               <Typography variant="body2" color="error">
                 {`${formatToCurrency(
                   calculateLapseInterest(
                     dayjs(loanDetails.dueDate).toDate(),
                     Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid),
-                    2
+                    loanDetails?.repStyle
                   ).computedLapseInterest,
                   'Fil-ph',
                   'Php'
@@ -76,7 +83,7 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
                   calculateLapseInterest(
                     dayjs(loanDetails.dueDate).toDate(),
                     Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid),
-                    Number(loanDetails?.interestRate)
+                    loanDetails?.repStyle
                   ).monthsLapse
                 } month(s)`}
               </Typography>
@@ -102,18 +109,30 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
 function calculateLapseInterest(
   dueDate: Date,
   remainingBalance: number,
-  interest: number
+  repStyle: RepaymentStyle
 ): { monthsLapse: number; computedLapseInterest: number } {
-  const monthsLapse = dayjs().diff(dayjs(dueDate), 'month');
+  const today = dayjs();
+  const due = dayjs(dueDate);
 
-  if (dayjs().toDate() < dayjs(dueDate).toDate()) {
+  // If current date is before due date, no lapse interest
+  if (today.isBefore(due)) {
     return { monthsLapse: 0, computedLapseInterest: 0 };
   }
 
-  return {
-    monthsLapse,
-    computedLapseInterest: (remainingBalance * interest * monthsLapse) / 100,
+  const monthsLapse = today.diff(due, 'month');
+
+  const penaltyRates: Record<RepaymentStyle, number> = {
+    StraightPayment: 3.25 / 100,
+    Diminishing: 3.5 / 100,
+    OneTime: 3.25 / 100,
   };
+
+  const rate = penaltyRates[repStyle];
+
+  const computedLapseInterest =
+    repStyle === 'StraightPayment' ? remainingBalance * rate * monthsLapse : remainingBalance * rate * monthsLapse;
+
+  return { monthsLapse, computedLapseInterest };
 }
 
 export default LoanAmortizationDetails;

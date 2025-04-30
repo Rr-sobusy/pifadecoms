@@ -15,14 +15,14 @@ const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
   Weekly: 'week',
   Monthly: 'month',
   Yearly: 'year',
-  None : null
+  None: null,
 };
 
 const loanContractMap: Record<ILoanDetails['repStyle'], string> = {
   StraightPayment: 'Straight Payment',
   Diminishing: 'Diminishing',
   OneTime: 'End of term',
-}
+};
 
 function computeAmortization(
   repStyle: ILoanDetails['repStyle'] | undefined,
@@ -78,7 +78,9 @@ function computeAmortization(
 
       amortizations.push({
         paymentNo: i,
-        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval] ?? undefined).toDate(),
+        paymentSched: dayjs(releaseDate)
+          .add(i, loanTypeMap[repInterval] ?? undefined)
+          .toDate(),
         totalPayment,
         principal: fixedPrincipal,
         interest,
@@ -93,7 +95,9 @@ function computeAmortization(
       balance = Math.max(balance - fixedPayment, 0);
       amortizations.push({
         paymentNo: i,
-        paymentSched: dayjs(releaseDate).add(i, loanTypeMap[repInterval] ?? undefined).toDate(),
+        paymentSched: dayjs(releaseDate)
+          .add(i, loanTypeMap[repInterval] ?? undefined)
+          .toDate(),
         totalPayment: fixedPayment,
         principal: fixedPayment,
         interest: 0,
@@ -102,7 +106,7 @@ function computeAmortization(
     }
   }
 
-  if(repStyle === 'OneTime') {
+  if (repStyle === 'OneTime') {
     amortizations.push({
       paymentNo: 1,
       paymentSched: dayjs(dueDate).toDate(),
@@ -151,6 +155,7 @@ const styleSheet = StyleSheet.create({
     flexDirection: 'row',
   },
 
+
   paymentNo: { width: '10%', textAlign: 'center', margin: 2 },
   paymentDate: { width: '17%', margin: 2 },
   totalPayment: { width: '17%', margin: 2 },
@@ -171,7 +176,6 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
     loanDetails?.paymentQty,
     Number(loanDetails?.interestRate)
   );
-  console.log(amortizations);
 
   if (!loanDetails) {
     return (
@@ -273,28 +277,37 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
             </View>
           </View>
 
-          {amortizations.map((ammort, index) => (
-            <View key={index} style={styleSheet.schedLine}>
-              <View style={styleSheet.paymentNo}>
-                <Text>{ammort.paymentNo}</Text>
+          {amortizations.map((ammort, index) => {
+            const diminishingPenaltyRate = 3.5 - Number(loanDetails?.interestRate);
+            const previousBalance = index > 0 ? amortizations[index - 1].balance : Number(loanDetails?.amountPayable);
+            const diminishingPenalty = (previousBalance * diminishingPenaltyRate) / 100;
+
+            return (
+              <View key={index} style={styleSheet.schedLine}>
+                <View style={styleSheet.paymentNo}>
+                  <Text>{ammort.paymentNo}</Text>
+                </View>
+                <View style={styleSheet.paymentDate}>
+                  <Text>{dayjs(ammort.paymentSched).format('MMM DD YYYY')}</Text>
+                </View>
+                <View style={styleSheet.totalPayment}>
+                  <Text>{loanDetails?.repStyle !== "Diminishing" ? formatToPHP(ammort.totalPayment) : `${formatToPHP(ammort.totalPayment)} (${formatToPHP(ammort.totalPayment + diminishingPenalty)}) if lapses` }</Text>
+                </View>
+                <View style={styleSheet.principal}>
+                  <Text>{formatToPHP(ammort.principal)}</Text>
+                </View>
+                <View style={styleSheet.interest}>
+                  <Text>
+                    {formatToPHP(ammort.interest)}
+                    {loanDetails.repStyle === 'Diminishing'&& `(${formatToPHP(diminishingPenalty + ammort.interest)} if lapses)`}
+                  </Text>
+                </View>
+                <View style={styleSheet.balance}>
+                  <Text>{formatToPHP(ammort.balance)}</Text>
+                </View>
               </View>
-              <View style={styleSheet.paymentDate}>
-                <Text>{dayjs(ammort.paymentSched).format('MMM DD YYYY')}</Text>
-              </View>
-              <View style={styleSheet.totalPayment}>
-                <Text>{formatToPHP(ammort.totalPayment)}</Text>
-              </View>
-              <View style={styleSheet.principal}>
-                <Text>{formatToPHP(ammort.principal)}</Text>
-              </View>
-              <View style={styleSheet.interest}>
-                <Text>{formatToPHP(ammort.interest)}</Text>
-              </View>
-              <View style={styleSheet.balance}>
-                <Text>{formatToPHP(ammort.balance)}</Text>
-              </View>
-            </View>
-          ))}
+            );
+          })}
 
           <View style={styleSheet.footer}>
             <Text>

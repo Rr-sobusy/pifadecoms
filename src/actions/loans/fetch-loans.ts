@@ -5,7 +5,7 @@ interface Filterers {
   loanId?: number;
   status?: 'Active' | 'Closed' | 'All';
   sourceId?: number;
-  contractType?: 'StraightPayment' | 'Diminishing' | 'OneTime';
+  contractType?: 'StraightPayment' | 'Diminishing' | 'OneTime' | 'All';
   releasedDateFrom?: Date;
   releasedDateTo?: Date;
   dueDate?: Date | string;
@@ -33,7 +33,7 @@ export async function fetchLoans(props: Filterers = {}) {
     conditions.push({ sourceId: Number(props.sourceId) });
   }
 
-  if (props.contractType) {
+  if (props.contractType && props.contractType !== 'All') {
     conditions.push({ repStyle: props.contractType });
   }
 

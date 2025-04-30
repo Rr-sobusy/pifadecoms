@@ -31,7 +31,7 @@ export async function fetchLoanSources() {
     const totalReceivable = source.Loans.reduce((sum, loan) => {
       // Calculate total payments made
       const totalPaid = loan.Repayments.reduce((paymentSum, repayment) => {
-        return paymentSum + (Number(repayment.interest) || 0) + (Number(repayment.interest) || 0);
+        return paymentSum + (Number(repayment.principal) || 0) + (Number(repayment.interest) || 0);
       }, 0);
 
       // Calculate remaining balance on the loan

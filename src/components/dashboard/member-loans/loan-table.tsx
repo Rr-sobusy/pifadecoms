@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import RouterLink from 'next/link';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
@@ -138,7 +139,13 @@ const columns = [
 export function LoanTable({ rows }: { rows: ILoanType }) {
   return (
     <Card sx={{ overflowX: 'auto' }}>
-      <DataTable columns={columns} rows={rows} />
+      {rows.length > 0 ? (
+        <DataTable columns={columns} rows={rows} />
+      ) : (
+        <Box sx={{minHeight : '150px', display:'flex', alignItems : 'center', justifyContent : 'center'}}>
+          <Typography variant='subtitle2' fontSize={17}>No loan data found!</Typography>
+        </Box>
+      )}
     </Card>
   );
 }
