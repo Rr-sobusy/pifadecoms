@@ -37,7 +37,7 @@ const columns = [
 function LoanSourceTable({ loanSources }: Props) {
   return (
     <Card>
-      {loanSources.length > 1 ? (
+      {loanSources.length > 0 ? (
         <DataTable columns={columns} rows={loanSources} />
       ) : (
         <Box sx={{ minHeight: '150px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
