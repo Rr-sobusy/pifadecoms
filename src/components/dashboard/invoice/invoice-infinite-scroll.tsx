@@ -9,10 +9,9 @@ import { InvoiceType } from '@/actions/invoices/types';
 
 interface Props {
   nextCursor: string | undefined;
-  invoices: InvoiceType['invoice'];
 }
 
-function InfiniteScroll({ nextCursor, invoices }: Props) {
+function InfiniteScroll({ nextCursor}: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { ref, inView } = useInView({ triggerOnce: false });

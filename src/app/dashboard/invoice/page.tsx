@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 const page = async ({ searchParams }: PageProps) => {
   const { memberId, endDate, invoiceId, startDate, status, cursor } = searchParams;
-  const filters = { memberId, endDate, invoiceId, startDate, status , cursor};
+  const filters = { memberId, endDate, invoiceId, startDate, status, cursor };
   const invoices = await fetchInvoices(filters);
 
   return (
@@ -57,7 +57,7 @@ const page = async ({ searchParams }: PageProps) => {
           <InvoicesFiltersCard filters={filters} />
           <Stack spacing={4} sx={{ flex: '1 1 auto', minWidth: 0 }}>
             <InvoiceTable rows={invoices.invoice} />
-            <InfiniteScroll invoices={invoices.invoice} nextCursor={String(invoices.nextCursor)} />
+            <InfiniteScroll nextCursor={String(invoices.nextCursor)} />
           </Stack>
         </Stack>
       </Stack>
