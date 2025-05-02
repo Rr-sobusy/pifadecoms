@@ -5,8 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Typography, Stack } from '@mui/material';
 import { useInView } from 'react-intersection-observer';
 
-import { InvoiceType } from '@/actions/invoices/types';
-
 interface Props {
   nextCursor: string | undefined;
 }
