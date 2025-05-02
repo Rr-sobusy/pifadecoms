@@ -74,7 +74,6 @@ function GeneralLedgerTable({ rows }: GeneralLedgerTableProps) {
     .toDecimalPlaces(2)
     .equals(totals.Liability.plus(totals.Equity).plus(totals.Revenue.minus(totals.Expense)).toDecimalPlaces(2));
 
-  console.log(rows);
   return (
     <>
       {rows.length ? (

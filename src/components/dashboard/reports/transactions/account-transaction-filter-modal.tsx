@@ -185,10 +185,10 @@ function FilterModal({ accounts }: FilterModalProps) {
       searchParams.set('memberId', data.member.memberId);
     }
     if (data.dateRange?.startDate) {
-      searchParams.set('startDate', String(data.dateRange?.startDate));
+      searchParams.set('startDate', dayjs(data.dateRange?.startDate).format('YYYY-MM-DD'));
     }
     if (data.dateRange?.endDate) {
-      searchParams.set('endDate', String(data.dateRange?.endDate));
+      searchParams.set('endDate', dayjs(data.dateRange?.endDate).format('YYYY-MM-DD'));
     }
     if (data.journalType) {
       searchParams.set('journalType', String(data.journalType));
