@@ -103,5 +103,6 @@ module.exports = {
     'react/no-unstable-nested-components': 'off',
     '@typescript-eslint/no-unsafe-call': 'off',
     'react/display-name': 'off',
+    '@typescript-eslint/prefer-reduce-type-parameter': 'off',
   },
 };
