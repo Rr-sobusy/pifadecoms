@@ -88,7 +88,8 @@ export const paths = {
     },
     funds: {
       list: '/dashboard/memberFunds',
-      view: (fundId: number) => `/dashboard/memberFunds/${fundId}`,
+      view: (fundId: number) => `/dashboard/memberFunds/view/${fundId}`,
+      ledger : '/dashboard/memberFunds/ledger'
     },
     items: {
       list: '/dashboard/items',

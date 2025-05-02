@@ -6,6 +6,7 @@ import { fetchAggregatedFunds } from './fetch-aggregated-funds';
 import { fetchFundTransactions } from './fetch-fund-transaction';
 import { fetchMemberFunds } from './fetch-funds';
 import { membersStillNotRegistered } from './fetch-members-nofund';
+import { fetchFundLedger } from './fetch-fund-ledgers';
 
 export const memberFundsSchema = transactionalSchema.extend({
   fundId: zod.number(),
@@ -41,3 +42,4 @@ export type FundTransactions = Prisma.PromiseReturnType<typeof fetchFundTransact
 export type MembersStillNotListedType = Prisma.PromiseReturnType<typeof membersStillNotRegistered>;
 export type AggregatedFundsType = Prisma.PromiseReturnType<typeof fetchAggregatedFunds>;
 export type MemberFundsNoPostingType = zod.infer<typeof memberFundsNoPosting>;
+export type MemberFundTransactionLedgerType = Prisma.PromiseReturnType<typeof fetchFundLedger>
