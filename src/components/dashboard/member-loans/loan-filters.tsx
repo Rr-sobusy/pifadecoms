@@ -60,7 +60,7 @@ function getDefaultValues(filters: FilterValues): FilterValues {
     loanId: filters.loanId ?? 0,
     member: undefined,
     sourceId: filters.sourceId ?? 0,
-    contractType : filters.contractType ?? 'All'
+    contractType: filters.contractType ?? 'All',
   };
 }
 
@@ -115,15 +115,15 @@ function LoanFilters({ loanSource }: LoanFiltersProps) {
     }
 
     if (data.releasedDate?.from) {
-      urlSearchParams.set('releasedDateFrom', data.releasedDate.from.toString());
+      urlSearchParams.set('releasedDateFrom', dayjs(data.releasedDate.from).format('YYYY-MM-DD'));
     }
 
     if (data.releasedDate?.to) {
-      urlSearchParams.set('releasedDateTo', data.releasedDate.to.toString());
+      urlSearchParams.set('releasedDateTo', dayjs(data.releasedDate.to).format('YYYY-MM-DD'));
     }
 
     if (data.dueDate) {
-      urlSearchParams.set('dueDate', data.dueDate.toString());
+      urlSearchParams.set('dueDate', dayjs(data.dueDate).format('YYYY-MM-DD'));
     }
     router.push(`${pathname}?${urlSearchParams.toString()}`);
   }

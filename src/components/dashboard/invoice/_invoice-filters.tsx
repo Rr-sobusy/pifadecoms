@@ -134,11 +134,11 @@ export function InvoiceFilterer({
       }
 
       if (newFilters.startDate) {
-        searchParams.set('startDate', String(newFilters.startDate));
+        searchParams.set('startDate',dayjs(newFilters.startDate).format('YYYY-MM-DD'));
       }
 
       if (newFilters.endDate) {
-        searchParams.set('endDate', String(newFilters.endDate));
+        searchParams.set('endDate',dayjs(newFilters.endDate).format('YYYY-MM-DD'));
       }
 
       router.push(`${paths.dashboard.invoice.list}?${searchParams.toString()}`);
