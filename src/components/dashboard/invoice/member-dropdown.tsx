@@ -18,7 +18,7 @@ function MemberDropDown({ members }: Props) {
   return (
     <Autocomplete
       options={members}
-      getOptionLabel={(member) => member.lastName + ' ' + member.firstName}
+      getOptionLabel={(member) => member.lastName + ' ' + member.firstName + ' ' + member?.middleName || ''}
       filterOptions={(options, { inputValue }) =>
         options.filter(
           (option) =>
@@ -35,7 +35,7 @@ function MemberDropDown({ members }: Props) {
       )}
       renderOption={(props, options) => (
         <Option {...props} key={options.memberId} value={options.memberId}>
-          {options.lastName + ' ' + options.firstName}
+          {options.lastName + ' ' + options.firstName + ' ' + options.middleName || ''}
         </Option>
       )}
     />
