@@ -171,7 +171,7 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
                 <Stack spacing={1}>
                   <Typography variant="subtitle1">Billed to</Typography>
                   <Typography variant="body2">
-                    {`${invoiceDetails?.Members.lastName}, ${invoiceDetails?.Members.firstName}`}
+                    {`${invoiceDetails?.Members.lastName}, ${invoiceDetails?.Members.firstName} ${invoiceDetails?.Members.middleName || ''}`}
                     <br />
                     {invoiceDetails?.Members.address}
                     <br />

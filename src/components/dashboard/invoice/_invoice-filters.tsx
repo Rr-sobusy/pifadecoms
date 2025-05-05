@@ -34,6 +34,7 @@ const schema = zod
       memberId: zod.string(),
       firstName: zod.string(),
       lastName: zod.string(),
+      middleName:zod.string().optional().nullable()
     }),
     endDate: zod.date().max(new Date('2099-01-01')).nullable().optional(),
     invoiceId: zod.number().optional(),
@@ -59,6 +60,7 @@ function getDefaultValues(filters: Filters): Values {
       firstName: '',
       memberId: '',
       lastName: '',
+      middleName : ''
     },
     endDate: filters.endDate ? dayjs(filters.endDate).toDate() : null,
     invoiceId: filters.invoiceId ?? 0,
@@ -205,7 +207,7 @@ export function InvoiceFilterer({
                 field.onChange(value); // Update form value on selection
               }}
               options={member}
-              getOptionLabel={(option) => (option.lastName.length ? `${option.lastName} ${option.firstName}` : '')}
+              getOptionLabel={(option) => (option.lastName.length ? `${option.lastName}, ${option.firstName} ${option.middleName || ''}` : '')}
               renderInput={(params) => (
                 <FormControl fullWidth>
                   <FormLabel>Member Name</FormLabel>
@@ -214,7 +216,7 @@ export function InvoiceFilterer({
               )}
               renderOption={(props, options) => (
                 <Option {...props} key={options.memberId} value={options.memberId}>
-                  {`${options.lastName}, ${options.firstName}`}
+                  {`${options.lastName}, ${options.firstName} ${options.middleName || ''}`}
                 </Option>
               )}
             />
