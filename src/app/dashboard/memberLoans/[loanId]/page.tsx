@@ -75,7 +75,7 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
           </Stack>
           <div>
             <Stack gap={2} direction="row">
-              <OptionsPopoverButton />
+              <OptionsPopoverButton loanId={loanDetails?.loanId} isAdmin={true} />
               <Button
                 target="_blank"
                 LinkComponent={RouterLink}
@@ -106,7 +106,7 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
               lg: 8,
             }}
           >
-            <LoanAmortizationDetails accounts={accounts} sx={{ p: 3 }} loanDetails={loanDetails} />
+            <LoanAmortizationDetails isAdmin={true} accounts={accounts} sx={{ p: 3 }} loanDetails={loanDetails} />
           </Grid>
         </Grid>
       </Stack>

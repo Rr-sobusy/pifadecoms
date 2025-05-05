@@ -20,6 +20,7 @@ import AmortizationTable from './amortization-tables';
 interface PageProps extends CardProps {
   loanDetails: ILoanDetails;
   accounts: AccounTreeType;
+  isAdmin:boolean
 }
 
 const loanContractMap: Record<RepaymentStyle, string> = {
@@ -28,7 +29,7 @@ const loanContractMap: Record<RepaymentStyle, string> = {
   OneTime: 'End of Term',
 };
 
-function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps) {
+function LoanAmortizationDetails({ loanDetails, accounts,isAdmin, ...props }: PageProps) {
   const totalAmortizationPaid = React.useMemo(() => {
     if (!loanDetails?.Repayments) return 0;
 
@@ -94,6 +95,7 @@ function LoanAmortizationDetails({ loanDetails, accounts, ...props }: PageProps)
           <Stack spacing={2}>
             <Typography variant="h6">Paid amortization/s</Typography>
             <AmortizationTable
+              isAdmin={isAdmin}
               loanId={loanDetails?.loanId}
               accounts={accounts}
               memberId={loanDetails?.Member.memberId}

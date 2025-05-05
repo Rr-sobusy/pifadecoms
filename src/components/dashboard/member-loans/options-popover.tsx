@@ -2,7 +2,7 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
-import { Check, Repeat } from '@phosphor-icons/react/dist/ssr';
+import { TrashSimple } from '@phosphor-icons/react/dist/ssr';
 
 interface OptionPopoverProps {
   anchorEl: null | Element | HTMLButtonElement;
@@ -10,9 +10,11 @@ interface OptionPopoverProps {
   onMarkAllAsRead?: () => void;
   onRemoveOne?: (id: string) => void;
   open?: boolean;
+  isAdmin: boolean;
+  deleteHandler: ()=>void
 }
 
-function OptionsPopover({ anchorEl, onClose, open = false }: OptionPopoverProps) {
+function OptionsPopover({ anchorEl, onClose, open = false, isAdmin , deleteHandler}: OptionPopoverProps) {
   return (
     <Popover
       anchorEl={anchorEl}
@@ -24,11 +26,8 @@ function OptionsPopover({ anchorEl, onClose, open = false }: OptionPopoverProps)
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
     >
       <Stack padding={1} spacing={1}>
-        <Button sx={{ color: 'text.primary' }} startIcon={<Check />}>
-          Mark as paid
-        </Button>
-        <Button sx={{ color: 'text.primary' }} startIcon={<Repeat />}>
-          Loan renewal
+        <Button color='error' onClick={deleteHandler} disabled={!isAdmin} sx={{ color: 'text.error' }} startIcon={<TrashSimple />}>
+          Delete Loan
         </Button>
       </Stack>
     </Popover>

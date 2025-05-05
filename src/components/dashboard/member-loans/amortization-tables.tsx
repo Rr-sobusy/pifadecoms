@@ -3,16 +3,19 @@
 import React, { useState } from 'react';
 import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import { TrashSimple } from '@phosphor-icons/react/dist/ssr';
 import { CreditCard } from '@phosphor-icons/react/dist/ssr/CreditCard';
 
-// import { toast } from '@/components/core/toaster';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
+import { deleteLoanAmortizationAction } from '@/actions/loans/delete-loan-amortization';
 import { ILoanType } from '@/actions/loans/types';
 import type { ColumnDef } from '@/components/core/data-table';
 import { DataTable } from '@/components/core/data-table';
+import { toast } from '@/components/core/toaster';
 
 import CreateAmortizationPayment from './create-amortization-payment-dialog';
 
@@ -21,9 +24,10 @@ interface Props {
   accounts: AccounTreeType;
   memberId: string | undefined;
   loanId: bigint | undefined;
+  isAdmin: boolean;
 }
 
-function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
+function AmortizationTable({ rows, accounts, memberId, loanId, isAdmin }: Props) {
   const [isDialogOpen, setDialogStatus] = useState<boolean>(false);
 
   const columns: ColumnDef<ILoanType[0]['Repayments'][0]>[] = [
@@ -70,7 +74,24 @@ function AmortizationTable({ rows, accounts, memberId, loanId }: Props) {
         </Typography>
       ),
     },
+    {
+      name: 'Action',
+      formatter: (row) => (
+        <IconButton onClick={() => deleteRepaymentHandler(row.repaymentId)} disabled={!isAdmin} color="error">
+          <TrashSimple />
+        </IconButton>
+      ),
+      width: '50px',
+    },
   ];
+
+  async function deleteRepaymentHandler(repaymentId: bigint) {
+    const result = await deleteLoanAmortizationAction(Number(repaymentId));
+
+    if (result?.data?.success) {
+      toast.success('Amortization deleted successfully.');
+    }
+  }
 
   function setDialogOpen(): void {
     setDialogStatus(true);

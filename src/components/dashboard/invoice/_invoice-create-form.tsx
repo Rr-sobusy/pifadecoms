@@ -132,7 +132,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                       <Autocomplete
                         {...field}
                         getOptionLabel={(member) =>
-                          member.lastName + ', ' + member.firstName + ' 0' + member.middleName || ''
+                          member.lastName + ', ' + member.firstName + ' ' + member.middleName || ''
                         }
                         onChange={(_, value) => {
                           if (value) {
