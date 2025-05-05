@@ -24,7 +24,7 @@ export const invoiceSchema = z.object({
     memberId: z.string(),
     lastName: z.string(),
     firstName: z.string(),
-    middleName: z.string().optional()
+    middleName: z.string().optional().nullable()
   }),
   invNumber: z.string().nullable(),
   invDate: z.date(),

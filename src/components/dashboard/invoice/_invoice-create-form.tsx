@@ -36,7 +36,7 @@ import { Option } from '@/components/core/option';
 import { toast } from '@/components/core/toaster';
 
 interface InvoiceCreateProps {
-  members: { memberId: string; lastName: string; firstName: string }[];
+  members: { memberId: string; lastName: string; firstName: string; middleName: string | null }[];
   items: { itemId: string; itemName: string; itemType: 'product' | 'services'; rate: number; trade: number }[];
 }
 
@@ -131,7 +131,9 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                     render={({ field }) => (
                       <Autocomplete
                         {...field}
-                        getOptionLabel={(member) => member.lastName + ', ' + member.firstName + ' '}
+                        getOptionLabel={(member) =>
+                          member.lastName + ', ' + member.firstName + ' 0' + member.middleName || ''
+                        }
                         onChange={(_, value) => {
                           if (value) {
                             field.onChange(value);
@@ -154,7 +156,7 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
                         )}
                         renderOption={(props, options) => (
                           <Option {...props} key={options.memberId} value={options.memberId}>
-                            {options.lastName + ' ' + options.firstName}
+                            {options.lastName + ' ' + options.firstName + ' ' + options.middleName || ' '}
                           </Option>
                         )}
                       />
@@ -425,3 +427,4 @@ const InvoiceCreateForm2 = ({ members, items }: InvoiceCreateProps) => {
 };
 
 export default InvoiceCreateForm2;
+``
