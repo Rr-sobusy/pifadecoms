@@ -49,6 +49,7 @@ export const layoutConfig = {
           icon: 'money',
           items: [
             { key: 'fund', title: 'Member Funds', href: paths.dashboard.funds.list },
+            { key: 'fund:ledger', title: 'Member Fund ledger', href: paths.dashboard.funds.ledger },
             // { key: 'members:create', title: 'Create member', href: paths.dashboard.members.create },
             // { key: 'members:details', title: 'Customer details', href: paths.dashboard.members.details('1') },
           ],
@@ -76,26 +77,6 @@ export const layoutConfig = {
             { key: 'memberLoans:calculator', title: 'Loan calculator', href: paths.dashboard.loans.calculator },
           ],
         },
-        // {
-        //   key: 'customers',
-        //   title: 'Customers',
-        //   icon: 'users',
-        //   items: [
-        //     { key: 'customers', title: 'List customers', href: paths.dashboard.customers.list },
-        //     { key: 'customers:create', title: 'Create customer', href: paths.dashboard.customers.create },
-        //     { key: 'customers:details', title: 'Customer details', href: paths.dashboard.customers.details('1') },
-        //   ],
-        // },
-        // {
-        //   key: 'products',
-        //   title: 'Products',
-        //   icon: 'shopping-bag-open',
-        //   items: [
-        //     { key: 'products', title: 'List products', href: paths.dashboard.products.list },
-        //     { key: 'products:create', title: 'Create product', href: paths.dashboard.products.create },
-        //     { key: 'products:details', title: 'Product details', href: paths.dashboard.products.details('1') },
-        //   ],
-        // },
         {
           key: 'items',
           title: 'Items',
