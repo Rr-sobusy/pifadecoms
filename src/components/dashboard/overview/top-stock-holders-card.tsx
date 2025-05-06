@@ -21,7 +21,7 @@ function TopStockHoldersCard({ rows }: TopStockHoldersCardProps) {
             <Typography fontWeight={600} variant="h6">
               Major Shareholders
             </Typography>
-            <Typography variant="caption" color='textSecondary'>Lists of the top 8 major shareholderss</Typography>
+            <Typography variant="caption" color='textSecondary'>Lists of the top 12 major shareholderss</Typography>
           </Stack>
           <TopStockHoldersChart rows={rows} />
         </Stack>

@@ -5,7 +5,7 @@ export async function fetchTopStockHolders() {
     orderBy: {
       shareCapBal: 'desc',
     },
-    take: 8,
+    take: 12,
     include: {
       Member: {
         select: {
