@@ -4,13 +4,6 @@ import prisma from '@/lib/prisma';
 const startDate = dayjs().startOf('year').toDate();
 const endDate = dayjs().endOf('year').toDate();
 
-type MonthlyTotals = {
-  [month: string]: {
-    Revenue: number;
-    Expense: number;
-  };
-};
-
 type AllowedRootTypes = 'Revenue' | 'Expense';
 
 export async function fetchMonthlyIncomeAndExpense() {

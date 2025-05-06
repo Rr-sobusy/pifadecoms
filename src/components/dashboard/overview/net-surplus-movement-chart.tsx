@@ -1,8 +1,6 @@
 import React from 'react'
 
-type Props = {}
-
-function NetSurplusMovement({}: Props) {
+function NetSurplusMovement() {
   return (
     <div>NetSurplusMovement</div>
   )
