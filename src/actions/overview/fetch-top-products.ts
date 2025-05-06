@@ -29,7 +29,7 @@ export async function fetchTopMovingItemInLast30Days() {
   const _items = await prisma.items.findMany({});
 
   bestMovingItems.forEach((items, index) => {
-    bestItems[0] = {
+    bestItems[index] = {
       itemName: _items.find((val) => val.itemID === items.itemID)?.itemName ?? '',
       quantityPurchased: items._sum.quantity || 0,
     };
