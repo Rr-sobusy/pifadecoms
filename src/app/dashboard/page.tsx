@@ -15,23 +15,30 @@ import { fetchMembers } from '@/actions/members/fetch-members';
 import { fetchActiveLoans } from '@/actions/overview/fetch-active-loans';
 import fetchCurrentEquities from '@/actions/overview/fetch-current-equities';
 import { fetchMonthlyIncomeAndExpense } from '@/actions/overview/fetch-income-expense-by-month-current';
+import { fetchMonthlyNetSurplus } from '@/actions/overview/fetch-monthly-net-surplus';
+import { fetchTopMovingItemInLast30Days } from '@/actions/overview/fetch-top-products';
+import { fetchTopStockHolders } from '@/actions/overview/fetch-top-stock-holders';
 import { fetchTotalEarnings } from '@/actions/overview/fetch-total-earnings';
 import NetSurplusCard from '@/components/dashboard/overview/net-surplus-card';
 import RevenueExpenseCard from '@/components/dashboard/overview/revenue-expense-card';
 import SummaryCard from '@/components/dashboard/overview/summary-card';
-import { fetchMonthlyNetSurplus } from '@/actions/overview/fetch-monthly-net-surplus';
+import TopMovedItems from '@/components/dashboard/overview/top-moved-items-card';
+import TopStockHoldersCard from '@/components/dashboard/overview/top-stock-holders-card';
 
 export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default async function Page(): Promise<React.JSX.Element> {
-  const [incomeExpense, members, currentEquities, activeLoans, totals, netSurplus] = await Promise.all([
-    fetchMonthlyIncomeAndExpense(),
-    fetchMembers({ fetchOnlyActive: true, returnAll: true }),
-    fetchCurrentEquities(),
-    fetchActiveLoans(),
-    fetchTotalEarnings(),
-    fetchMonthlyNetSurplus()
-  ]);
+  const [incomeExpense, members, currentEquities, activeLoans, totals, netSurplus, topStockHolders, topItems] =
+    await Promise.all([
+      fetchMonthlyIncomeAndExpense(),
+      fetchMembers({ fetchOnlyActive: true, returnAll: true }),
+      fetchCurrentEquities(),
+      fetchActiveLoans(),
+      fetchTotalEarnings(),
+      fetchMonthlyNetSurplus(),
+      fetchTopStockHolders(),
+      fetchTopMovingItemInLast30Days(),
+    ]);
   return (
     <Box
       sx={{
@@ -54,7 +61,7 @@ export default async function Page(): Promise<React.JSX.Element> {
               xl: 3,
             }}
           >
-            <SummaryCard icon={User} title="Active members" value={members.totalCount} />
+            <SummaryCard icon={User} title="Active members" value={members.members.length} />
           </Grid>
           <Grid
             size={{
@@ -104,6 +111,24 @@ export default async function Page(): Promise<React.JSX.Element> {
             }}
           >
             <NetSurplusCard data={netSurplus} />
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+              md: 5,
+            }}
+          >
+            <TopMovedItems data={topItems} />
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+              md: 7,
+            }}
+          >
+            <TopStockHoldersCard rows={topStockHolders} />
           </Grid>
         </Grid>
       </Stack>
