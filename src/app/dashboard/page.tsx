@@ -4,18 +4,31 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid2';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { MoneyWavy as EarningIcon } from '@phosphor-icons/react/dist/ssr';
 import { CurrencyDollarSimple as DollarIcon } from '@phosphor-icons/react/dist/ssr/CurrencyDollarSimple';
 import { User } from '@phosphor-icons/react/dist/ssr/User';
 import { UserCircleDashed as LoanIcon } from '@phosphor-icons/react/dist/ssr/UserCircleDashed';
-import { MoneyWavy as EarningIcon } from '@phosphor-icons/react/dist/ssr';
+
 import { config } from '@/config';
 import { formatToCurrency } from '@/lib/format-currency';
-import SummaryCard from '@/components/dashboard/overview/summary-card';
+import { fetchMembers } from '@/actions/members/fetch-members';
+import { fetchActiveLoans } from '@/actions/overview/fetch-active-loans';
+import fetchCurrentEquities from '@/actions/overview/fetch-current-equities';
+import { fetchMonthlyIncomeAndExpense } from '@/actions/overview/fetch-income-expense-by-month-current';
+import { fetchTotalEarnings } from '@/actions/overview/fetch-total-earnings';
 import RevenueExpenseCard from '@/components/dashboard/overview/revenue-expense-card';
+import SummaryCard from '@/components/dashboard/overview/summary-card';
 
 export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 
-export default function Page(): React.JSX.Element {
+export default async function Page(): Promise<React.JSX.Element> {
+  const [incomeExpense, members, currentEquities, activeLoans, totals] = await Promise.all([
+    fetchMonthlyIncomeAndExpense(),
+    fetchMembers({ fetchOnlyActive: true, returnAll: true }),
+    fetchCurrentEquities(),
+    fetchActiveLoans(),
+    fetchTotalEarnings(),
+  ]);
   return (
     <Box
       sx={{
@@ -38,7 +51,7 @@ export default function Page(): React.JSX.Element {
               xl: 3,
             }}
           >
-            <SummaryCard icon={User} title="Active members" value={6} />
+            <SummaryCard icon={User} title="Active members" value={members.totalCount} />
           </Grid>
           <Grid
             size={{
@@ -47,7 +60,7 @@ export default function Page(): React.JSX.Element {
               xl: 3,
             }}
           >
-            <SummaryCard icon={DollarIcon} title="Member Capitals" value={formatToCurrency(150000)} />
+            <SummaryCard icon={DollarIcon} title="Current Equities" value={formatToCurrency(currentEquities)} />
           </Grid>
           <Grid
             size={{
@@ -56,7 +69,7 @@ export default function Page(): React.JSX.Element {
               xl: 3,
             }}
           >
-            <SummaryCard icon={LoanIcon} title="Active loans" value={250} />
+            <SummaryCard icon={LoanIcon} title="Active loans" value={activeLoans} />
           </Grid>
           <Grid
             size={{
@@ -65,16 +78,20 @@ export default function Page(): React.JSX.Element {
               xl: 3,
             }}
           >
-            <SummaryCard icon={EarningIcon} title="Net earnings" value={250} />
+            <SummaryCard
+              icon={EarningIcon}
+              title="Net earnings (from implementation)"
+              value={formatToCurrency(totals.Revenue - totals.Expense)}
+            />
           </Grid>
           <Grid
             size={{
               xs: 12,
               sm: 12,
-              md: 8,
+              md: 7,
             }}
           >
-            <RevenueExpenseCard />
+            <RevenueExpenseCard data={incomeExpense} />
           </Grid>
         </Grid>
       </Stack>

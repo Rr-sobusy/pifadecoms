@@ -4,9 +4,15 @@ interface MemberFilters {
   memberName?: string | undefined;
   offsetPage?: number | undefined;
   returnAll?: boolean;
+  fetchOnlyActive?: boolean;
 }
 
-export async function fetchMembers({ memberName, offsetPage = 1, returnAll = false }: MemberFilters) {
+export async function fetchMembers({
+  memberName,
+  offsetPage = 1,
+  returnAll = false,
+  fetchOnlyActive = false,
+}: MemberFilters) {
   const totalCount = await prisma.members.count(); // Get total number of members
 
   const members = await prisma.members.findMany({
@@ -18,6 +24,9 @@ export async function fetchMembers({ memberName, offsetPage = 1, returnAll = fal
         firstName: 'asc',
       },
     ],
+    where: {
+      accountStatus: fetchOnlyActive ? 'Active' : undefined,
+    },
   });
 
   const extendedMembers = members.map((member, index) => ({
