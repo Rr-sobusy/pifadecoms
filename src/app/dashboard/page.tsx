@@ -16,18 +16,21 @@ import { fetchActiveLoans } from '@/actions/overview/fetch-active-loans';
 import fetchCurrentEquities from '@/actions/overview/fetch-current-equities';
 import { fetchMonthlyIncomeAndExpense } from '@/actions/overview/fetch-income-expense-by-month-current';
 import { fetchTotalEarnings } from '@/actions/overview/fetch-total-earnings';
+import NetSurplusCard from '@/components/dashboard/overview/net-surplus-card';
 import RevenueExpenseCard from '@/components/dashboard/overview/revenue-expense-card';
 import SummaryCard from '@/components/dashboard/overview/summary-card';
+import { fetchMonthlyNetSurplus } from '@/actions/overview/fetch-monthly-net-surplus';
 
 export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default async function Page(): Promise<React.JSX.Element> {
-  const [incomeExpense, members, currentEquities, activeLoans, totals] = await Promise.all([
+  const [incomeExpense, members, currentEquities, activeLoans, totals, netSurplus] = await Promise.all([
     fetchMonthlyIncomeAndExpense(),
     fetchMembers({ fetchOnlyActive: true, returnAll: true }),
     fetchCurrentEquities(),
     fetchActiveLoans(),
     fetchTotalEarnings(),
+    fetchMonthlyNetSurplus()
   ]);
   return (
     <Box
@@ -92,6 +95,15 @@ export default async function Page(): Promise<React.JSX.Element> {
             }}
           >
             <RevenueExpenseCard data={incomeExpense} />
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+              md: 5,
+            }}
+          >
+            <NetSurplusCard data={netSurplus} />
           </Grid>
         </Grid>
       </Stack>

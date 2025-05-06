@@ -23,7 +23,7 @@ function RevenueExpenseCard({ data }: MonthlyIncomeExpenseProps) {
             <Typography fontWeight={600} variant="h6">
               Current year income and expense overview
             </Typography>
-            <Typography variant="subtitle2"></Typography>
+            <Typography variant="caption" color='textSecondary'>Break down of income and expenses in each month</Typography>
           </Stack>
           <Stack>
             <RevenueExpenseChart data={data} />
