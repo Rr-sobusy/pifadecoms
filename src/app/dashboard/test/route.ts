@@ -1,6 +1,6 @@
 import { stringify } from 'json-bigint';
 
-import { fetchMonthlyIncomeAndExpense } from '@/actions/overview/fetch-income-expense-by-month-current';
+// import { fetchMonthlyIncomeAndExpense } from '@/actions/overview/fetch-income-expense-by-month-current';
 // import { fetchDoubleEntryPosted } from '@/actions/reports/account-transactions/fetch-double-entry-posted';
 import { fetchMonthlyNetSurplus } from '@/actions/overview/fetch-monthly-net-surplus';
 
