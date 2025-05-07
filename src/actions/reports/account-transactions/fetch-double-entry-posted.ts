@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import Decimal from 'decimal.js'; // or from Prisma if needed
+import Decimal from 'decimal.js';
 import { stringify } from 'json-bigint';
 
 import prisma from '@/lib/prisma';
@@ -13,7 +13,6 @@ type JournalItemLite = {
 type AccountTransaction = {
   entryId: bigint;
   entryDate: Date;
-  referenceName: string;
   journalType: string;
   memberId: string | null;
   JournalItems: JournalItemLite[];
@@ -22,12 +21,7 @@ type AccountTransaction = {
 type AccountTransactionTypes = AccountTransaction[];
 
 function createEntryKey(entry: AccountTransaction) {
-  return [
-    dayjs(entry.entryDate).format('YYYY-MM-DD'),
-    entry.referenceName,
-    entry.journalType,
-    entry.memberId ?? 'NULL',
-  ].join('|');
+  return [dayjs(entry.entryDate).format('YYYY-MM'), entry.journalType, entry.memberId ?? 'NULL'].join('|');
 }
 
 function hashJournalItems(items: JournalItemLite[]): string {
@@ -72,13 +66,41 @@ export async function fetchDoubleEntryPosted(fromDate: Date, toDate: Date) {
   const duplicates = detectDuplicateJournalEntries(entries);
 
   if (duplicates.length > 0) {
-    const duplicatePostings = []
-    for (const [a, b] of duplicates) {
-        duplicatePostings.push({first: stringify(a), second: stringify(b)})
-      }
-
-      return duplicatePostings
+    const duplicatePostings = duplicates.map(([a, b]) => ({
+      first: stringify({ firstEntry: a.entryId, secondEntry: b.entryId ,}),
+      second: stringify({ firstEntry: a.entryId, secondEntry: b.entryId }),
+    }));
+    return duplicatePostings;
   } else {
-    console.log('No duplicates detected');
+    return [];
   }
+}
+
+export async function compareEntriesByMonth(fromDate: Date, toDate: Date) {
+  // Fetch entries from the specified date range
+  const entries = await prisma.journalEntries.findMany({
+    where: {
+      entryDate: {
+        gte: fromDate,
+        lte: toDate,
+      },
+    },
+    include: {
+      JournalItems: true,
+    },
+  });
+
+  // Detect duplicates
+  const duplicates = detectDuplicateJournalEntries(entries);
+
+  if (duplicates.length > 0) {
+    // Log or return the duplicate entries
+    const duplicatePostings = duplicates.map(([a, b]) => ({
+      first: stringify({ firstEntry: a.entryId, secondEntry: b.entryId }),
+      second: stringify(b),
+    }));
+    return duplicatePostings;
+  }
+
+  return 'No duplicate entries found for the month.';
 }
