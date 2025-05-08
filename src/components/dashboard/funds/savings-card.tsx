@@ -9,8 +9,12 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid2';
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import { Eraser } from '@phosphor-icons/react/dist/ssr';
 import { ArrowBendRightDown as WithdrawIcon } from '@phosphor-icons/react/dist/ssr/ArrowBendRightDown';
 import { Bank } from '@phosphor-icons/react/dist/ssr/Bank';
 import { Calculator as CalcuIcon } from '@phosphor-icons/react/dist/ssr/Calculator';
@@ -22,6 +26,7 @@ import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { deleteFundTransaction } from '@/actions/funds/delete-fund-transaction';
 import type { MemberFundsType } from '@/actions/funds/types';
+import { updateFundManualAction } from '@/actions/funds/update-fund-manual';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 import { toast } from '@/components/core/toaster';
 
@@ -125,6 +130,9 @@ function SavingsCard({ fund }: SavingsCardProps) {
   const router = useRouter();
   const pathName = usePathname();
 
+  const [editMode, toggleEditMode] = React.useState<boolean>(false);
+  const editInputRef = React.useRef<HTMLInputElement>(null);
+
   /**
    * * States used for showing data in data table with pagination
    */
@@ -181,6 +189,21 @@ function SavingsCard({ fund }: SavingsCardProps) {
     }
   }
 
+  async function editSavingsHandler() {
+    if ((Number(editInputRef.current?.value) ?? 0) !== fund.savingsBal) {
+      const serverResult = await updateFundManualAction({
+        fundId: fund.fundId,
+        fundType: 'savings',
+        newBalance: Number(editInputRef.current?.value) ?? 0,
+      });
+
+      if (serverResult?.data?.success) {
+        toast.success('Savings updated successfully.');
+        toggleEditMode(false);
+      }
+    }
+  }
+
   return (
     <Card>
       <CardContent>
@@ -218,9 +241,25 @@ function SavingsCard({ fund }: SavingsCardProps) {
                       <Bank fontSize="var(--icon-fontSize-lg)" />
                     </Avatar>
                   </Stack>
-                  <Typography marginTop={3} fontWeight={700} variant="h6">
-                    {formatToCurrency(currentSavings, 'Fil-ph', 'Php')}
-                  </Typography>
+                  <Stack alignItems="center" direction="row">
+                    {editMode ? (
+                      <Stack spacing={1} direction="row">
+                        <OutlinedInput type="number" defaultValue={fund.savingsBal} inputRef={editInputRef} />
+                        <Button onClick={editSavingsHandler} variant="outlined">
+                          Update
+                        </Button>
+                      </Stack>
+                    ) : (
+                      <Typography marginTop={3} fontWeight={700} variant="h6">
+                        {formatToCurrency(currentSavings, 'Fil-ph', 'Php')}
+                      </Typography>
+                    )}
+                    <Tooltip title="Note: Use this with precautions because editing it without proper journal entry has deferred risk">
+                      <IconButton color="error" onClick={() => toggleEditMode((prev) => !prev)}>
+                        <Eraser />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
                 </CardContent>
               </Card>
             </Grid>

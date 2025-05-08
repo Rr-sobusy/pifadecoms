@@ -17,14 +17,17 @@ import { Calculator as CalcuIcon } from '@phosphor-icons/react/dist/ssr/Calculat
 import { CashRegister as TransactIcon } from '@phosphor-icons/react/dist/ssr/CashRegister';
 import { PiggyBank } from '@phosphor-icons/react/dist/ssr/PiggyBank';
 import { FundTransactionsType } from '@prisma/client';
-
+import { Eraser } from '@phosphor-icons/react/dist/ssr';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { deleteFundTransaction } from '@/actions/funds/delete-fund-transaction';
 import type { MemberFundsType } from '@/actions/funds/types';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 import { toast } from '@/components/core/toaster';
-
+import { updateFundManualAction } from '@/actions/funds/update-fund-manual';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import DepositButton from './deposit-button';
 import FundTransactionPaginator from './fund-transcaction-table-paginator';
 
@@ -124,6 +127,9 @@ function SharesCard({ fund }: SharesCardProps) {
   const router = useRouter();
   const pathName = usePathname();
 
+  const [editMode, toggleEditMode] = React.useState<boolean>(false);
+  const editInputRef = React.useRef<HTMLInputElement>(null);
+
   const currentShareCapTransactions = fund.Transactions.filter((ctx) => ctx.fundType === 'ShareCapital');
   const [currentPage, setCurrentPage] = React.useState<number>(0);
   const paginatedData = currentShareCapTransactions.slice(currentPage * 5, (currentPage + 1) * 5);
@@ -180,6 +186,21 @@ function SharesCard({ fund }: SharesCardProps) {
     }
   }
 
+  async function editShareHandler() {
+    if ((Number(editInputRef.current?.value) ?? 0) !== fund.shareCapBal) {
+      const serverResult = await updateFundManualAction({
+        fundId: fund.fundId,
+        fundType: 'share',
+        newBalance: Number(editInputRef.current?.value) ?? 0,
+      });
+
+      if (serverResult?.data?.success) {
+        toast.success('Share capital updated successfully.');
+        toggleEditMode(false);
+      }
+    }
+  }
+
   const currentShare = fund.shareCapBal;
   return (
     <Card>
@@ -218,9 +239,25 @@ function SharesCard({ fund }: SharesCardProps) {
                       <Bank fontSize="var(--icon-fontSize-lg)" />
                     </Avatar>
                   </Stack>
-                  <Typography marginTop={3} fontWeight={700} variant="h6">
-                    {formatToCurrency(currentShare, 'Fil-ph', 'Php')}
-                  </Typography>
+                  <Stack alignItems="center" direction="row">
+                    {editMode ? (
+                      <Stack spacing={1} direction="row">
+                        <OutlinedInput type="number" defaultValue={fund.shareCapBal} inputRef={editInputRef} />
+                        <Button onClick={editShareHandler} variant="outlined">
+                          Update
+                        </Button>
+                      </Stack>
+                    ) : (
+                      <Typography marginTop={3} fontWeight={700} variant="h6">
+                        {formatToCurrency(currentShare, 'Fil-ph', 'Php')}
+                      </Typography>
+                    )}
+                    <Tooltip title="Note: Use this with precautions because editing it without proper journal entry has deferred risk">
+                      <IconButton color="error" onClick={() => toggleEditMode((prev) => !prev)}>
+                        <Eraser />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
                 </CardContent>
               </Card>
             </Grid>
