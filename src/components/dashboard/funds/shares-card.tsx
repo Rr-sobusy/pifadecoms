@@ -252,7 +252,7 @@ function SharesCard({ fund }: SharesCardProps) {
                         {formatToCurrency(currentShare, 'Fil-ph', 'Php')}
                       </Typography>
                     )}
-                    <Tooltip title="Note: Use this with precautions because editing it without proper journal entry has deferred risk">
+                    <Tooltip title="Note: Use this with precautions because editing it without proper journal entry may encounter deferred risk">
                       <IconButton color="error" onClick={() => toggleEditMode((prev) => !prev)}>
                         <Eraser />
                       </IconButton>

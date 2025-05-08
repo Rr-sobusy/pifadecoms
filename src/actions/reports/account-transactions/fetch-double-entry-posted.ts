@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import Decimal from 'decimal.js';
-import { stringify } from 'json-bigint';
 
 import prisma from '@/lib/prisma';
 
@@ -50,25 +49,30 @@ function detectDuplicateJournalEntries(entries: AccountTransactionTypes) {
   return duplicates;
 }
 
-export async function fetchDoubleEntryPosted(fromDate: Date, toDate: Date) {
+export async function fetchDoubleEntryPosted(fromDate?: Date, toDate?: Date) {
   const entries = await prisma.journalEntries.findMany({
     where: {
       entryDate: {
-        gte: fromDate,
-        lte: toDate,
+        gte: fromDate ? dayjs(fromDate).startOf('day').toDate() : dayjs().startOf('month').toDate(),
+        lte: toDate ? dayjs(toDate).endOf('day').toDate() : dayjs().endOf('month').toDate(),
       },
     },
     include: {
       JournalItems: true,
+      Members: true,
     },
   });
+
+  if (!entries) {
+    return [];
+  }
 
   const duplicates = detectDuplicateJournalEntries(entries);
 
   if (duplicates.length > 0) {
     const duplicatePostings = duplicates.map(([a, b]) => ({
-      first: stringify({ firstEntry: a.entryId, secondEntry: b.entryId ,}),
-      second: stringify({ firstEntry: a.entryId, secondEntry: b.entryId }),
+      first: `Entry Date: ${dayjs(a.entryDate).format('MMM DD YYYY')} Transaction #:${String(a.entryId)}`,
+      second: `Entry Date: ${dayjs(b.entryDate).format('MMM DD YYYY')} Transaction #:${String(b.entryId)}`,
     }));
     return duplicatePostings;
   } else {
@@ -76,31 +80,31 @@ export async function fetchDoubleEntryPosted(fromDate: Date, toDate: Date) {
   }
 }
 
-export async function compareEntriesByMonth(fromDate: Date, toDate: Date) {
-  // Fetch entries from the specified date range
-  const entries = await prisma.journalEntries.findMany({
-    where: {
-      entryDate: {
-        gte: fromDate,
-        lte: toDate,
-      },
-    },
-    include: {
-      JournalItems: true,
-    },
-  });
+// export async function compareEntriesByMonth(fromDate: Date, toDate: Date) {
+//   // Fetch entries from the specified date range
+//   const entries = await prisma.journalEntries.findMany({
+//     where: {
+//       entryDate: {
+//         gte: fromDate,
+//         lte: toDate,
+//       },
+//     },
+//     include: {
+//       JournalItems: true,
+//     },
+//   });
 
-  // Detect duplicates
-  const duplicates = detectDuplicateJournalEntries(entries);
+//   // Detect duplicates
+//   const duplicates = detectDuplicateJournalEntries(entries);
 
-  if (duplicates.length > 0) {
-    // Log or return the duplicate entries
-    const duplicatePostings = duplicates.map(([a, b]) => ({
-      first: stringify({ firstEntry: a.entryId, secondEntry: b.entryId }),
-      second: stringify(b),
-    }));
-    return duplicatePostings;
-  }
+//   if (duplicates.length > 0) {
+//     // Log or return the duplicate entries
+//     const duplicatePostings = duplicates.map(([a, b]) => ({
+//       first: stringify({ firstEntry: a.entryId, secondEntry: b.entryId }),
+//       second: stringify(b),
+//     }));
+//     return duplicatePostings;
+//   }
 
-  return 'No duplicate entries found for the month.';
-}
+//   return 'No duplicate entries found for the month.';
+// }

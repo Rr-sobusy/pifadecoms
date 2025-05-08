@@ -89,16 +89,16 @@ export const paths = {
     funds: {
       list: '/dashboard/memberFunds',
       view: (fundId: number) => `/dashboard/memberFunds/view/${fundId}`,
-      ledger : '/dashboard/memberFunds/ledger'
+      ledger: '/dashboard/memberFunds/ledger',
     },
     items: {
       list: '/dashboard/items',
       create: '/dashboard/items/create',
-      source: '/dashboard/items/source'
+      source: '/dashboard/items/source',
     },
     finance: {
       list: '/dashboard/finance/accounts',
-      types : '/dashboard/finance/accounts/account-types',
+      types: '/dashboard/finance/accounts/account-types',
       create: '/dashboard/finance/accounts/create',
       journal: '/dashboard/finance/journal',
       journalCreate: '/dashboard/finance/journal/create',
@@ -109,7 +109,7 @@ export const paths = {
       details: (invoiceId: bigint) => `/dashboard/invoice/${invoiceId}`,
       payments: '/dashboard/invoice/payments',
       createPayment: (invoiceId: bigint) => `/dashboard/invoice/payments/create/${invoiceId}`,
-      itemsPerMember : '/dashboard/invoice/items'
+      itemsPerMember: '/dashboard/invoice/items',
     },
     loans: {
       list: '/dashboard/memberLoans/list',
@@ -117,13 +117,14 @@ export const paths = {
       view: (loanId: bigint | 0) => `/dashboard/memberLoans/${loanId}`,
       viewPdf: (loanId: bigint | 0) => `/pdf/loans/${loanId}`,
       calculator: '/dashboard/memberLoans/calculator',
-      source: '/dashboard/memberLoans/sources'
+      source: '/dashboard/memberLoans/sources',
     },
     reports: {
       ledgerList: '/dashboard/reports/ledger',
       balanceSheet: '/dashboard/reports/balanceSheet',
       accountTransaction: '/dashboard/reports/account-transactions',
       incomeAndLoss: '/dashboard/reports/incomeAndLoss',
+      potentialDoubleEntry: '/dashboard/reports/potential-double-entry',
     },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',

@@ -163,6 +163,7 @@ export const layoutConfig = {
             },
             { key: 'balance', title: 'Balance Sheet', href: paths.dashboard.reports.balanceSheet },
             { key: 'incomeAndLoss', title: 'Statement of Income/Loss', href: paths.dashboard.reports.incomeAndLoss },
+            { key: 'doublePosting', title: 'Potential Double entries', href: paths.dashboard.reports.potentialDoubleEntry },
             // { key: 'balanceSheet', title: 'Balance Sheet', href: paths.dashboard.reports.ledgerList },
             // { key: 'profitLoss', title: 'Income/Loss Statement', href: paths.dashboard.reports.ledgerList },
             // { key: 'trialBalance', title: 'Trial Balance', href: paths.dashboard.reports.ledgerList },
