@@ -20,7 +20,7 @@ import AmortizationTable from './amortization-tables';
 interface PageProps extends CardProps {
   loanDetails: ILoanDetails;
   accounts: AccounTreeType;
-  isAdmin:boolean
+  isAdmin: boolean;
 }
 
 const loanContractMap: Record<RepaymentStyle, string> = {
@@ -29,17 +29,22 @@ const loanContractMap: Record<RepaymentStyle, string> = {
   OneTime: 'End of Term',
 };
 
-function LoanAmortizationDetails({ loanDetails, accounts,isAdmin, ...props }: PageProps) {
+function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: PageProps) {
   const totalAmortizationPaid = React.useMemo(() => {
-    if (!loanDetails?.Repayments) return 0;
+    if (!loanDetails?.Repayments) {
+      return { totalPrincipalPaid: 0, totalInterestPaid: 0 };
+    }
 
-    return loanDetails.Repayments.filter((repayment) => repayment.paymentDate)
-      .reduce((acc, curr) => {
+    return loanDetails.Repayments.filter((repayment) => repayment.paymentDate).reduce(
+      (acc, curr) => {
         const principal = Number(curr.principal) || 0;
         const interest = Number(curr.interest) || 0;
-        return acc + principal + interest;
-      }, 0)
-      .toFixed(2);
+        acc.totalPrincipalPaid += principal;
+        acc.totalInterestPaid += interest;
+        return acc;
+      },
+      { totalPrincipalPaid: 0, totalInterestPaid: 0 }
+    );
   }, [loanDetails]);
 
   return (
@@ -53,7 +58,11 @@ function LoanAmortizationDetails({ loanDetails, accounts,isAdmin, ...props }: Pa
           <Stack direction="row" spacing={2}>
             <Typography variant="body2">Total amortization paid:</Typography>
             <Typography variant="body2" color="error">
-              {formatToCurrency(Number(totalAmortizationPaid), 'Fil-ph', 'Php')}
+              {formatToCurrency(
+                Number(totalAmortizationPaid.totalInterestPaid + totalAmortizationPaid.totalPrincipalPaid),
+                'Fil-ph',
+                'Php'
+              )}
             </Typography>
           </Stack>
 
@@ -64,7 +73,11 @@ function LoanAmortizationDetails({ loanDetails, accounts,isAdmin, ...props }: Pa
                 : 'Payment remaining:'}
             </Typography>
             <Typography variant="body2" color="error">
-              {formatToCurrency(Number(loanDetails.amountPayable) - Number(totalAmortizationPaid), 'Fil-ph', 'Php')}
+              {loanDetails?.repStyle === 'Diminishing'
+                ? formatToCurrency(
+                    Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid.totalPrincipalPaid)
+                  )
+                : formatToCurrency(Number(loanDetails.amountPayable) - Number(totalAmortizationPaid), 'Fil-ph', 'Php')}
             </Typography>
           </Stack>
 

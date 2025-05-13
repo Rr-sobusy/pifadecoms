@@ -36,7 +36,7 @@ export const addLoanSchema = zod.object({
       paymentSched: zod.date(),
       principal: zod.number(),
       interest: zod.number(),
-      datePaid: zod.date().optional(),
+      datePaid: zod.date(),
       amountPaid: zod.number().optional(),
       balance: zod.number().optional(),
       isExisting: zod.boolean().default(false),
