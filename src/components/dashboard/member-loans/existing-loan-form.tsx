@@ -124,6 +124,7 @@ function CreateExistingLoan({ loanSources }: Props) {
     const newLine = {
       repaymentId: uuidv4(),
       paymentSched: new Date(),
+      datePaid: new Date(),
       principal: 0,
       interest: 0,
       isExisting: true,
