@@ -20,7 +20,7 @@ type AccountTransaction = {
 type AccountTransactionTypes = AccountTransaction[];
 
 function createEntryKey(entry: AccountTransaction) {
-  return [dayjs(entry.entryDate).format('YYYY-MM'), entry.journalType, entry.memberId ?? 'NULL'].join('|');
+  return [dayjs(entry.entryDate).format('YYYY-MM-DD'), entry.journalType, entry.memberId ?? 'NULL'].join('|');
 }
 
 function hashJournalItems(items: JournalItemLite[]): string {
