@@ -97,6 +97,7 @@ export async function fetchLoanDetails(loanId: bigint) {
           memberId: true,
           lastName: true,
           firstName: true,
+          middleName: true
         },
       },
       Repayments: {

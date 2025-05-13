@@ -34,7 +34,7 @@ function LoanDetailsCard({ loanDetails, ...props }: PageProps) {
         <Stack marginTop={2} spacing={3}>
           {(
             [
-              { title: 'Loaner Name', value: `${loanDetails?.Member.lastName} ${loanDetails?.Member.firstName}` },
+              { title: 'Loaner Name', value: `${loanDetails?.Member.lastName} ${loanDetails?.Member.firstName} ${loanDetails?.Member.middleName ?? ''}` },
               {
                 title: 'Loan status',
                 value: <StatusToggler isActive={loanDetails.loanStatus === 'Active'} loanId={loanDetails.loanId} />,

@@ -4,10 +4,15 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { fetchReceivedPayments } from '@/actions/invoice-payments/fetch-payments';
+import PaymentsTableInfiniteScroll from '@/components/dashboard/payments/payment-table-infinite-scroll';
 import PaymentsTable from '@/components/dashboard/payments/payments-table';
 
-async function page(): Promise<React.JSX.Element> {
-  const payments = await fetchReceivedPayments();
+interface PageProps {
+  searchParams: { cursor?: string };
+}
+
+async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
+  const payments = await fetchReceivedPayments(searchParams.cursor);
   return (
     <Box
       sx={{
@@ -23,8 +28,9 @@ async function page(): Promise<React.JSX.Element> {
             <Typography variant="h4">Received Invoice Payments</Typography>
           </Box>
         </Stack>
-        <PaymentsTable rows={payments} />
+        <PaymentsTable rows={payments['payment']} />
       </Stack>
+      <PaymentsTableInfiniteScroll nextCursor={searchParams.cursor} />
     </Box>
   );
 }

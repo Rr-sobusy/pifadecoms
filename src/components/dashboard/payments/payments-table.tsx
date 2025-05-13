@@ -16,7 +16,7 @@ import { DataTable } from '@/components/core/data-table';
 import DeletePaymentButton from './delete-payment-button';
 
 interface Props {
-  rows: PaymentsType;
+  rows: PaymentsType['payment'];
 }
 
 const columns = [
@@ -65,12 +65,12 @@ const columns = [
     name: 'Payment for',
     width: '100px',
   },
-] satisfies ColumnDef<PaymentsType[0]>[];
+] satisfies ColumnDef<PaymentsType['payment'][0]>[];
 
 function PaymentsTable({ rows }: Props) {
-  const [selectedRows, setSelectedRows] = React.useState<PaymentsType>([]);
+  const [selectedRows, setSelectedRows] = React.useState<PaymentsType['payment']>([]);
 
-  function handleSelectOne(_: React.ChangeEvent, row: PaymentsType[0]) {
+  function handleSelectOne(_: React.ChangeEvent, row: PaymentsType['payment'][0]) {
     setSelectedRows((prev) => {
       const isSelected = prev.some((_prev) => _prev.itemsPaymentId === row.itemsPaymentId);
 
@@ -85,7 +85,7 @@ function PaymentsTable({ rows }: Props) {
       <Stack padding={3} alignItems="flex-end">
         <DeletePaymentButton paymentIds={selectedRows.map((row) => row.itemsPaymentId)} />
       </Stack>
-      <DataTable<PaymentsType[0]>
+      <DataTable<PaymentsType['payment'][0]>
         selected={new Set(selectedRows.map((prev) => Number(prev.itemsPaymentId)))}
         uniqueRowId={(row) => Number(row.itemsPaymentId)}
         onSelectOne={handleSelectOne}

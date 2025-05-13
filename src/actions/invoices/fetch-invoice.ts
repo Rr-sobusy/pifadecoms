@@ -65,7 +65,6 @@ export async function fetchInvoices(props: Filterers = {}) {
   });
   const hasMore = invoices.length === 151;
   const nextCursor = hasMore ? invoices[150].invoiceId : undefined; // Only set nextCursor if there are more than 150 records
-  console.log(nextCursor);
   return { nextCursor, invoice: invoices.slice(0, 151) };
 }
 

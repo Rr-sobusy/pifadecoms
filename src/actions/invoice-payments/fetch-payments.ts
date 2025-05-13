@@ -1,7 +1,15 @@
 import prisma from '@/lib/prisma';
 
-export async function fetchReceivedPayments() {
+export async function fetchReceivedPayments(cursor?: string) {
+  const cursorValue = cursor ? Number(cursor) : undefined;
+
   const payments = await prisma.invoiceItemsPayments.findMany({
+    cursor: cursorValue ? { itemsPaymentId: cursorValue } : undefined,
+    skip: cursor ? 1 : 0,
+    take: 151,
+    orderBy: {
+      itemsPaymentId: 'desc',
+    },
     include: {
       JournalEntry: {
         include: {
@@ -37,5 +45,7 @@ export async function fetchReceivedPayments() {
     },
   });
 
-  return payments;
+  const hasMore = payments.length === 501;
+  const nextCursor = hasMore ? payments[500].itemsPaymentId : undefined;
+  return { nextCursor, payment: payments.slice(0, 501) };
 }
