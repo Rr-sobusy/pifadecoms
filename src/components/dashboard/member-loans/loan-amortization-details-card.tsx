@@ -77,7 +77,11 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
                 ? formatToCurrency(
                     Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid.totalPrincipalPaid)
                   )
-                : formatToCurrency(Number(loanDetails.amountPayable) - Number(totalAmortizationPaid), 'Fil-ph', 'Php')}
+                : formatToCurrency(
+                    Number(loanDetails.amountPayable) -
+                      (Number(totalAmortizationPaid.totalInterestPaid) +
+                        Number(totalAmortizationPaid.totalPrincipalPaid))
+                  )}
             </Typography>
           </Stack>
 
@@ -96,7 +100,9 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
                 )} in ${
                   calculateLapseInterest(
                     dayjs(loanDetails.dueDate).toDate(),
-                    Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid),
+                    Number(loanDetails?.amountPayable) -
+                      (Number(totalAmortizationPaid.totalInterestPaid) +
+                        Number(totalAmortizationPaid.totalPrincipalPaid)),
                     loanDetails?.repStyle
                   ).monthsLapse
                 } month(s)`}
