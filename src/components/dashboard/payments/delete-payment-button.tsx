@@ -8,7 +8,7 @@ import type { PaymentsType } from '@/actions/invoice-payments/types';
 import { toast } from '@/components/core/toaster';
 
 interface PageProps {
-  paymentIds: PaymentsType[0]['itemsPaymentId'][];
+  paymentIds: PaymentsType['payment'][0]['itemsPaymentId'][];
 }
 
 function DeletePaymentButton({ paymentIds }: PageProps) {
