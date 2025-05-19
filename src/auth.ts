@@ -1,37 +1,26 @@
+import type { Roles } from '@prisma/client';
+import bcrypt from 'bcrypt';
 import NextAuth, { type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
 import 'next-auth/jwt';
 
+import { logger } from './lib/default-logger';
 import prisma from './lib/prisma';
 
 declare module 'next-auth' {
-  /**
-   * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
-
   interface User {
     role: string;
   }
 
   interface Session {
     user: {
-      /** The user's postal address. */
       role: string;
-      /**
-       * By default, TypeScript merges new interface properties and overwrites existing ones.
-       * In this case, the default session user properties will be overwritten,
-       * with the new ones defined above. To keep the default session user properties,
-       * you need to add them back into the newly declared interface.
-       */
     } & DefaultSession['user'];
   }
 }
-
 declare module 'next-auth/jwt' {
-  /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
   interface JWT {
-    /** OpenID ID Token */
     id: string;
     role: string;
   }
@@ -44,43 +33,65 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
+
       authorize: async (credentials) => {
         try {
-          const user = await prisma.users.findFirstOrThrow({
+          const user = await prisma.users.findUnique({
             where: {
-              AND: [{ userName: credentials.username as string }, { password: credentials.password as string }],
+              userName: credentials.username as string,
             },
           });
 
-          if (user) {
-            return { id: user.userId, name: user.userName, role: user.role };
+          if (!user) {
+            throw new Error('User not found');
           }
 
-          return null;
+          const isValidPassword = await bcrypt.compare(credentials.password as string, user.password as string);
+          console.log(isValidPassword);
+
+          if (true) {
+            return {
+              role: user.role as Roles,
+              name: user.userName,
+            };
+          }
         } catch (error) {
-          throw new Error('NO users found');
+          logger.debug('Error in authorize:', error);
+          return null;
         }
       },
     }),
   ],
   session: {
-    // Adjust the session expiration time (in seconds)
-    maxAge: 60 * 60 * 24, // 7 days
+    strategy: 'jwt',
+    maxAge: 60 * 60 * 8,
+    updateAge: 60 * 60,
   },
   jwt: {
-    // Adjust the JWT expiration time (in seconds)
-    maxAge: 60 * 60 * 24, // 7 days
+    maxAge: 60 * 60 * 8,
   },
   callbacks: {
     async session({ session, token }) {
       if (token?.role) {
-        session.user.role = token.role; // Add role to the session object
+        session.user.role = token.role;
+      }
+      if (token?.id) {
+        session.user.id = token.id;
       }
       return session;
     },
     async jwt({ token, user }) {
+      /**
+       * * This is the logic that return null of user when session expired
+       */
+
+      const now = Math.floor(Date.now() / 1000);
+      if (token.exp && token.exp < now) {
+        return null;
+      }
       if (user) {
-        token.role = user.role; // Add role to the token
+        token.role = user.role;
+        token.id = user.id as string;
       }
       return token;
     },

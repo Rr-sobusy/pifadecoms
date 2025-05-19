@@ -1,5 +1,6 @@
 import React from 'react';
 import RouterLink from 'next/link';
+import { auth } from '@/auth';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -8,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 import { X as CloseIcon } from '@phosphor-icons/react/dist/ssr/X';
-import type { JournalType } from '@prisma/client';
+import type { JournalType, Roles } from '@prisma/client';
 
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
@@ -37,13 +38,13 @@ interface PageProps {
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const { memberId, accountId, startDate, endDate, entryId, journalType, referenceName } = searchParams;
   const filters = { memberId, accountId, startDate, endDate, journalType, referenceName };
-  const [accountTransactions, accounts, singleAccountTransaction] = await Promise.all([
+  const [accountTransactions, accounts, singleAccountTransaction, session] = await Promise.all([
     fetchAccountTransactions(filters),
     fetchAccountTree(),
     fetchSingleAccountTransaction(entryId),
+    auth(),
   ]);
-
-
+  const isAdmin = session?.user.role === ('Admin' as Roles);
   return (
     <Box
       sx={{
@@ -106,7 +107,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         </Card>
       </Stack>
       <FilterModal accounts={accounts} />
-      <TransactionDialog accountTransactions={singleAccountTransaction} />
+      <TransactionDialog isAdmin={isAdmin} accountTransactions={singleAccountTransaction} />
     </Box>
   );
 }

@@ -15,7 +15,7 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 
 import type { User } from '@/types/user';
 import { config } from '@/config';
-import { paths } from '@/paths';
+// import { paths } from '@/paths';
 import { AuthStrategy } from '@/lib/auth/strategy';
 
 import { Auth0SignOut } from './auth0-sign-out';
@@ -54,7 +54,7 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
         </Typography>
       </Box>
       <Divider />
-      <List sx={{ p: 1 }}>
+      {/* <List sx={{ p: 1 }}>
         <MenuItem component={RouterLink} href={paths.dashboard.settings.account} onClick={onClose}>
           <ListItemIcon>
             <UserIcon />
@@ -73,7 +73,7 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
           </ListItemIcon>
           Billing
         </MenuItem>
-      </List>
+      </List> */}
       <Divider />
       <Box sx={{ p: 1 }}>
         {config.auth.strategy === AuthStrategy.CUSTOM ? <CustomSignOut /> : null}

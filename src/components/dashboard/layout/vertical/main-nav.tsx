@@ -8,10 +8,8 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
-import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
-import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { Next13ProgressBar } from 'next13-progressbar';
 import { useTranslation } from 'react-i18next';
 
@@ -19,12 +17,9 @@ import type { NavItemConfig } from '@/types/nav';
 import type { User } from '@/types/user';
 import { useDialog } from '@/hooks/use-dialog';
 import { usePopover } from '@/hooks/use-popover';
-
-import { ContactsPopover } from '../contacts-popover';
 import { languageFlags, LanguagePopover } from '../language-popover';
 import type { Language } from '../language-popover';
 import { MobileNav } from '../mobile-nav';
-import { NotificationsPopover } from '../notifications-popover';
 import { SearchDialog } from '../search-dialog';
 import { UserPopover } from '../user-popover/user-popover';
 
@@ -78,8 +73,6 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
             spacing={2}
             sx={{ alignItems: 'center', flex: '1 1 auto', justifyContent: 'flex-end' }}
           >
-            <NotificationsButton />
-            <ContactsButton />
             <Divider
               flexItem
               orientation="vertical"
@@ -116,41 +109,41 @@ function SearchButton(): React.JSX.Element {
   );
 }
 
-function ContactsButton(): React.JSX.Element {
-  const popover = usePopover<HTMLButtonElement>();
+// function ContactsButton(): React.JSX.Element {
+//   const popover = usePopover<HTMLButtonElement>();
 
-  return (
-    <React.Fragment>
-      <Tooltip title="Contacts">
-        <IconButton onClick={popover.handleOpen} ref={popover.anchorRef}>
-          <UsersIcon />
-        </IconButton>
-      </Tooltip>
-      <ContactsPopover anchorEl={popover.anchorRef.current} onClose={popover.handleClose} open={popover.open} />
-    </React.Fragment>
-  );
-}
+//   return (
+//     <React.Fragment>
+//       <Tooltip title="Contacts">
+//         <IconButton onClick={popover.handleOpen} ref={popover.anchorRef}>
+//           <UsersIcon />
+//         </IconButton>
+//       </Tooltip>
+//       <ContactsPopover anchorEl={popover.anchorRef.current} onClose={popover.handleClose} open={popover.open} />
+//     </React.Fragment>
+//   );
+// }
 
-function NotificationsButton(): React.JSX.Element {
-  const popover = usePopover<HTMLButtonElement>();
+// function NotificationsButton(): React.JSX.Element {
+//   const popover = usePopover<HTMLButtonElement>();
 
-  return (
-    <React.Fragment>
-      <Tooltip title="Notifications">
-        <Badge
-          color="error"
-          sx={{ '& .MuiBadge-dot': { borderRadius: '50%', height: '10px', right: '6px', top: '6px', width: '10px' } }}
-          variant="dot"
-        >
-          <IconButton onClick={popover.handleOpen} ref={popover.anchorRef}>
-            <BellIcon />
-          </IconButton>
-        </Badge>
-      </Tooltip>
-      <NotificationsPopover anchorEl={popover.anchorRef.current} onClose={popover.handleClose} open={popover.open} />
-    </React.Fragment>
-  );
-}
+//   return (
+//     <React.Fragment>
+//       <Tooltip title="Notifications">
+//         <Badge
+//           color="error"
+//           sx={{ '& .MuiBadge-dot': { borderRadius: '50%', height: '10px', right: '6px', top: '6px', width: '10px' } }}
+//           variant="dot"
+//         >
+//           <IconButton onClick={popover.handleOpen} ref={popover.anchorRef}>
+//             <BellIcon />
+//           </IconButton>
+//         </Badge>
+//       </Tooltip>
+//       <NotificationsPopover anchorEl={popover.anchorRef.current} onClose={popover.handleClose} open={popover.open} />
+//     </React.Fragment>
+//   );
+// }
 
 function LanguageSwitch(): React.JSX.Element {
   const { i18n } = useTranslation();

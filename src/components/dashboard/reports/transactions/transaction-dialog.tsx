@@ -25,6 +25,7 @@ import { transactionTypeMap } from './account-transactions-table';
 
 interface TransactionDialogProps {
   accountTransactions: SingleAccountTransactionType | undefined;
+  isAdmin: boolean;
 }
 
 const getKeyByValue = (value: JournalType = 'cashReceipts') => {
@@ -62,7 +63,7 @@ const columns = [
   },
 ] satisfies ColumnDef<AccountTransactionTypes[0]['JournalItems'][0]>[] | undefined;
 
-function TransactionDialog({ accountTransactions }: TransactionDialogProps) {
+function TransactionDialog({ accountTransactions, isAdmin }: TransactionDialogProps) {
   const router = useRouter();
   const searchParamss = useSearchParams();
 
@@ -175,7 +176,7 @@ function TransactionDialog({ accountTransactions }: TransactionDialogProps) {
           </Typography>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'flex-end', paddingBottom: 4, marginRight: 3 }}>
-          <Button onClick={deleteHandler} variant="contained" color="error">
+          <Button disabled={!isAdmin} onClick={deleteHandler} variant="contained" color="error">
             Delete Entry
           </Button>
         </DialogActions>

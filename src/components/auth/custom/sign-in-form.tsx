@@ -19,7 +19,6 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/custom/client';
 import { useUser } from '@/hooks/use-user';
@@ -105,15 +104,14 @@ export function SignInForm(): React.JSX.Element {
       <div>
         <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-block', fontSize: 0 }}>
           <DynamicLogo colorDark="light" colorLight="dark" height={32} width={122} />
+          <Typography>This is logo</Typography>
         </Box>
       </div>
       <Stack spacing={1}>
-        <Typography variant="h5">Sign in</Typography>
+        <Typography variant="h5">Sign inss</Typography>
         <Typography color="text.secondary" variant="body2">
           Don&apos;t have an account?{' '}
-          <Link component={RouterLink} href={paths.auth.custom.signUp} variant="subtitle2">
-            Sign up
-          </Link>
+   
         </Typography>
       </Stack>
       <Stack spacing={3}>
@@ -198,16 +196,6 @@ export function SignInForm(): React.JSX.Element {
           </div>
         </Stack>
       </Stack>
-      <Alert color="warning">
-        Use{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          sofia@devias.io
-        </Typography>{' '}
-        with password{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          Secret1
-        </Typography>
-      </Alert>
     </Stack>
   );
 }

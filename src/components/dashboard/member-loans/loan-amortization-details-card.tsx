@@ -112,7 +112,7 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
 
           <Divider />
           <Stack spacing={2}>
-            <Typography variant="h6">Paid amortization/s</Typography>
+            <Typography variant="h6">Paid amortization/s {(isAdmin).toString()}</Typography>
             <AmortizationTable
               isAdmin={isAdmin}
               loanId={loanDetails?.loanId}

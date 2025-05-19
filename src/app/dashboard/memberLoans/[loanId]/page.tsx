@@ -17,14 +17,17 @@ import LoanAmortizationDetails from '@/components/dashboard/member-loans/loan-am
 import LoanDetailsCard from '@/components/dashboard/member-loans/loan-details-card';
 import LoanNotes from '@/components/dashboard/member-loans/loan-notes';
 import OptionsPopoverButton from '@/components/dashboard/member-loans/option-popover-button';
-
+import { auth } from '@/auth';
+import { Roles } from '@prisma/client';
 interface PageProps {
   params: { loanId: bigint };
 }
 
 async function page({ params }: PageProps): Promise<React.JSX.Element> {
   const loanId = params?.loanId;
-  const [loanDetails, accounts] = await Promise.all([fetchLoanDetails(loanId), fetchAccountTree()]);
+  const [loanDetails, accounts, session] = await Promise.all([fetchLoanDetails(loanId), fetchAccountTree(), auth()]);
+
+  const isAdmin = session?.user.role === "Admin" as Roles
 
   if (!loanDetails) {
     return (
@@ -75,7 +78,7 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
           </Stack>
           <div>
             <Stack gap={2} direction="row">
-              <OptionsPopoverButton loanId={loanDetails?.loanId} isAdmin={true} />
+              <OptionsPopoverButton loanId={loanDetails?.loanId} isAdmin={isAdmin} />
               <Button
                 target="_blank"
                 LinkComponent={RouterLink}
@@ -106,7 +109,7 @@ async function page({ params }: PageProps): Promise<React.JSX.Element> {
               lg: 8,
             }}
           >
-            <LoanAmortizationDetails isAdmin={true} accounts={accounts} sx={{ p: 3 }} loanDetails={loanDetails} />
+            <LoanAmortizationDetails isAdmin={isAdmin} accounts={accounts} sx={{ p: 3 }} loanDetails={loanDetails} />
           </Grid>
         </Grid>
       </Stack>

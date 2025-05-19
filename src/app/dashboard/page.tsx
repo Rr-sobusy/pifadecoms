@@ -50,7 +50,7 @@ export default async function Page(): Promise<React.JSX.Element> {
     >
       <Stack spacing={4}>
         <Box sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Overview</Typography>
+          <Typography variant="h4">Overview </Typography>
         </Box>
 
         <Grid container spacing={3}>
