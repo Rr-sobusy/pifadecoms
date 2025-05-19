@@ -170,7 +170,7 @@ model LoanRepayments {
   repaymentId     BigInt        @id @default(autoincrement())
   loanId          BigInt
   paymentSched    DateTime
-  paymentDate     DateTime
+  paymentDate     DateTime      @default(now())
   principal       Decimal       @default(0) @db.Decimal(10, 2)
   interest        Decimal       @default(0) @db.Decimal(10, 2)
   remarks         String?
