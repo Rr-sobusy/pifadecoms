@@ -1,12 +1,9 @@
 import React from 'react';
-import { Typography } from '@mui/material';
 
 import { SplitLayout } from '@/components/auth/split-layout';
 import { SignInForm } from '@/components/auth/cognito/sign-in-form';
 
-type Props = {};
-
-function page({}: Props) {
+function page(): React.JSX.Element {
   return (
     <SplitLayout>
      <SignInForm />

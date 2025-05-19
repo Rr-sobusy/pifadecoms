@@ -24,12 +24,11 @@ const schema = zod.object({
   password: zod.string().min(1, { message: 'Password is required' }),
 });
 
-type Values = zod.infer<typeof schema>;
+export type SignInSchema = zod.infer<typeof schema>;
 
-const defaultValues = { username: 'pifadeco_user', password: '' } satisfies Values;
+const defaultValues = { username: 'pifadeco_user', password: '' } satisfies SignInSchema;
 
 export function SignInForm(): React.JSX.Element {
-  const router = useRouter();
 
   const [showPassword, setShowPassword] = React.useState<boolean>();
 
@@ -38,11 +37,10 @@ export function SignInForm(): React.JSX.Element {
   const {
     control,
     handleSubmit,
-    setError,
     formState: { errors },
-  } = useForm<Values>({ defaultValues, resolver: zodResolver(schema) });
+  } = useForm<SignInSchema>({ defaultValues, resolver: zodResolver(schema) });
 
-  async function submitHandler(data: Values): Promise<void> {
+  async function submitHandler(data: SignInSchema): Promise<void> {
     try {
       setIsPending(true);
       await signInUsingCredentials(data);

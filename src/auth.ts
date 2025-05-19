@@ -49,12 +49,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const isValidPassword = await bcrypt.compare(credentials.password as string, user.password as string);
           console.log(isValidPassword);
 
-          if (true) {
+          if (isValidPassword && user) {
             return {
               role: user.role as Roles,
               name: user.userName,
             };
           }
+          return null;
         } catch (error) {
           logger.debug('Error in authorize:', error);
           return null;
