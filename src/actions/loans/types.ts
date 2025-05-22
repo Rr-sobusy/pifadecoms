@@ -41,6 +41,7 @@ export const addLoanSchema = zod.object({
       balance: zod.number().optional(),
       isExisting: zod.boolean().default(false),
       notes: zod.string().optional(),
+      historicalRef:zod.string().optional()
     })
   ),
 });

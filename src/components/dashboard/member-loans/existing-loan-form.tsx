@@ -456,6 +456,13 @@ function CreateExistingLoan({ loanSources }: Props) {
                     variant="number"
                     isRequired
                   />
+                  <FormInputFields
+                    control={control}
+                    name={`paymentSched.${index}.historicalRef`}
+                    inputLabel="Historical Payment O.R"
+                    errors={errors}
+                    variant="text"
+                  />
                 </Stack>
               ))}
               <div>

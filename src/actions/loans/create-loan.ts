@@ -100,12 +100,14 @@ export const createExistingLoan = actionClient.schema(addLoanSchema).action(asyn
         repInterval: Request.repInterval,
         repStyle: Request.repStyle,
 
+
         Repayments: {
           create: Request.paymentSched.map((repayment) => ({
             paymentSched: repayment.paymentSched,
             principal: repayment.principal,
             interest: repayment.interest,
             paymentDate: repayment.datePaid,
+            historicalRef:repayment.historicalRef
           })),
         },
       },
