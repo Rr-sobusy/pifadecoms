@@ -266,7 +266,7 @@ function NewJournalFrom({ data }: NewJournalFromProps) {
                     )}
                     renderOption={(props, options) => (
                       <Option {...props} key={options.memberId} value={options.memberId}>
-                        {`${options.lastName}, ${options.firstName}`}
+                        {`${options.lastName}, ${options.firstName} ${options.middleName || ''}`}
                       </Option>
                     )}
                   />
