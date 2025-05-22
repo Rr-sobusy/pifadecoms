@@ -101,7 +101,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
   const lineItems = watch('journalLineItems');
 
   const memberData = watch('particulars');
-  const watchPaymentQty = watch('paymentQty');
+  // const watchPaymentQty = watch('paymentQty');
   const watchPaymentInterval = watch('repInterval');
   const router = useRouter();
 

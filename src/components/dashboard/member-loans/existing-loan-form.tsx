@@ -75,7 +75,7 @@ function CreateExistingLoan({ loanSources }: Props) {
   const { execute, isExecuting, result } = useAction(createExistingLoan);
   const watchRepaymentStyle = watch('repStyle');
 
-  const watchPaymentQty = watch('paymentQty');
+  // const watchPaymentQty = watch('paymentQty');
   const watchPaymentInterval = watch('repInterval');
   const router = useRouter();
 
