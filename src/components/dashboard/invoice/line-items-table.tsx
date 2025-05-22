@@ -10,6 +10,8 @@ import type { InvoiceItemsWithItem } from '@/actions/invoices/types';
 import { DataTable } from '@/components/core/data-table';
 import type { ColumnDef } from '@/components/core/data-table';
 
+import DeleteInvoiceItemButton from './delete-invoice-item-button';
+
 const columns = [
   {
     formatter: (row) => (
@@ -17,7 +19,7 @@ const columns = [
         <Typography variant="subtitle2">{row.Item.itemName}</Typography>
         {row.isTotallyPaid && (
           <div>
-            <Chip variant='soft' color="success" label="Paid" />
+            <Chip variant="soft" color="success" label="Paid" />
           </div>
         )}
       </Stack>
@@ -75,6 +77,13 @@ const columns = [
       );
     },
     name: 'Total Amount',
+    width: '100px',
+  },
+  {
+    formatter: (row) => {
+      return <DeleteInvoiceItemButton invoiceItemId={row.invoiceItemId} />;
+    },
+    name: 'Action',
     width: '100px',
   },
 ] satisfies ColumnDef<InvoiceItemsWithItem['InvoiceItems'][0]>[];

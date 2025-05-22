@@ -101,7 +101,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
   const lineItems = watch('journalLineItems');
 
   const memberData = watch('particulars');
-  // const watchPaymentQty = watch('paymentQty');
+  const watchPaymentQty = watch('paymentQty') ?? 1;
   const watchPaymentInterval = watch('repInterval');
   const router = useRouter();
 
@@ -436,7 +436,9 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
 
                           const interval = loanTypeMap[watchPaymentInterval];
                           if (interval && date) {
-                            const nextDue = dayjs().add(interval === 'day' ? 14 : 1, interval);
+                            const multiplier = interval === 'day' && watchPaymentInterval === 'TwoWeeks' ? 14 : 1;
+                            const totalAmount = watchPaymentQty * multiplier;
+                            const nextDue = dayjs(date).add(totalAmount, interval);
                             setValue('dueDate', nextDue.toDate());
                           }
                         }}

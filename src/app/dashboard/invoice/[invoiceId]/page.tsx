@@ -71,14 +71,6 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
               <Typography variant="h4">INV-{params.invoiceId.toString().padStart(6, '0')}</Typography>
             </Stack>
             <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-              {/* <InvoicePDFLink invoice={undefined}>
-                <Button disabled color="secondary">
-                  Download
-                </Button>
-              </InvoicePDFLink>
-              <Button disabled component="a" href={paths.pdf.invoice('1')} target="_blank" variant="contained">
-                Preview
-              </Button> */}
               <Button
                 LinkComponent={RouterLink}
                 href={`${paths.dashboard.invoice.itemsPerMember}?memberId=${invoiceDetails?.Members.memberId}`}

@@ -75,7 +75,7 @@ function CreateExistingLoan({ loanSources }: Props) {
   const { execute, isExecuting, result } = useAction(createExistingLoan);
   const watchRepaymentStyle = watch('repStyle');
 
-  // const watchPaymentQty = watch('paymentQty');
+  const watchPaymentQty = watch('paymentQty') ?? 1;
   const watchPaymentInterval = watch('repInterval');
   const router = useRouter();
 
@@ -366,7 +366,9 @@ function CreateExistingLoan({ loanSources }: Props) {
 
                           const interval = loanTypeMap[watchPaymentInterval];
                           if (interval && date) {
-                            const nextDue = dayjs().add(interval === 'day' ? 14 : 1, interval);
+                            const multiplier = interval === 'day' && watchPaymentInterval === 'TwoWeeks' ? 14 : 1;
+                            const totalAmount = watchPaymentQty * multiplier;
+                            const nextDue = dayjs(date).add(totalAmount, interval);
                             setValue('dueDate', nextDue.toDate());
                           }
                         }}
