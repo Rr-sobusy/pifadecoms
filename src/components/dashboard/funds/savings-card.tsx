@@ -35,6 +35,7 @@ import FundTransactionPaginator from './fund-transcaction-table-paginator';
 
 interface SavingsCardProps {
   fund: MemberFundsType[0];
+  isAdmin:boolean
 }
 
 const FundTransactionMap: Record<FundTransactionsType, string> = {
@@ -126,7 +127,7 @@ const columns = [
   },
 ] satisfies ColumnDef<MemberFundsType[0]['Transactions'][0]>[];
 
-function SavingsCard({ fund }: SavingsCardProps) {
+function SavingsCard({ fund , isAdmin}: SavingsCardProps) {
   const router = useRouter();
   const pathName = usePathname();
 
@@ -255,7 +256,7 @@ function SavingsCard({ fund }: SavingsCardProps) {
                       </Typography>
                     )}
                     <Tooltip title="Note: Use this with precautions because editing it without proper journal entry may encounter deferred risk">
-                      <IconButton color="error" onClick={() => toggleEditMode((prev) => !prev)}>
+                      <IconButton disabled={!isAdmin} color="error" onClick={() => toggleEditMode((prev) => !prev)}>
                         <Eraser />
                       </IconButton>
                     </Tooltip>

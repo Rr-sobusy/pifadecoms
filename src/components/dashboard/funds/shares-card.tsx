@@ -9,31 +9,33 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid2';
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import { Eraser } from '@phosphor-icons/react/dist/ssr';
 import { ArrowBendRightDown as WithdrawIcon } from '@phosphor-icons/react/dist/ssr/ArrowBendRightDown';
 import { Bank } from '@phosphor-icons/react/dist/ssr/Bank';
 import { Calculator as CalcuIcon } from '@phosphor-icons/react/dist/ssr/Calculator';
 import { CashRegister as TransactIcon } from '@phosphor-icons/react/dist/ssr/CashRegister';
 import { PiggyBank } from '@phosphor-icons/react/dist/ssr/PiggyBank';
 import { FundTransactionsType } from '@prisma/client';
-import { Eraser } from '@phosphor-icons/react/dist/ssr';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
+
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import { deleteFundTransaction } from '@/actions/funds/delete-fund-transaction';
 import type { MemberFundsType } from '@/actions/funds/types';
+import { updateFundManualAction } from '@/actions/funds/update-fund-manual';
 import { ColumnDef, DataTable } from '@/components/core/data-table';
 import { toast } from '@/components/core/toaster';
-import { updateFundManualAction } from '@/actions/funds/update-fund-manual';
-import OutlinedInput from '@mui/material/OutlinedInput';
+
 import DepositButton from './deposit-button';
 import FundTransactionPaginator from './fund-transcaction-table-paginator';
 
-
 interface SharesCardProps {
   fund: MemberFundsType[0];
+  isAdmin: boolean;
 }
 
 const FundTransactionMap: Record<FundTransactionsType, string> = {
@@ -123,7 +125,7 @@ const columns = [
   },
 ] satisfies ColumnDef<MemberFundsType[0]['Transactions'][0]>[];
 
-function SharesCard({ fund }: SharesCardProps) {
+function SharesCard({ fund, isAdmin }: SharesCardProps) {
   const router = useRouter();
   const pathName = usePathname();
 
@@ -253,7 +255,7 @@ function SharesCard({ fund }: SharesCardProps) {
                       </Typography>
                     )}
                     <Tooltip title="Note: Use this with precautions because editing it without proper journal entry may encounter deferred risk">
-                      <IconButton color="error" onClick={() => toggleEditMode((prev) => !prev)}>
+                      <IconButton disabled={!isAdmin} color="error" onClick={() => toggleEditMode((prev) => !prev)}>
                         <Eraser />
                       </IconButton>
                     </Tooltip>

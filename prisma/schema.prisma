@@ -76,6 +76,7 @@ enum RepaymentStyle {
 
 enum RepaymentInterval {
   Weekly
+  TwoWeeks
   Monthly
   Yearly
   None

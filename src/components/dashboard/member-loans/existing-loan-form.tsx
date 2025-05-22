@@ -50,6 +50,7 @@ const repaymentStyle: Record<RepaymentStyle, string> = {
 const repaymentInterval: Record<RepaymentInterval, string> = {
   Weekly: 'Weekly',
   Monthly: 'Monthly',
+  TwoWeeks: 'Every two weeks',
   Yearly: 'Yearly',
   None: 'None',
 };
@@ -65,9 +66,7 @@ function CreateExistingLoan({ loanSources }: Props) {
   } = useForm<IAddLoanSchema>({
     resolver: zodResolver(addLoanSchema),
     defaultValues: {
-      paymentSched: [
-       
-      ],
+      paymentSched: [],
     },
   });
 
@@ -359,6 +358,7 @@ function CreateExistingLoan({ loanSources }: Props) {
 
                           const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
                             Weekly: 'week',
+                            TwoWeeks: 'day',
                             Monthly: 'month',
                             Yearly: 'year',
                             None: null,
@@ -366,7 +366,8 @@ function CreateExistingLoan({ loanSources }: Props) {
 
                           const interval = loanTypeMap[watchPaymentInterval];
                           if (interval && date) {
-                            setValue('dueDate', dayjs(date).add(watchPaymentQty, interval).toDate());
+                            const nextDue = dayjs().add(interval === 'day' ? 14 : 1, interval);
+                            setValue('dueDate', nextDue.toDate());
                           }
                         }}
                         defaultValue={dayjs()}
@@ -406,7 +407,7 @@ function CreateExistingLoan({ loanSources }: Props) {
               <Typography variant="h6">Existing Payments</Typography>
               {watchPaymentSched.map((_, index) => (
                 <Stack key={index} spacing={3} direction="row">
-                 <Stack paddingTop={5}>{index + 1}</Stack>
+                  <Stack paddingTop={5}>{index + 1}</Stack>
                   <Controller
                     name={`paymentSched.${index}.paymentSched`}
                     control={control}

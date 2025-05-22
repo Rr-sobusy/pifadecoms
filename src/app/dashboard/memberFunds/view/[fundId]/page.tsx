@@ -1,12 +1,14 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import RouterLink from 'next/link';
 import { redirect } from 'next/navigation';
+import { auth } from '@/auth';
 import { Chip } from '@mui/material';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
-import type { FundTransactionsType } from '@prisma/client';
+import type { FundTransactionsType, Roles } from '@prisma/client';
 
 import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
@@ -16,7 +18,6 @@ import FundTransactionNonPosting from '@/components/dashboard/funds/fund-transac
 import { FundTransactionWithPosting } from '@/components/dashboard/funds/fund-transaction-with-posting';
 import SavingsCard from '@/components/dashboard/funds/savings-card';
 import SharesCard from '@/components/dashboard/funds/shares-card';
-import type { Metadata } from 'next';
 
 interface PageProps {
   params: { fundId: number };
@@ -31,16 +32,18 @@ export const metadata: Metadata = {
   title: 'PIFADECO | Member funds current',
 };
 
-
 async function page({ params, searchParams }: PageProps) {
-  const [fundTransactions, accounts] = await Promise.all([
+  const [fundTransactions, accounts, session] = await Promise.all([
     fetchFundTransactions(Number(params.fundId)),
     fetchAccountTree(),
+    auth(),
   ]);
 
   if (!fundTransactions) {
     redirect(paths.dashboard.funds.list);
   }
+
+  const isAdmin = session?.user.role === ('Admin' as Roles);
 
   return (
     <Box
@@ -79,8 +82,8 @@ async function page({ params, searchParams }: PageProps) {
             </Stack>
           </Box>
         </Stack>
-        <SavingsCard fund={fundTransactions} />
-        <SharesCard fund={fundTransactions} />
+        <SavingsCard isAdmin={isAdmin} fund={fundTransactions} />
+        <SharesCard isAdmin={isAdmin} fund={fundTransactions} />
       </Stack>
       <FundTransactionWithPosting
         transactionType={searchParams.transactionType}

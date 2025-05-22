@@ -13,6 +13,7 @@ interface LoanPdfDocProps {
 
 const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
   Weekly: 'week',
+  TwoWeeks: 'day',
   Monthly: 'month',
   Yearly: 'year',
   None: null,
@@ -79,7 +80,7 @@ function computeAmortization(
       amortizations.push({
         paymentNo: i,
         paymentSched: dayjs(releaseDate)
-          .add(i, loanTypeMap[repInterval] ?? undefined)
+          .add(repInterval === 'TwoWeeks' ? i * 14 : i, loanTypeMap[repInterval] ?? undefined)
           .toDate(),
         totalPayment,
         principal: fixedPrincipal,
@@ -96,7 +97,7 @@ function computeAmortization(
       amortizations.push({
         paymentNo: i,
         paymentSched: dayjs(releaseDate)
-          .add(i, loanTypeMap[repInterval] ?? undefined)
+          .add(repInterval === 'TwoWeeks' ? i * 14 : i, loanTypeMap[repInterval] ?? undefined)
           .toDate(),
         totalPayment: fixedPayment,
         principal: fixedPayment,
@@ -154,7 +155,6 @@ const styleSheet = StyleSheet.create({
   schedLine: {
     flexDirection: 'row',
   },
-
 
   paymentNo: { width: '10%', textAlign: 'center', margin: 2 },
   paymentDate: { width: '17%', margin: 2 },
@@ -291,7 +291,11 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
                   <Text>{dayjs(ammort.paymentSched).format('MMM DD YYYY')}</Text>
                 </View>
                 <View style={styleSheet.totalPayment}>
-                  <Text>{loanDetails?.repStyle !== "Diminishing" ? formatToPHP(ammort.totalPayment) : `${formatToPHP(ammort.totalPayment)} (${formatToPHP(ammort.totalPayment + diminishingPenalty)}) if lapses` }</Text>
+                  <Text>
+                    {loanDetails?.repStyle !== 'Diminishing'
+                      ? formatToPHP(ammort.totalPayment)
+                      : `${formatToPHP(ammort.totalPayment)} (${formatToPHP(ammort.totalPayment + diminishingPenalty)}) if lapses`}
+                  </Text>
                 </View>
                 <View style={styleSheet.principal}>
                   <Text>{formatToPHP(ammort.principal)}</Text>
@@ -299,7 +303,8 @@ function LoanPdfDoc({ loanDetails }: LoanPdfDocProps) {
                 <View style={styleSheet.interest}>
                   <Text>
                     {formatToPHP(ammort.interest)}
-                    {loanDetails.repStyle === 'Diminishing'&& `(${formatToPHP(diminishingPenalty + ammort.interest)} if lapses)`}
+                    {loanDetails.repStyle === 'Diminishing' &&
+                      `(${formatToPHP(diminishingPenalty + ammort.interest)} if lapses)`}
                   </Text>
                 </View>
                 <View style={styleSheet.balance}>

@@ -56,6 +56,7 @@ const repaymentStyle: Record<RepaymentStyle, string> = {
 
 const repaymentInterval: Record<RepaymentInterval, string> = {
   Weekly: 'Weekly',
+  TwoWeeks: 'Every 2 weeks',
   Monthly: 'Monthly',
   Yearly: 'Yearly',
   None: 'None',
@@ -427,6 +428,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
 
                           const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
                             Weekly: 'week',
+                            TwoWeeks: 'day', // Use with amount = 14
                             Monthly: 'month',
                             Yearly: 'year',
                             None: null,
@@ -434,7 +436,8 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
 
                           const interval = loanTypeMap[watchPaymentInterval];
                           if (interval && date) {
-                            setValue('dueDate', dayjs(date).add(watchPaymentQty, interval).toDate());
+                            const nextDue = dayjs().add(interval === 'day' ? 14 : 1, interval);
+                            setValue('dueDate', nextDue.toDate());
                           }
                         }}
                         defaultValue={dayjs()}
