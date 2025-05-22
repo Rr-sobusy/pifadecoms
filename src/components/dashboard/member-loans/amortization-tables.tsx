@@ -56,7 +56,7 @@ function AmortizationTable({ rows, accounts, memberId, loanId, isAdmin }: Props)
     },
     {
       name: 'Historical O.R',
-      formatter: (row) => <Typography variant="subtitle2">{row.historicalRef?.toString()}</Typography>,
+      formatter: (row) => <Typography variant="subtitle2">{row.historicalRef ?? ''}</Typography>,
     },
     {
       name: 'Principal Amount',
