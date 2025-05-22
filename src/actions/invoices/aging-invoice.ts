@@ -9,4 +9,6 @@ export async function fetchAgingInvoiceItems(){
             isTotallyPaid : false,
         },
     })
+
+    return agingInvoiceItems
 }
