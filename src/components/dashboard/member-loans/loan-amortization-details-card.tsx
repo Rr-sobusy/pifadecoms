@@ -26,7 +26,7 @@ interface PageProps extends CardProps {
 const loanContractMap: Record<RepaymentStyle, string> = {
   Diminishing: 'Diminishing 3.5%',
   StraightPayment: 'Straight Payment 3.25%',
-  OneTime: 'End of Term',
+  OneTime: 'End of Term 3.25%',
 };
 
 function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: PageProps) {
@@ -46,6 +46,20 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
       { totalPrincipalPaid: 0, totalInterestPaid: 0 }
     );
   }, [loanDetails]);
+
+  const penaltyInterest =
+    loanDetails?.repStyle === 'Diminishing'
+      ? calculateLapseInterest(
+          loanDetails?.dueDate,
+          Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid.totalPrincipalPaid),
+          loanDetails?.repStyle
+        )
+      : calculateLapseInterest(
+          loanDetails?.dueDate,
+          Number(loanDetails?.amountLoaned) -
+            (Number(totalAmortizationPaid.totalPrincipalPaid) + Number(totalAmortizationPaid.totalInterestPaid)),
+          loanDetails?.repStyle
+        );
 
   return (
     <Card {...props}>
@@ -89,22 +103,8 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
             <Stack direction="row" spacing={2}>
               <Typography variant="body2">{`Penalty Interest (${loanContractMap[loanDetails?.repStyle]}):`}</Typography>
               <Typography variant="body2" color="error">
-                {`${formatToCurrency(
-                  calculateLapseInterest(
-                    dayjs(loanDetails.dueDate).toDate(),
-                    Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid),
-                    loanDetails?.repStyle
-                  ).computedLapseInterest,
-                  'Fil-ph',
-                  'Php'
-                )} in ${
-                  calculateLapseInterest(
-                    dayjs(loanDetails.dueDate).toDate(),
-                    Number(loanDetails?.amountPayable) -
-                      (Number(totalAmortizationPaid.totalInterestPaid) +
-                        Number(totalAmortizationPaid.totalPrincipalPaid)),
-                    loanDetails?.repStyle
-                  ).monthsLapse
+                {`${formatToCurrency(Number(penaltyInterest.computedLapseInterest))} in ${
+                  penaltyInterest.monthsLapse
                 } month(s)`}
               </Typography>
             </Stack>
@@ -112,7 +112,7 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
 
           <Divider />
           <Stack spacing={2}>
-            <Typography variant="h6">Paid amortization/s {(isAdmin).toString()}</Typography>
+            <Typography variant="h6">Paid amortization/s</Typography>
             <AmortizationTable
               isAdmin={isAdmin}
               loanId={loanDetails?.loanId}
@@ -150,8 +150,7 @@ function calculateLapseInterest(
 
   const rate = penaltyRates[repStyle];
 
-  const computedLapseInterest =
-    repStyle === 'StraightPayment' ? remainingBalance * rate * monthsLapse : remainingBalance * rate * monthsLapse;
+  const computedLapseInterest = remainingBalance * rate * monthsLapse;
 
   return { monthsLapse, computedLapseInterest };
 }
