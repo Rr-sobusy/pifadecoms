@@ -46,6 +46,12 @@ export const invoiceItemsPaymentschema = transactionalSchema
     paymentLine: z.array(
       z.object({
         invoiceItemId: z.number(),
+        Item: z.object({
+          ItemSource: z.object({
+            sourceId: z.number().optional(),
+            sourceName: z.string().optional(),
+          })
+        }).optional(),
         itemName: z.string(),
         quantityPurchased: z.number(),
         principal: z.number(),
@@ -53,6 +59,8 @@ export const invoiceItemsPaymentschema = transactionalSchema
         tradePaying:z.number(),
         principalPaying: z.number(),
         interestPaying: z.number(),
+        quantityPaying:z.number().optional(),
+        invoiceDate: z.string()
       })
     ),
   })

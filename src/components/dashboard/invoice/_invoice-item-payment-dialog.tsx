@@ -45,6 +45,19 @@ interface PageProps {
   setSelectedRowsToNull?: () => void;
 }
 
+type GroupedType = {
+  /**
+   * * Key is the source name
+   */
+  [key: string]: {
+    sourceId: number;
+    sourceName: string;
+    totalPrincipal: number;
+    totalTrade: number;
+    totalInterest: number;
+  };
+};
+
 function isPastDue(inputtedDate: Date): boolean {
   return !dayjs(inputtedDate).add(dueMonth, 'M').isSameOrAfter(dayjs(), 'D');
 }
@@ -112,14 +125,14 @@ function InvoiceItemPaymentDialog({
           principal: row.principalPrice,
           trade: row.trade,
           principalPaying: 0,
+          Item: row.Item,
           interestPaying: 0,
           tradePaying: 0,
+          invoiceDate: dayjs(row.Invoice.dateOfInvoice).format('MMM DD YYYY'),
         };
       })
     );
   }, [selectedRows, setValue]);
-
-  console.log(selectedRows);
 
   React.useEffect(() => {
     if (result.data?.success) {
@@ -185,9 +198,34 @@ function InvoiceItemPaymentDialog({
   );
 
   const watchPaymentLine = watch('paymentLine') || [];
+  console.log(watchPaymentLine);
   const watchJournalLines = watch('journalLineItems');
   const totalDebits = watch('journalLineItems').reduce((acc, curr) => acc + curr.debit || 0, 0);
   const totalCredits = watch('journalLineItems').reduce((acc, curr) => acc + curr.credit || 0, 0);
+
+  // const flattedPayments = watchPaymentLine.flatMap((items)=> )
+
+  const grouped: GroupedType = {};
+
+  for (const item of watchPaymentLine) {
+    const sourceName = item.Item?.ItemSource?.sourceName || 'Unknown';
+    const sourceId = item.Item?.ItemSource?.sourceId || 0;
+
+    if (!grouped[sourceName]) {
+      grouped[sourceName] = {
+        sourceId,
+        sourceName,
+        totalPrincipal: 0,
+        totalTrade: 0,
+        totalInterest: 0,
+      };
+    }
+
+    grouped[sourceName].totalPrincipal += item.principalPaying;
+    grouped[sourceName].totalTrade += item.tradePaying;
+    grouped[sourceName].totalInterest += item.interestPaying;
+  }
+
   return (
     <Dialog
       sx={{
@@ -254,8 +292,16 @@ function InvoiceItemPaymentDialog({
           <Divider />
           <Stack marginY={2} spacing={1}>
             <Typography variant="h6">Payment Line</Typography>
-            {watchPaymentLine.map((_, index:number) => (
+            {watchPaymentLine.map((_, index: number) => (
               <Stack key={index} direction="row" spacing={2}>
+                <FormInputFields
+                  isDisabled
+                  errors={errors.paymentLine?.[index]?.invoiceDate}
+                  control={control}
+                  name={`paymentLine.${index}.invoiceDate`}
+                  variant="text"
+                  inputLabel="Date of Invoice"
+                />
                 <FormInputFields
                   isDisabled
                   errors={errors.paymentLine?.[index]?.itemName}
@@ -310,6 +356,18 @@ function InvoiceItemPaymentDialog({
                 />
               </Stack>
             ))}
+            <Divider sx={{ marginTop: 2 }} />
+            <Stack>
+              <Typography variant='h6'>Suggested Journal Entries</Typography>
+              {Object.entries(grouped).map(([sourceName, values]) => (
+                <Stack>
+                  <Typography variant="subtitle2" fontSize={15}>{values.sourceName}</Typography>
+                  <Typography variant="caption">{`Total Principal (${values.sourceName}): ${formatToCurrency(values.totalPrincipal)}`}</Typography>
+                  <Typography variant="caption">{`Total Trading (${values.sourceName}): ${formatToCurrency(values.totalTrade)}`}</Typography>
+                  <Typography variant="caption">{`Total Interest (${values.sourceName}): ${formatToCurrency(values.totalInterest)}`}</Typography>
+                </Stack>
+              ))}
+            </Stack>
             <Typography sx={{ textDecoration: 'underline', marginTop: 2 }} variant="subtitle2">
               Payment-line total : {formatToCurrency(paymentTotal, 'Fil-ph', 'Php')}
             </Typography>

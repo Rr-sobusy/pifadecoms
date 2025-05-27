@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 
 // interface LayoutProps {}
 
-export default function Layout(): React.JSX.Element {
+export default async function Layout(): Promise<React.JSX.Element> {
   return (
     // <Box
     //   sx={{
