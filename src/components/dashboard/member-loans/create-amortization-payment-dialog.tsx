@@ -4,24 +4,26 @@ import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogAction from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers';
+import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import Decimal from 'decimal.js';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
 import type { AccounTreeType } from '@/actions/accounts/types';
@@ -99,7 +101,7 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
     if (result.data?.success) {
       handleClose();
       toast.success('Payment successfully posted');
-      reset()
+      reset();
     }
   }, [result]);
 
@@ -126,6 +128,18 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
       },
     ]);
   }, [getValues, setValue]);
+
+  const removeJournalLineItemHandler = React.useCallback(
+    (lineItemId: string) => {
+      const journalLines = getValues('journalLineItems');
+
+      setValue(
+        'journalLineItems',
+        journalLines.filter((item) => item.journalLineItemId !== lineItemId)
+      );
+    },
+    [setValue, getValues]
+  );
 
   const totalDebits = watch('journalLineItems').reduce((acc, curr) => acc + curr.debit, 0);
   const totalCredits = watch('journalLineItems').reduce((acc, curr) => acc + curr.credit, 0);
@@ -188,7 +202,6 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
             <FormControlLabel control={<Checkbox />} label="Span payment" />
             {watchPaymentSched.map((_, index) => (
               <Stack key={index} alignItems="center" spacing={2} direction="row">
-             
                 <Controller
                   control={control}
                   name={`paymentSched.${index}.paymentSched`}
@@ -221,7 +234,7 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
           <Divider />
           <Stack spacing={2} marginY={2}>
             <Typography variant="h6">Journal Line</Typography>
-            {watchJournalLines.map((_, index) => (
+            {watchJournalLines.map((items, index) => (
               <Stack key={index} direction="row" spacing={1}>
                 <Controller
                   control={control}
@@ -258,6 +271,14 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
                   inputLabel="Credit"
                   name={`journalLineItems.${index}.credit`}
                 />
+                <IconButton
+                  onClick={() => removeJournalLineItemHandler(items.journalLineItemId)}
+                  disabled={index === 0 || index === 1}
+                  color="error"
+                  sx={{ alignSelf: 'flex-end' }}
+                >
+                  <TrashIcon />
+                </IconButton>
               </Stack>
             ))}
             <Stack sx={{ width: '50%' }}>

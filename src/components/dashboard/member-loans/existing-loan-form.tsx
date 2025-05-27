@@ -12,13 +12,14 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid2';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr';
+import { Plus as PlusIcon, Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr';
 import type { RepaymentInterval, RepaymentStyle } from '@prisma/client';
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, useForm } from 'react-hook-form';
@@ -131,6 +132,18 @@ function CreateExistingLoan({ loanSources }: Props) {
 
     return setValue('paymentSched', [...existingLine, newLine]);
   }, [getValues('paymentSched'), setValue]);
+
+  const removeJournalLineItemHandler = React.useCallback(
+    (paymentId: string) => {
+      const existingPayments = getValues('paymentSched');
+
+      setValue(
+        'paymentSched',
+        existingPayments.filter((payment) => payment.repaymentId !== paymentId)
+      );
+    },
+    [setValue, getValues]
+  );
 
   function submitHandler(data: IAddLoanSchema) {
     execute(data);
@@ -407,7 +420,7 @@ function CreateExistingLoan({ loanSources }: Props) {
             </Stack>
             <Stack spacing={3}>
               <Typography variant="h6">Existing Payments</Typography>
-              {watchPaymentSched.map((_, index) => (
+              {watchPaymentSched.map((items, index) => (
                 <Stack key={index} spacing={3} direction="row">
                   <Stack paddingTop={5}>{index + 1}</Stack>
                   <Controller
@@ -463,6 +476,13 @@ function CreateExistingLoan({ loanSources }: Props) {
                     errors={errors}
                     variant="text"
                   />
+                  <IconButton
+                    onClick={() => removeJournalLineItemHandler(items.repaymentId ?? '')}
+                    color="error"
+                    sx={{ alignSelf: 'flex-end' }}
+                  >
+                    <TrashIcon />
+                  </IconButton>
                 </Stack>
               ))}
               <div>
@@ -474,9 +494,6 @@ function CreateExistingLoan({ loanSources }: Props) {
           </Stack>
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button onClick={() => console.log(errors)} variant="outlined">
-            Cancel
-          </Button>
           <Button disabled={isExecuting} type="submit" variant="contained">
             Submit
           </Button>
