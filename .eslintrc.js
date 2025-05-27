@@ -104,5 +104,6 @@ module.exports = {
     '@typescript-eslint/no-unsafe-call': 'off',
     'react/display-name': 'off',
     '@typescript-eslint/prefer-reduce-type-parameter': 'off',
+    '@typescript-eslint/consistent-indexed-object-style': 'off'
   },
 };

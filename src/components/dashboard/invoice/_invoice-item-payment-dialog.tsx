@@ -358,10 +358,12 @@ function InvoiceItemPaymentDialog({
             ))}
             <Divider sx={{ marginTop: 2 }} />
             <Stack>
-              <Typography variant='h6'>Suggested Journal Entries</Typography>
-              {Object.entries(grouped).map(([sourceName, values]) => (
-                <Stack>
-                  <Typography variant="subtitle2" fontSize={15}>{values.sourceName}</Typography>
+              <Typography variant="h6">Suggested Journal Entries</Typography>
+              {Object.entries(grouped).map(([_, values], index) => (
+                <Stack key={index}>
+                  <Typography variant="subtitle2" fontSize={15}>
+                    {values.sourceName}
+                  </Typography>
                   <Typography variant="caption">{`Total Principal (${values.sourceName}): ${formatToCurrency(values.totalPrincipal)}`}</Typography>
                   <Typography variant="caption">{`Total Trading (${values.sourceName}): ${formatToCurrency(values.totalTrade)}`}</Typography>
                   <Typography variant="caption">{`Total Interest (${values.sourceName}): ${formatToCurrency(values.totalInterest)}`}</Typography>

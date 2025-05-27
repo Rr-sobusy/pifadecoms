@@ -23,5 +23,5 @@ export async function fetchAgingInvoiceItemsPerMember() {
     },
   });
 
-  
+  return agingInvoiceItems
 }
