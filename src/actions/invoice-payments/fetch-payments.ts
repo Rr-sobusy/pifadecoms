@@ -6,7 +6,7 @@ export async function fetchReceivedPayments(cursor?: string) {
   const payments = await prisma.invoiceItemsPayments.findMany({
     cursor: cursorValue ? { itemsPaymentId: cursorValue } : undefined,
     skip: cursor ? 1 : 0,
-    take: 151,
+    take: 501,
     orderBy: {
       itemsPaymentId: 'desc',
     },
