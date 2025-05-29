@@ -125,6 +125,7 @@ export const paths = {
       accountTransaction: '/dashboard/reports/account-transactions',
       incomeAndLoss: '/dashboard/reports/incomeAndLoss',
       potentialDoubleEntry: '/dashboard/reports/potential-double-entry',
+      agingInvoice: '/dashboard/reports/aging-invoice'
     },
     eCommerce: '/dashboard/e-commerce',
     fileStorage: '/dashboard/file-storage',
