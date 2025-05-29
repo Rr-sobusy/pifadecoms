@@ -10,6 +10,11 @@ import { fetchLoanSources } from '@/actions/loans/fetch-loan-source';
 import { fetchLoans } from '@/actions/loans/fetch-loans';
 import LoanFilters from '@/components/dashboard/member-loans/loan-filters';
 import { LoanTable } from '@/components/dashboard/member-loans/loan-table';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title : "PIFADECO | Loan lists"
+}
 
 interface PageProps {
   searchParams: {

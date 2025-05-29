@@ -7,9 +7,13 @@ import { dayjs } from '@/lib/dayjs';
 import { getBalanceSheet } from '@/actions/reports/balance-sheet';
 import BalanceSheetFilterModal from '@/components/dashboard/reports/balancesheet/filter-modal';
 import PrintableBalanceSheet from '@/components/dashboard/reports/balancesheet/printable-balance-table';
-
+import type { Metadata } from 'next';
 interface PageProps {
   searchParams: { filterList: boolean; asOf?: Date | string };
+}
+
+export const metadata:Metadata = {
+  title : "Reports || Balance Sheet"
 }
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {

@@ -21,7 +21,7 @@ interface PageProps {
 }
 
 export const metadata: Metadata = {
-  title : "PIFEDECO || Invoice Item per memeber"
+  title : "PIFADECO || Invoice Item per member"
 }
 
 async function page({ searchParams }: PageProps) {

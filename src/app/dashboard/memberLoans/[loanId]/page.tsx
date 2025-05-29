@@ -19,6 +19,12 @@ import LoanNotes from '@/components/dashboard/member-loans/loan-notes';
 import OptionsPopoverButton from '@/components/dashboard/member-loans/option-popover-button';
 import { auth } from '@/auth';
 import { Roles } from '@prisma/client';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title : "PIFADECO | Loan Details"
+}
+
 interface PageProps {
   params: { loanId: bigint };
 }

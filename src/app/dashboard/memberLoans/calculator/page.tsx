@@ -3,6 +3,12 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LoanCalculator from '@/components/dashboard/member-loans/loan-calculator';
+import type { Metadata } from 'next';
+
+
+export const metadata:Metadata = {
+  title : "PIFADECO | Loan calculator"
+}
 
 function page() {
   return (

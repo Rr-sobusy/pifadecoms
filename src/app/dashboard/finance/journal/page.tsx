@@ -7,6 +7,11 @@ import Typography from '@mui/material/Typography';
 import { paths } from '@/paths';
 import ManualJournalTable from '@/components/dashboard/finance/manual-journal-table';
 import { fetchJournals } from '@/actions/journals/fetch-journals';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title : "Finance || Manual Journal List"
+}
 
 async function page():Promise<React.JSX.Element> {
   const manualJournals = await fetchJournals()

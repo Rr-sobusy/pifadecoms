@@ -9,6 +9,11 @@ import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchLoanSources } from '@/actions/loans/fetch-loan-source';
 import CreateNewLoan from '@/components/dashboard/member-loans/new-loan-form';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title : "PIFADECO | New loan"
+}
 
 const page = async () => {
   // const members = await fetchMembers({ returnAll: true });

@@ -10,7 +10,7 @@ import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 import { X as CloseIcon } from '@phosphor-icons/react/dist/ssr/X';
 import type { JournalType, Roles } from '@prisma/client';
-
+import type { Metadata } from 'next';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
@@ -21,6 +21,10 @@ import {
 import FilterModal from '@/components/dashboard/reports/transactions/account-transaction-filter-modal';
 import TransactionsTable from '@/components/dashboard/reports/transactions/account-transactions-table';
 import TransactionDialog from '@/components/dashboard/reports/transactions/transaction-dialog';
+
+export const metadata:Metadata = {
+  title : "Reports || Account Transactions"
+}
 
 interface PageProps {
   searchParams: {

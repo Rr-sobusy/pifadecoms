@@ -14,6 +14,11 @@ import { fetchFundLedger } from '@/actions/funds/fetch-fund-ledgers';
 import FundTotalOverview from '@/components/dashboard/funds/fund-totals-overview';
 import FundTransactionLedgerTable from '@/components/dashboard/funds/fund-transaction-ledger-table';
 import LedgerDatePickerDialog from '@/components/dashboard/funds/ledger-date-picker-dialog';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title : "PIFADECO || Member funds ledger"
+}
 
 interface PageProps {
   searchParams: { selectPeriod: boolean; startDate: Date; endDate: Date };

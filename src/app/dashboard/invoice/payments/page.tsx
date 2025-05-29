@@ -6,6 +6,11 @@ import Typography from '@mui/material/Typography';
 import { fetchReceivedPayments } from '@/actions/invoice-payments/fetch-payments';
 import PaymentsTableInfiniteScroll from '@/components/dashboard/payments/payment-table-infinite-scroll';
 import PaymentsTable from '@/components/dashboard/payments/payments-table';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title : "PIFADECO || Invoice payments"
+}
 
 interface PageProps {
   searchParams: { cursor?: string };

@@ -10,6 +10,11 @@ import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import AccountTypesTable from '@/components/dashboard/finance/account-types-table';
 import { AddNewAccountTypeDialog } from '@/components/dashboard/finance/add-account-type-dialog';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title : "Finance || Account types"
+}
 
 interface AccountListProps {
   searchParams: { create: boolean };

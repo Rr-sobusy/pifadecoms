@@ -12,6 +12,11 @@ import { fetchChartofAccounts, fetchRootAccounts } from '@/actions/accounts/fetc
 import { AccountNameFilterrs } from '@/components/dashboard/finance/account-name-filterer';
 import { AccountsTable } from '@/components/dashboard/finance/accounts-table';
 import { AddNewAccountDiaglog } from '@/components/dashboard/finance/add-account-dialog';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title : "Finance || Accounts list"
+}
 
 interface AccountListProps {
   searchParams: { create: boolean; accountName: string };

@@ -4,6 +4,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { fetchAccountTree} from '@/actions/accounts/fetch-accounts';
 import NewJournalFrom from '@/components/dashboard/finance/new-journal-form';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title : "Finance || New Journal Entry"
+}
+
 
 async function page():Promise<React.JSX.Element> {
   const acc = await fetchAccountTree();

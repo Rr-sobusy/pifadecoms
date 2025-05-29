@@ -9,6 +9,11 @@ import { paths } from '@/paths';
 import { fetchItems } from '@/actions/items/fetch-items';
 import { fetchMembers } from '@/actions/members/fetch-members';
 import InvoiceCreateForm2 from '@/components/dashboard/invoice/_invoice-create-form';
+import type { Metadata } from 'next';
+
+export const metadata:Metadata = {
+  title: "PIFADECO || Create new invoice"
+}
 
 const page = async () => {
   const members = await fetchMembers({ returnAll: true });

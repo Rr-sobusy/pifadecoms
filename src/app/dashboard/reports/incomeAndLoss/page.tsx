@@ -6,9 +6,14 @@ import Typography from '@mui/material/Typography';
 import { fetchIncomeAndLossReport } from '@/actions/reports/income-and-loss';
 import IncomeAndLossFiltererModal from '@/components/dashboard/reports/income-loss/filterer-modal';
 import PrintableIncomeStatement from '@/components/dashboard/reports/income-loss/printable-income-statement';
+import type { Metadata } from 'next';
 
 interface PageProps {
   searchParams: { startDate?: Date | string; endDate?: Date | string; isFilterOpen: boolean };
+}
+
+export const metadata:Metadata = {
+  title : "Reports || Statement of Income and Loss"
 }
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {

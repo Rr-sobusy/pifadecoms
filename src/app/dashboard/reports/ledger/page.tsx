@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Export as ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
 import { FunnelSimple as FilterIcon } from '@phosphor-icons/react/dist/ssr/FunnelSimple';
 import { JournalType } from '@prisma/client';
-
+import type { Metadata } from 'next';
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { fetchLedgers } from '@/actions/reports/general-ledger';
@@ -24,6 +24,11 @@ interface PageProps {
     journalType: JournalType | 'All';
   };
 }
+
+export const metadata:Metadata = {
+  title : "Reports || General Ledger"
+}
+
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const { startDate, endDate, isFilterOpen, journalType } = searchParams;
   const generalLedgers = await fetchLedgers({ dateRange: { startDate, endDate }, journalType });

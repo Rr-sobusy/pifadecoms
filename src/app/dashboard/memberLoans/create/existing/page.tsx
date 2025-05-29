@@ -8,6 +8,12 @@ import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/Arrow
 import { paths } from '@/paths';
 import { fetchLoanSources } from '@/actions/loans/fetch-loan-source';
 import CreateExistingLoan from '@/components/dashboard/member-loans/existing-loan-form';
+import type { Metadata } from 'next';
+
+
+export const metadata:Metadata = {
+  title : "PIFADECO | New existing loan"
+}
 
 const page = async () => {
 
