@@ -43,6 +43,7 @@ export async function fetchInvoices(props: Filterers = {}) {
       InvoiceItems: {
         include: {
           Item: true,
+          ItemPayment: true,
         },
       },
       Members: true,

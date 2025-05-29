@@ -24,7 +24,6 @@ interface InvoiceTableProps {
   rows: InvoiceType['invoice'];
 }
 
-const dueMonth = 1;
 
 const columns = [
   {
@@ -104,7 +103,7 @@ const columns = [
           <Typography variant="subtitle2">Invoice Items</Typography>
           <Stack direction="column">
             {row.InvoiceItems.map((item) => (
-              <Typography variant="caption">{`${item.quantity} ${item.Item.itemName},  Principal:${formatToCurrency(item.principalPrice)}, Trade:${formatToCurrency(item.trade)}`}</Typography>
+              <Typography key={item.invoiceItemId} variant="caption">{`${item.quantity} ${item.Item.itemName},  Principal:${formatToCurrency(item.principalPrice)}, Trade:${formatToCurrency(item.trade)}`}</Typography>
             ))}
           </Stack>
         </div>
