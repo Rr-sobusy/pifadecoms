@@ -32,6 +32,11 @@ export async function fetchAgingInvoiceItemsPerMember() {
         },
       },
     },
+    orderBy : {
+      Invoice : {
+        dateOfInvoice : 'asc'
+      }
+    },
     include: {
       Invoice: {
         include: {

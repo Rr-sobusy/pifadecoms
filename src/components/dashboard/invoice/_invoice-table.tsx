@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import RouterLink from 'next/link';
+import Link from 'next/link';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
@@ -10,7 +11,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CheckCircle as CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
-import { DotsThreeVertical as Dots } from '@phosphor-icons/react/dist/ssr/DotsThreeVertical';
+import { Notepad as Info } from '@phosphor-icons/react/dist/ssr/Notepad';
+
 import { paths } from '@/paths';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
@@ -75,7 +77,7 @@ const columns = [
       );
     },
     name: 'Member Name',
-    width: '100px',
+    width: '10%',
   },
   {
     formatter: (row): React.JSX.Element => {
@@ -93,32 +95,23 @@ const columns = [
       );
     },
     name: 'Grand Total',
-    width: '100px',
+    width: '50px',
   },
   {
     formatter: (row): React.JSX.Element => {
-      const totalBalanceDue = row.InvoiceItems.reduce(
-        (acc, curr) => acc + curr.quantity * (curr.principalPrice + curr.trade),
-        0
-      );
-      const totalPaid = row.InvoiceItems.map((invoiceItem) => {
-        let totalPayment = 0;
-        for (const payment of invoiceItem.ItemPayment) {
-          totalPayment += Number(payment.principalPaid) + Number(payment.tradingPaid);
-        }
-        return { ...invoiceItem, payment: totalPayment };
-      }).reduce((acc, curr) => acc + curr.payment, 0);
       return (
         <div>
-          <Typography variant="subtitle2">Balance Due</Typography>
-          <Typography color="text.secondary" variant="body2">
-            {formatToCurrency(totalBalanceDue - totalPaid || 0, 'Fil-ph', 'Php')}
-          </Typography>
+          <Typography variant="subtitle2">Invoice Items</Typography>
+          <Stack direction="column">
+            {row.InvoiceItems.map((item) => (
+              <Typography variant="caption">{`${item.quantity} ${item.Item.itemName},  Principal:${formatToCurrency(item.principalPrice)}, Trade:${formatToCurrency(item.trade)}`}</Typography>
+            ))}
+          </Stack>
         </div>
       );
     },
     name: 'Total balance',
-    width: '100px',
+    width: '400px',
   },
   {
     formatter: (row): React.JSX.Element => (
@@ -133,25 +126,11 @@ const columns = [
     width: '100px',
   },
   {
-    formatter: (row): React.JSX.Element => (
-      <div>
-        <Typography variant="subtitle2">Due</Typography>
-        <Typography color="text.secondary" variant="body2">
-          {dayjs(dayjs(row.dateOfInvoice).add(dueMonth, 'M')).format('MMM DD YYYY')}
-        </Typography>
-      </div>
-    ),
-    name: 'Total amount',
-    width: '100px',
-  },
-  {
-    formatter: (): React.JSX.Element => {
+    formatter: (row): React.JSX.Element => {
       return (
-        <>
-          <IconButton>
-            <Dots />
-          </IconButton>
-        </>
+        <IconButton LinkComponent={Link} href={paths.dashboard.invoice.details(row.invoiceId)}>
+          <Info />
+        </IconButton>
       );
     },
     name: 'Actions',

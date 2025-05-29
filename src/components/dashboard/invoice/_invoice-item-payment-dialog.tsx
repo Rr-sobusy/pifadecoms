@@ -145,6 +145,7 @@ function InvoiceItemPaymentDialog({
 
   React.useEffect(() => {
     setValue('particulars.memberId', searchParams.get('memberId') || '');
+    setSelectedRowsToNull?.()
   }, [searchParams.get('memberId')]);
 
   const flattenedAccounts = React.useMemo(
