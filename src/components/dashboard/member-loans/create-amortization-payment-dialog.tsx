@@ -4,13 +4,11 @@ import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogAction from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import Stack from '@mui/material/Stack';
@@ -199,7 +197,6 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
           <Divider />
           <Stack spacing={2} marginY={2}>
             <Typography variant="h6">Payment Line</Typography>
-            <FormControlLabel control={<Checkbox />} label="Span payment" />
             {watchPaymentSched.map((_, index) => (
               <Stack key={index} alignItems="center" spacing={2} direction="row">
                 <Controller
@@ -306,9 +303,6 @@ function CreateAmortizationPayment({ open = true, handleClose, accounts, memberI
               </Button>
             </div>
             <DialogAction sx={{ justifyContent: 'flex-end' }}>
-              <Button onClick={() => console.log(errors)} variant="contained">
-                details
-              </Button>
               <Button disabled={isExecuting} type="submit" variant="contained">
                 Post Payment
               </Button>

@@ -169,6 +169,7 @@ export const layoutConfig = {
               href: paths.dashboard.reports.potentialDoubleEntry,
             },
             { key: 'agingInvoice', title: 'Aging Invoice', href: paths.dashboard.reports.agingInvoice },
+            { key: 'agingLoans', title: 'Aging Loans', href: paths.dashboard.reports.agingLoans },
             // { key: 'balanceSheet', title: 'Balance Sheet', href: paths.dashboard.reports.ledgerList },
             // { key: 'profitLoss', title: 'Income/Loss Statement', href: paths.dashboard.reports.ledgerList },
             // { key: 'trialBalance', title: 'Trial Balance', href: paths.dashboard.reports.ledgerList },

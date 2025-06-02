@@ -29,7 +29,7 @@ const columns: ColumnDef<MemberRow>[] = [
         <Stack direction="column">
           {row.agingItems.map((item) => (
             <Typography key={item.invoiceItemId.toString()} variant="caption">
-              {`${item.quantity} ${item.itemName}  invoiced on ${dayjs(item.dateOfInvoice).format('MMM DD, YYYY')} (${item.monthOverdue} month/s overdue) `}
+              {`${item.quantity} ${item.itemName}  invoiced on ${dayjs(item.dateOfInvoice).format('MMM DD YYYY')} (${item.monthOverdue} month/s overdue) `}
             </Typography>
           ))}
         </Stack>

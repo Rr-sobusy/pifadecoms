@@ -205,7 +205,7 @@ const columns = [
     formatter: (row) => {
       const paymentOr = row.ItemPayment.map((payments) => payments.JournalEntry.referenceName);
 
-      return <Typography variant="subtitle2">{paymentOr.join(',')}</Typography>;
+      return <Typography variant="subtitle2">{`${paymentOr.join(',')} (System : ${row.ItemPayment.join(',')})`}</Typography>;
     },
   },
 ] satisfies ColumnDef<InvoiceItemPerMemberTypes['invoiceItems'][0]>[];

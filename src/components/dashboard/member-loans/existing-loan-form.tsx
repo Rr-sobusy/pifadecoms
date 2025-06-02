@@ -385,8 +385,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                             setValue('dueDate', nextDue.toDate());
                           }
                         }}
-                        defaultValue={dayjs()}
-                        value={dayjs(field.value)}
+                        value={field.value ? dayjs(field.value) : null}
                         label="Released Date"
                       />
                     )}
@@ -409,8 +408,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                         onChange={(date) => {
                           field.onChange(date?.toDate());
                         }}
-                        defaultValue={dayjs()}
-                        value={dayjs(field.value)}
+                        value={field.value ? dayjs(field.value) : null}
                         label="Due Date"
                       />
                     )}
@@ -448,7 +446,7 @@ function CreateExistingLoan({ loanSources }: Props) {
                           field.onChange(date?.toDate());
                         }}
                         defaultValue={dayjs()}
-                        value={dayjs(field.value)}
+                        value={field.value ? dayjs(field.value) : null}
                         label="Date Paid"
                       />
                     )}

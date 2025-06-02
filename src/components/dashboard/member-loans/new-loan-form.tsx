@@ -428,7 +428,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
 
                           const loanTypeMap: Record<RepaymentInterval, dayjs.ManipulateType | null> = {
                             Weekly: 'week',
-                            TwoWeeks: 'day', // Use with amount = 14
+                            TwoWeeks: 'day',
                             Monthly: 'month',
                             Yearly: 'year',
                             None: null,
@@ -442,8 +442,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                             setValue('dueDate', nextDue.toDate());
                           }
                         }}
-                        defaultValue={dayjs()}
-                        value={dayjs(field.value)}
+                        value={field.value ? dayjs(field.value) : null}
                         label="Released Date"
                       />
                     )}
@@ -466,8 +465,7 @@ function CreateNewLoan({ accounts, loanSources }: Props) {
                         onChange={(date) => {
                           field.onChange(date?.toDate());
                         }}
-                        defaultValue={dayjs()}
-                        value={dayjs(field.value)}
+                        value={field.value ? dayjs(field.value) : null}
                         label="Due Date"
                       />
                     )}

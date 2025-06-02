@@ -2,10 +2,13 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import { fetchAgingInvoiceItemsPerMember } from '@/actions/invoices/aging-invoice';
 import AgingInvoiceTable from '@/components/dashboard/reports/aging-invoice/aging-invoice-table';
+import { fetchAgingLoanPerMember } from '@/actions/loans/aging-loans';
+import AgingLoanTable from '@/components/dashboard/reports/aging-loans/aging-loan-table';
 // interface LayoutProps {}
 
 export default async function Layout(): Promise<React.JSX.Element> {
-  const test = await fetchAgingInvoiceItemsPerMember()
+  const test = await fetchAgingLoanPerMember()
+  console.log(test)
   return (
     // <Box
     //   sx={{
@@ -21,7 +24,7 @@ export default async function Layout(): Promise<React.JSX.Element> {
     //   </Stack>
     // </Box>
     <Box>Construction on-going.
-      <AgingInvoiceTable data={test} />
+      <AgingLoanTable data={test}/>
     </Box>
   );
 }

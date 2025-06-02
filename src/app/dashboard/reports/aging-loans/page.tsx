@@ -2,20 +2,17 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-import { fetchAgingInvoiceItemsPerMember } from '@/actions/invoices/aging-invoice';
+import AgingLoanTable from '@/components/dashboard/reports/aging-loans/aging-loan-table';
+import { fetchAgingLoanPerMember } from '@/actions/loans/aging-loans';
 import type { Metadata } from 'next';
-import PrintableAgingInvoiceReport from '@/components/dashboard/reports/aging-invoice/printable-aging-invoice';
-
 
 export const metadata:Metadata = {
-  title : "Reports || Aging Invoice"
+  title : "Reports || Aging Loans"
 }
 
-async function page() {
 
-  const agingInvoice = await fetchAgingInvoiceItemsPerMember();
-  
+async function page() {
+  const agingLoans = await fetchAgingLoanPerMember()
   return (
     <Box
       sx={{
@@ -28,10 +25,10 @@ async function page() {
       <Stack spacing={4}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ alignItems: 'flex-start' }}>
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Aging Invoices</Typography>
+            <Typography variant="h4">Aging Loans</Typography>
           </Box>
         </Stack>
-        <PrintableAgingInvoiceReport data={agingInvoice} />
+        <AgingLoanTable data={agingLoans} />
       </Stack>
     </Box>
   );
