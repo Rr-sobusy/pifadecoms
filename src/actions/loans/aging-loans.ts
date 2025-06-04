@@ -3,7 +3,7 @@ import { RepaymentStyle } from '@prisma/client';
 import { dayjs } from '@/lib/dayjs';
 import prisma from '@/lib/prisma';
 
-const today = dayjs().toDate();
+const today = dayjs();
 
 export type AgingLoanMap = {
   [memberId: string]: {
@@ -35,7 +35,7 @@ export async function fetchAgingLoanPerMember(): Promise<AgingLoanMap> {
     where: {
       loanStatus: 'Active',
       dueDate: {
-        lte: today,
+        lte: today.subtract(3, 'month').toDate(),
       },
     },
     include: {
@@ -81,7 +81,7 @@ export async function fetchAgingLoanPerMember(): Promise<AgingLoanMap> {
       repaymentStyle: loan.repStyle,
       amountToPay: Number(loan.amountPayable),
       lapseFromLastPaymentToDueDate,
-      interestRate : Number(loan.interestRate),
+      interestRate: Number(loan.interestRate),
       lapseFromDueDateToToday,
 
       repayments: loan.Repayments.map((payment) => ({
