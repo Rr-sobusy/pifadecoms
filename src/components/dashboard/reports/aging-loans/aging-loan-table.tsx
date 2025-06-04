@@ -52,8 +52,8 @@ const columns = [
     formatter: (row) => {
       return (
         <Stack direction="column">
-          {row.agingLoans.map((loans) => (
-            <Stack direction="row">
+          {row.agingLoans.map((loans, index) => (
+            <Stack key={index} direction="row">
               <Typography variant="caption">{`Released on ${dayjs(loans.releaseDate).format('MM/DD/YYYY')} due on ${dayjs(loans.dueDate).format('MM/DD/YYYY')} with amount payable of ${formatToCurrency(loans.amountToPay)}`}</Typography>
             </Stack>
           ))}
