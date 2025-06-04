@@ -69,7 +69,7 @@ const columns = [
           }, 0);
 
           return (
-            <Typography key={loan.loanId} variant="subtitle2">
+            <Typography key={loan.loanId} variant="caption">
               {formatToCurrency(loan.amountToPay - totalAmortizationPaid)}
             </Typography>
           );
@@ -95,8 +95,8 @@ const columns = [
             loan.amountToPay > totalAmortizationPaid ? loan.amountToPay - totalAmortizationPaid : 0;
 
           return (
-            <Typography key={loan.loanId} variant="subtitle2">
-              {`${lapseMonths < 12 ? formatToCurrency(totalBalanceUnpaid * 0.3) : formatToCurrency(0)}`}
+            <Typography key={loan.loanId} variant="caption">
+              {`${lapseMonths < 12 ? `${formatToCurrency(totalBalanceUnpaid * 0.3)} due for ${lapseMonths} month/s` : formatToCurrency(0)}`}
             </Typography>
           );
         })}
@@ -122,8 +122,8 @@ const columns = [
               loan.amountToPay > totalAmortizationPaid ? loan.amountToPay - totalAmortizationPaid : 0;
 
             return (
-              <Typography key={loan.loanId} variant="subtitle2">
-                {`${lapseMonths <= 12 ? formatToCurrency(totalBalanceUnpaid) : formatToCurrency(0)}`}
+              <Typography key={loan.loanId} variant="caption">
+                {`${lapseMonths >= 12 ? `${formatToCurrency(totalBalanceUnpaid)} due for ${lapseMonths} month/s` : formatToCurrency(0)}`}
               </Typography>
             );
           })}
