@@ -35,7 +35,7 @@ export async function fetchAgingLoanPerMember(): Promise<AgingLoanMap> {
     where: {
       loanStatus: 'Active',
       dueDate: {
-        lte: today.subtract(3, 'month').toDate(),
+        lte: today.subtract(1, 'month').toDate(),
       },
     },
     include: {

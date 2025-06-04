@@ -27,13 +27,6 @@ export const layoutConfig = {
       title: 'General',
       items: [
         {
-          key: 'settings',
-          title: 'Settings',
-          href: paths.dashboard.settings.account,
-          icon: 'gear',
-          matcher: { type: 'startsWith', href: '/dashboard/settings' },
-        },
-        {
           key: 'members',
           title: 'Members',
           icon: 'users',
