@@ -14,6 +14,7 @@ export type AgingLoanMap = {
       repaymentStyle: RepaymentStyle;
       sourceName: string;
       releaseDate: Date;
+      interestRate: number;
       dueDate: Date;
       amountToPay: number;
       lapseFromLastPaymentToDueDate: number | null;
@@ -80,6 +81,7 @@ export async function fetchAgingLoanPerMember(): Promise<AgingLoanMap> {
       repaymentStyle: loan.repStyle,
       amountToPay: Number(loan.amountPayable),
       lapseFromLastPaymentToDueDate,
+      interestRate : Number(loan.interestRate),
       lapseFromDueDateToToday,
 
       repayments: loan.Repayments.map((payment) => ({

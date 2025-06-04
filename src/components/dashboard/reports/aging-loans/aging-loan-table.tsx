@@ -17,6 +17,12 @@ const loanContractMap: Record<RepaymentStyle, string> = {
   OneTime: 'End of Term',
 };
 
+const overDueInterest: Record<RepaymentStyle, number> = {
+  Diminishing: 3.5,
+  OneTime: 3.25,
+  StraightPayment: 3.25,
+};
+
 type Props = {
   data: AgingLoanMap;
 };
@@ -57,12 +63,29 @@ const columns = [
     },
   },
   {
-    name: 'Overdue from last payment to due date',
+    name: 'Interest on lapse from last payment to due date (Applied only on dimishing loans)',
     formatter: (row) => (
       <Stack direction="column">
         {row.agingLoans.map((loan) => {
           const lastPaymentDate = loan.repayments.at(-1)?.paymentDate;
-          if (loan.repaymentStyle === 'OneTime' || !lastPaymentDate) {
+
+          /**
+           * * If there is no recorded repayment, count the span between the released and due date
+           */
+          const monthsLapsed = loan.repayments.length
+            ? dayjs().diff(lastPaymentDate, 'month')
+            : dayjs(loan.dueDate).diff(dayjs(loan.releaseDate), 'month');
+
+          const totalAmortizationPaid = loan.repayments.reduce((acc, curr) => {
+            return acc + Number(curr.principal);
+          }, 0);
+
+          const totalUnpaidPrincipal =
+            totalAmortizationPaid < loan.amountToPay ? loan.amountToPay - totalAmortizationPaid : 0;
+
+          const interestLapse = (totalUnpaidPrincipal * loan.interestRate * monthsLapsed) / 100;
+
+          if (loan.repaymentStyle !== 'Diminishing' || !lastPaymentDate) {
             return (
               <Typography key={loan.loanId} variant="caption">
                 N/A
@@ -70,13 +93,9 @@ const columns = [
             );
           }
 
-          const dueDate = dayjs(loan.dueDate);
-          const lastPayment = dayjs(lastPaymentDate);
-          const diff = dueDate.diff(lastPayment, 'day');
-
           return (
             <Typography key={loan.loanId} variant="caption">
-              {diff > 0 ? `${diff} days from last payment to due date` : 'Paid after due date'}
+              {`${formatToCurrency(interestLapse)} lapse for ${monthsLapsed} month/s`}
             </Typography>
           );
         })}
@@ -84,7 +103,38 @@ const columns = [
     ),
   },
   {
-    name: 'Overdue from due date to current date',
+    name: 'Interest on lapse from due date to current date (In all loans)',
+    formatter: (row) => (
+      <Stack direction="column">
+        {row.agingLoans.map((loan) => {
+          const lapseMonths = dayjs().diff(dayjs(loan.dueDate), 'month');
+
+          const isLapsed = lapseMonths > 0;
+
+          const totalAmortizationPaid = loan.repayments.reduce((acc, curr) => {
+            return acc + Number(curr.principal);
+          }, 0);
+
+          const totalUnpaidPrincipal =
+            totalAmortizationPaid < loan.amountToPay ? loan.amountToPay - totalAmortizationPaid : 0;
+
+          const interest = isLapsed
+            ? lapseMonths * (overDueInterest[loan.repaymentStyle] / 100) * totalUnpaidPrincipal
+            : 0;
+
+          return (
+            <Typography key={loan.loanId} variant="caption">
+              {isLapsed
+                ? `${formatToCurrency(interest)} in ${lapseMonths} month/s`
+                : 'No lapse'}
+            </Typography>
+          );
+        })}
+      </Stack>
+    ),
+  },
+  {
+    name: 'Total Computed Amt to pay (Remaining + interest)',
   },
 ] satisfies ColumnDef<MemberRow>[];
 

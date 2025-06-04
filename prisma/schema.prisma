@@ -240,7 +240,7 @@ model InvoiceItems {
   ItemPayment     InvoiceItemsPayments[]
   
 
-  @@index([isTotallyPaid, invoiceId])
+  @@index([isTotallyPaid, invoiceId, itemID])
   @@map("invoice_items")
 }
 
