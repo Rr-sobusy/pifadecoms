@@ -17,12 +17,6 @@ const loanContractMap: Record<RepaymentStyle, string> = {
   OneTime: 'End of Term',
 };
 
-const overDueInterest: Record<RepaymentStyle, number> = {
-  Diminishing: 3.5,
-  OneTime: 3.25,
-  StraightPayment: 3.25,
-};
-
 type Props = {
   data: AgingLoanMap;
 };
