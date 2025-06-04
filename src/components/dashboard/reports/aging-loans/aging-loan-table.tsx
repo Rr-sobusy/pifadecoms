@@ -4,12 +4,11 @@ import React from 'react';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { type RepaymentStyle } from '@prisma/client';
-
+import { RepaymentStyle } from '@prisma/client';
 import { dayjs } from '@/lib/dayjs';
 import { formatToCurrency } from '@/lib/format-currency';
-import { type AgingLoanMap } from '@/actions/loans/aging-loans';
-import { DataTable, type ColumnDef } from '@/components/core/data-table';
+import { AgingLoanMap } from '@/actions/loans/aging-loans';
+import { DataTable, ColumnDef } from '@/components/core/data-table';
 
 const loanContractMap: Record<RepaymentStyle, string> = {
   Diminishing: 'Diminishing',
@@ -39,8 +38,8 @@ const columns = [
     formatter: (row) => {
       return (
         <Stack direction="column">
-          {row.agingLoans.map((loans) => (
-            <Stack direction="row">
+          {row.agingLoans.map((loans, index) => (
+            <Stack key={index} direction="row">
               <Typography variant="caption">{`${loanContractMap[loans.repaymentStyle]} in ${loans.sourceName}`}</Typography>
             </Stack>
           ))}
