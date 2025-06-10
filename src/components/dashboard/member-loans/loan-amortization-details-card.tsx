@@ -72,16 +72,11 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
           <Stack direction="row" spacing={2}>
             <Typography variant="body2">Total amortization paid:</Typography>
             <Typography variant="body2" color="error">
-              {loanDetails.repStyle !== 'Diminishing'
-                ? formatToCurrency(
-                    Math.max(
-                      Number(totalAmortizationPaid.totalInterestPaid + totalAmortizationPaid.totalPrincipalPaid),
-                      0
-                    ),
-                    'Fil-ph',
-                    'Php'
-                  )
-                : Math.max(Number(totalAmortizationPaid.totalPrincipalPaid), 0)}
+              {formatToCurrency(
+                Number(totalAmortizationPaid.totalInterestPaid + totalAmortizationPaid.totalPrincipalPaid),
+                'Fil-ph',
+                'Php'
+              )}
             </Typography>
           </Stack>
 
@@ -94,12 +89,15 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
             <Typography variant="body2" color="error">
               {loanDetails?.repStyle === 'Diminishing'
                 ? formatToCurrency(
-                    Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid.totalPrincipalPaid)
+                    Math.max(Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid.totalPrincipalPaid), 0)
                   )
                 : formatToCurrency(
-                    Number(loanDetails.amountPayable) -
-                      (Number(totalAmortizationPaid.totalInterestPaid) +
-                        Number(totalAmortizationPaid.totalPrincipalPaid))
+                    Math.max(
+                      Number(loanDetails.amountPayable) -
+                        (Number(totalAmortizationPaid.totalInterestPaid) +
+                          Number(totalAmortizationPaid.totalPrincipalPaid),
+                        0)
+                    )
                   )}
             </Typography>
           </Stack>
