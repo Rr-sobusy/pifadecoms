@@ -89,15 +89,13 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
             <Typography variant="body2" color="error">
               {loanDetails?.repStyle === 'Diminishing'
                 ? formatToCurrency(
-                    Math.max(Number(loanDetails.amountPayable.minus(totalAmortizationPaid.totalPrincipalPaid)), 0)
+                    Math.max(Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid.totalPrincipalPaid), 0)
                   )
                 : formatToCurrency(
                     Math.max(
-                      Number(
-                        loanDetails.amountPayable.minus(
-                          totalAmortizationPaid.totalInterestPaid + totalAmortizationPaid.totalPrincipalPaid
-                        )
-                      ),
+                      Number(loanDetails.amountPayable) -
+                        (Number(totalAmortizationPaid.totalInterestPaid) +
+                          Number(totalAmortizationPaid.totalPrincipalPaid)),
                       0
                     )
                   )}
