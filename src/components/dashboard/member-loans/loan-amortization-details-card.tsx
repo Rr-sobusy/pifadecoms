@@ -72,11 +72,16 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
           <Stack direction="row" spacing={2}>
             <Typography variant="body2">Total amortization paid:</Typography>
             <Typography variant="body2" color="error">
-              {formatToCurrency(
-                Number(totalAmortizationPaid.totalInterestPaid + totalAmortizationPaid.totalPrincipalPaid),
-                'Fil-ph',
-                'Php'
-              )}
+              {loanDetails.repStyle !== 'Diminishing'
+                ? formatToCurrency(
+                    Math.max(
+                      Number(totalAmortizationPaid.totalInterestPaid + totalAmortizationPaid.totalPrincipalPaid),
+                      0
+                    ),
+                    'Fil-ph',
+                    'Php'
+                  )
+                : Math.max(Number(totalAmortizationPaid.totalPrincipalPaid), 0)}
             </Typography>
           </Stack>
 
