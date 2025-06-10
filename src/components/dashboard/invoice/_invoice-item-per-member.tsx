@@ -200,14 +200,26 @@ const columns = [
       );
     },
   },
-  {
-    name: 'Payment O.R/s',
-    formatter: (row) => {
-      const paymentOr = row.ItemPayment.map((payments) => payments.JournalEntry.referenceName);
+ {
+  name: 'Payment O.R/s',
+  formatter: (row) => {
+    const itemPayments = row?.ItemPayment ?? [];
 
-      return <Typography variant="subtitle2">{`${paymentOr.join(',')} (System : ${row.ItemPayment.join(',')})`}</Typography>;
-    },
+    const orList = itemPayments
+      .map((payment) => payment?.JournalEntry?.referenceName)
+      .filter(Boolean); // removes undefined/null entries
+
+    const systemIds = itemPayments
+      .map((payment) => payment?.itemsPaymentId)
+      .filter(Boolean);
+
+    return (
+      <Typography variant="subtitle2">
+        {`${orList.join(', ')} (System: RPay-${systemIds.join(', ')})`}
+      </Typography>
+    );
   },
+}
 ] satisfies ColumnDef<InvoiceItemPerMemberTypes['invoiceItems'][0]>[];
 
 function InvoiceItemTable({ data, accounts, member }: PageProps) {
