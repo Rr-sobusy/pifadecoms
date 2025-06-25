@@ -13,11 +13,11 @@ export const metadata:Metadata = {
 }
 
 interface PageProps {
-  searchParams: { cursor?: string };
+  searchParams: { nextCursor?: string };
 }
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const payments = await fetchReceivedPayments(searchParams.cursor);
+  const payments = await fetchReceivedPayments(String(searchParams.nextCursor));
   return (
     <Box
       sx={{
@@ -35,7 +35,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         </Stack>
         <PaymentsTable rows={payments['payment']} />
       </Stack>
-      <PaymentsTableInfiniteScroll nextCursor={searchParams.cursor} />
+      <PaymentsTableInfiniteScroll nextCursor={searchParams.nextCursor} />
     </Box>
   );
 }

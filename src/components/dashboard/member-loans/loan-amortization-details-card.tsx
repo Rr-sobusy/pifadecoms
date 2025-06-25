@@ -153,7 +153,7 @@ function calculateLapseInterest(
 
   const rate = penaltyRates[repStyle];
 
-  const computedLapseInterest = remainingBalance * rate * monthsLapse;
+  const computedLapseInterest = Math.max(remainingBalance, 0) * rate * monthsLapse;
 
   return { monthsLapse, computedLapseInterest };
 }
