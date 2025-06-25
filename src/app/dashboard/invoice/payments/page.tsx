@@ -17,7 +17,7 @@ interface PageProps {
 }
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const payments = await fetchReceivedPayments(String(searchParams.nextCursor));
+  const payments = await fetchReceivedPayments(searchParams.nextCursor);
   return (
     <Box
       sx={{
@@ -35,7 +35,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         </Stack>
         <PaymentsTable rows={payments['payment']} />
       </Stack>
-      <PaymentsTableInfiniteScroll nextCursor={searchParams.nextCursor} />
+      <PaymentsTableInfiniteScroll nextCursor={String(payments.nextCursor)} />
     </Box>
   );
 }
