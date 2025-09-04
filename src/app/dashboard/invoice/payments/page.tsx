@@ -13,11 +13,11 @@ export const metadata:Metadata = {
 }
 
 interface PageProps {
-  searchParams: { nextCursor?: string };
+  searchParams: { cursor?: string };
 }
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
-  const payments = await fetchReceivedPayments(searchParams.nextCursor);
+  const payments = await fetchReceivedPayments(searchParams.cursor);
   return (
     <Box
       sx={{

@@ -113,6 +113,9 @@ function AmortizationTable({ rows, accounts, memberId, loanId, isAdmin }: Props)
           <Button startIcon={<CreditCard />} onClick={setDialogOpen} variant="contained">
             Post Payment
           </Button>
+          <Button startIcon={<CreditCard />} onClick={setDialogOpen} variant="outlined">
+            Log posted payment
+          </Button>
         </Stack>
       </div>
       <CreateAmortizationPayment

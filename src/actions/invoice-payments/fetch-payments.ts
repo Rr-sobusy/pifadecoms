@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 
 export async function fetchReceivedPayments(cursor?: string) {
+  
   const cursorValue = cursor ? Number(cursor) : undefined;
 
   const payments = await prisma.invoiceItemsPayments.findMany({

@@ -60,14 +60,10 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
     resolver: zodResolver(adbComponentsSchema),
   });
 
-  // const fundTransaction = fund.Transactions.filter((transaction) =>
-  //   computeAdbType === 'Savings' ? transaction.fundType === 'Savings' : transaction.fundType === 'ShareCapital'
-  // );
-
   const searchParams = useSearchParams();
   const payload = searchParams.get('computeAdb') || 'Savings';
 
-  const rex = computeMonthlyBalances(fund, getValues('year') ?? 0, payload as 'Savings' | 'ShareCapital');
+  const monthlyBalances = computeMonthlyBalances(fund, getValues('year') ?? 0, payload as 'Savings' | 'ShareCapital');
   function handleClose() {
     router.push(pathName);
   }
@@ -165,22 +161,7 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
             </Grid>
             <Card>
               <CardContent>
-                {/* <Stack justifyContent="center" alignItems="center" gap={1} flexDirection="row">
-                  <Typography>Accrued Average Daily Balance:</Typography>
-                  <Typography>{formatToCurrency(currentAdb, 'Fil-ph', 'Php')}</Typography>
-                  <Typography>X</Typography>
-                  <Stack>
-                    <Typography variant="subtitle1">{`${getValues('interestRate') ?? 0}%`}</Typography>
-                  </Stack>
-                  <Typography>=</Typography>
-                  <Stack>
-                    <Typography>Interest Payable</Typography>
-                    <Typography>
-                      {formatToCurrency((currentAdb * (getValues('interestRate') ?? 0)) / 100, 'Fil-ph', 'Php')}
-                    </Typography>
-                  </Stack>
-                </Stack> */}
-                <MonthBalancesChart interestRate={getValues('interestRate')} data={rex} />
+                <MonthBalancesChart interestRate={getValues('interestRate')} data={monthlyBalances} />
               </CardContent>
             </Card>
           </Stack>
