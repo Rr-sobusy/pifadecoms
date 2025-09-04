@@ -1,6 +1,10 @@
 
 // import { stringify } from 'json-bigint';
 
+export function GET(){
+  return new Response("Hello, This is a test route")
+}
+
 // import { fetchFundLedger } from '@/actions/funds/fetch-fund-ledgers';
 
 // interface MonthlyBalance {
