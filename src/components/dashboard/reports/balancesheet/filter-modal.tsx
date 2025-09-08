@@ -31,7 +31,12 @@ function BalanceSheetFilterModal({ open }: FiltererModalProps) {
   }
 
   function selectHandler() {
-    router.push(`${pathname}?asOf=${asOf}`);
+    const urlSearchParams = new URLSearchParams();
+
+    if (asOf) {
+      urlSearchParams.set('asOf', dayjs(asOf).format('YYYY-MM-DD'));
+    }
+    router.push(`${pathname}?${urlSearchParams.toString()}`);
   }
   return (
     <Dialog
