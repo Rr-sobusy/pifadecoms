@@ -5,12 +5,12 @@ import prisma from '@/lib/prisma';
 
 interface FilterProps {
   month: string;
-  journalType?: JournalType | 'All';
+  journalType?: JournalType;
   memberId: string;
   year: string;
 }
 
-export async function fetchMemberPatronages({ month, memberId, year = dayjs().year().toString() }: FilterProps) {
+export async function fetchMemberPatronages({ month, memberId, year = dayjs().year().toString(), journalType = 'cashReceipts' }: FilterProps) {
   /**
    * * Fetch the records for the previous 30 days when there is no given parameters in dateRange
    */
@@ -35,11 +35,14 @@ export async function fetchMemberPatronages({ month, memberId, year = dayjs().ye
     where: {
       JournalEntries: {
         entryDate: { gte: startDate, lt: endDate },
-        journalType: 'cashReceipts',
+        journalType: journalType,
         memberId: memberId,
       },
       Accounts: {
         RootID: {
+          /**
+           * * Only assets and Revenue accounts are relevant to patronages
+           */
           OR: [{ rootType: 'Assets' }, { rootType: 'Revenue' }],
         },
       },

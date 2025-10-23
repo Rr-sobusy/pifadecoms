@@ -26,8 +26,9 @@ import NotfoundToaster from '@/components/dashboard/members/member-not-found';
 import MemberStatusToggler from '@/components/dashboard/members/member-status-toggler';
 import PatronageTable from '@/components/dashboard/members/patronage-table';
 import PatronageYearPicker from '@/components/dashboard/members/patronage-year-picker';
+import PatronageJournalTypePicker from '@/components/dashboard/members/patronage-journal-type-picker';
 
-export const metadata = { title: "PIFADECO || Member Profile" } satisfies Metadata;
+export const metadata = { title: 'PIFADECO || Member Profile' } satisfies Metadata;
 
 interface PageProps {
   params: { memberId: string };
@@ -149,7 +150,10 @@ export default async function Page({ params, searchParams }: PageProps): Promise
                   title="Member Patronages"
                 />
                 <CardContent>
-                  <PatronageYearPicker />
+                  <Stack spacing={2} direction="row">
+                    <PatronageYearPicker />
+                    <PatronageJournalTypePicker />
+                  </Stack>
                   <PatronageTable
                     rows={patronages}
                     content={[
