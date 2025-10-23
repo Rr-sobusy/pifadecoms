@@ -10,15 +10,13 @@ import { JournalType } from '@prisma/client';
 import { dayjs } from '@/lib/dayjs';
 import { Option } from '@/components/core/option';
 
-type Props = {};
-
 const JournalsTypes: Record<string, JournalType> = {
   'Cash Receipts': 'cashReceipts',
   'Cash Disbursements': 'cashDisbursement',
   'General Journal': 'generalJournal',
 };
 
-function PatronageJournalTypePicker({}: Props) {
+function PatronageJournalTypePicker() {
   const router = useRouter();
   const currentParams = useSearchParams();
 
