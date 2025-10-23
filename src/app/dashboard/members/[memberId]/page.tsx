@@ -27,12 +27,13 @@ import MemberStatusToggler from '@/components/dashboard/members/member-status-to
 import PatronageTable from '@/components/dashboard/members/patronage-table';
 import PatronageYearPicker from '@/components/dashboard/members/patronage-year-picker';
 import PatronageJournalTypePicker from '@/components/dashboard/members/patronage-journal-type-picker';
+import { JournalType } from '@prisma/client';
 
 export const metadata = { title: 'PIFADECO || Member Profile' } satisfies Metadata;
 
 interface PageProps {
   params: { memberId: string };
-  searchParams: { monthFilter: string; filterYear: string };
+  searchParams: { monthFilter: string; filterYear: string, journalType?: JournalType };
 }
 
 export default async function Page({ params, searchParams }: PageProps): Promise<React.JSX.Element> {
@@ -43,6 +44,7 @@ export default async function Page({ params, searchParams }: PageProps): Promise
     memberId,
     month: searchParams.monthFilter,
     year: searchParams.filterYear,
+    journalType : searchParams.journalType || 'cashReceipts',
   });
 
   const isActive = memberData?.accountStatus === 'Active';

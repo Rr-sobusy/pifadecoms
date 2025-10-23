@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 
 interface FilterProps {
   month: string;
-  journalType?: JournalType;
+  journalType: JournalType;
   memberId: string;
   year: string;
 }
