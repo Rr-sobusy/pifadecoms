@@ -75,7 +75,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
           <MemberFilters basePath={paths.dashboard.funds.list} filters={{ memberName }} />
           <Divider />
           <Box sx={{ overflowX: 'auto' }}>
-            <MemberFundsTable rows={memberFunds} />
+            <MemberFundsTable data={totalSavingsInterestPayable} rows={memberFunds} />
           </Box>
         </Card>
       </Stack>
