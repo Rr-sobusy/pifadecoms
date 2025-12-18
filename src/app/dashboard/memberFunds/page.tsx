@@ -17,8 +17,8 @@ import { membersStillNotRegistered } from '@/actions/funds/fetch-members-nofund'
 import AddFundsMember from '@/components/dashboard/funds/add-member';
 import FundsStats from '@/components/dashboard/funds/fund-stats';
 import { MemberFundsTable } from '@/components/dashboard/funds/member-funds-table';
-import { MemberFilters } from '@/components/dashboard/members/members-filter';
 import TotalSavingsInterestCard from '@/components/dashboard/funds/total-savings-interest-card';
+import { MemberFilters } from '@/components/dashboard/members/members-filter';
 
 interface PageProps {
   searchParams: { addNewFund: boolean; memberName: string };
@@ -40,11 +40,10 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
     fetchAggregatedFunds(),
   ]);
   let totalSavingsInterestPayable = 0;
-  memberFunds.map((fund) => {
+  memberFunds.forEach((fund) => {
     const monthlyBalances = computeMonthlyBalances(fund, fiscalYear, 'Savings');
-    const interestPerMember = monthlyBalances.reduce((curr, acc) => curr + acc.balance, 0) * interestRate / 1200;
+    const interestPerMember = (monthlyBalances.reduce((curr, acc) => curr + acc.balance, 0) * interestRate) / 1200;
     totalSavingsInterestPayable += interestPerMember;
-    
   });
 
   return (
@@ -80,7 +79,11 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
             <MemberFundsTable rows={memberFunds} />
           </Box>
         </Card>
-        <TotalSavingsInterestCard interestRate={interestRate} fiscalYear={fiscalYear} totalSavingsInterestPayable={totalSavingsInterestPayable} />
+        <TotalSavingsInterestCard
+          interestRate={interestRate}
+          fiscalYear={fiscalYear}
+          totalSavingsInterestPayable={totalSavingsInterestPayable}
+        />
       </Stack>
       <AddFundsMember
         membersList={membersList.map((member) => {
