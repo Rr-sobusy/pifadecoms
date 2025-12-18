@@ -13,6 +13,7 @@ import type { FundTransactionsType, Roles } from '@prisma/client';
 import { paths } from '@/paths';
 import { fetchAccountTree } from '@/actions/accounts/fetch-accounts';
 import { fetchFundTransactions } from '@/actions/funds/fetch-fund-transaction';
+import { fetchMemberFunds } from '@/actions/funds/fetch-funds';
 import AdbCalculator from '@/components/dashboard/funds/adb-interest-card';
 import FundTransactionNonPosting from '@/components/dashboard/funds/fund-transact-already-posted';
 import { FundTransactionWithPosting } from '@/components/dashboard/funds/fund-transaction-with-posting';

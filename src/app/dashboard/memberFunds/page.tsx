@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
 import { paths } from '@/paths';
+import { computeMonthlyBalances } from '@/lib/api-utils/calculate-balance-every-14th';
 import { fetchAggregatedFunds } from '@/actions/funds/fetch-aggregated-funds';
 import { fetchMemberFunds } from '@/actions/funds/fetch-funds';
 import { membersStillNotRegistered } from '@/actions/funds/fetch-members-nofund';
@@ -34,6 +35,15 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
     membersStillNotRegistered(),
     fetchAggregatedFunds(),
   ]);
+  let totalSavingsInterestPayable = 0;
+  memberFunds.map((fund) => {
+    const monthlyBalances = computeMonthlyBalances(fund, 2025, 'Savings');
+    const interestPerMember = monthlyBalances.reduce((curr, acc) => curr + acc.balance, 0) * 2 / 1200;
+    totalSavingsInterestPayable += interestPerMember;
+    
+  });
+
+  console.log('Total Savings Interest Payable: ', totalSavingsInterestPayable);
 
   return (
     <Box

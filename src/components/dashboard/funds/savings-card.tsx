@@ -35,7 +35,7 @@ import FundTransactionPaginator from './fund-transcaction-table-paginator';
 
 interface SavingsCardProps {
   fund: MemberFundsType[0];
-  isAdmin:boolean
+  isAdmin: boolean;
 }
 
 const FundTransactionMap: Record<FundTransactionsType, string> = {
@@ -127,13 +127,14 @@ const columns = [
   },
 ] satisfies ColumnDef<MemberFundsType[0]['Transactions'][0]>[];
 
-function SavingsCard({ fund , isAdmin}: SavingsCardProps) {
+function SavingsCard({ fund, isAdmin }: SavingsCardProps) {
   const router = useRouter();
   const pathName = usePathname();
 
   const [editMode, toggleEditMode] = React.useState<boolean>(false);
   const editInputRef = React.useRef<HTMLInputElement>(null);
 
+  // console.log(sampleDatea)
   /**
    * * States used for showing data in data table with pagination
    */
