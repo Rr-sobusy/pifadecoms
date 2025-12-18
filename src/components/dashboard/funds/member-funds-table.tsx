@@ -16,7 +16,6 @@ import type { ColumnDef } from '@/components/core/data-table';
 
 interface MemberFundsTableProps {
   rows?: MemberFundsType;
-  data: any
 }
 
 const columns = [
@@ -65,8 +64,7 @@ const columns = [
   },
 ] satisfies ColumnDef<MemberFundsType[0]>[];
 
-export function MemberFundsTable({ rows = [], data }: MemberFundsTableProps): React.JSX.Element {
-  console.log('Data in MemberFundsTable: ', data);
+export function MemberFundsTable({ rows = [] }: MemberFundsTableProps): React.JSX.Element {
   return (
     <React.Fragment>
       <DataTable hover columns={columns} rows={rows} />

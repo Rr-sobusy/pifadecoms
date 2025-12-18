@@ -18,6 +18,7 @@ import AddFundsMember from '@/components/dashboard/funds/add-member';
 import FundsStats from '@/components/dashboard/funds/fund-stats';
 import { MemberFundsTable } from '@/components/dashboard/funds/member-funds-table';
 import { MemberFilters } from '@/components/dashboard/members/members-filter';
+import TotalSavingsInterestCard from '@/components/dashboard/funds/total-savings-interest-card';
 
 interface PageProps {
   searchParams: { addNewFund: boolean; memberName: string };
@@ -26,6 +27,9 @@ interface PageProps {
 export const metadata: Metadata = {
   title: 'PIFADECO | Member funds',
 };
+
+const fiscalYear = 2025;
+const interestRate = 2;
 
 async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const { memberName } = searchParams;
@@ -37,13 +41,11 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   ]);
   let totalSavingsInterestPayable = 0;
   memberFunds.map((fund) => {
-    const monthlyBalances = computeMonthlyBalances(fund, 2025, 'Savings');
-    const interestPerMember = monthlyBalances.reduce((curr, acc) => curr + acc.balance, 0) * 2 / 1200;
+    const monthlyBalances = computeMonthlyBalances(fund, fiscalYear, 'Savings');
+    const interestPerMember = monthlyBalances.reduce((curr, acc) => curr + acc.balance, 0) * interestRate / 1200;
     totalSavingsInterestPayable += interestPerMember;
     
   });
-
-  console.log('Total Savings Interest Payable: ', totalSavingsInterestPayable);
 
   return (
     <Box
@@ -75,9 +77,10 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
           <MemberFilters basePath={paths.dashboard.funds.list} filters={{ memberName }} />
           <Divider />
           <Box sx={{ overflowX: 'auto' }}>
-            <MemberFundsTable data={totalSavingsInterestPayable} rows={memberFunds} />
+            <MemberFundsTable rows={memberFunds} />
           </Box>
         </Card>
+        <TotalSavingsInterestCard interestRate={interestRate} fiscalYear={fiscalYear} totalSavingsInterestPayable={totalSavingsInterestPayable} />
       </Stack>
       <AddFundsMember
         membersList={membersList.map((member) => {
