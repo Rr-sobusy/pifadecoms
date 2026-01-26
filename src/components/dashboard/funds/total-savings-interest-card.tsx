@@ -9,16 +9,20 @@ import { formatToCurrency } from '@/lib/format-currency';
 
 interface PageProps {
   totalSavingsInterestPayable: number;
+  totalAdbShareCapital:number;
   fiscalYear: number;
   interestRate: number;
 }
 
-function TotalSavingsInterestCard({ totalSavingsInterestPayable, fiscalYear, interestRate }: PageProps) {
+function TotalSavingsInterestCard({ totalSavingsInterestPayable, fiscalYear, interestRate , totalAdbShareCapital}: PageProps) {
   return (
     <Card>
       <CardContent>
         <Typography variant="body2" gutterBottom>
           {`Total Savings Interest Payable for Fiscal Year ${fiscalYear} with ${interestRate}% Interest Rate : ${formatToCurrency(totalSavingsInterestPayable)}`}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+          {`Total Average Daily Balance of Share Capitals for Fiscal Year ${fiscalYear} : ${formatToCurrency(totalAdbShareCapital)}`}
         </Typography>
       </CardContent>
     </Card>

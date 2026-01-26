@@ -40,9 +40,13 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
     fetchAggregatedFunds(),
   ]);
   let totalSavingsInterestPayable = 0;
+  let totalAdbShareCapital = 0;
   memberFunds.forEach((fund) => {
-    const monthlyBalances = computeMonthlyBalances(fund, fiscalYear, 'Savings');
-    const interestPerMember = (monthlyBalances.reduce((curr, acc) => curr + acc.balance, 0) * interestRate) / 1200;
+    const monthlyBalancesSavings = computeMonthlyBalances(fund, fiscalYear, 'Savings');
+    const monthlyAdbShareCapital = computeMonthlyBalances(fund, fiscalYear, 'ShareCapital');
+    totalAdbShareCapital += monthlyAdbShareCapital.reduce((curr, acc) => curr + acc.balance, 0);
+    const interestPerMember =
+      (monthlyBalancesSavings.reduce((curr, acc) => curr + acc.balance, 0) * interestRate) / 1200;
     totalSavingsInterestPayable += interestPerMember;
   });
 
@@ -82,6 +86,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
         <TotalSavingsInterestCard
           interestRate={interestRate}
           fiscalYear={fiscalYear}
+          totalAdbShareCapital={totalAdbShareCapital}
           totalSavingsInterestPayable={totalSavingsInterestPayable}
         />
       </Stack>
