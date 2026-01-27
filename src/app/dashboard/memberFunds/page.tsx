@@ -44,7 +44,7 @@ async function page({ searchParams }: PageProps): Promise<React.JSX.Element> {
   memberFunds.forEach((fund) => {
     const monthlyBalancesSavings = computeMonthlyBalances(fund, fiscalYear, 'Savings');
     const monthlyAdbShareCapital = computeMonthlyBalances(fund, fiscalYear, 'ShareCapital');
-    totalAdbShareCapital += monthlyAdbShareCapital.reduce((curr, acc) => curr + acc.balance, 0);
+    totalAdbShareCapital += monthlyAdbShareCapital.reduce((curr, acc) => (curr + acc.balance / 12), 0);
     const interestPerMember =
       (monthlyBalancesSavings.reduce((curr, acc) => curr + acc.balance, 0) * interestRate) / 1200;
     totalSavingsInterestPayable += interestPerMember;
