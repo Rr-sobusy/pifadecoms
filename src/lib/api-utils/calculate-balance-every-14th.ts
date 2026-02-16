@@ -7,12 +7,13 @@ interface MonthlyBalance {
   balance: number;
 }
 
+const implementationYear = 2025
+
 export const computeMonthlyBalances = (
   transactions: MemberFundsType[0],
   year: 2024 | 2025 | 2026 | 2027 | 2028 | 2029,
   fundType: 'Savings' | 'ShareCapital'
 ): MonthlyBalance[] => {
-  const currentYear = dayjs().year();
 
   const months = Array.from({ length: 12 }, (_, i) => ({
     month: i + 1,
@@ -44,14 +45,12 @@ export const computeMonthlyBalances = (
       ? Number(transactions.savingsBal || 0)
       : Number(transactions.shareCapBal || 0);
 
-  // 🔴 CASE 1: No transactions recorded at all
+  // 🔴 CASE 1: No transactions recorded at all, use the current balance
   if (filteredTransactions.length === 0) {
-    const balanceToUse =
-      year < currentYear ? 0 : currentBalance;
 
     return months.map(({ month }) => ({
       month: dayjs().month(month - 1).format('MMMM'),
-      balance: balanceToUse,
+      balance: currentBalance,
     }));
   }
 
