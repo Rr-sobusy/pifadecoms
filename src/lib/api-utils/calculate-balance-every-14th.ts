@@ -7,8 +7,6 @@ interface MonthlyBalance {
   balance: number;
 }
 
-const implementationYear = 2025
-
 export const computeMonthlyBalances = (
   transactions: MemberFundsType[0],
   year: 2024 | 2025 | 2026 | 2027 | 2028 | 2029,
