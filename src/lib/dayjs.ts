@@ -4,12 +4,14 @@ import updateLocale from 'dayjs/plugin/updateLocale';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import minMax from 'dayjs/plugin/minMax'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import isBetween from 'dayjs/plugin/isBetween'
 
 extend(relativeTime);
 extend(updateLocale);
 extend(isSameOrAfter)
 extend(minMax)
 extend(isSameOrBefore)
+extend(isBetween)
 
 dayjs.updateLocale('en', {
   relativeTime: {
