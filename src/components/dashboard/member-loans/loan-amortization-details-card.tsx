@@ -48,7 +48,7 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
   }, [loanDetails]);
 
   const penaltyInterest =
-    loanDetails?.repStyle === 'Diminishing'
+    loanDetails?.repStyle === 'Diminishing' || loanDetails?.repStyle === 'OneTime'
       ? calculateLapseInterest(
           loanDetails?.dueDate,
           Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid.totalPrincipalPaid),
@@ -87,7 +87,7 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
                 : 'Payment remaining:'}
             </Typography>
             <Typography variant="body2" color="error">
-              {loanDetails?.repStyle === 'Diminishing'
+              {loanDetails?.repStyle === 'Diminishing' || loanDetails?.repStyle === 'OneTime'
                 ? formatToCurrency(
                     Math.max(Number(loanDetails?.amountPayable) - Number(totalAmortizationPaid.totalPrincipalPaid), 0)
                   )
@@ -106,7 +106,7 @@ function LoanAmortizationDetails({ loanDetails, accounts, isAdmin, ...props }: P
             <Stack direction="row" spacing={2}>
               <Typography variant="body2">{`Penalty Interest (${loanContractMap[loanDetails?.repStyle]}):`}</Typography>
               <Typography variant="body2" color="error">
-                {`${formatToCurrency(Number(penaltyInterest.computedLapseInterest))} in ${
+                {`${loanDetails?.repStyle !== 'OneTime' ? formatToCurrency(Number(penaltyInterest.computedLapseInterest)) : formatToCurrency(Number(penaltyInterest.computedLapseInterest - totalAmortizationPaid.totalInterestPaid))} in ${
                   penaltyInterest.monthsLapse
                 } month(s)`}
               </Typography>
