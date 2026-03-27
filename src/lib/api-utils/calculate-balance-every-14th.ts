@@ -32,6 +32,17 @@ export const computeMonthlyBalances = (
   const currentBalance =
     fundType === 'Savings' ? Number(transactions.savingsBal || 0) : Number(transactions.shareCapBal || 0);
 
+  const startOfYear = dayjs(`${year}-01-01`);
+  const endOfYear = dayjs(`${year}-12-31`);
+
+  const previousTransactions = filteredTransactions.filter((t) =>
+    dayjs(t.JournalEntries?.entryDate).isBefore(startOfYear)
+  );
+
+  const yearTransactions = filteredTransactions.filter((t) =>
+    dayjs(t.JournalEntries?.entryDate).isBetween(startOfYear, endOfYear, 'day', '[]')
+  );
+
   // 🔴 CASE 1: No transactions recorded at all, use the current balance
   if (filteredTransactions.length === 0) {
     return months.map(({ month }) => ({
@@ -46,24 +57,26 @@ export const computeMonthlyBalances = (
 
   // 🔴 CASE 2: Requested year is before first transaction
   if (year < firstTransactionYear) {
-    return months.map(({ month }) => ({
+    const firstTransaction = filteredTransactions[0];
+    const firstTransactionBalance =
+      firstTransaction.transactionType === 'SavingsDeposit' || firstTransaction.transactionType === 'ShareCapDeposit'
+        ? Number(firstTransaction.newBalance) - Number(firstTransaction.postedBalance)
+        : Number(firstTransaction.newBalance) + Number(firstTransaction.postedBalance);
+
+        if(firstTransactionBalance === 0)    return months.map(({ month }) => ({
       month: dayjs()
         .month(month - 1)
         .format('MMMM'),
       balance: 0,
     }));
+
+    return months.map(({ month }) => ({
+      month: dayjs()
+        .month(month - 1)
+        .format('MMMM'),
+      balance: firstTransactionBalance,
+    }));
   }
-
-  const startOfYear = dayjs(`${year}-01-01`);
-  const endOfYear = dayjs(`${year}-12-31`);
-
-  const previousTransactions = filteredTransactions.filter((t) =>
-    dayjs(t.JournalEntries?.entryDate).isBefore(startOfYear)
-  );
-
-  const yearTransactions = filteredTransactions.filter((t) =>
-    dayjs(t.JournalEntries?.entryDate).isBetween(startOfYear, endOfYear, 'day', '[]')
-  );
 
   let startingBalance = 0;
 
