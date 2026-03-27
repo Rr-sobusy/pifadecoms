@@ -1,4 +1,3 @@
-
 import { dayjs } from '@/lib/dayjs';
 import { MemberFundsType } from '@/actions/funds/types';
 
@@ -9,10 +8,9 @@ interface MonthlyBalance {
 
 export const computeMonthlyBalances = (
   transactions: MemberFundsType[0],
-  year: 2024 | 2025 | 2026 | 2027 | 2028 | 2029,
+  year: 2025 | 2026 | 2027 | 2028 | 2029,
   fundType: 'Savings' | 'ShareCapital'
 ): MonthlyBalance[] => {
-
   const months = Array.from({ length: 12 }, (_, i) => ({
     month: i + 1,
     totalBalance: 0,
@@ -27,39 +25,31 @@ export const computeMonthlyBalances = (
       if (!entryDate) return false;
 
       const transactionDate = dayjs(entryDate);
-      return (
-        transactionDate.isValid() &&
-        transaction.fundType === fundType
-      );
+      return transactionDate.isValid() && transaction.fundType === fundType;
     })
-    .sort((a, b) =>
-      dayjs(a.JournalEntries?.entryDate).diff(
-        dayjs(b.JournalEntries?.entryDate)
-      )
-    );
+    .sort((a, b) => dayjs(a.JournalEntries?.entryDate).diff(dayjs(b.JournalEntries?.entryDate)));
 
   const currentBalance =
-    fundType === 'Savings'
-      ? Number(transactions.savingsBal || 0)
-      : Number(transactions.shareCapBal || 0);
+    fundType === 'Savings' ? Number(transactions.savingsBal || 0) : Number(transactions.shareCapBal || 0);
 
   // 🔴 CASE 1: No transactions recorded at all, use the current balance
   if (filteredTransactions.length === 0) {
-
     return months.map(({ month }) => ({
-      month: dayjs().month(month - 1).format('MMMM'),
+      month: dayjs()
+        .month(month - 1)
+        .format('MMMM'),
       balance: currentBalance,
     }));
   }
 
-  const firstTransactionYear = dayjs(
-    filteredTransactions[0].JournalEntries?.entryDate
-  ).year();
+  const firstTransactionYear = dayjs(filteredTransactions[0].JournalEntries?.entryDate).year();
 
   // 🔴 CASE 2: Requested year is before first transaction
   if (year < firstTransactionYear) {
     return months.map(({ month }) => ({
-      month: dayjs().month(month - 1).format('MMMM'),
+      month: dayjs()
+        .month(month - 1)
+        .format('MMMM'),
       balance: 0,
     }));
   }
@@ -72,43 +62,38 @@ export const computeMonthlyBalances = (
   );
 
   const yearTransactions = filteredTransactions.filter((t) =>
-    dayjs(t.JournalEntries?.entryDate).isBetween(
-      startOfYear,
-      endOfYear,
-      'day',
-      '[]'
-    )
+    dayjs(t.JournalEntries?.entryDate).isBetween(startOfYear, endOfYear, 'day', '[]')
   );
 
   let startingBalance = 0;
 
   if (previousTransactions.length > 0) {
-    startingBalance =
-      Number(previousTransactions[previousTransactions.length - 1].newBalance);
+    startingBalance = Number(previousTransactions[previousTransactions.length - 1].newBalance);
   }
 
   const dailyBalances: Record<string, number> = {};
   let runningBalance = startingBalance;
 
   yearTransactions.forEach((transaction) => {
-    const dateKey = dayjs(
-      transaction.JournalEntries?.entryDate
-    ).format('YYYY-MM-DD');
+    const dateKey = dayjs(transaction.JournalEntries?.entryDate).format('YYYY-MM-DD');
 
     runningBalance = Number(transaction.newBalance);
     dailyBalances[dateKey] = runningBalance;
   });
+  let firstTransaction = yearTransactions[0];
 
-  let lastKnownBalance = startingBalance;
+  let lastKnownBalance = yearTransactions.length
+    ? firstTransaction.transactionType === 'SavingsDeposit' || firstTransaction.transactionType === 'ShareCapDeposit'
+      ? Number(firstTransaction.newBalance) - Number(firstTransaction.postedBalance)
+      : Number(firstTransaction.newBalance) + Number(firstTransaction.postedBalance)
+    : startingBalance;
 
   for (let month = 1; month <= 12; month++) {
     const daysInMonth = dayjs(`${year}-${month}-01`).daysInMonth();
     let monthlyTotal = 0;
 
     for (let day = 1; day <= daysInMonth; day++) {
-      const dateKey = `${year}-${String(month).padStart(2, '0')}-${String(
-        day
-      ).padStart(2, '0')}`;
+      const dateKey = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
       if (dailyBalances[dateKey] !== undefined) {
         lastKnownBalance = dailyBalances[dateKey];
@@ -122,12 +107,12 @@ export const computeMonthlyBalances = (
   }
 
   return months.map(({ month, totalBalance, daysCount }) => ({
-    month: dayjs().month(month - 1).format('MMMM'),
+    month: dayjs()
+      .month(month - 1)
+      .format('MMMM'),
     balance: daysCount > 0 ? totalBalance / daysCount : 0,
   }));
 };
-
-
 
 // export const computeMonthlyBalances = (
 //   transactions: MemberFundsType[0],

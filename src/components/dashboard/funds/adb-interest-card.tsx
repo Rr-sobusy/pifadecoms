@@ -35,7 +35,6 @@ interface Props {
 }
 
 enum YearsEnum {
-  one = 2024,
   two = 2025,
   three = 2026,
 }
@@ -121,7 +120,7 @@ function AdbCalculator({ fund, open, computeAdbType }: Props) {
                     <FormControl fullWidth>
                       <InputLabel>Year</InputLabel>
                       <Select {...field}>
-                        {[2024, 2025, 2026, 2027, 2028].map((years) => (
+                        {[ 2025, 2026, 2027, 2028].map((years) => (
                           <Option value={years} key={years}>
                             {years}
                           </Option>
